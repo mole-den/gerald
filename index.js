@@ -4,13 +4,6 @@ const version = "0.2";
 const commandPrefix = "!i";
 const HypixelAPI = require('hypixel-api')
  
-const client = new HypixelAPI('83318b25-4540-4efb-a744-62b9eacc20fe')
- 
-client.getPlayer('name', 'ZacIsBurnt').then((player) => {
-    console.log(player)
-}).catch((err) => {
-    console.error('Error! ' + err)
-})
 
 bot.on('ready', () => {
     bot.user.setStatus('available') // Can be 'available', 'idle', 'dnd', or 'invisible'
