@@ -1,0 +1,16 @@
+{
+  "name": "discordbot",
+  "version": "1.0.0",
+  "description": "much wow such amaze",
+  "main": " ",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "ZacIsBurnt",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^11.6.4",
+    "hypixel-api": "^1.1.0"
+  },
+  "devDependencies": {}
+}
