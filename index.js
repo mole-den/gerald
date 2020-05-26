@@ -2,8 +2,6 @@ const Discord = require('discord.js');
 const bot = new Discord.Client();
 const version = "0.2";
 const commandPrefix = "!i";
-const HypixelAPI = require('hypixel-api')
- 
 
 bot.on('ready', () => {
     bot.user.setStatus('available') // Can be 'available', 'idle', 'dnd', or 'invisible'
