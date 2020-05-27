@@ -125,3 +125,33 @@ function randomnumber(msg){
     msg.channel.sendMessage(Math.floor(Math.random() * 10 + 1));
 }
 
+
+
+if (message.content.startsWith(commandPrefix + "kick")) {
+        // Easy way to get member object though mentions.
+        var member= message.mentions.members.first();
+        // Kick
+        member.kick().then((member) => {
+            // Successmessage
+            message.channel.send(":wave: " + member.displayName + " got kicked lol what a nerd");
+        }).catch(() => {
+             // Failmessage
+            message.channel.send("Access Denied");
+        });
+    }
+});
+ client.on("message", (message) => {
+    if (message.content.startsWith(commandPrefix + "ban")) {
+        // Easy way to get member object though mentions.
+        var member= message.mentions.members.first();
+        // ban
+        member.ban().then((member) => {
+            // Successmessage
+            message.channel.send(":wave: " + member.displayName + " has been smited.");
+        }).catch(() => {
+             // Failmessage
+            message.channel.send("Access Denied");
+        });
+    }
+});
+
