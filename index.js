@@ -2,6 +2,7 @@ const Discord = require('discord.js');
 const bot = new Discord.Client();
 const commandPrefix = "!i";
 const wikiPrefix = "gwiki ";
+const emerald = "224644";
 
 bot.on('ready', () => {
     bot.user.setStatus('available') // Can be 'available', 'idle', 'dnd', or 'invisible'
@@ -97,7 +98,7 @@ function checkCommand(msg){
                     //console.log('bread shipment imbound');
                 //break;
                 case "emerald":
-                    msg.channel.sendMessage('Zac currently has mined **224644** emeralds! (27/5/2020) Check his status for his position.');
+                    msg.channel.sendMessage('Zac currently has mined **' + emerald + '** emeralds! (27/5/2020) Check his status for his position.');
                 break;
                 case "help":
                     msg.channel.sendMessage('The link to join my creators discord is https://discord.gg/Y2EtATM');
