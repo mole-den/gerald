@@ -1,6 +1,5 @@
 const Discord = require('discord.js');
 const bot = new Discord.Client();
-const version = "0.2";
 const commandPrefix = "!i";
 
 bot.on('ready', () => {
@@ -32,7 +31,7 @@ bot.on('message', msg=>{
         case "Bonjour":
             msg.reply('i like french bread');
             break;
-        case "SHould toast rob no?":
+        case "Should toast rob no?":
             msg.reply('no');
             break;
              case "Bonjour":
@@ -87,8 +86,16 @@ function checkCommand(msg){
                 case "backflip":
                     msg.channel.sendMessage('**does a backflip**');
                 break;
+                case "cookie":
+                    msg.channel.sendMessage('no cookie for u 1 year');
+                    console.log('cookie denied');
+                break;
+                case "bread":
+                    msg.channel.sendMessage('donate le bread pls');
+                    console.log('bread shipment imbound');
+                break;
                 case "emerald":
-                    msg.channel.sendMessage('Zac currently has mined **197764** emeralds! (20/5/2020) Check his status for his position.');
+                    msg.channel.sendMessage('Zac currently has mined **224644** emeralds! (27/5/2020) Check his status for his position.');
                 break;
                 case "help":
                     msg.channel.sendMessage('The link to join my creators discord is https://discord.gg/Y2EtATM');
