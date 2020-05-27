@@ -157,3 +157,27 @@ if (message.content.startsWith(commandPrefix + "kick")) {
 });
 
 */
+//----------Wiki------------------------
+function checkCommand(msg){
+    try{
+        if(msg.content.startsWith(commandPrefix)){
+            var command = msg.content.replace(commandPrefix, 'wiki ');
+            switch(command){
+                case "":
+                    msg.channel.sendMessage('ACCESS DENIED');
+                break;
+                default:
+                    msg.channel.sendMessage('wat');
+                    console.log('Oh no. Somebody cant english!')
+                break;
+            }
+        }
+    } catch (e){
+        msg.channel.sendMessage('Error!');
+        msg.channel.sendMessage('Error code: ' + Math.floor(Math.random() * 999 + 1));
+        msg.channel.sendMessage(e);
+        console.log('ERROR')
+    }
+    
+}
+
