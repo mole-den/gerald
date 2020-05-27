@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 const bot = new Discord.Client();
 const commandPrefix = "!i";
+const wikiPrefix = "gwiki ";
 
 bot.on('ready', () => {
     bot.user.setStatus('available') // Can be 'available', 'idle', 'dnd', or 'invisible'
@@ -128,10 +129,10 @@ function randomnumber(msg){
 
 
 //----------Wiki------------------------
-function checkCommand(msg){
+function checkWiki(msg){
     try{
-        if(msg.content.startsWith(commandPrefix)){
-            var command = msg.content.replace(commandPrefix, 'wiki ');
+        if(msg.content.startsWith(wikiPrefix)){
+            var command = msg.content.replace(wikiPrefix, '');
             switch(command){
                 case "Harvester1":
                     msg.channel.sendMessage('that worked hooray');
