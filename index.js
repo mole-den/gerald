@@ -127,44 +127,14 @@ function randomnumber(msg){
 }
 
 
-/*
-if (message.content.startsWith(commandPrefix + "kick")) {
-        // Easy way to get member object though mentions.
-        var member= message.mentions.members.first();
-        // Kick
-        member.kick().then((member) => {
-            // Successmessage
-            message.channel.send(":wave: " + member.displayName + " got kicked lol what a nerd");
-        }).catch(() => {
-             // Failmessage
-            message.channel.send("Access Denied");
-        });
-    }
-});
- client.on("message", (message) => {
-    if (message.content.startsWith(commandPrefix + "ban")) {
-        // Easy way to get member object though mentions.
-        var member= message.mentions.members.first();
-        // ban
-        member.ban().then((member) => {
-            // Successmessage
-            message.channel.send(":wave: " + member.displayName + " has been smited.");
-        }).catch(() => {
-             // Failmessage
-            message.channel.send("Access Denied");
-        });
-    }
-});
-
-*/
 //----------Wiki------------------------
 function checkCommand(msg){
     try{
         if(msg.content.startsWith(commandPrefix)){
             var command = msg.content.replace(commandPrefix, 'wiki ');
             switch(command){
-                case "":
-                    msg.channel.sendMessage('ACCESS DENIED');
+                case "Harvester 1":
+                    msg.channel.sendMessage('that worked hooray');
                 break;
                 default:
                     msg.channel.sendMessage('wat');
