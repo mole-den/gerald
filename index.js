@@ -126,7 +126,7 @@ function randomnumber(msg){
 }
 
 
-
+/*
 if (message.content.startsWith(commandPrefix + "kick")) {
         // Easy way to get member object though mentions.
         var member= message.mentions.members.first();
@@ -155,3 +155,4 @@ if (message.content.startsWith(commandPrefix + "kick")) {
     }
 });
 
+*/
