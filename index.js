@@ -129,7 +129,7 @@ function randomnumber(msg){
 
 
 //----------Wiki------------------------
-function checkWiki(msg){
+function checkCommand(msg){
     try{
         if(msg.content.startsWith(wikiPrefix)){
             var command = msg.content.replace(wikiPrefix, '');
