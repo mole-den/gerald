@@ -46,7 +46,7 @@ bot.on('message', msg=>{
             break;
             case "ÞĬļɶɫʋʑʕ":
                 msg.reply('ÞĬļɶɫʋʑʕ');
-                console.log('Potat Ritual complete!');
+                console.log('dafaq');
                break;
         case "hi":
             msg.reply('Why hello there.');
@@ -57,7 +57,7 @@ bot.on('message', msg=>{
             break;
         case "ÝƏƏ":
             msg.reply('ÝƏƏ');
-            console.log('Ascension Ritual complete!');
+            console.log('dafaq');
             break;
 //--------------------------------End no prefix commands here---------------------------------
         default:
