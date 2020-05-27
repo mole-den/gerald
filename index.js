@@ -131,7 +131,7 @@ function randomnumber(msg){
 function checkCommand(msg){
     try{
         if(msg.content.startsWith(commandPrefix)){
-            var command = msg.content.replace(commandPrefix, 'wiki ');
+            var command = msg.content.replace(commandPrefix, '');
             switch(command){
                 case "Harvester 1":
                     msg.channel.sendMessage('that worked hooray');
