@@ -86,14 +86,14 @@ function checkCommand(msg){
                 case "backflip":
                     msg.channel.sendMessage('**does a backflip**');
                 break;
-                case "cookie":
-                    msg.channel.sendMessage('no cookie for u 1 year');
-                    console.log('cookie denied');
-                break;
-                case "bread":
-                    msg.channel.sendMessage('donate le bread pls');
-                    console.log('bread shipment imbound');
-                break;
+                //case "cookie":
+                  //  msg.channel.sendMessage('no cookie for u 1 year');
+                    //console.log('cookie denied');
+               // break;
+                //case "bread":
+                  //  msg.channel.sendMessage('donate le bread pls');
+                    //console.log('bread shipment imbound');
+                //break;
                 case "emerald":
                     msg.channel.sendMessage('Zac currently has mined **224644** emeralds! (27/5/2020) Check his status for his position.');
                 break;
