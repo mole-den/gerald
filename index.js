@@ -2,7 +2,7 @@ const Discord = require('discord.js');
 const bot = new Discord.Client();
 const commandPrefix = "!i";
 const wikiPrefix = "gwiki ";
-const emerald = "224644";
+const emerald = "224644 E";
 
 bot.on('ready', () => {
     bot.user.setStatus('available') // Can be 'available', 'idle', 'dnd', or 'invisible'
