@@ -153,7 +153,7 @@ bot.on('message', msg=>{
             msg.channel.sendMessage('probably does nothing (Price: 1B)');
             break;
          case wikiPrefix + "God of Spuds":
-            msg.reply('gwiki: God of Spuds); 
+            msg.reply('gwiki: God of Spuds'); 
             msg.channel.sendMessage('After maxing out every other upgrade, a farmer must take on a final task: to become a god of spuds.');
             msg.channel.sendMessage('10B | 100M per hour to bank');
             break;
