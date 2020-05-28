@@ -141,7 +141,15 @@ bot.on('message', msg=>{
             break;
         case wikiPrefix + "Mastery":
             msg.reply('gwiki: Mastery Upgrades'); 
+            msg.channel.sendMessage('Once, one farmer decended so far into potato madness he crossed the threshold of potatification. He then brought back these upgrades.');
             msg.channel.sendMessage('Mastery I: Acquired from giveaways || 10k Spudcoin per hour');
+            msg.channel.sendMessage('Mastery II: 5M || 50k Spudcoin per hour');
+            msg.channel.sendMessage('Mastery III: 100M || 1M Spudcoin per hour to bank');
+            msg.channel.sendMessage('Mastery IV: !B || 10M Spudcoin per hour to bank');
+            break;
+         case wikiPrefix + "Spudcoin":
+            msg.reply('gwiki: Spudcoin); 
+            msg.channel.sendMessage('The strange spud currency of Project Flicker.');
             break;
             
         default:
