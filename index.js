@@ -131,6 +131,11 @@ bot.on('message', msg=>{
     switch(msg.content){
         case wikiPrefix + "Harvester":
             msg.reply('gwiki: Harvester Upgrades'); 
+            msg.channel.sendMessage('Harvester I: 100 Spudcoin || 100 Spudcoin per hour');
+            break;
+        case wikiPrefix + "Mastery":
+            msg.reply('gwiki: Mastery Upgrades'); 
+            msg.channel.sendMessage('Mastery I: ??? Spudcoin || ??? Spudcoin per hour');
             break;
             
         default:
