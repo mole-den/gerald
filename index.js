@@ -148,7 +148,7 @@ bot.on('message', msg=>{
             msg.channel.sendMessage('Mastery IV: !B || 10M Spudcoin per hour to bank');
             break;
          case wikiPrefix + "Spudcoin":
-            msg.reply('gwiki: Spudcoin); 
+            msg.reply('gwiki: Spudcoin'); 
             msg.channel.sendMessage('The strange spud currency of Project Flicker.');
             break;
             
