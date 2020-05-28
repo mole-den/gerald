@@ -135,7 +135,7 @@ bot.on('message', msg=>{
             break;
         case wikiPrefix + "Mastery":
             msg.reply('gwiki: Mastery Upgrades'); 
-            msg.channel.sendMessage('Mastery I: ??? Spudcoin || ??? Spudcoin per hour');
+            msg.channel.sendMessage('Mastery I: Acquired from giveaways || 10k Spudcoin per hour');
             break;
             
         default:
