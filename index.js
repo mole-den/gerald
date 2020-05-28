@@ -129,7 +129,7 @@ function randomnumber(msg){
 //----------Wiki------------------------
 bot.on('message', msg=>{
     switch(msg.content){
-        case "gwiki Harvester":
+        case gwiki + "Harvester":
             msg.reply('gwiki: Harvester Upgrades'); 
             break;
             
