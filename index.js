@@ -16,7 +16,7 @@ bot.on('ready', () => {
 });   
 
 
-const token = 'NjcxMTU2MTMwNDgzMDExNjA1.XszgVg.SLrHn6JHfAecf0K9CnuPHoEBn7w';
+const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9s2w.T6LoneB43xjPjFEF61Xhif68TKA';
 
 bot.on('ready', () =>{
     console.log('Preparing to take over the world...');
