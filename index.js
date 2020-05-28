@@ -143,7 +143,7 @@ bot.on('message', msg=>{
             msg.channel.sendMessage('Mastery IV: 1B || 10M Spudcoin per hour to bank');
             break;
          case wikiPrefix + "Valuable Spuds":
-            msg.reply('gwiki: Mastery Upgrades'); 
+            msg.reply('gwiki: Valuable Spuds'); 
             msg.channel.sendMessage('MUST. HAVE. SHINY. SPUDS.');
             msg.channel.sendMessage('(Valuable Spuds I: 10M | 100k per hour) -> (Valuable Spuds II: 30M | 500k per hour) -> (Valuable Spuds III: 100M | 1M per hour)');
             break;
