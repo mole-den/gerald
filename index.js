@@ -90,14 +90,10 @@ function checkCommand(msg){
                 case "backflip":
                     msg.channel.sendMessage('**does a backflip**');
                 break;
-                //case "cookie":
-                  //  msg.channel.sendMessage('no cookie for u 1 year');
-                    //console.log('cookie denied');
-               // break;
-                //case "bread":
-                  //  msg.channel.sendMessage('donate le bread pls');
-                    //console.log('bread shipment imbound');
-                //break;
+                case "donatebread":
+                    msg.channel.sendMessage('Thankyou for your contribution!');
+                    console.log('Bread shipment inbound!');
+                break;
                 case "emerald":
                     msg.channel.sendMessage('Zac currently has mined **' + emerald + '** emeralds! (' + date + ') Check his status for his position.');
                 break;
