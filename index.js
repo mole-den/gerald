@@ -127,26 +127,14 @@ function randomnumber(msg){
 
 
 //----------Wiki------------------------
-/*function checkCommand(msg){
-    try{
-        if(msg.content.startsWith(wikiPrefix)){
-            var command = msg.content.replace(wikiPrefix, '');
-            switch(command){
-                case "Harvester1":
-                    msg.channel.sendMessage('that worked hooray');
-                break;
-                default:
-                    msg.channel.sendMessage('wat');
-                    console.log('Oh no. Somebody cant english!')
-                break;
-            }
-        }
-    } catch (e){
-        msg.channel.sendMessage('Error!');
-        msg.channel.sendMessage('Error code: ' + Math.floor(Math.random() * 999 + 1));
-        msg.channel.sendMessage(e);
-        console.log('ERROR')
+bot.on('message', msg=>{
+    switch(msg.content){
+        case "gwiki Harvester":
+            msg.reply('gwiki: Harvester Upgrades'); 
+            break;
+            
+        default:
+            checkCommand(msg);
+            break;
     }
-    
-}
-*/
+})
