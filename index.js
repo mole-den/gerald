@@ -147,6 +147,14 @@ bot.on('message', msg=>{
             msg.channel.sendMessage('Mastery III: 100M || 1M Spudcoin per hour to bank');
             msg.channel.sendMessage('Mastery IV: 1B || 10M Spudcoin per hour to bank');
             break;
+         case wikiPrefix + "Valuable Spuds":
+            msg.reply('gwiki: Mastery Upgrades'); 
+            msg.channel.sendMessage('MUST. HAVE. SHINY. SPUDS.');
+            msg.channel.sendMessage('Mastery I: Acquired from giveaways || 10k Spudcoin per hour');
+            msg.channel.sendMessage('Mastery II: 5M || 50k Spudcoin per hour');
+            msg.channel.sendMessage('Mastery III: 100M || 1M Spudcoin per hour to bank');
+            msg.channel.sendMessage('Mastery IV: 1B || 10M Spudcoin per hour to bank');
+            break;
          case wikiPrefix + "Spudcoin":
             msg.reply('gwiki: Spudcoin'); 
             msg.channel.sendMessage('The strange spud currency of Project Flicker.');
