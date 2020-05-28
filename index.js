@@ -131,7 +131,13 @@ bot.on('message', msg=>{
     switch(msg.content){
         case wikiPrefix + "Harvester":
             msg.reply('gwiki: Harvester Upgrades'); 
+            msg.channel.sendMessage('Once a great spud farmer decided he was tired of farming spuds by hand so he invented a Harvester that would do it for him.');
             msg.channel.sendMessage('Harvester I: 100 Spudcoin || 100 Spudcoin per hour');
+            msg.channel.sendMessage('Harvester II: 1000 Spudcoin || 200 Spudcoin per hour');
+            msg.channel.sendMessage('Harvester III: 10k Spudcoin || 300 Spudcoin per hour');
+            msg.channel.sendMessage('Harvester IV: 100k Spudcoin || 400 Spudcoin per hour');
+            msg.channel.sendMessage('Harvester V: 500k Spudcoin || 500 Spudcoin per hour');
+            msg.channel.sendMessage('Harvester VI: 1M Spudcoin || 1k Spudcoin per hour to bank');
             break;
         case wikiPrefix + "Mastery":
             msg.reply('gwiki: Mastery Upgrades'); 
