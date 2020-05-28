@@ -151,6 +151,10 @@ bot.on('message', msg=>{
             msg.reply('gwiki: Spudcoin'); 
             msg.channel.sendMessage('The strange spud currency of Project Flicker.');
             break;
+         case wikiPrefix + "Midas Spuds":
+            msg.reply('gwiki: Spudcoin'); 
+            msg.channel.sendMessage('probably does nothing');
+            break;
             
         default:
             checkCommand(msg);
