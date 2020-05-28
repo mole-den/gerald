@@ -137,10 +137,7 @@ bot.on('message', msg=>{
         case wikiPrefix + "Mastery":
             msg.reply('gwiki: Mastery Upgrades'); 
             msg.channel.sendMessage('Once, one farmer decended so far into potato madness he crossed the threshold of potatification. He then brought back these upgrades.');
-            msg.channel.sendMessage('Mastery I: Acquired from giveaways || 10k Spudcoin per hour');
-            msg.channel.sendMessage('Mastery II: 5M || 50k Spudcoin per hour');
-            msg.channel.sendMessage('Mastery III: 100M || 1M Spudcoin per hour to bank');
-            msg.channel.sendMessage('Mastery IV: 1B || 10M Spudcoin per hour to bank');
+            msg.channel.sendMessage('(Mastery I: From Giveaways | 10k per hour) -> (Mastery II: 5M | 50k per hour) -> (Mastery III: 100M | 1M per hour to bank) -> (Mastery IV: 1000000000 | 10M per hour to bank)');
             break;
          case wikiPrefix + "Valuable Spuds":
             msg.reply('gwiki: Valuable Spuds'); 
@@ -152,10 +149,18 @@ bot.on('message', msg=>{
             msg.channel.sendMessage('The strange spud currency of Project Flicker.');
             break;
          case wikiPrefix + "Midas Spuds":
-            msg.reply('gwiki: Spudcoin'); 
-            msg.channel.sendMessage('probably does nothing');
+            msg.reply('gwiki: Midas Spuds'); 
+            msg.channel.sendMessage('probably does nothing (Price: 1B)');
             break;
-            
+         case wikiPrefix + "God of Spuds":
+            msg.reply('gwiki: God of Spuds); 
+            msg.channel.sendMessage('After maxing out every other upgrade, a farmer must take on a final task: to become a god of spuds.');
+            msg.channel.sendMessage('10B | 100M per hour to bank');
+            break;
+         case wikiPrefix + "Reboots":
+            msg.reply('gwiki: Server Reboots'); 
+            msg.channel.sendMessage('Every once in a while, the server undergoes a cosmetic change called a reboot. During a reboot, farmers may sacrifice all their spudcoin and gameplay roles (not Eternal Service) to get a Rebooted item. Farmers keep their inventory when they reboot.');
+            break;
         default:
             checkCommand(msg);
             break;
