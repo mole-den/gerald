@@ -35,10 +35,7 @@ bot.on('message', msg=>{
         case "Bonjour":
             msg.reply('i like french bread');
             break;
-        case "Should toast rob no?":
-            msg.reply('no');
-            break;
-             case "Bonjour":
+        case "Bonjour":
             msg.reply('i like french bread');
             break;
         case "Gerald":
