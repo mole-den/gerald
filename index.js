@@ -158,6 +158,11 @@ bot.on('message', msg=>{
             msg.reply('gwiki: Server Reboots'); 
             msg.channel.sendMessage('Every once in a while, the server undergoes a cosmetic change called a reboot. During a reboot, farmers may sacrifice all their spudcoin and gameplay roles (not Eternal Service) to get a Rebooted item. Farmers keep their inventory when they reboot.');
             break;
+         case wikiPrefix + "Luck":
+            msg.reply('gwiki: Luck'); 
+            msg.channel.sendMessage('amazing WIP');
+            msg.channel.sendMessage('u can get from sweden querst and shop and other stuff');
+            break;
         default:
             checkCommand(msg);
             break;
