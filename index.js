@@ -2,8 +2,8 @@ const Discord = require('discord.js');
 const bot = new Discord.Client();
 const commandPrefix = "!i";
 const wikiPrefix = "gwiki ";
-const emerald = "224644";
-const date = "27/5/2020"
+const emerald = "555477";
+const date = "23/6/2020"
 
 bot.on('ready', () => {
     bot.user.setStatus('available') // Can be 'available', 'idle', 'dnd', or 'invisible'
@@ -135,6 +135,7 @@ bot.on('message', msg=>{
             msg.reply('gwiki: Mastery Upgrades'); 
             msg.channel.sendMessage('Once, one farmer decended so far into potato madness he crossed the threshold of potatification. He then brought back these upgrades.');
             msg.channel.sendMessage('(Mastery I: From Giveaways | 10k per hour) -> (Mastery II: 5M | 50k per hour) -> (Mastery III: 100M | 1M per hour to bank) -> (Mastery IV: 1000000000 | 10M per hour to bank)');
+            msg.channel.sendMessage('lol this is outdated');
             break;
          case wikiPrefix + "Valuable Spuds":
             msg.reply('gwiki: Valuable Spuds'); 
