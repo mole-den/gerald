@@ -178,7 +178,7 @@ bot.on('message', msg=>{
 })
 
 
-client.on('message', message => {
+bot.on('message', message => {
   // Ignore messages that aren't from a guild
   if (!message.guild) return;
 
@@ -206,7 +206,7 @@ client.on('message', message => {
           })
           .then(() => {
             // We let the message author know we were able to ban the person
-            message.reply(`Successfully banned ${user.tag}`);
+            message.reply('Successfully banned ${user.tag}');
           })
           .catch(err => {
             // An error happened
