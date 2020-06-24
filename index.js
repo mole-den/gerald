@@ -133,7 +133,7 @@ bot.on('message', msg=>{
         case wikiPrefix + "Harvester":
             msg.reply('gwiki: Harvester Upgrades'); 
             msg.channel.sendMessage('Once a great spud farmer decided he was tired of farming spuds by hand so he invented a Harvester that would do it for him.');
-            msg.channel.sendMessage('(Harvester I: 100 Spudcoin | 100 Spudcoin per hour) -> (Harvester II: 1000 Spudcoin | 200 Spudcoin per hour) -> (Harvester III: 10k Spudcoin | 300 Spudcoin per hour) -> (Harvester IV: 100k Spudcoin | 400 Spudcoin per hour) -> (Harvester V: 500k Spudcoin | 500 Spudcoin per hour) -> (Harvester VI: 1M Spudcoin | 1k Spudcoin per hour to bank)');
+            msg.channel.sendMessage('(Harvester I: 100 Spudcoin | 100 Spudcoin per hour) -> (Harvester II: 1000 Spudcoin | 200 Spudcoin per hour) -> (Harvester III: 10k Spudcoin | 300 Spudcoin per hour) -> (Harvester IV: 100k Spudcoin | 400 Spudcoin per hour) -> (Harvester V: 500k Spudcoin | 500 Spudcoin per hour) -> (Harvester VI: 1M Spudcoin | 1k Spudcoin per hour to bank) -> (Harvester VII: Buy from the Strange Auction | ???)');
             break;
         case wikiPrefix + "Mastery":
             msg.reply('gwiki: Mastery Upgrades'); 
@@ -168,6 +168,9 @@ bot.on('message', msg=>{
             msg.channel.sendMessage('amazing WIP');
             msg.channel.sendMessage('u can get from sweden querst and shop and other stuff');
             break;
+         case wikiPrefix + "Strange Auction":
+            msg.reply('gwiki: Strange Auction');
+            msg.channel.sendMessage("get lot monez to buy stuf");
         default:
             checkCommand(msg);
             break;
