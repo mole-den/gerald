@@ -3,6 +3,7 @@ const bot = new Discord.Client();
 const commandPrefix = "!i";
 const wikiPrefix = "gwiki ";
 const emerald = "555477";
+const ice = "e";
 const date = "23/6/2020"
 
 bot.on('ready', () => {
@@ -93,6 +94,9 @@ function checkCommand(msg){
                 break;
                 case "emerald":
                     msg.channel.sendMessage('Zac currently has mined **' + emerald + '** emeralds! (' + date + ') Check his status for his position.');
+                break;
+                case "ice":
+                    msg.channel.sendMessage('Zac currently has mined **' + ice + '** emeralds! (' + date + ')');
                 break;
                 case "help":
                     msg.channel.sendMessage('The link to join my creators discord is https://discord.gg/Y2EtATM');
