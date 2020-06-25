@@ -177,7 +177,7 @@ bot.on('message', msg=>{
     }
 })
 
-
+/*
 bot.on('message', message => {
   // Ignore messages that aren't from a guild
   if (!message.guild) return;
@@ -226,3 +226,4 @@ bot.on('message', message => {
     }
   }
 });
+*/
