@@ -107,7 +107,7 @@ function checkCommand(msg){
                 break;
 //--------------------------------End prefix commands, unknown command below-----------------------------
                 default:
-                    msg.channel.sendMessage('Unknown command!');
+                    msg.channel.sendMessage('wat');
                     console.log('Oh no. Somebody cant english!')
                 break;
             }
