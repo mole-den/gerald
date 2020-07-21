@@ -136,13 +136,13 @@ bot.on('message', msg=>{
             msg.channel.sendMessage('(Harvester I: 100 Spudcoin | 100 Spudcoin per hour) -> (Harvester II: 1000 Spudcoin | 200 Spudcoin per hour) -> (Harvester III: 10k Spudcoin | 300 Spudcoin per hour) -> (Harvester IV: 100k Spudcoin | 400 Spudcoin per hour) -> (Harvester V: 500k Spudcoin | 500 Spudcoin per hour) -> (Harvester VI: 1M Spudcoin | 1k Spudcoin per hour to bank) -> (Harvester VII: Buy from the Strange Auction | ???)');
             break;
         case wikiPrefix + "Mastery":
-            msg.reply('gwiki: Mastery Upgrades'); 
+            msg.reply('gwiki: Mastery Upgrades (outdated)'); 
             msg.channel.sendMessage('Once, one farmer decended so far into potato madness he crossed the threshold of potatification. He then brought back these upgrades.');
             msg.channel.sendMessage('(Mastery I: From Giveaways | 10k per hour) -> (Mastery II: 5M | 50k per hour) -> (Mastery III: 100M | 1M per hour to bank) -> (Mastery IV: 1000000000 | 10M per hour to bank)');
             msg.channel.sendMessage('lol this is outdated');
             break;
          case wikiPrefix + "Valuable Spuds":
-            msg.reply('gwiki: Valuable Spuds'); 
+            msg.reply('gwiki: Valuable Spuds (outdated)'); 
             msg.channel.sendMessage('MUST. HAVE. SHINY. SPUDS.');
             msg.channel.sendMessage('(Valuable Spuds I: 10M | 100k per hour) -> (Valuable Spuds II: 30M | 500k per hour) -> (Valuable Spuds III: 100M | 1M per hour)');
             break;
