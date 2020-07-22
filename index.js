@@ -104,6 +104,7 @@ function checkCommand(msg){
                 break;
                 case "flicker":
                     msg.channel.sendMessage('The link to join my creators discord is https://discord.gg/Y2EtATM');
+                    channel.send(PFembed);
                 break;
 //--------------------------------End prefix commands, unknown command below-----------------------------
                 default:
@@ -176,5 +177,25 @@ bot.on('message', msg=>{
             break;
     }
 })
+
+const PFembed = new Discord.MessageEmbed()
+	.setColor('#31ef01')
+	.setTitle('Project Flicker [test]')
+	.setURL('https://discord.js.org/')
+	.setAuthor('Some name', 'https://i.imgur.com/wSTFkRM.png', 'https://discord.js.org')
+	.setDescription('Some description here')
+	.setThumbnail('https://i.imgur.com/wSTFkRM.png')
+	//.addFields(
+	//	{ name: 'Regular field title', value: 'Some value here' },
+	//	{ name: '\u200B', value: '\u200B' },
+	//	{ name: 'Inline field title', value: 'Some value here', inline: true },
+	//	{ name: 'Inline field title', value: 'Some value here', inline: true },
+	//)
+	.addField('Inline field title', 'Some value here', true)
+	.setImage('https://i.imgur.com/wSTFkRM.png')
+	.setTimestamp()
+	.setFooter('Some footer text here', 'https://i.imgur.com/wSTFkRM.png');
+
+
 
 
