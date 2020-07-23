@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
 const bot = new Discord.Client();
-const commandPrefix = "!i";
+const commandPrefix = "g";
 const wikiPrefix = "gwiki ";
 const emerald = "555477";
 const ice = "e";
@@ -102,10 +102,6 @@ function checkCommand(msg){
                     msg.channel.sendMessage('The link to join my creators discord is https://discord.gg/Y2EtATM');
                     msg.channel.sendMessage('Invite me with https://discordapp.com/oauth2/authorize?client_id=671156130483011605&scope=bot&permissions=8');
                 break;
-                case "flicker":
-                    msg.channel.sendMessage('The link to join my creators discord is https://discord.gg/Y2EtATM');
-                    channel.send(PFembed);
-                break;
 //--------------------------------End prefix commands, unknown command below-----------------------------
                 default:
                     msg.channel.sendMessage('wat');
@@ -128,7 +124,7 @@ function randomnumber(msg){
 }
 
 
-//----------Wiki------------------------
+//----------Wiki and new commands------------------------
 bot.on('message', msg=>{
     switch(msg.content){
         case wikiPrefix + "Harvester":
@@ -172,6 +168,11 @@ bot.on('message', msg=>{
          case wikiPrefix + "Strange Auction":
             msg.reply('gwiki: Strange Auction');
             msg.channel.sendMessage("get lot monez to buy stuf");
+		    //commands
+	    case commandPrefix + "flicker":
+	    msg.channel.sendMessage('Yës Brøthër');
+	    channel.send(Pfembed);
+	    msg.channel.sendMessage('https://discord.gg/Y2EtATM');
         default:
             checkCommand(msg);
             break;
