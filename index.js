@@ -168,8 +168,8 @@ bot.on('message', msg=>{
          case wikiPrefix + "Strange Auction":
             msg.reply('gwiki: Strange Auction');
             msg.channel.sendMessage("get lot monez to buy stuf");
-		    //commands are good
-	    case commandPrefix + "flicker":
+	 	    //commands are good
+	 case commandPrefix + "flicker":
 	    msg.channel.sendMessage('Yës Brøthër');
 	    channel.send(Pfembed);
 	    msg.channel.sendMessage('https://discord.gg/Y2EtATM');
