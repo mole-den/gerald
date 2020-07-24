@@ -77,31 +77,9 @@ function checkCommand(msg){
             switch(command){
 //-----------------------Prefix commands here------------------------------------
                 case "invite":
-                    msg.channel.sendMessage('Add me to your server with https://discordapp.com/oauth2/authorize?client_id=671156130483011605&scope=bot&permissions=8');
+                    msg.channel.sendMessage('no');
                 break;
-                case "ledie":
-                    throw "You broke it, good job.";
-                break;
-                case "admin":
-                    msg.channel.sendMessage('ACCESS DENIED');
-                break;
-                case "backflip":
-                    msg.channel.sendMessage('**does a backflip**');
-                break;
-                case "donatebread":
-                    msg.channel.sendMessage('Thankyou for your contribution!');
-                    console.log('Bread shipment inbound!');
-                break;
-                case "emerald":
-                    msg.channel.sendMessage('Zac currently has mined **' + emerald + '** emeralds! (' + date + ') Check his status for his position.');
-                break;
-                case "ice":
-                    msg.channel.sendMessage('Zac currently has mined **' + ice + '** emeralds! (' + date + ')');
-                break;
-                case "help":
-                    msg.channel.sendMessage('The link to join my creators discord is https://discord.gg/Y2EtATM');
-                    msg.channel.sendMessage('Invite me with https://discordapp.com/oauth2/authorize?client_id=671156130483011605&scope=bot&permissions=8');
-                break;
+
 //--------------------------------End prefix commands, unknown command below-----------------------------
                 default:
                     msg.channel.sendMessage('wat');
@@ -173,6 +151,12 @@ bot.on('message', msg=>{
 	    msg.channel.sendMessage('Yës Brøthër');
 	    channel.send(Pfembed);
 	    msg.channel.sendMessage('https://discord.gg/Y2EtATM');
+	 case commandPrefix + "help":
+	    msg.channel.sendMessage('no');
+	    break;
+	 case commandPrefix + "errortest":
+	    throw ":(";
+	    break;
         default:
             checkCommand(msg);
             break;
