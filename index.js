@@ -53,7 +53,7 @@ bot.on('message', msg=>{
             msg.reply('Why hello there.');
             break;
          case "NI":
-            msg.channel.sendMessage('NI');
+            channel.send('NI');
             console.log('NI');
             break;
         case "ÝƏƏ":
