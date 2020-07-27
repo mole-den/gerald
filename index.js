@@ -10,7 +10,7 @@ bot.on('ready', () => {
     bot.user.setStatus('available') // Can be 'available', 'idle', 'dnd', or 'invisible'
     bot.user.setPresence({
         game: {
-            name: 'PRAISE GERALD',
+            name: 'PRAISE GERALD', //do that
             type: 2
         }
     });
