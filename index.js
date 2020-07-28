@@ -31,33 +31,31 @@ bot.on('message', msg=>{
     switch(msg.content){
 //-----------------------No prefix commands here------------------------------------
         case "HELLO":
-            msg.reply('HELLO FRIEND'); 
+            channel.send('HELLO FRIEND'); 
             break;
         case "Bonjour":
-            msg.reply('i like french bread');
+            channel.send('i like french bread');
             break;
         case "Bonjour":
-            msg.reply('i like french bread');
+            channel.send('i like french bread');
             break;
         case "Gerald":
-            msg.reply('that is me');
+            channel.send('that is me');
             break;
         case "PRAISE GERALD":
-             msg.reply('Yes');
+             channel.send('do that');
             break;
-            case "ÞĬļɶɫʋʑʕ":
-                msg.reply('ÞĬļɶɫʋʑʕ');
-                console.log('dafaq');
-               break;
+         case "ÞĬļɶɫʋʑʕ":
+             console.log('dafaq');
+            break;
         case "hi":
-            msg.reply('Why hello there.');
+            channel.send('Why hello there.');
             break;
          case "NI":
-            channel.send('NI');
+            channel.send('no');
             console.log('NI');
             break;
         case "ÝƏƏ":
-            msg.reply('ÝƏƏ');
             console.log('dafaq');
             break;
 //--------------------------------End no prefix commands here---------------------------------
