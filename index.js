@@ -6,7 +6,7 @@ const emerald = "555477";
 const ice = "e";
 const date = "23/6/2020"
 
-/*bot.on('ready', () => {
+bot.on('ready', () => {
     bot.user.setStatus('available') // Can be 'available', 'idle', 'dnd', or 'invisible'
     bot.user.setPresence({
         game: {
@@ -14,7 +14,7 @@ const date = "23/6/2020"
             type: 2
         }
     });
-});   */
+});   
 
 
 const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4';
