@@ -103,52 +103,12 @@ function randomnumber(msg){
 //----------Wiki and new commands------------------------
 bot.on('message', msg=>{
     switch(msg.content){
-        case wikiPrefix + "Harvester":
-            channel.send('gwiki: Harvester Upgrades'); 
-            channel.send('Once a great spud farmer decided he was tired of farming spuds by hand so he invented a Harvester that would do it for him.');
-            channel.send('(Harvester I: 100 Spudcoin | 100 Spudcoin per hour) -> (Harvester II: 1000 Spudcoin | 200 Spudcoin per hour) -> (Harvester III: 10k Spudcoin | 300 Spudcoin per hour) -> (Harvester IV: 100k Spudcoin | 400 Spudcoin per hour) -> (Harvester V: 500k Spudcoin | 500 Spudcoin per hour) -> (Harvester VI: 1M Spudcoin | 1k Spudcoin per hour to bank) -> (Harvester VII: Buy from the Strange Auction | ???)');
-            break;
-        case wikiPrefix + "Mastery":
-            channel.send('gwiki: Mastery Upgrades (outdated)'); 
-            channel.send('Once, one farmer decended so far into potato madness he crossed the threshold of potatification. He then brought back these upgrades.');
-            channel.send('(Mastery I: From Giveaways | 10k per hour) -> (Mastery II: 5M | 50k per hour) -> (Mastery III: 100M | 1M per hour to bank) -> (Mastery IV: 1000000000 | 10M per hour to bank)');
-            channel.send('lol this is outdated');
-            break;
-         case wikiPrefix + "Valuable Spuds":
-            channel.send('gwiki: Valuable Spuds (outdated)'); 
-            channel.send('MUST. HAVE. SHINY. SPUDS.');
-            channel.send('(Valuable Spuds I: 10M | 100k per hour) -> (Valuable Spuds II: 30M | 500k per hour) -> (Valuable Spuds III: 100M | 1M per hour)');
-            break;
-         case wikiPrefix + "Spudcoin":
-            channel.send('gwiki: Spudcoin'); 
-            channel.send('The strange spud currency of Project Flicker.');
-            break;
-         case wikiPrefix + "Midas Spuds":
-            channel.send('gwiki: Midas Spuds'); 
-            channel.send('probably does nothing (Price: 1B)');
-            break;
-         case wikiPrefix + "God of Spuds":
-            channel.send('gwiki: God of Spuds'); 
-            channel.send('After maxing out every other upgrade, a farmer must take on a final task: to become a god of spuds.');
-            channel.send('10B | 100M per hour to bank');
-            break;
-         case wikiPrefix + "Reboots":
-            channel.send('gwiki: Server Reboots'); 
-            channel.send('Every once in a while, the server undergoes a cosmetic change called a reboot. During a reboot, farmers may sacrifice all their spudcoin and gameplay roles (not Eternal Service) to get a Rebooted item. Farmers keep their inventory when they reboot.');
-            break;
-         case wikiPrefix + "Luck":
-            channel.send('gwiki: Luck'); 
-            channel.send('amazing WIP');
-            channel.send('u can get from sweden querst and shop and other stuff');
-            break;
-         case wikiPrefix + "Strange Auction":
-            channel.send('gwiki: Strange Auction');
-            channel.send("get lot monez to buy stuf");
 	 	    //commands are good
 	 case commandPrefix + "flicker":
 	    channel.send('Yës Brøthër');
 	    //channel.send(Pfembed);
 	    channel.send('https://discord.gg/Y2EtATM');
+	    break;
 	 case commandPrefix + "help":
 	    channel.send('no');
 	    break;
