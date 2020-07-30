@@ -4,13 +4,14 @@ const commandPrefix = "g";
 const wikiPrefix = "gwiki ";
 const emerald = "555477";
 const ice = "e";
-const date = "23/6/2020"
+const date = "23/6/2020";
+const status = "10";
 
 bot.on('ready', () => {
     bot.user.setStatus('available') // Can be 'available', 'idle', 'dnd', or 'invisible'
     bot.user.setPresence({
         game: {
-            name: 'Protection Status: 10% - Testing', 
+            name: 'Protection Status: ' + status + '% - Testing', 
             type: 2
         }
     });
