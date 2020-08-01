@@ -1,4 +1,4 @@
-const Discord = require('discord.js'); //hello there
+const Discord = require('discord.js'); //hello there yes 
 const bot = new Discord.Client();
 const commandPrefix = "g";
 const wikiPrefix = "gwiki ";
