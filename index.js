@@ -32,28 +32,28 @@ bot.on('message', msg=>{
     switch(msg.content){
 //-----------------------No prefix commands here------------------------------------
         case "HELLO":
-            channel.send('HELLO FRIEND'); 
+            message.channel.send('HELLO FRIEND'); 
             break;
         case "Bonjour":
-            channel.send('i like french bread');
+            message.channel.send('i like french bread');
             break;
         case "Bonjour":
-            channel.send('i like french bread');
+            message.channel.send('i like french bread');
             break;
         case "Gerald":
-            channel.send('that is me');
+            message.channel.send('that is me');
             break;
         case "PRAISE GERALD":
-             channel.send('do that');
+             message.channel.send('do that');
             break;
          case "ÞĬļɶɫʋʑʕ":
              console.log('dafaq');
             break;
         case "hi":
-            channel.send('Why hello there.');
+            message.channel.send('Why hello there.');
             break;
          case "NI":
-            channel.send('no');
+            message.channel.send('no');
             console.log('NI');
             break;
         case "ÝƏƏ":
@@ -87,9 +87,9 @@ function checkCommand(msg){
             }
         }
     } catch (e){
-        channel.send('Error!');
-        channel.send('Error code: ' + Math.floor(Math.random() * 999 + 1));
-        channel.send(e);
+        message.channel.send('Error!');
+        message.channel.send('Error code: ' + Math.floor(Math.random() * 999 + 1));
+        message.channel.send(e);
         console.log('ERROR')
     }
     
@@ -106,12 +106,12 @@ bot.on('message', msg=>{
     switch(msg.content){
 	 	    //commands are good
 	 case commandPrefix + "flicker":
-	    channel.send('Yës Brøthër');
+	    message.channel.send('Yës Brøthër');
 	    //channel.send(Pfembed);
-	    channel.send('https://discord.gg/Y2EtATM');
+	    message.channel.send('https://discord.gg/Y2EtATM');
 	    break;
 	 case commandPrefix + "help":
-	    channel.send('no');
+	    message.channel.send('no');
 	    break;
 	 case commandPrefix + "errortest":
 	    throw ":(";
