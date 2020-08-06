@@ -28,16 +28,11 @@ bot.on('ready', () =>{
    // Client.guilds.get("576344535622483968").channels.get("588221105710432286").send("Hello there.")
 })
 
-client.on('ready', () => {
+bot.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
-
-client.on('ready', () => {
-  console.log(`Logged in as ${client.user.tag}!`);
-});
-
-client.on('message', msg => {
+bot.on('message', msg => {
   if (msg.content === commandPrefix + 'test') {
      message.channel.send('Online!');
   }
