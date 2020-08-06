@@ -24,13 +24,10 @@ bot.on('ready', () =>{
     console.log('Preparing to take over the world...');
     console.log('World domination complete.');
     console.log('ONLINE');
-    //console.log(`Logged in as ${client.user.tag}!`);
-   // Client.guilds.get("576344535622483968").channels.get("588221105710432286").send("Hello there.")
-})
-
-bot.on('ready', () => {
-  console.log(`Logged in as ${client.user.tag}!`);
+    console.log(`Logged in as ${client.user.tag}!`);
 });
+
+
 
 bot.on('message', msg => {
   if (msg.content === commandPrefix + 'test') {
