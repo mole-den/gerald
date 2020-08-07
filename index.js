@@ -16,12 +16,12 @@ const status = "10";
 
 const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4';
 
-bot.on('ready', () =>{
+/*bot.on('ready', () =>{
     console.log('Preparing to take over the world...');
     console.log('World domination complete.');
     console.log('ONLINE');
     //console.log(`Logged in as ${client.user.tag}!`);
-}); 
+});  */
 
 
 
