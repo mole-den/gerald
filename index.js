@@ -30,3 +30,4 @@ bot.on('message', msg => {
      message.channel.send('Online!');
   }
 });
+*/
