@@ -24,8 +24,8 @@ bot.on('ready', () =>{
 }); 
 
 
-
-/*bot.on('message', msg => {
+/*
+bot.on('message', msg => {
   if (msg.content === commandPrefix + 'test') {
      message.channel.send('Online!');
   }
