@@ -29,7 +29,7 @@ bot.login(token);
 
 //Server Firewall code below
 
-client.on('guildMemberAdd', member => {
+bot.on('guildMemberAdd', member => {
   // Send the message to a designated channel on a server:
   const channel = member.guild.channels.cache.find(ch => ch.name === 'joining-room');
   // Do nothing if the channel wasn't found on this server
