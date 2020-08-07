@@ -36,5 +36,6 @@ bot.on('guildMemberAdd', member => {
   if (!channel) return;
   // Send the message, mentioning the member
   channel.send(`Welcome to the server, ${member}. Remember to follow the rules and praise me every Wednesday.`);
+  console.log(`${member} added to database.`);
 });
 
