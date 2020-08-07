@@ -1,13 +1,13 @@
 const Discord = require('discord.js'); //hello there yes 
 const bot = new Discord.Client();
 const commandPrefix = "g";
-const status = "10";
+const status = "";
 
 bot.on('ready', () => {
     bot.user.setStatus('available')
     bot.user.setPresence({
         game: {
-            name: 'Project Flicker',
+            name: 'Firewall: ' + status,
             type: "STREAMING",
             url: "https://discord.com/invite/Y2EtATM"
         }
