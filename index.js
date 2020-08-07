@@ -25,3 +25,5 @@ const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4';
 
 
 
+
+bot.login(token);
