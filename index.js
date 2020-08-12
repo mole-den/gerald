@@ -40,7 +40,7 @@ bot.on('guildMemberAdd', member => {
 });
 
 bot.on('message', message => {
-	if (message.content === '!ping') {
-		message.channel.send('Pong.');
+	if (message.content === 'ghelp') {
+		message.channel.send('Does this work?');
 	}
 });
