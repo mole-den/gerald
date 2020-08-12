@@ -1,13 +1,13 @@
 const Discord = require('discord.js'); //hello there yes 
 const bot = new Discord.Client();
 const commandPrefix = "g";
-const status = "";
+const status = "10";
 
 bot.on('ready', () => {
     bot.user.setStatus('available')
     bot.user.setPresence({
         game: {
-            name: 'Firewall: ' + status,
+            name: 'Firewall: ' + status + '%',
             type: "STREAMING",
             url: "https://discord.com/invite/Y2EtATM"
         }
@@ -39,3 +39,6 @@ bot.on('guildMemberAdd', member => {
   console.log(`${member} added to database.`);
 });
 
+if (message.content === 'ghelp') {
+	message.channel.send('Hello! This is WIP and will probably become an emebed idk.');
+}
