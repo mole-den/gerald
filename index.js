@@ -39,6 +39,8 @@ bot.on('guildMemberAdd', member => {
   console.log(`${member} added to database.`);
 });
 
-if (message.content === 'ghelp') {
-	message.channel.send('Hello! This is WIP and will probably become an emebed idk.');
-}
+bot.on('message', message => {
+	if (message.content === '!ping') {
+		message.channel.send('Pong.');
+	}
+});
