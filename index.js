@@ -44,3 +44,6 @@ bot.on('message', message => {
 		message.channel.send('Does this work?');
 	}
 });
+
+
+//invite tracking 
