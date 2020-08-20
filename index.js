@@ -1,7 +1,8 @@
 const Discord = require('discord.js'); //hello there yes 
 const bot = new Discord.Client();
-const commandPrefix = "g";
+const prefix = "g";
 const status = "10";
+
 
 /*bot.on('ready', () => {
     bot.user.setStatus('available')
