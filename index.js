@@ -42,6 +42,9 @@ bot.on('guildMemberAdd', member => {
 });
 
 bot.on('message', message => {
+	const args = message.content.slice(prefix.length).trim().split(' ');
+	const command = args.shift().toLowerCase();
+	
 	if (message.content === 'ghelp') {
 		message.channel.send('yes');
 	} else if (message.content === 'Hello there') {
@@ -53,14 +56,14 @@ bot.on('message', message => {
 	} else if (message.content === 'HELLO THERE') {
 		message.channel.send('General Kenobi');
 	//testing commands
-	} else if (message.content === 'gtest') {
+	} else if (command === `gt-detectiontest`) {
 	// grab the "first" mentioned user from the message
 	// this will return a `User` object, just like `message.author`
 		const taggedUser = message.mentions.users.first();
 
 		message.channel.send('User detected: ' + taggedUser);
 		
-	} else if (message.content === 'gserver') {
+	} else if (message.content === 'gt-servertest') {
 		message.channel.send(`This server's name is: ${message.guild.name}`);
 	}
 
