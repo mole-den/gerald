@@ -67,7 +67,7 @@ bot.on('message', message => {
 		message.channel.send(`User detected: ${taggedUser.username}`);
 		
 	} else if (command === `t-servertest`) {
-		message.channel.send(`This server's name is: ${message.guild.name}`);
+		message.channel.send(`This server's name is: ${message.guild.name}. User ID is: ` + taggedUser);
 	}
 
 });
