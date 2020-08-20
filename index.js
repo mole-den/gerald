@@ -58,7 +58,7 @@ bot.on('message', message => {
 	// this will return a `User` object, just like `message.author`
 		const taggedUser = message.mentions.users.first();
 
-		message.channel.send(`User detected: ${taggedUser.username}`);
+		message.channel.send('User detected: ' + taggedUser);
 	}
 });
 
