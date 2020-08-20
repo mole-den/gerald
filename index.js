@@ -29,7 +29,7 @@ bot.on('ready', () =>{
 
 bot.login(token);
 
-//Server Firewall code below
+
 
 bot.on('guildMemberAdd', member => {
   // Send the message to a designated channel on a server:
@@ -43,26 +43,28 @@ bot.on('guildMemberAdd', member => {
 
 bot.on('message', message => {
 	if (message.content === 'ghelp') {
-		message.channel.send('**Hello there!**');
-	}
-});
-
-
-bot.on('message', message => {
-	if (message.content === 'Hello there') {
+		message.channel.send('yes');
+	} else if (message.content === 'Hello there') {
 		message.channel.send('General Kenobi');
-	}
-});
-bot.on('message', message => {
-	if (message.content === 'hello there') {
+		
+	} else if (message.content === 'hello there') {
 		message.channel.send('General Kenobi');
-	}
-});
-bot.on('message', message => {
-	if (message.content === 'HELLO THERE') {
+		
+	} else if (message.content === 'HELLO THERE') {
 		message.channel.send('General Kenobi');
+	//testing commands
+	} else if (message.content === 'gtest') {
+	// grab the "first" mentioned user from the message
+	// this will return a `User` object, just like `message.author`
+		const taggedUser = message.mentions.users.first();
+
+		message.channel.send(`User detected: ${taggedUser.username}`);
 	}
 });
 
 
-//invite tracking 
+
+//invite tracking
+
+
+
