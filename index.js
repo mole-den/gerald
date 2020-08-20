@@ -59,14 +59,14 @@ bot.on('message', message => {
 	} else if (message.content === 'HELLO THERE') {
 		message.channel.send('General Kenobi');
 	//testing commands
-	} else if (command === `gt-detectiontest`) {
+	} else if (command === `t-detectiontest`) {
 	// grab the "first" mentioned user from the message
 	// this will return a `User` object, just like `message.author`
 		const taggedUser = message.mentions.users.first();
 
 		message.channel.send('User detected: ' + taggedUser);
 		
-	} else if (message.content === 'gt-servertest') {
+	} else if (command === `t-servertest`) {
 		message.channel.send(`This server's name is: ${message.guild.name}`);
 	}
 
