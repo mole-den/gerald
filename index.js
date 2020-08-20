@@ -41,6 +41,23 @@ bot.on('guildMemberAdd', member => {
 
 bot.on('message', message => {
 	if (message.content === 'ghelp') {
-		message.channel.send('Does this work?');
+		message.channel.send('**Hello there!**');
+	}
+});
+
+
+bot.on('message', message => {
+	if (message.content === 'Hello there') {
+		message.channel.send('General Kenobi');
+	}
+});
+bot.on('message', message => {
+	if (message.content === 'hello there') {
+		message.channel.send('General Kenobi');
+	}
+});
+bot.on('message', message => {
+	if (message.content === 'HELLO THERE') {
+		message.channel.send('General Kenobi');
 	}
 });
