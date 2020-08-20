@@ -17,6 +17,11 @@ bot.on('ready', () => {
 
 const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4';
 
+bot.user.setActivity("Project Flicker", {
+  type: "STREAMING",
+  url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+});
+
 bot.on('ready', () =>{
     console.log('Preparing to take over the world...');
     console.log('World domination complete.');
