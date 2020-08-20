@@ -64,10 +64,10 @@ bot.on('message', message => {
 	// this will return a `User` object, just like `message.author`
 		const taggedUser = message.mentions.users.first();
 
-		message.channel.send(`User detected: ${taggedUser.username}`);
+		message.channel.send(`User detected: ${taggedUser.username}. User ID is: ` + taggedUser);
 		
 	} else if (command === `t-servertest`) {
-		message.channel.send(`This server's name is: ${message.guild.name}. User ID is: ` + taggedUser);
+		message.channel.send(`This server's name is: ${message.guild.name}`);
 	}
 
 });
