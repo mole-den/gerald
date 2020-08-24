@@ -69,12 +69,10 @@ bot.on('message', message => {
 	} else if (command === `t-servertest`) {
 		message.channel.send(`This server's name is: ${message.guild.name}`);
 	}
-
 });
 
 
 
-//invite tracking
-
+//user detection
 
 
