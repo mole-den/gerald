@@ -78,4 +78,12 @@ bot.on("error", (e) => console.error(e));
 bot.on("warn", (e) => console.warn(e));
 bot.on("debug", (e) => console.info(e));
 
+bot.on("channelDelete", function(channel){
+
+   const logc = member.guild.channels.cache.find(ch => ch.name === 'geraldlog');
+  // Do nothing if the channel wasn't found on this server
+  if (!logc) return;
+  // Send the message, mentioning the member
+  channel.send(`I lost connection to: ${channel}`);
+});
 
