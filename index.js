@@ -71,7 +71,7 @@ bot.on('message', message => {
 	}
 });
 
-
+/*
 
 //error handling
 bot.on("error", (e) => console.error(e));
