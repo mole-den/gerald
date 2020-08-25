@@ -80,20 +80,24 @@ bot.on("debug", (e) => console.info(e));
 
 bot.on("channelDelete", function(channel){
 
-   const logc = member.guild.channels.cache.find(ch => ch.name === 'geraldlog');
+   const glog = member.guild.channels.cache.find(ch => ch.name === 'geraldlog');
   // Do nothing if the channel wasn't found on this server
-  if (!logc) return;
+  if (!glog) return;
   // Send the message, mentioning the member
   channel.send(`Connection lost to: ${channel}`);
 });
 
 
 bot.on("channelCreate", function(channel){
-  const logc = member.guild.channels.cache.find(ch => ch.name === 'geraldlog');
+  const glog = member.guild.channels.cache.find(ch => ch.name === 'geraldlog');
   // Do nothing if the channel wasn't found on this server
-  if (!logc) return;
+  if (!glog) return;
   // Send the message, mentioning the member
 
     channel.log(`Connected to: ${channel}`);
+});
+
+bot.on("error", function(error){
+    console.error(`client's WebSocket encountered a connection error: ${error}`);
 });
 
