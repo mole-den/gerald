@@ -68,5 +68,11 @@ bot.on('message', message => {
 		
 	} else if (command === `t-servertest`) {
 		message.channel.send(`This server's name is: ${message.guild.name}`);
+	} else if (command == `detect`) {
+		
+		const taggedUser = message.mentions.users.first();
+		
+		message.channel.send(`User:` + taggedUser + ` found in ${message.guild.name}`);
 	}
+	
 });
