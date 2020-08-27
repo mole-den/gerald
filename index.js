@@ -1,7 +1,12 @@
 const Discord = require('discord.js'); //hello there yes 
 const bot = new Discord.Client();
 const prefix = "g";
-const status = "10";
+
+
+const slade = "sponge";
+const zac = "idiot";
+const rishaan = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+const gerald = "me";
 
 
 /*bot.on('ready', () => {
@@ -16,7 +21,7 @@ const status = "10";
 }); */
 
 
-const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4';
+const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //the ancient texts!
 
 
 
@@ -24,7 +29,7 @@ bot.on('ready', () =>{
     console.log('Preparing to take over the world...');
     console.log('World domination complete.');
     console.log('ONLINE');
-    //console.log(`Logged in as ${client.user.tag}!`);
+    console.log(`Logged in as ${client.user.tag}!`);
 });  
 
 
