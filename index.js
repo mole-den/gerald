@@ -72,7 +72,7 @@ bot.on('message', message => {
 		
 		const taggedUser = message.mentions.users.first();
 		
-		message.channel.send(`User:` + taggedUser + ` found in ${message.guild.name}`);
+		message.channel.send(`User: ` + taggedUser + ` found in ${message.guild.name}`);
 	}
 	
 });
