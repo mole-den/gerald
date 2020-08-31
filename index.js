@@ -7,6 +7,7 @@ const slade = "sponge";
 const zac = "idiot";
 const rishaan = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 const gerald = "me";
+const darkdash = "uwu";
 
 
 /*bot.on('ready', () => {
@@ -53,8 +54,8 @@ bot.on('message', message => {
 	const args = message.content.slice(prefix.length).trim().split(' ');
 	const command = args.shift().toLowerCase();
 	
-	if (message.content === 'ghelp') {
-		message.channel.send('yes');
+	if (command === 'ghelp') {
+		message.channel.send('Hello there! I am Gerald: A discord bot made to protect your guild from raids and other attacks. Remeber to make a channel named #geraldlog and make your joining channel called #joining-room');
 	} else if (message.content === 'Hello there') {
 		message.channel.send('General Kenobi');
 		
@@ -78,6 +79,7 @@ bot.on('message', message => {
 		const taggedUser = message.mentions.users.first();
 		
 		message.channel.send(`User: ` + taggedUser + ` found in ${message.guild.name}`);
-	}
+	} else if (message.content === 'cc x pf?') {
+		message.channel.send('yes');
 	
 });
