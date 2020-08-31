@@ -81,5 +81,26 @@ bot.on('message', message => {
 		message.channel.send(`User: ` + taggedUser + ` found in ${message.guild.name}`);
 	} else if (message.content === 'cc x pf?') {
 		message.channel.send('yes');
+		
+		
+		
+	} else if (command === `labyrinth`) {
+		if (message.guild.id !== 'Project Flicker') return message.reply('This command is Project Flicker exclusive lol');
+		
+		message.channel.send('Creating Labyrinth...');
+		
+		
+		const labyrID = Math.random() * (1 - 100) + 1;
+		
+		server.channels.create("labyrinth-" + labyrID)
+  		.then(channel => {
+    		let category = server.channels.cache.find(c => c.name == "Labyrinth" && c.type == "category");
+
+    		if (!category) throw new Error("lol it no work nerd");
+    		channel.setParent(category.id);
+ 		}).catch(console.error);
+		
+	}
 	
 });
+	
