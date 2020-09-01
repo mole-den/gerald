@@ -101,7 +101,7 @@ bot.on('message', message => {
         		r.overwritePermissions(message.author.id, { VIEW_CHANNEL: true });
         		r.overwritePermissions(client.id, { VIEW_CHANNEL: true });
         		r.overwritePermissions(everyoneRole, { VIEW_CHANNEL: false });
-	    }
+	    })
 			
 			
 		//const channelID = createdChannel.id
