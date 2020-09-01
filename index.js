@@ -92,7 +92,7 @@ bot.on('message', message => {
 		const guild = message.channel.guild;
 		const labyrID = Math.random() * (1 - 100) + 1;
 		
-		guild.channels.create("labyrinth-" + labyrID)
+		guild.channels.create("labyrinth-" + labyrID).then(createdChannel => { var channelId = createdChannel.id })
   		.then(channel => {
     		let category = guild.channels.cache.find(c => c.id == "749883316223737906" && c.type == "category");
 
@@ -100,7 +100,7 @@ bot.on('message', message => {
     		channel.setParent(category.id);
  		}).catch(console.error);
 		
-		message.channel.send('Labyrinth created!');
+		message.channel.send('Labyrinth created!' + channelID);
 		
 	}
 	
