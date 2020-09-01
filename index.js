@@ -115,4 +115,3 @@ bot.on('message', message => {
 	}
 	
 });
-	
