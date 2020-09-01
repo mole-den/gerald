@@ -92,9 +92,17 @@ bot.on('message', message => {
 		const guild = message.channel.guild;
 		const labyrID = Math.random() * (1 - 100) + 1;
 		
+		const everyoneRole = client.guilds.get('SERVER ID').roles.find('name', '@everyone');
+		
 		guild.channels.create("labyrinth-" + labyrID)
   		.then(channel => {
     		let category = guild.channels.cache.find(c => c.id == "749883316223737906" && c.type == "category");
+		.then(r => {
+        		r.overwritePermissions(message.author.id, { VIEW_CHANNEL: true });
+        		r.overwritePermissions(client.id, { VIEW_CHANNEL: true });
+        		r.overwritePermissions(everyoneRole, { VIEW_CHANNEL: false });
+	    }
+			
 			
 		//const channelID = createdChannel.id
 
