@@ -94,7 +94,7 @@ bot.on('message', message => {
 		
 		guild.channels.create("labyrinth-" + labyrID)
   		.then(channel => {
-    		let category = server.channels.cache.find(c => c.id == "749883316223737906" && c.type == "category");
+    		let category = guild.channels.cache.find(c => c.id == "749883316223737906" && c.type == "category");
 
     		if (!category) throw new Error("lol it no work nerd");
     		channel.setParent(category.id);
