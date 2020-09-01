@@ -30,7 +30,7 @@ bot.on('ready', () =>{
     console.log('Preparing to take over the world...');
     console.log('World domination complete.');
     console.log('ONLINE');
-    console.log(`Logged in as ${client.user.tag}!`);
+    //console.log(`Logged in as ${client.user.tag}!`);
 });  
 
 
