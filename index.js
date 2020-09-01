@@ -104,13 +104,14 @@ bot.on('message', message => {
 	    })*/
 			
 			
-		const channelID = createdChannel.id
+		//const channelID = createdChannel.id
 
     		if (!category) throw new Error("lol it no work nerd");
     		channel.setParent(category.id);
  		}).catch(console.error);
 		
-		message.channel.send(`Labyrinth created! <#${channelID}>`);
+		//message.channel.send(`Labyrinth created! <#${channelID}>`);
+		message.channel.send('Labyrinth created! #labyrinth' + labyrID);
 		
 	}
 	
