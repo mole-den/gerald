@@ -92,7 +92,7 @@ bot.on('message', message => {
 		const guild = message.channel.guild;
 		const labyrID = Math.random() * (1 - 100) + 1;
 		
-		guild.channels.create("labyrinth-" + labyrID).then(createdChannel => { var channelID = createdChannel.id })
+		guild.channels.create("labyrinth-" + labyrID).then(createdChannel => { const channelID = createdChannel.id })
   		.then(channel => {
     		let category = guild.channels.cache.find(c => c.id == "749883316223737906" && c.type == "category");
 
