@@ -97,7 +97,7 @@ bot.on('message', message => {
 		guild.channels.create("labyrinth-" + labyrID)
   		.then(channel => {
     		let category = guild.channels.cache.find(c => c.id == "749883316223737906" && c.type == "category");
-		.then(r => {
+		then(r => {
         		r.overwritePermissions(message.author.id, { VIEW_CHANNEL: true });
         		r.overwritePermissions(client.id, { VIEW_CHANNEL: true });
         		r.overwritePermissions(everyoneRole, { VIEW_CHANNEL: false });
