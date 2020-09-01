@@ -110,7 +110,7 @@ bot.on('message', message => {
     		channel.setParent(category.id);
  		}).catch(console.error);
 		
-		message.channel.send('Labyrinth created! #labyrinth' + labyrID);
+		message.channel.send(`Labyrinth created! <#${createdChannel.id}>`);
 		
 	}
 	
