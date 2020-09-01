@@ -89,7 +89,7 @@ bot.on('message', message => {
 		
 		message.channel.send('Creating Labyrinth...');
 		
-		
+		const guild = msg.channel.guild;
 		const labyrID = Math.random() * (1 - 100) + 1;
 		
 		guild.channels.create("labyrinth-" + labyrID)
