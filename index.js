@@ -85,7 +85,7 @@ bot.on('message', message => {
 		
 		
 	} else if (command === `labyrinth`) {
-		if (message.guild.id !== 'Project Flicker') return message.reply('This command is Project Flicker exclusive lol');
+		if (message.guild.id !== '576344535622483968') return message.reply('This command is Project Flicker exclusive lol');
 		
 		message.channel.send('Creating Labyrinth...');
 		
