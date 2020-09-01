@@ -83,14 +83,14 @@ bot.on('message', message => {
 		message.channel.send('yes');
 		
 		
-		
+	//tham keep this stuff here :)	 or dont idk how command handlers work
 	} else if (command === `labyrinth`) {
 		if (message.guild.id !== '576344535622483968') return message.reply('This command is Project Flicker exclusive lol');
 		
 		message.channel.send('Creating Labyrinth...');
 		
 		const guild = message.channel.guild;
-		const labyrID = Math.random() * (1 - 100) + 1;
+		const labyrID = Math.round(Math.random() * (1 - 100) + 1);
 		
 		//const everyoneRole = bot.guilds.id('576344535622483968').roles.find('name', '@everyone');
 		
