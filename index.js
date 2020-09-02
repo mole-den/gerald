@@ -3,23 +3,7 @@ const bot = new Discord.Client();
 const prefix = "g";
 
 
-const slade = "sponge";
-const zac = "idiot";
-const rishaan = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-const gerald = "me";
-const darkdash = "uwu";
 
-
-/*bot.on('ready', () => {
-    bot.user.setStatus('available')
-    bot.user.setPresence({
-        game: {
-            name: 'Firewall: ' + status + '%',
-            type: "STREAMING",
-            url: "https://discord.com/invite/Y2EtATM"
-        }
-    });
-}); */
 
 
 const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //the ancient texts!
@@ -31,7 +15,7 @@ bot.on('ready', () =>{
     console.log('World domination complete.');
     console.log('ONLINE');
     //console.log(`Logged in as ${client.user.tag}!`);
-    bot.user.setActivity("Project Flicker", { type: "WATCHING"})
+    bot.user.setPresence({ activity: { name: "Project Flicker", type: "WATCHING" }, status: "online		w" });
 });  
 
 
@@ -56,7 +40,7 @@ bot.on('message', message => {
 	const command = args.shift().toLowerCase();
 	
 	if (command === 'ghelp') {
-		message.channel.send('Hello there! I am Gerald: A discord bot made to protect your guild from raids and other attacks. Remeber to make a channel named #geraldlog and make your joining channel called #joining-room');
+		message.channel.send('Hello there! I am Gerald: A discord bot made to protect your guild from raids and other attacks. Remeber to make a channel named #geraldlog and make your joining channel called #joining-room I also am used in Project Flicker to do lot smart.');
 	} else if (message.content === 'Hello there') {
 		message.channel.send('General Kenobi');
 		
