@@ -96,7 +96,7 @@ bot.on('message', message => {
  		}).catch(console.error);
 		
 		//message.channel.send(`Labyrinth created! <#${channelID}>`);
-		message.channel.send('Labyrinth created! #labyrinth' + labyrID);
+		message.channel.send('Labyrinth created! [WIP] #labyrinth' + labyrID);
 		
 	}
 	
