@@ -31,6 +31,7 @@ bot.on('ready', () =>{
     console.log('World domination complete.');
     console.log('ONLINE');
     //console.log(`Logged in as ${client.user.tag}!`);
+    bot.user.setActivity("Project Flicker", { type: "WATCHING"})
 });  
 
 
