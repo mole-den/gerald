@@ -12,7 +12,7 @@ var toaster = {health:1, attack:100, def:0};
 //end monsters
 //items
 
-var basicsword = {attack:2, rarity:"common"};
+var basicsword = {attack:2, rarity:"common", type:"sword"};
 
 //end items
 
