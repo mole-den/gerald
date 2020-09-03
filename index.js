@@ -3,11 +3,13 @@ const bot = new Discord.Client();
 const prefix = "g";
 
 
-
-
-
 const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //the ancient texts!
+//monsters
 
+const slime = ["10", "1", "0"]; //hp then atk then def
+
+
+//end monsters
 
 
 bot.on('ready', () =>{
@@ -97,7 +99,7 @@ bot.on('message', message => {
  		}).catch(console.error);
 		
 		//message.channel.send(`Labyrinth created! <#${channelID}>`);
-		message.channel.send('Labyrinth created! [WIP] #labyrinth' + labyrID);
+		message.channel.send(`Labyrinth created, ${labyrplayer}! [WIP] #labyrinth` + labyrID);
 		
 	}
 	
