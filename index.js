@@ -87,7 +87,7 @@ bot.on('message', message => {
 		
 		//const everyoneRole = bot.guilds.id('576344535622483968').roles.find('name', '@everyone');
 		
-		guild.channels.create("labyrinth-" + labyrID).then(createdChannel => { var labyrChannelID = createdChannel.id })
+		guild.channels.create("labyrinth-" + labyrID).then(createdChannel => { const labyrChannelID = createdChannel.id })
   		.then(channel => {
     		let category = guild.channels.cache.find(c => c.id == "749883316223737906" && c.type == "category");
 		/*then(r => {
