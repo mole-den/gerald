@@ -6,7 +6,7 @@ const prefix = "g";
 const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //the ancient texts!
 //monsters
 
-const slime = ["10", "1", "0"]; //hp then atk then def
+var slime = ["10", "1", "0"]; //hp then atk then def
 
 
 //end monsters
