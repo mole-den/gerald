@@ -87,7 +87,7 @@ bot.on('message', message => {
 		
 		//const everyoneRole = bot.guilds.id('576344535622483968').roles.find('name', '@everyone');
 		
-		guild.channels.create("labyrinth-" + labyrID).then(createdChannel => { var id = createdChannel.id })
+		guild.channels.create("labyrinth-" + labyrID)
   		.then(channel => {
     		let category = guild.channels.cache.find(c => c.id == "749883316223737906" && c.type == "category");
 		/*then(r => {
@@ -97,14 +97,14 @@ bot.on('message', message => {
 	    })*/
 			
 			
-		//const channelID = createdChannel.id
+		const channelID = member.guild.channels.cache.find(ch => ch.name === 'labyrinth' + labyrID);
 
     		if (!category) throw new Error("lol it no work nerd");
     		channel.setParent(category.id);
  		}).catch(console.error);
 		
 		//message.channel.send(`Labyrinth created! <#${channelID}>`);
-		message.channel.send(`Labyrinth created, ${labyrplayer}!`); //${id} doesnt work 
+		message.channel.send(`Labyrinth created, ${labyrplayer}! ${channelID}`); //${id} doesnt work 
 		
 	}
 	
