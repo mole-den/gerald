@@ -104,7 +104,7 @@ bot.on('message', message => {
  		}).catch(console.error);
 		
 		//message.channel.send(`Labyrinth created! <#${channelID}>`);
-		message.channel.send(`Labyrinth created, ${labyrplayer}! ${id}`);
+		message.channel.send(`Labyrinth created, ${labyrplayer}!`); //${id} doesnt work 
 		
 	}
 	
