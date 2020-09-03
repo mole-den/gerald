@@ -12,8 +12,8 @@ var toaster = {health:1, attack:100, def:0};
 //end monsters
 //items
 
-var basicsword = {attack:2, rarity:"common", type:"sword"};
-
+var basicsword = {type:"sword", rarity:"common", attack:2};
+,
 //end items
 
 
