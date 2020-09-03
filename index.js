@@ -76,6 +76,7 @@ bot.on('message', message => {
 		
 		const guild = message.channel.guild;
 		const labyrID = Math.round(Math.random() * (1 - 100) + 1);
+		const labyrplayer = message.author //tham will this work?
 		
 		//const everyoneRole = bot.guilds.id('576344535622483968').roles.find('name', '@everyone');
 		
