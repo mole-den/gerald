@@ -13,7 +13,7 @@ var toaster = {health:1, attack:100, def:0};
 //items
 
 var basicsword = {type:"sword", rarity:"common", attack:2};
-,
+
 //end items
 
 
