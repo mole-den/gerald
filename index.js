@@ -97,7 +97,7 @@ bot.on('message', message => {
 	    })*/
 			
 			
-		const channelID = guild.channels.cache.find(ch => ch.name === 'labyrinth-' + labyrID);
+		const channelID = guild.channels.find(channel => channel.name === "labyrinth" + labyrID)
 
     		if (!category) throw new Error("lol it no work nerd");
     		channel.setParent(category.id);
