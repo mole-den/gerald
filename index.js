@@ -88,7 +88,7 @@ bot.on('message', message => {
 		
 		guild.channels.create("labyrinth-" + labyrID)
 		.then(createdChannel => { 
-			var id = createdChannel.id 
+			const id = createdChannel.id 
 		})
 		//guild.channels.create("labyrinth-" + labyrID, "pog?").then(createdChannel => { var id = createdChannel.id })
 		
