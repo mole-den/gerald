@@ -84,7 +84,7 @@ bot.on('message', message => {
 		const guild = message.channel.guild;
 		const labyrID = Math.round(Math.random() * (1 - 100) + 1);
 		const labyrplayer = message.author //tham will this work?
-		
+		const channelID = member.guild.channels.find(ch => ch.name === "labyrinth-" + labyrID);
 		//const everyoneRole = bot.guilds.id('576344535622483968').roles.find('name', '@everyone');
 		
 		guild.channels.create("labyrinth-" + labyrID)
@@ -95,9 +95,7 @@ bot.on('message', message => {
         		r.overwritePermissions(bot.id, { VIEW_CHANNEL: true });
         		r.overwritePermissions(everyoneRole, { VIEW_CHANNEL: false });
 	    })*/
-			
-			
-		const channelID = member.guild.channels.find(ch => ch.name === "labyrinth-" + labyrID);
+
 
     		if (!category) throw new Error("lol it no work nerd");
     		channel.setParent(category.id);
