@@ -100,6 +100,14 @@ bot.on('message', message => {
 		//message.channel.send(`Labyrinth created! <#${channelID}>`);
 		message.channel.send(`Labyrinth created, ${labyrplayer}!`);
 		
+		
+		 const Lchannel = member.guild.channels.cache.find(ch => ch.name === 'labyrinth-' + labyrID);
+  		 if (!channel) return;
+		 channel.send(`test`);
+		
+		
+		
+		
 	}
 	
 });
