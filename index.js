@@ -83,18 +83,12 @@ bot.on('message', message => {
 		
 		const guild = message.channel.guild;
 		const labyrID = Math.round(Math.random() * (1 - 100) + 1);
-		const labyrplayer = message.author //tham will this work?
-		const channelID = guild.channels.find(ch => ch.name === "labyrinth-" + labyrID);
-		//const everyoneRole = bot.guilds.id('576344535622483968').roles.find('name', '@everyone');
+		const labyrplayer = message.author 
+		const channelID = guild.channels.cache.find(ch => ch.name === "labyrinth-" + labyrID);
 		
 		guild.channels.create("labyrinth-" + labyrID)
   		.then(channel => {
     		let category = guild.channels.cache.find(c => c.id == "749883316223737906" && c.type == "category");
-		/*then(r => {
-        		r.overwritePermissions(message.author.id, { VIEW_CHANNEL: true });
-        		r.overwritePermissions(bot.id, { VIEW_CHANNEL: true });
-        		r.overwritePermissions(everyoneRole, { VIEW_CHANNEL: false });
-	    })*/
 
 
     		if (!category) throw new Error("lol it no work nerd");
