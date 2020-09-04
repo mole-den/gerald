@@ -6,8 +6,8 @@ const prefix = "g";
 const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //the ancient texts!
 //monsters
 
-var slime = {health:10, attack:1, def:0};
-var toaster = {health:1, attack:100, def:0};
+var slime = {health:10, attack:1, def:0, id:1};
+var toaster = {health:1, attack:100, def:0, id:2};
 
 //end monsters
 //items
