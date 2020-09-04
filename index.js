@@ -100,7 +100,7 @@ bot.on('message', message => {
 		//const channelID = id
 		
 		//message.channel.send(`Labyrinth created! <#${channelID}>`);
-		message.channel.send(`Labyrinth created, ${labyrplayer}! ${id}`);
+		message.channel.send(`Labyrinth created, ${labyrplayer}!`);
 		
 	}
 	
