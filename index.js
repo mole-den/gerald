@@ -102,7 +102,7 @@ bot.on('message', message => {
 		
 		
 		 const Lchannel = guild.channels.cache.find(ch => ch.name === 'labyrinth-' + labyrID);
-  		 if (!channel) return;
+  		 if (!Lchannel) return;
 		 channel.send(`test`);
 		
 		
