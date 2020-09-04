@@ -92,7 +92,7 @@ bot.on('message', message => {
 		if (!category) throw new Error("lol it no work nerd");
     		channel.setParent(category.id);
  		}).catch(console.error);
-		.then(createdChannel => { var id = createdChannel.id })
+		then(createdChannel => { var id = createdChannel.id })
 		
 		//message.channel.send(`Labyrinth created! <#${channelID}>`);
 		message.channel.send(`Labyrinth created, ${labyrplayer}! ${id}`); //${id} doesnt work 
