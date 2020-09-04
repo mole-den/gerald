@@ -97,14 +97,14 @@ bot.on('message', message => {
 	    })*/
 			
 			
-		const channel = member.guild.channels.find(channel => channel.name === "labyrinth-" + labyrID);
+		const channelID = member.guild.channels.find(ch => ch.name === "labyrinth-" + labyrID);
 
     		if (!category) throw new Error("lol it no work nerd");
     		channel.setParent(category.id);
  		}).catch(console.error);
 		
 		//message.channel.send(`Labyrinth created! <#${channelID}>`);
-		message.channel.send(`Labyrinth created, ${labyrplayer}! ${channel}`); //${id} doesnt work 
+		message.channel.send(`Labyrinth created, ${labyrplayer}! ${channelID}`); //${id} doesnt work 
 		
 	}
 	
