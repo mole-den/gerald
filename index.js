@@ -108,3 +108,7 @@ bot.on('message', message => {
 	}
 	
 });
+
+/*bot.on('message', message => {
+	
+});  
