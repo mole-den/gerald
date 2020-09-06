@@ -22,7 +22,7 @@ bot.on('ready', () =>{
     console.log('World domination complete.');
     console.log('ONLINE');
     //console.log(`Logged in as ${client.user.tag}!`);
-    bot.user.setPresence({ activity: { name: "Project Flicker", type: "WATCHING" }, status: "dnd" });
+    bot.user.setPresence({ activity: { name: "Project Flicker", type: "WATCHING" }, status: "dnd" }); //online or dnd
 });  
 
 
