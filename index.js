@@ -111,3 +111,12 @@ bot.on('message', message => {
 	}
 });  
 	
+
+
+
+function intervalFunc() {
+  console.log('Heartbeat sent');
+  console.log('Heartbeat registered');
+}
+
+setInterval(intervalFunc, 3000);
