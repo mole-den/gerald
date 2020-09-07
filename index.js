@@ -36,6 +36,7 @@ bot.on('guildMemberAdd', member => {
 });
 
 bot.on('message', message => {
+	console.log('hmmm');
 	if (!message.content.startsWith(prefix) || message.author.bot) return;
 	
 	const args = message.content.slice(prefix.length).trim().split(' ');
