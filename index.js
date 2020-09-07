@@ -48,15 +48,6 @@ bot.on('message', message => {
 	
 	if (command === 'ghelp') {
 		message.channel.send('Hello there! I am Gerald: A discord bot made to protect your guild from raids and other attacks. Remeber to make a channel named #geraldlog and make your joining channel called #joining-room I also am used in Project Flicker to do lot smart.');
-	} else if (message.content === 'Hello there') {
-		message.channel.send('General Kenobi');
-		
-	} else if (message.content === 'hello there') {
-		message.channel.send('General Kenobi');
-		
-	} else if (message.content === 'HELLO THERE') {
-		message.channel.send('General Kenobi');
-	//testing commands
 	} else if (command === `t-detectiontest`) {
 	// grab the "first" mentioned user from the message
 	// this will return a `User` object, just like `message.author`
@@ -109,6 +100,15 @@ bot.on('message', message => {
 	
 });
 
-/*bot.on('message', message => {
-	
+bot.on('message', message => {
+	if (message.content === 'Hello there') {
+		message.channel.send('General Kenobi');
+		
+	} else if (message.content === 'hello there') {
+		message.channel.send('General Kenobi');
+		
+	} else if (message.content === 'HELLO THERE') {
+		message.channel.send('General Kenobi');
+	}
 });  
+	
