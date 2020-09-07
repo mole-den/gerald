@@ -112,9 +112,9 @@ bot.on('message', message => {
 	
 
 
-
+const when = Date.now();
 function heartbeat() {
-	console.log(`Heartbeat recived. Logged in as ${bot.user.tag}`);
+	console.log(`Heartbeat recived. Logged in as ${bot.user.tag}. It is now ${when}. `);
 }
 
 setInterval(heartbeat, 10000);
