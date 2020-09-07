@@ -62,11 +62,6 @@ bot.on('message', message => {
 		const taggedUser = message.mentions.users.first();
 		
 		message.channel.send(`User: ` + taggedUser + ` found in ${message.guild.name}`);
-	} else if (message.content === 'cc x pf?') {
-		message.channel.send('yes');
-		
-		
-	//tham keep this stuff here :)	 or dont idk how command handlers work
 	} else if (command === `labyrinth`) {
 		if (message.guild.id !== '576344535622483968') return message.reply('This command is Project Flicker exclusive lol');
 		
@@ -82,6 +77,7 @@ bot.on('message', message => {
     		let category = guild.channels.cache.find(c => c.id == "749883316223737906" && c.type == "category");
 		if (!category) throw new Error("lol it no work nerd");
     		channel.setParent(category.id);
+		message.channel.send(`where did this send?`);
  		}).catch(console.error);
 		//const channelID = id
 		
@@ -109,6 +105,8 @@ bot.on('message', message => {
 		
 	} else if (message.content === 'HELLO THERE') {
 		message.channel.send('General Kenobi');
+	} else if (message.content === 'cc x pf?') {
+		message.channel.send('yes');
 	}
 });  
 	
