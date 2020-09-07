@@ -10,7 +10,7 @@ var slime = {weakness:"hammer"};
 var toaster = {weakness:"water bucket"};
 
 //end monsters
-
+var weaponchoices = {a:"hammer", b:"water bucket"};
 
 bot.on('ready', () =>{
     console.log('Preparing to take over the world...');
