@@ -116,9 +116,10 @@ bot.on('message', message => {
 
 function intervalFunc() {
 
-  var ping = Date.now() - message.createdTimestamp + " ms";	
+
 	
-  console.log('Heartbeat: ' + ping);
+  console.log('Heartbeat');
+ 
 }
 
 setInterval(intervalFunc, 3000);
