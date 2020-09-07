@@ -92,14 +92,9 @@ bot.on('message', message => {
 });
 
 bot.on('message', message => {
-	if (message.content === 'Hello there') {
+	if(message.content.toLowerCase().includes('hello there')) {
 		message.channel.send('General Kenobi');
 		
-	} else if (message.content === 'hello there') {
-		message.channel.send('General Kenobi');
-		
-	} else if (message.content === 'HELLO THERE') {
-		message.channel.send('General Kenobi');
 	} else if (message.content === 'cc x pf?') {
 		message.channel.send('yes');
 	}
