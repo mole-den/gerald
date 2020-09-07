@@ -106,9 +106,9 @@ bot.on('message', message => {
 });  
 	
 
-
+var ping = 99999
 function heartbeat() {
-	console.log(`Heartbeat recived. Logged in as ${bot.user.tag}`);
+	console.log(`Heartbeat recived. Logged in as ${bot.user.tag}. Ping is ${ping}ms. i am good`);
 }
 
 setInterval(heartbeat, 10000);
