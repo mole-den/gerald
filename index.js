@@ -116,6 +116,7 @@ bot.on('message', message => {
 
 function intervalFunc() {
   console.log('Heartbeat sent');
+  await sleep(500);
   console.log('Heartbeat registered');
 }
 
