@@ -21,7 +21,6 @@ bot.on('ready', () =>{
     console.log('Preparing to take over the world...');
     console.log('World domination complete.');
     console.log('ONLINE');
-    //console.log(`Logged in as ${client.user.tag}!`);
     bot.user.setPresence({ activity: { name: "Project Flicker", type: "WATCHING" }, status: "dnd" }); //online or dnd
 });  
 
@@ -115,7 +114,7 @@ bot.on('message', message => {
 
 
 function heartbeat() {
-	console.log('Heartbeat');
+	console.log(`Heartbeat recived. Logged in as ${bot.user.tag}`);
 }
 
 setInterval(heartbeat, 10000);
