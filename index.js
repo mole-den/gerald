@@ -6,15 +6,10 @@ const prefix = "g";
 const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //the ancient texts!
 //monsters
 
-var slime = {health:10, attack:1, def:0, id:1};
-var toaster = {health:1, attack:100, def:0, id:2};
+var slime = {weakness:"hammer"};
+var toaster = {weakness:"water bucket"};
 
 //end monsters
-//items
-
-var basicsword = {type:"sword", rarity:"common", attack:2};
-
-//end items
 
 
 bot.on('ready', () =>{
@@ -22,6 +17,7 @@ bot.on('ready', () =>{
     console.log('World domination complete.');
     console.log('ONLINE');
     bot.user.setPresence({ activity: { name: "Project Flicker", type: "WATCHING" }, status: "dnd" }); //online or dnd
+    bot.channels.get('751002634038804510').send('Hello here!');
 });  
 
 
@@ -78,7 +74,6 @@ bot.on('message', message => {
     		let category = guild.channels.cache.find(c => c.id == "749883316223737906" && c.type == "category");
 		if (!category) throw new Error("lol it no work nerd");
     		channel.setParent(category.id);
-		message.channel.send(`where did this send?`);
  		}).catch(console.error);
 		//const channelID = id
 		//message.channel.send(`Labyrinth created! <#${channelID}>`);
