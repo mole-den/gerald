@@ -115,7 +115,8 @@ bot.on('message', message => {
 
 
 function heartbeat() {
-	console.log('Heartbeat');
+	var heartbeatcount = heartbeatcount + 1
+	console.log('Heartbeat: ' + heartbeatcount);
 }
 
 setInterval(heartbeat, 60000);
