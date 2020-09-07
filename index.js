@@ -17,7 +17,6 @@ bot.on('ready', () =>{
     console.log('World domination complete.');
     console.log('ONLINE');
     bot.user.setPresence({ activity: { name: "Project Flicker", type: "WATCHING" }, status: "dnd" }); //online or dnd
-    bot.channels.get('751002634038804510').send('Hello here!');
 });  
 
 
