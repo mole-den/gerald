@@ -114,12 +114,8 @@ bot.on('message', message => {
 
 
 
-function intervalFunc() {
-
-
-	
-  console.log('Heartbeat');
- 
+function heartbeat() {
+	console.log('Heartbeat');
 }
 
-setInterval(intervalFunc, 3000);
+setInterval(heartbeat, 5000);
