@@ -63,6 +63,7 @@ bot.on('message', message => {
 		
 		message.channel.send(`User: ` + taggedUser + ` found in ${message.guild.name}`);
 	} else if (command === `labyrinth`) {
+		message.react('🐉');
 		if (message.guild.id !== '576344535622483968') return message.reply('This command is Project Flicker exclusive lol');
 		
 		message.channel.send('Creating Labyrinth...');
@@ -80,7 +81,6 @@ bot.on('message', message => {
 		message.channel.send(`where did this send?`);
  		}).catch(console.error);
 		//const channelID = id
-		message.react('✔️');
 		//message.channel.send(`Labyrinth created! <#${channelID}>`);
 		message.channel.send(`Labyrinth created, ${labyrplayer}!`);
 		
