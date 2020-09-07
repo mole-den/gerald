@@ -80,7 +80,7 @@ bot.on('message', message => {
 		message.channel.send(`where did this send?`);
  		}).catch(console.error);
 		//const channelID = id
-		
+		message.react('✔️');
 		//message.channel.send(`Labyrinth created! <#${channelID}>`);
 		message.channel.send(`Labyrinth created, ${labyrplayer}!`);
 		
