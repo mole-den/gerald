@@ -118,4 +118,4 @@ function heartbeat() {
 	console.log('Heartbeat');
 }
 
-setInterval(heartbeat, 5000);
+setInterval(heartbeat, 60000);
