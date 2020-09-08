@@ -103,6 +103,7 @@ bot.on('message', message => {
 	
 
 function heartbeat() {
+	console.log('Heartbeat sent.');
 	bot.emit('heartbeated');
 }
 
