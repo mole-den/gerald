@@ -108,7 +108,7 @@ async function heartbeat() {
 	bot.emit('heartbeated');
 }
 
-setInterval(heartbeat, 10000);
+setInterval(heartbeat, 5000);
 
 bot.on('heartbeated', () =>{
 	console.log(`Heartbeat recived. Logged in as ${bot.user.tag}`);
