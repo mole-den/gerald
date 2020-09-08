@@ -104,7 +104,7 @@ bot.on('message', message => {
 
 async function heartbeat() {
 	console.log('Heartbeat sent.');
-	await new Promise(r => setTimeout(r, 100));
+	await new Promise(r => setTimeout(r, 500));
 	bot.emit('heartbeated');
 }
 
