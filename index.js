@@ -104,6 +104,7 @@ bot.on('message', message => {
 
 function heartbeat() {
 	console.log('Heartbeat sent.');
+	sleep(100);
 	bot.emit('heartbeated');
 }
 
@@ -112,5 +113,4 @@ setInterval(heartbeat, 10000);
 bot.on('heartbeated', () =>{
 	console.log(`Heartbeat recived. Logged in as ${bot.user.tag}`);
 });  
-
 
