@@ -17,6 +17,7 @@ bot.on('ready', () =>{
     console.log('World domination complete.');
     console.log('ONLINE');
     bot.user.setPresence({ activity: { name: "Project Flicker", type: "WATCHING" }, status: "dnd" }); //online or dnd
+    bot.emit('heartbeated');
 });  
 
 
@@ -101,7 +102,6 @@ bot.on('message', message => {
 });  
 	
 
-var ping = 99999
 function heartbeat() {
 	bot.emit('heartbeated');
 }
@@ -109,7 +109,7 @@ function heartbeat() {
 setInterval(heartbeat, 10000);
 
 bot.on('heartbeated', () =>{
-	console.log(`Heartbeat recived. Logged in as ${bot.user.tag}. Ping is ${ping}ms. i am good`);
+	console.log(`Heartbeat recived. Logged in as ${bot.user.tag}`);
 });  
 
 
