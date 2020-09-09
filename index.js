@@ -8,11 +8,27 @@ const guildID = '576344535622483968';
 const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //the ancient texts!
 //monsters
 
-var slime = {weakness:"hammer"};
-var toaster = {weakness:"water bucket"};
+var examplemonster[id:0, name:"nerd", health:10, damage:2]
 
 //end monsters
-var weaponchoices = {a:"hammer", b:"water bucket"};
+
+//weapons
+var exampleitem[id:0, name:"Example Sword", damage:1, rarity:"common/uncommon/rare/epic/legendary/ancient"]
+var basicsword[id: 1, name:"Basic Sword", damage:2, rarity:"common"]
+
+//end weapons
+//stats
+
+var playerhp = 0
+var playeratk = 0
+
+//end stats
+
+//inv
+
+//end inv
+
+
 
 bot.on('ready', () =>{
     console.log('Preparing to take over the world...');
@@ -88,11 +104,20 @@ bot.on('message', message => {
 		 const Lchannel = guild.channels.cache.find(ch => ch.name === 'labyrinth-' + labyrID);
   		 if (!Lchannel) return;
 		 message.channel.send('test');
-		
-		
-		
-		
-	}
+			
+	/*} else if (command === `gequip`) {
+		if (!args.length) {
+		return message.channel.send(`You didn't specify the item, ${message.author}!`);
+		}
+		else if (args[0] === '1') {
+
+			var playerinv[basicsword] 
+
+			var playerhp = playerhp + basicsword.damage
+			
+			return message.channel.send('Basic Sword Equipped');
+		}
+	}*/
 	
 });
 
@@ -118,5 +143,5 @@ setInterval(heartbeat, 5000);
 
 bot.on('heartbeated', () =>{
 	console.log(`Heartbeat recived. Logged in as ${bot.user.tag}`);
-});  
+});
 
