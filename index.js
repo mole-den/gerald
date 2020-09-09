@@ -105,7 +105,7 @@ bot.on('message', message => {
   		 if (!Lchannel) return;
 		 message.channel.send('test');
 			
-	/*} else if (command === `gequip`) {
+	} /*else if (command === `gequip`) {
 		if (!args.length) {
 		return message.channel.send(`You didn't specify the item, ${message.author}!`);
 		}
@@ -144,3 +144,4 @@ setInterval(heartbeat, 5000);
 bot.on('heartbeated', () =>{
 	console.log(`Heartbeat recived. Logged in as ${bot.user.tag}`);
 });
+// this is death
