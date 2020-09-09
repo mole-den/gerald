@@ -1,7 +1,9 @@
-const Discord = require('discord.js'); //hello there yes 
+const Discord = require('discord.js'); //hello there yes
+//const { Client } = require('unb-api');
 const bot = new Discord.Client();
 const prefix = "g";
 
+const guildID = '576344535622483968';
 
 const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //the ancient texts!
 //monsters
@@ -38,6 +40,7 @@ bot.on('guildMemberAdd', member => {
 
 bot.on('message', message => {
 	console.log(`${message.author.tag} said: ${message.content}`);
+	const userID = message.author;
 	if (!message.content.startsWith(prefix) || message.author.bot) return;
 	
 	const args = message.content.slice(prefix.length).trim().split(' ');
@@ -61,6 +64,7 @@ bot.on('message', message => {
 		message.channel.send(`User: ` + taggedUser + ` found in ${message.guild.name}`);
 	} else if (command === `labyrinth`) {
 		message.react('🐉');
+		
 		if (message.guild.id !== '576344535622483968') return message.reply('This command is Project Flicker exclusive lol');
 		
 		message.channel.send('Creating Labyrinth...');
