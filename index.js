@@ -98,6 +98,8 @@ bot.on('message', message => {
 		
 	} else if (message.content === 'cc x pf?') {
 		message.channel.send('yes');
+	} else if (message.content.toLowerCase().includes('pog')) {
+		message.channel.send('**M I L K  C A P S**');
 	}
 });  
 	
