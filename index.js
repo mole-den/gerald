@@ -129,6 +129,9 @@ bot.on('message', message => {
 		message.channel.send('yes');
 	} else if (message.content.toLowerCase().includes('pog')) {
 		message.channel.send('**M I L K  C A P S**');
+	} else if (message.content.toLowerCase().includes('gerald')) {
+		message.channel.send('**Whomst has awakened the ancient one**');
+		console.log('E');
 	}
 });  
 	
