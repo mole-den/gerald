@@ -132,6 +132,9 @@ bot.on('message', message => {
 	} else if (message.content.toLowerCase().includes('gerald')) {
 		message.channel.send('**Whomst has awakened the ancient one**');
 		console.log('E');
+	} else if (message.content.toLowerCase().includes('execute order 66')) {
+		message.channel.send('**It will be done, My lord.**');
+		console.log('E');
 	}
 });  
 	
