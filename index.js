@@ -125,7 +125,7 @@ bot.on('message', message => {
 	if(message.content.toLowerCase().includes('hello there')) {
 		message.channel.send('General Kenobi');
 		
-	} else if (message.content === 'cc x pf?') {
+	} else if (message.content.toLowerCase().includes('cc x pf')) {
 		message.channel.send('yes');
 	} else if (message.content.toLowerCase().includes('pog')) {
 		message.channel.send('**M I L K  C A P S**');
