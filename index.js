@@ -3,7 +3,7 @@ const Discord = require('discord.js'); //hello there yes
 const bot = new Discord.Client();
 const prefix = "g";
 
-var doheartbeat = true
+//var doheartbeat = true
 
 const guildID = '576344535622483968';
 
@@ -107,13 +107,13 @@ bot.on('message', message => {
   		 if (!Lchannel) return;
 		 message.channel.send('test');
 			
-	} else if (command === `heartbeat enable`) {
-		message.channel.send(`ok`);
-		var doheartbeat = true
-	} else if (command === `heartbeat disable`) {
-		message.channel.send(`ok`);
-		var doheartbeat = false
-	}
+	} //else if (command === `heartbeat enable`) {
+	//	message.channel.send(`ok`);
+	//	var doheartbeat = true
+	} //else if (command === `heartbeat disable`) {
+	//	message.channel.send(`ok`);
+	//	var doheartbeat = false
+	//}
 	
 	
 	
@@ -160,9 +160,9 @@ async function heartbeat() {
 	bot.emit('heartbeated');
 }
 
-if doheartbeat = true {
-	setInterval(heartbeat, 5000);
-}
+//if doheartbeat = true {
+setInterval(heartbeat, 5000);
+//}
 	
 bot.on('heartbeated', () =>{
 	console.log(`Heartbeat recived. Logged in as ${bot.user.tag}`);
