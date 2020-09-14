@@ -110,7 +110,7 @@ bot.on('message', message => {
 	} //else if (command === `heartbeat enable`) {
 	//	message.channel.send(`ok`);
 	//	var doheartbeat = true
-	} //else if (command === `heartbeat disable`) {
+	//} else if (command === `heartbeat disable`) {
 	//	message.channel.send(`ok`);
 	//	var doheartbeat = false
 	//}
