@@ -3,6 +3,8 @@ const Discord = require('discord.js'); //hello there yes
 const bot = new Discord.Client();
 const prefix = "g";
 
+var doheartbeat = true
+
 const guildID = '576344535622483968';
 
 const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //the ancient texts!
@@ -105,7 +107,20 @@ bot.on('message', message => {
   		 if (!Lchannel) return;
 		 message.channel.send('test');
 			
-	} /*else if (command === `gequip`) {
+	} else if (command === `heartbeat enable`) {
+		message.channel.send(`ok`);
+		var doheartbeat = true
+	} else if (command === `heartbeat disable`) {
+		message.channel.send(`ok`);
+		var doheartbeat = false
+	}
+	
+	
+	
+	
+	
+	
+	/*else if (command === `gequip`) {
 		if (!args.length) {
 		return message.channel.send(`You didn't specify the item, ${message.author}!`);
 		}
@@ -135,7 +150,7 @@ bot.on('message', message => {
 	} else if (message.content.toLowerCase().includes('execute order 66')) {
 		message.channel.send('**It will be done, My lord.**');
 		console.log('E');
-	}
+	} 
 });  
 	
 
@@ -145,8 +160,10 @@ async function heartbeat() {
 	bot.emit('heartbeated');
 }
 
-setInterval(heartbeat, 5000);
-
+if doheartbeat = true {
+	setInterval(heartbeat, 5000);
+}
+	
 bot.on('heartbeated', () =>{
 	console.log(`Heartbeat recived. Logged in as ${bot.user.tag}`);
 });
