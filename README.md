@@ -1,2 +1,2 @@
 # Gerald
-The goodest boy.
+Praise Gerald.
