@@ -64,7 +64,7 @@ bot.on('message', message => {
 	const args = message.content.slice(prefix.length).trim().split(' ');
 	const command = args.shift().toLowerCase();
 	
-	if (command === 'ghelp') {
+	if (command === `help`) {
 		message.channel.send('Hello there! I am Gerald: A discord bot made to protect your guild from raids and other attacks. Remeber to make a channel named #geraldlog and make your joining channel called #joining-room I also am used in Project Flicker to do lot smart.');
 	} else if (command === `t-detectiontest`) {
 	// grab the "first" mentioned user from the message
