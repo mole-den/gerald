@@ -8,6 +8,9 @@ const prefix = "g";
 const guildID = '576344535622483968';
 
 const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //the ancient texts!
+
+const logs = guild.channels.cache.find(ch => ch.name === 'gerldlog');
+
 //monsters
 
 //var examplemonster = [id:0, name:"nerd", health:10, damage:2]
@@ -65,7 +68,7 @@ bot.on('message', message => {
 	const command = args.shift().toLowerCase();
 	
 	if (command === `help`) {
-		message.channel.send('Hello there! I am Gerald: A discord bot made to protect your guild from raids and other attacks. Remeber to make a channel named #geraldlog and make your joining channel called #joining-room I also am used in Project Flicker to do lot smart.');
+		message.channel.send('Hello! I am Gerald: A discord bot made to protect your guild from raids and other attacks. Remeber to make a channel named **geraldlog** and make your joining channel called #joining-room I also am used in Project Flicker to do lot smart.');
 	} else if (command === `t-detectiontest`) {
 	// grab the "first" mentioned user from the message
 	// this will return a `User` object, just like `message.author`
@@ -107,13 +110,13 @@ bot.on('message', message => {
   		 if (!Lchannel) return;
 		 message.channel.send('test');
 			
-	} //else if (command === `heartbeat enable`) {
-	//	message.channel.send(`ok`);
-	//	var doheartbeat = true
-	//} else if (command === `heartbeat disable`) {
-	//	message.channel.send(`ok`);
-	//	var doheartbeat = false
-	//}
+	} else if (command === `eject`) {
+		message.react('🦆');
+		const imposter = message.mentions.users.first();
+		
+		message.channel.send(imposter + ` was not the imposter. 1 imposter remains`);
+		
+	}
 	
 	
 	
