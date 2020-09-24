@@ -9,7 +9,7 @@ const guildID = '576344535622483968';
 
 const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //the ancient texts!
 
-const logs = guild.channels.cache.find(ch => ch.name === 'gerldlog');
+//const logs = guild.channels.cache.find(ch => ch.name === 'gerldlog');
 
 //monsters
 
