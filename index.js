@@ -103,39 +103,14 @@ bot.on('message', message => {
  		}).catch(console.error);
 		//const channelID = id
 		//message.channel.send(`Labyrinth created! <#${channelID}>`);
-		message.channel.send(`Labyrinth created, ${labyrplayer}!`);
+		message.channel.send(`Labyrinth created, ${labyrplayer}! ID: ${labyrID}`);
 		
 		
 		 const Lchannel = guild.channels.cache.find(ch => ch.name === 'labyrinth-' + labyrID);
   		 if (!Lchannel) return;
 		 message.channel.send('test');
 			
-	} else if (command === `eject`) {
-		message.react('🦆');
-		const imposter = message.mentions.users.first();
-		
-		message.channel.send(imposter + ` was not the imposter. 1 imposter remains`);
-		
 	}
-	
-	
-	
-	
-	
-	
-	/*else if (command === `gequip`) {
-		if (!args.length) {
-		return message.channel.send(`You didn't specify the item, ${message.author}!`);
-		}
-		else if (args[0] === '1') {
-
-			var playerinv = [basicsword.id] 
-
-			var playerhp = playerhp + basicsword.damage
-			
-			return message.channel.send('Basic Sword Equipped');
-		}
-	}*/
 	
 });
 
