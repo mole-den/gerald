@@ -152,7 +152,7 @@ bot.on('message', message => {
 	} else if (message.content.toLowerCase().includes('hello gerald')) {
 		message.channel.send('Hello!');
 	} else if (message.content.toLowerCase().includes('how are you gerald')) {
-		message.channel.send()'better than u nerd';
+		message.channel.send('better then u nerd');
 	}
 });  
 	
