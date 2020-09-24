@@ -143,17 +143,17 @@ bot.on('message', message => {
 	if(message.content.toLowerCase().includes('hello there')) {
 		message.channel.send('General Kenobi');
 		
-	} else if (message.content.toLowerCase().includes('cc x pf')) {
-		message.channel.send('yes');
 	} else if (message.content.toLowerCase().includes('pog')) {
 		message.channel.send('**M I L K  C A P S**');
-	} else if (message.content.toLowerCase().includes('gerald')) {
-		message.channel.send('**Whomst has awakened the ancient one**');
-		console.log('E');
 	} else if (message.content.toLowerCase().includes('execute order 66')) {
 		message.channel.send('**It will be done, My lord.**');
 		console.log('E');
-	} 
+		//ai?
+	} else if (message.content.toLowerCase().includes('hello gerald')) {
+		message.channel.send('Hello!');
+	} else if (message.content.toLowerCase().includes('how are you gerald')) {
+		message.channel.send()'better than u nerd';
+	}
 });  
 	
 
