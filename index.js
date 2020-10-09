@@ -111,6 +111,11 @@ bot.on('message', message => {
 		 message.channel.send('test');
 			
 	}
+	const fetchedChannel = message.guild.channels.find(r => r.name === args.join(' '));
+
+	else if (command === 'delete') {
+    		fetchedChannel.delete();
+	}
 	
 });
 
@@ -128,7 +133,7 @@ bot.on('message', message => {
 		message.channel.send('Hello!');
 	} else if (message.content.toLowerCase().includes('how are you gerald')) {
 		message.channel.send('better then u nerd');
-	}
+	} 
 });  
 	
 
