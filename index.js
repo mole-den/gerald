@@ -110,10 +110,10 @@ bot.on('message', message => {
   		 if (!Lchannel) return;
 		 message.channel.send('test');
 			
-	}
+	} 
 	const fetchedChannel = message.guild.channels.find(r => r.name === args.join(' '));
-
-	else if (command === 'delete') {
+	
+	if (command === 'delete') {
     		fetchedChannel.delete();
 	}
 	
