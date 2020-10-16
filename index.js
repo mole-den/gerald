@@ -40,7 +40,7 @@ bot.on('ready', () =>{
     console.log('World domination complete.');
     console.log('ONLINE');
     bot.user.setPresence({ activity: { name: "Project Flicker", type: "WATCHING" }, status: "dnd" }); //online or dnd
-    bot.emit('heartbeated');
+    //bot.emit('heartbeated');
 });  
 
 
@@ -140,7 +140,7 @@ bot.on('message', message => {
 	
 
 async function heartbeat() {
-	console.log('Heartbeat sent.');
+	//console.log('Heartbeat sent.');
 	await new Promise(r => setTimeout(r, 500));
 	bot.emit('heartbeated');
 }
