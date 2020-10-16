@@ -115,6 +115,8 @@ bot.on('message', message => {
 	
 	if (command === 'delete') {
     		fetchedChannel.delete();
+	} else if (command === `wiki`) { // G WIKI KEKW
+		message.channel.send('You did not yes.')
 	}
 	
 });
@@ -148,6 +150,6 @@ setInterval(heartbeat, 5000);
 //}
 	
 bot.on('heartbeated', () =>{
-	console.log(`Heartbeat recived. Logged in as ${bot.user.tag}`);
+	//console.log(`Heartbeat recived. Logged in as ${bot.user.tag}`);
 });
 // this is death
