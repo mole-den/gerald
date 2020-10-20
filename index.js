@@ -117,6 +117,8 @@ bot.on('message', message => {
     		fetchedChannel.delete();
 	} else if (command === `wiki`) { // G WIKI KEKW
 		message.channel.send('You did not yes.')
+	} else if (command === `smolder start`) {
+		console.log('hmm');
 	}
 	
 });
