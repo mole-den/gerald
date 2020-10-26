@@ -119,6 +119,7 @@ bot.on('message', message => {
 		message.channel.send('You did not yes.')
 	} else if (command === `smolder start`) {
 		console.log('hmm');
+		message.channel.send('perhaps no');
 	}
 	
 });
