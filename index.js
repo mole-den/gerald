@@ -33,6 +33,12 @@ const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //t
 
 //end inv
 
+//wip -> for new verification system
+var verified = [
+  "me",
+  "myself",
+  "I"
+];
 
 
 bot.on('ready', () =>{
