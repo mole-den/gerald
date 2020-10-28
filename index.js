@@ -120,9 +120,16 @@ bot.on('message', message => {
 	const fetchedChannel = message.guild.channels.find(r => r.name === args.join(' '));
 	
 	if (command === 'delete') {
-    		fetchedChannel.delete();
+    		//fetchedChannel.delete();
 	} else if (command === `wiki`) { // G WIKI KEKW
-		message.channel.send('You did not yes.')
+		if (!args.length) {
+		return message.channel.send(`You didn't provide a valid page name, ${message.author}!`);
+		} else if (args[0] === 'harvester') {
+			return message.channel.send('**HARVESTER**: An ancient farmer once constructed a little robot to farm spuds for him. The blueprints for the robot can be found in the shop.');
+		} else if (args[0] === 'mastery') {
+			return message.channel.send('wip lol git gud');
+		} 
+		
 	} else if (command === `smolder start`) {
 		console.log('hmm');
 		message.channel.send('perhaps no');
@@ -144,7 +151,11 @@ bot.on('message', message => {
 		message.channel.send('Hello!');
 	} else if (message.content.toLowerCase().includes('how are you gerald')) {
 		message.channel.send('better then u nerd');
-	} 
+	} else if (message.content.toLowerCase().includes('rawr'))) {
+		message.channel.send('x3 nuzzles');
+		message.channel.send('*pounces on you* uwu you so warm');
+		message.channel.send('k ill stop nerds');
+	}
 });  
 	
 
