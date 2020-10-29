@@ -122,13 +122,18 @@ bot.on('message', message => {
 	if (command === 'delete') {
     		//fetchedChannel.delete();
 	} else if (command === `wiki`) { // G WIKI KEKW
+		message.react('🐠');
 		if (!args.length) {
 		return message.channel.send(`You didn't provide a valid page name, ${message.author}!`);
 		} else if (args[0] === 'harvester') {
 			return message.channel.send('**HARVESTER**: An ancient farmer once constructed a little robot to farm spuds for him. The blueprints for the robot can be found in the shop.');
 		} else if (args[0] === 'mastery') {
-			return message.channel.send('wip lol git gud');
-		} 
+			return message.channel.send('**MASTERY**: A long time ago, someone got gud. They now present you with these upgrades.');
+		} else if (args[0] === 'valuable spuds') {
+			return message.channel.send('**VALUABLE SPUDS**: These upgrades turn your spuds into better spuds.');
+		} else if (args[0] === 'god of spuds') {
+			return message.channel.send('**GOD OF SPUDS**: This is overpowered.');
+		}
 		
 	} else if (command === `smolder start`) {
 		console.log('hmm');
