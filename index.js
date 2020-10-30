@@ -10,28 +10,9 @@ const guildID = '576344535622483968';
 const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //the ancient texts!
 
 //const logs = guild.channels.cache.find(ch => ch.name === 'gerldlog');
-
-//monsters
-
-//var examplemonster = [id:0, name:"nerd", health:10, damage:2]
-
-//end monsters
-
-//weapons
-//var exampleitem = [id:0, name:"Example Sword", damage:1, rarity:"common/uncommon/rare/epic/legendary/ancient"]
-//var basicsword = [id: 1, name:"Basic Sword", damage:2, rarity:"common"]
-
-//end weapons
-//stats
-
-//var playerhp = 0
-//var playeratk = 0
-
-//end stats
-
-//inv
-
-//end inv
+/*
+Hello! I am Gerald. Praise me or nerd.
+*/
 
 //wip -> for new verification system
 var verified = [
