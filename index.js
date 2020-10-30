@@ -132,13 +132,10 @@ bot.on('message', message => {
 		} else if (args[0] === 'valuable spuds') {
 			return message.channel.send('**VALUABLE SPUDS**: These upgrades turn your spuds into better spuds.');
 		} else if (args[0] === 'god of spuds') {
-			return message.channel.send('**GOD OF SPUDS**: This is overpowered.');
+			return message.channel.send('**GOD OF SPUDS**: This is overpowered. 30% of your purse gets added every hour. will probably get nerfed **again**');
 		}
 		
-	} else if (command === `smolder start`) {
-		console.log('hmm');
-		message.channel.send('perhaps no');
-	}
+	} 
 	
 });
 
@@ -151,7 +148,7 @@ bot.on('message', message => {
 	} else if (message.content.toLowerCase().includes('execute order 66')) {
 		message.channel.send('**It will be done, My lord.**');
 		console.log('E');
-		//ai?
+		//yes
 	} else if (message.content.toLowerCase().includes('hello gerald')) {
 		message.channel.send('Hello!');
 	} else if (message.content.toLowerCase().includes('how are you gerald')) {
@@ -160,6 +157,8 @@ bot.on('message', message => {
 		message.channel.send('x3 nuzzles');
 		message.channel.send('*pounces on you* uwu you so warm');
 		message.channel.send('k ill stop nerds');
+	} else if (message.content.toLowerCase().includes('how do i git gud')) {
+		message.channel.send('just git gud');
 	}
 });  
 	
