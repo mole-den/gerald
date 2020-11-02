@@ -134,7 +134,7 @@ bot.on('message', message => {
 		message.channel.send('Hello!');
 	} else if (message.content.toLowerCase().includes('how are you gerald')) {
 		message.channel.send('better then u nerd');
-	} else if (message.content.toLowerCase().includes('rawr'))) {
+	} else if (message.content.toLowerCase().includes('rawr')) {
 		message.channel.send('x3 nuzzles');
 		message.channel.send('*pounces on you* uwu you so warm');
 		message.channel.send('k ill stop nerds');
