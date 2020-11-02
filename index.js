@@ -10,8 +10,11 @@ const guildID = '576344535622483968';
 const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //the ancient texts!
 
 //const logs = guild.channels.cache.find(ch => ch.name === 'gerldlog');
+
 /*
 Hello! I am Gerald. Praise me or nerd.
+
+I was originally intended to be a server protection bot but I am not that yet. lel git gud
 */
 
 //wip -> for new verification system
@@ -157,4 +160,5 @@ setInterval(heartbeat, 5000);
 bot.on('heartbeated', () =>{
 	//console.log(`Heartbeat recived. Logged in as ${bot.user.tag}`);
 });
-// this is death
+
+// the spanish inquisition
