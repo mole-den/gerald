@@ -105,7 +105,7 @@ bot.on('message', message => {
 	} else if (command === `wiki`) { // G WIKI KEKW
 		message.react('🐠');
 		if (!args.length) {
-		return message.channel.send(`You didn't provide a valid page name, ${message.author}!`);
+		return message.channel.send(`You didn't provide a valid page name, ${message.author}! The valid pages are: **harvester, mastery, valuable spuds, god of spuds** git gud`);
 		} else if (args[0] === 'harvester') {
 			return message.channel.send('**HARVESTER**: An ancient farmer once constructed a little robot to farm spuds for him. The blueprints for the robot can be found in the shop.');
 		} else if (args[0] === 'mastery') {
