@@ -23,7 +23,7 @@ var verified = [
   "myself",
   "I"
 ];
-
+// idk when ill add ^ lel
 
 bot.on('ready', () =>{
     console.log('Preparing to take over the world...');
@@ -105,7 +105,7 @@ bot.on('message', message => {
 	
 	if (command === 'delete') {
     		//fetchedChannel.delete();
-	} else if (command === `wiki`) { // G WIKI KEKW
+	} else if (command === `wiki`) { // this doesnt work and it is all tham's fault
 		message.react('🐠');
 		if (!args.length) {
 		return message.channel.send(`You didn't provide a valid page name, ${message.author}! The valid pages are: **harvester, mastery, valuable spuds, god of spuds** git gud`);
