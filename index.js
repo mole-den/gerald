@@ -143,7 +143,7 @@ bot.on('message', message => {
 		message.channel.send('k ill stop nerds');
 	} else if (message.content.toLowerCase().includes('how do i git gud')) {
 		message.channel.send('just git gud');
-	} else if (message.content.send('nerd')) {
+	} else if (message.content.toLowerCase().includes('nerd')) {
 		message.channel.send('no u');
 		console.log('i just #rekt some kid lmao they need counselling'); //yeah what a non
 	}
