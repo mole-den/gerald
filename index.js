@@ -19,7 +19,7 @@ I was originally intended to be a server protection bot but I am not that yet. l
 
 //wip -> for new verification system
 var verified = [
-  "me",
+  "Zac#5871",
   "myself",
   "I"
 ];
