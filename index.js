@@ -99,12 +99,9 @@ bot.on('message', message => {
 		 const Lchannel = guild.channels.cache.find(ch => ch.name === 'labyrinth-' + labyrID);
   		 if (!Lchannel) return;
 		 message.channel.send('test');
-			
-	} 
+		
 	const fetchedChannel = message.guild.channels.find(r => r.name === args.join(' '));
-	
-	if (command === 'delete') {
-    		//fetchedChannel.delete();
+			
 	} else if (command === `wiki`) { // this doesnt work and it is all tham's fault
 		message.react('🐠');
 		if (!args.length) {
@@ -126,7 +123,6 @@ bot.on('message', message => {
 bot.on('message', message => {
 	if(message.content.toLowerCase().includes('hello there')) {
 		message.channel.send('General Kenobi');
-		
 	} else if (message.content.toLowerCase().includes('pog')) {
 		message.channel.send('**M I L K  C A P S**');
 	} else if (message.content.toLowerCase().includes('execute order 66')) {
@@ -146,7 +142,7 @@ bot.on('message', message => {
 	} else if (message.content.toLowerCase().includes('nerd')) {
 		message.channel.send('no u');
 		console.log('i just #rekt some kid lmao they need counselling'); //yeah what a non
-	}
+	} //i am good at coding -Zac
 });  
 	
 
