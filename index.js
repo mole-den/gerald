@@ -2,6 +2,8 @@ const Discord = require('discord.js'); //hello there yes
 //const { Client } = require('unb-api');
 const bot = new Discord.Client();
 const prefix = "g";
+const fs = require('fs');
+
 
 //var doheartbeat = true
 
@@ -23,7 +25,7 @@ var verified = [
   "",
   ""
 ];
-// idk when ill add ^ lel
+// idk when il add ^ lel
 
 bot.on('ready', () =>{
     console.log('Preparing to take over the world...');
@@ -73,35 +75,16 @@ bot.on('message', message => {
 		const taggedUser = message.mentions.users.first();
 		
 		message.channel.send(`User: ` + taggedUser + ` found in ${message.guild.name}`);
-	} else if (command === `labyrinth`) {
-		message.react('🐉');
-		
-		if (message.guild.id !== '576344535622483968') return message.reply('This command is Project Flicker exclusive lol');
-		
-		message.channel.send('Creating Labyrinth...');
-		
-		const guild = message.channel.guild;
-		const labyrID = Math.round(Math.random() * (1 - 100) + 1);
-		const labyrplayer = message.author 
-		//const channelID = guild.channels.cache.find(ch => ch.name === "labyrinth-" + labyrID);
-		
-		guild.channels.create("labyrinth-" + labyrID)
-		.then(channel => {
-    		let category = guild.channels.cache.find(c => c.id == "749883316223737906" && c.type == "category");
-		if (!category) throw new Error("lol it no work nerd");
-    		channel.setParent(category.id);
- 		}).catch(console.error);
-		//const channelID = id
-		//message.channel.send(`Labyrinth created! <#${channelID}>`);
-		message.channel.send(`Labyrinth created, ${labyrplayer}! ID: ${labyrID}`);
+	} else if (command === `setup`) {
+		message.channel.send(`Beginning setup`);
+		fs.writeFile(`${message.guild.name}`, `${message.guild.name}`, function (err) {
+  			if (err) return console.log(err);
+  			console.log(`L`);
+		});
 		
 		
-		 const Lchannel = guild.channels.cache.find(ch => ch.name === 'labyrinth-' + labyrID);
-  		 if (!Lchannel) return;
-		 message.channel.send('test');
 		
-	const fetchedChannel = message.guild.channels.find(r => r.name === args.join(' '));
-			
+		
 	} else if (command === `wiki`) { // this doesnt work and it is all tham's fault
 		message.react('🐠');
 		if (!args.length) {
