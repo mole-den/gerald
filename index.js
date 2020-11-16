@@ -31,7 +31,7 @@ const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //t
 //const logs = guild.channels.cache.find(ch => ch.name === 'gerldlog');
 
 /*
-Hello! I am Gerald. Praise me or nerd.
+Hello! I am Gerald. Praise me or nerd. I am a woman with a lampshade on my head lmao get flex on nube
 
 I was originally intended to be a server protection bot but I am not that yet. lel git gud
 */
