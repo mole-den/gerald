@@ -99,7 +99,7 @@ bot.on('message', message => {
 		//fs.writeFile(`${message.guild.name}`, `${message.guild.name}`, function (err) {
   			if (err) return console.log(err);
   			console.log(`L`);
-		});
+		};
 		
 		
 		
