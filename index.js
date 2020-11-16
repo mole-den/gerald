@@ -103,6 +103,8 @@ bot.on('message', message => {
 		
 		
 		
+	} else if (command === `die`) {
+		message.channel.send(`no u`);
 	} else if (command === `wiki`) { // this doesnt work and it is all tham's fault
 		message.react('🐠');
 		if (!args.length) {
