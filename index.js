@@ -96,10 +96,9 @@ bot.on('message', message => {
 		message.channel.send(`User: ` + taggedUser + ` found in ${message.guild.name}`);
 	} else if (command === `setup`) {
 		message.channel.send(`Beginning setup`);
-		//fs.writeFile(`${message.guild.name}`, `${message.guild.name}`, function (err) {
   			if (err) return console.log(err);
   			console.log(`L`);
-		};
+		
 		
 		
 		
