@@ -2,7 +2,7 @@ const Discord = require('discord.js'); //hello there yes
 //const { Client } = require('unb-api');
 const bot = new Discord.Client();
 const prefix = "g";
-const fs = require('fs');
+//const fs = require('fs');
 const AntiSpam = require('discord-anti-spam');
 const antiSpam = new AntiSpam({
     warnThreshold: 5, // Amount of messages sent in a row that will cause a warning.
@@ -96,7 +96,7 @@ bot.on('message', message => {
 		message.channel.send(`User: ` + taggedUser + ` found in ${message.guild.name}`);
 	} else if (command === `setup`) {
 		message.channel.send(`Beginning setup`);
-		fs.writeFile(`${message.guild.name}`, `${message.guild.name}`, function (err) {
+		//fs.writeFile(`${message.guild.name}`, `${message.guild.name}`, function (err) {
   			if (err) return console.log(err);
   			console.log(`L`);
 		});
