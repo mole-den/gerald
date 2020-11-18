@@ -43,6 +43,7 @@ var verified = [
   ""
 ];
 // idk when il add ^ lel
+// i probably wont because dark lacks brain cellz
 
 bot.on('ready', () =>{
     console.log('Preparing to take over the world...');
