@@ -106,21 +106,16 @@ bot.on('message', message => {
 		
 	} else if (command === `die`) {
 		message.channel.send(`no u`);
-	} else if (command === `wiki`) { // this doesnt work and it is all tham's fault
-		message.react('🐠');
-		if (!args.length) {
-		return message.channel.send(`You didn't provide a valid page name, ${message.author}! The valid pages are: **harvester, mastery, valuable spuds, god of spuds** git gud`);
-		} else if (args[0] === 'harvester') {
-			return message.channel.send('**HARVESTER**: An ancient farmer once constructed a little robot to farm spuds for him. The blueprints for the robot can be found in the shop.');
-		} else if (args[0] === 'mastery') {
-			return message.channel.send('**MASTERY**: A long time ago, someone got gud. They now present you with these upgrades.');
-		} else if (args[0] === 'valuable spuds') {
-			return message.channel.send('**VALUABLE SPUDS**: These upgrades turn your spuds into better spuds.');
-		} else if (args[0] === 'god of spuds') {
-			return message.channel.send('**GOD OF SPUDS**: This is overpowered. 30% of your purse gets added every hour. will probably get nerfed **again**');
-		} //update: it is tham's fault
-		
-	} 
+	} else if (command === `esus`) {
+		message.channel.send(`Are you sure you want to do this?`).then(async (start) => {
+            	message.channel.awaitMessages(filter, { maxMatches: 1, time: 60000, errors: ['time']}).then(async (collected) => {
+                if (collected.first().content === "yes") {
+			message.channel.send(`Fine. HAHAHA GET WIPd NUBE`);
+		} else if (collected.first().content === "no") {
+			message.channel.send(`Oh, good.`);
+		}
+            })
+	}
 	
 });
 
@@ -145,8 +140,8 @@ bot.on('message', message => {
 		message.channel.send('just git gud');
 	} else if (message.content.toLowerCase().includes('nerd')) {
 		message.channel.send('no u');
-		console.log('i just #rekt some kid lmao they need counselling'); //yeah what a non
-	} //i am good at coding -Zac
+		console.log('i just #rekt some kid lmao they need counselling'); 
+	} 
 });  
 	
 
