@@ -37,13 +37,7 @@ I was originally intended to be a server protection bot but I am not that yet. l
 */
 
 //wip -> for new verification system
-var verified = [
-  "Zac#5871",
-  "",
-  ""
-];
-// idk when il add ^ lel
-// i probably wont because dark lacks brain cellz
+
 
 bot.on('ready', () =>{
     console.log('Preparing to take over the world...');
@@ -101,7 +95,7 @@ bot.on('message', message => {
   			console.log(`L`);
 		
 		
-		
+		//im a gnome
 		
 		
 	} else if (command === `die`) {
