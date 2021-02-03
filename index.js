@@ -4,7 +4,7 @@ const bot = new Discord.Client();
 const prefix = "g";
 //const fs = require('fs');
 const AntiSpam = require('discord-anti-spam');
-const antiSpam = new AntiSpam({
+/*const antiSpam = new AntiSpam({
     warnThreshold: 5, // Amount of messages sent in a row that will cause a warning.
     kickThreshold: 10, // Amount of messages sent in a row that will cause a ban.
     banThreshold: 15, // Amount of messages sent in a row that will cause a ban.
@@ -20,7 +20,7 @@ const antiSpam = new AntiSpam({
     verbose: true, // Extended Logs from module.
     ignoredUsers: [], // Array of User IDs that get ignored.
     // And many more options... See the documentation.
-});
+});*/
 
 //var doheartbeat = true
 
@@ -96,7 +96,7 @@ bot.on('message', message => {
 		
 		message.channel.send(`User: ` + taggedUser + ` found in ${message.guild.name}`);
 	} else if (command === `setup`) {
-		message.channel.send(`Beginning setup`);
+		message.channel.send(`Beginning setup but no because also wip lmao`);
   			if (err) return console.log(err);
   			console.log(`L`);
 		
@@ -106,7 +106,7 @@ bot.on('message', message => {
 		
 	} else if (command === `die`) {
 		message.channel.send(`no u`);
-	} else if (command === `esus`) {
+	} /*else if (command === `esus`) {
 		message.channel.send(`Are you sure you want to do this?`).then(async (start) => {
             	message.channel.awaitMessages(filter, { maxMatches: 1, time: 60000, errors: ['time']}).then(async (collected) => {
                 if (collected.first().content === "yes") {
@@ -115,11 +115,11 @@ bot.on('message', message => {
 			message.channel.send(`Oh, good.`);
 		}
             })
-	}
+	}*/
 	
 });
 
-bot.on('message', message => {
+/*bot.on('message', message => {
 	if(message.content.toLowerCase().includes('hello there')) {
 		message.channel.send('General Kenobi');
 	} else if (message.content.toLowerCase().includes('pog')) {
@@ -142,7 +142,7 @@ bot.on('message', message => {
 		message.channel.send('no u');
 		console.log('i just #rekt some kid lmao they need counselling'); 
 	} 
-});  
+});  */
 	
 
 async function heartbeat() {
