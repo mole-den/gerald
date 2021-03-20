@@ -43,7 +43,7 @@ bot.on('ready', () =>{
     console.log('Preparing to take over the world...');
     console.log('World domination complete.');
     console.log('ONLINE');
-    bot.user.setPresence({ activity: { name: "Project Flicker", type: "WATCHING" }, status: "dnd" }); //online or dnd
+    bot.user.setPresence({ activity: { name: "all nerds", type: "WATCHING" }, status: "dnd" }); //online or dnd
     bot.emit('heartbeated');
 });  
 
