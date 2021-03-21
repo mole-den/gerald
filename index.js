@@ -3,7 +3,7 @@ const Discord = require('discord.js'); //hello there yes
 const bot = new Discord.Client();
 const prefix = "g";
 //const fs = require('fs');
-const AntiSpam = require('discord-anti-spam');
+//const AntiSpam = require('discord-anti-spam');
 /*const antiSpam = new AntiSpam({
     warnThreshold: 5, // Amount of messages sent in a row that will cause a warning.
     kickThreshold: 10, // Amount of messages sent in a row that will cause a ban.
