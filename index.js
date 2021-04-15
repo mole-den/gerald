@@ -74,7 +74,7 @@ bot.on('message', message => {
 	const command = args.shift().toLowerCase();
 	
 	if (command === `help`) {
-		message.channel.send('Hello! I am Gerald: A discord bot made to protect your guild from raids and other attacks. Remeber to make a channel named **geraldlog** and make your joining channel called #joining-room I also am used in Project Flicker to do lot smart.');
+		message.channel.send('Hello! I am Gerald. Welcome to my cult.');
 	} else if (command === `t-detectiontest`) {
 	// grab the "first" mentioned user from the message
 	// this will return a `User` object, just like `message.author`
