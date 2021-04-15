@@ -75,7 +75,7 @@ bot.on('message', message => {
 	
 	if (command === `help`) {
 		message.channel.send('Hello! I am Gerald. Welcome to my cult.');
-	} else if (command === `t-detectiontest`) {
+	} else if (command === `detect`) {
 	// grab the "first" mentioned user from the message
 	// this will return a `User` object, just like `message.author`
 		const taggedUser = message.mentions.users.first();
@@ -84,11 +84,6 @@ bot.on('message', message => {
 		
 	} else if (command === `t-servertest`) {
 		message.channel.send(`This server's name is: ${message.guild.name}`);
-	} else if (command == `detect`) {
-		
-		const taggedUser = message.mentions.users.first();
-		
-		message.channel.send(`User: ` + taggedUser + ` found in ${message.guild.name}`);
 	} else if (command === `setup`) {
 		message.channel.send(`Beginning setup but no because also wip lmao`);
   			if (err) return console.log(err);
