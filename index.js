@@ -2,25 +2,6 @@ const Discord = require('discord.js'); //hello there yes
 //const { Client } = require('unb-api');
 const bot = new Discord.Client();
 const prefix = "g";
-//const fs = require('fs');
-//const AntiSpam = require('discord-anti-spam');
-/*const antiSpam = new AntiSpam({
-    warnThreshold: 5, // Amount of messages sent in a row that will cause a warning.
-    kickThreshold: 10, // Amount of messages sent in a row that will cause a ban.
-    banThreshold: 15, // Amount of messages sent in a row that will cause a ban.
-    maxInterval: 2000, // Amount of time (in milliseconds) in which messages are considered spam.
-    warnMessage: '{@user}, Please stop spamming.', // Message that will be sent in chat upon warning a user.
-    kickMessage: '**{user_tag}** has been kicked for spamming.', // Message that will be sent in chat upon kicking a user.
-    banMessage: '**{user_tag}** has been banned for spamming.', // Message that will be sent in chat upon banning a user.
-    maxDuplicatesWarning: 7, // Amount of duplicate messages that trigger a warning.
-    maxDuplicatesKick: 10, // Amount of duplicate messages that trigger a warning.
-    maxDuplicatesBan: 12, // Amount of duplicate messages that trigger a warning.
-    exemptPermissions: [ 'ADMINISTRATOR'], // Bypass users with any of these permissions.
-    ignoreBots: true, // Ignore bot messages.
-    verbose: true, // Extended Logs from module.
-    ignoredUsers: [], // Array of User IDs that get ignored.
-    // And many more options... See the documentation.
-});*/
 
 //var doheartbeat = true
 
@@ -85,7 +66,7 @@ bot.on('message', message => {
 	} else if (command === `t-servertest`) {
 		message.channel.send(`This server's name is: ${message.guild.name}`);
 	} else if (command === `setup`) {
-		message.channel.send(`Beginning setup but no because also wip lmao`);
+		message.channel.send(`Beginning setup but no because zac cant code`);
   			if (err) return console.log(err);
   			console.log(`L`);
 		
@@ -95,7 +76,7 @@ bot.on('message', message => {
 		
 	} else if (command === `die`) {
 		message.channel.send(`no u`);
-	} /*else if (command === `esus`) {
+	} else if (command === `esus`) {
 		message.channel.send(`Are you sure you want to do this?`).then(async (start) => {
             	message.channel.awaitMessages(filter, { maxMatches: 1, time: 60000, errors: ['time']}).then(async (collected) => {
                 if (collected.first().content === "yes") {
@@ -104,7 +85,7 @@ bot.on('message', message => {
 			message.channel.send(`Oh, good.`);
 		}
             })
-	}*/
+	}
 	
 });
 
