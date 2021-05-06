@@ -84,7 +84,7 @@ bot.on('message', message => {
 		} else if (collected.first().content === "no") {
 			message.channel.send(`Oh, good.`);
 		}
-            })
+            }
 	}
 	
 });
