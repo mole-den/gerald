@@ -76,16 +76,7 @@ bot.on('message', message => {
 		
 	} else if (command === `die`) {
 		message.channel.send(`no u`);
-	} else if (command === `esus`) {
-		message.channel.send(`Are you sure you want to do this?`).then(async (start) => {
-            	message.channel.awaitMessages(filter, { maxMatches: 1, time: 60000, errors: ['time']}).then(async (collected) => {
-                if (collected.first().content === "yes") {
-			message.channel.send(`Fine. HAHAHA GET WIPd NUBE`);
-		} else if (collected.first().content === "no") {
-			message.channel.send(`Oh, good.`);
-		}
-            })
-	})
+	}
 	
 });
 
