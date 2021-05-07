@@ -76,6 +76,8 @@ bot.on('message', message => {
 		
 	} else if (command === `die`) {
 		message.channel.send(`no u`);
+	} else if (command === `cool`) {
+		message.channel.send(`You are not as cool as me.`)
 	}
 	
 });
