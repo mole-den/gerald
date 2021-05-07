@@ -85,7 +85,7 @@ bot.on('message', message => {
 			message.channel.send(`Oh, good.`);
 		}
             })
-	}
+	})
 	
 });
 
