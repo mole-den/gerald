@@ -32,7 +32,7 @@ bot.on('ready', () =>{
 //bot.on('message', (message) => antiSpam.message(message)); 
 
 bot.login(token);
-
+//egg
 
 
 bot.on('guildMemberAdd', member => {
