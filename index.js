@@ -14,7 +14,7 @@ const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //t
 /*
 Hello! I am Gerald. Praise me or nerd. I am a flightless bird in a suit with a fedora and a cane. I am the 2nd coolest thing to exist. 1st is my creator obv.
 
-I was originally intended to be a server protection bot but I am not that yet. lel git gud
+I was originally intended to be a server protection bot. Now I am used for raids? I dont even know.
 */
 
 //wip -> for new verification system
@@ -24,7 +24,7 @@ bot.on('ready', () =>{
     console.log('Preparing to take over the world...');
     console.log('World domination complete.');
     console.log('ONLINE');
-    bot.user.setPresence({ activity: { name: "Critical Role", type: "WATCHING" }, status: "dnd" }); //online or dnd
+    bot.user.setPresence({ activity: { name: "you.", type: "WATCHING" }, status: "dnd" }); //online or dnd
     bot.emit('heartbeated');
 });  
 
