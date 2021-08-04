@@ -2,12 +2,20 @@ const Discord = require('discord.js'); //hello there yes
 //const { Client } = require('unb-api');
 const bot = new Discord.Client();
 const prefix = "g";
-
+const Chatbot  =  require("discord-chatbot");
 //var doheartbeat = true
 
 const guildID = '576344535622483968';
 
 const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //the ancient texts!
+
+const chatbot  =  new  Chatbot({name: "Gerald", gender: "Male"});
+
+
+chatbot.chat("Hello").then(console.log).catch(e => console.log(e));
+/*
+	Hi, my friend! Do you want me to tell you a story?
+ */
 
 //const logs = guild.channels.cache.find(ch => ch.name === 'gerldlog');
 
