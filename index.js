@@ -96,7 +96,7 @@ bot.on('message', message => {
 	if(message.content.toLowerCase().includes('hello there')) {
 		message.channel.send('General Kenobi');
 	} 
-});  */
+});
 	
 
 async function heartbeat() {
