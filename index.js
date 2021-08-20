@@ -54,7 +54,7 @@ bot.on('guildMemberAdd', member => {
   console.log(`${member} added to database.`);
 });
 
-/*bot.on('message', message => {
+bot.on('message', message => {
 	console.log(`${message.author.tag} said: ${message.content}`);
 	const userID = message.author;
 	if (!message.content.startsWith(prefix) || message.author.bot) return;
@@ -90,28 +90,16 @@ bot.on('guildMemberAdd', member => {
 		message.channel.send(`egg`)
 	}
 	
-});*/
+});
+
+const swears = ["fuck", "shit", "cock", "cum"];
 
 bot.on('message', message => {
 	if(message.content.toLowerCase().includes('hello there')) {
 		message.channel.send('General Kenobi!');
-	} else(message.content.toLowerCase().includes('fuck')) {
-		message.channel.send('watch yo language idiot');
-		
-	} else(message.content.toLowerCase().includes('shit')) {
-		message.channel.send('watch yo language idiot');
-		
-	} else(message.content.toLowerCase().includes('cock')) {
-		message.channel.send('watch yo language idiot');
-		
-	} else(message.content.toLowerCase().includes('cum')) {
-		message.channel.send('watch yo language idiot');
-		
-	} else(message.content.toLowerCase().includes('bitch')) {
-		message.channel.send('watch yo language idiot');
-		
+	} else if(message.content.toLowerCase().includes(swears)) {
+		message.channel.send('oi watch yo language');
 	}
-		
 });
 	
 
