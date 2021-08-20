@@ -57,9 +57,9 @@ bot.on('guildMemberAdd', member => {
 
 bot.on('message', message => {
 
-	if (!message.channel.guild === 'Mole Den') return;
+	if (!message.channel.type === 'dm') {
 	console.log(`${message.author.tag} said: "${message.content}" in ${message.guild.name}`);
-	
+	}
 	
 	
 	
