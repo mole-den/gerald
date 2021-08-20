@@ -56,7 +56,9 @@ bot.on('guildMemberAdd', member => {
 });
 
 bot.on('message', message => {
-	console.log(`${message.author.tag} said: "${message.content}" in ${message.guild.name}`);
+
+	
+	
 	const userID = message.author;
 	if (!message.content.startsWith(prefix) || message.author.bot) return;
 	
@@ -90,6 +92,12 @@ bot.on('message', message => {
 	} else if (command === `buy egg`) {
 		message.channel.send(`egg`)
 	}
+	
+	
+	
+	if (!message.guild.name) return;
+	console.log(`${message.author.tag} said: "${message.content}" in ${message.guild.name}`);
+	
 	
 });
 
