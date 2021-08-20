@@ -53,9 +53,10 @@ bot.on('message', message => {
 	const channel = message.guild.channels.cache.find(ch => ch.name === 'gerald');
 
 	
-	if (message.channel.name === 'gerald') return;
+	
 	//console.log(`${message.author.tag} said: "${message.content}" in ${message.guild.name}`);
-	if (!channel) return;
+	//if (!channel) return;
+	if (message.channel.name === 'gerald') return;
 	channel.send(`${message.author.tag} said: "${message.content}" in ${message.guild.name}`);
 });
 
