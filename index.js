@@ -58,7 +58,7 @@ bot.on('guildMemberAdd', member => {
 
 bot.on('message', message => {
 	
-	const geraldchannel = member.guild.channels.cache.find(ch => ch.name === 'gerald');
+	const geraldchannel = message.guild.channels.cache.find(ch => ch.name === 'gerald');
 
 	if (message.channel.type === 'dm') return;
 	//console.log(`${message.author.tag} said: "${message.content}" in ${message.guild.name}`);
