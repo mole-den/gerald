@@ -99,6 +99,7 @@ bot.on('message', message => {
 		message.channel.send('General Kenobi!');
 	} else(message.content.toLowerCase().includes(swears)) {
 		message.channel.send('oi watch yo language');
+	}
 });
 	
 
