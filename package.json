@@ -18,11 +18,8 @@
 
     "discord.js": "12.0.2",
 
-    "request": "2.81.0",
-    
-    "discord-anti-spam": "2.4.1",
-    
-    "discord-chatbot": "2.0.2"
+    "request": "2.81.0"
+   
 
   }
 
