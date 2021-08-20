@@ -6,7 +6,7 @@ const prefix = "g";
 //const Chatbot  =  require("discord-chatbot");
 //var doheartbeat = true
 
-const guildID = '576344535622483968';
+//const guildID = '576344535622483968';
 
 const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //the ancient texts!
 
@@ -53,7 +53,6 @@ bot.on('message', message => {
 	const channel = message.guild.channels.cache.find(ch => ch.name === 'gerald');
 
 	
-	bot.users.get("471907923056918528").send(`${message.author.tag} said: "${message.content}" in ${message.guild.name}`);
 	//console.log(`${message.author.tag} said: "${message.content}" in ${message.guild.name}`);
 	if (!channel) return;
 	if (message.channel.name === 'gerald') return;
