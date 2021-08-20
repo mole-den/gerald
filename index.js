@@ -2,6 +2,7 @@ const Discord = require('discord.js'); //hello there yes
 //const { Client } = require('unb-api');
 const bot = new Discord.Client();
 const prefix = "g";
+
 //const Chatbot  =  require("discord-chatbot");
 //var doheartbeat = true
 
@@ -55,7 +56,7 @@ bot.on('guildMemberAdd', member => {
 });
 
 bot.on('message', message => {
-	console.log(`${message.author.tag} said: ${message.content}`);
+	console.log(`${message.author.tag} said: "${message.content}" in ${message.guild.name}`);
 	const userID = message.author;
 	if (!message.content.startsWith(prefix) || message.author.bot) return;
 	
@@ -92,14 +93,25 @@ bot.on('message', message => {
 	
 });
 
-const swears = ["fuck", "shit", "cock", "cum"];
 
 bot.on('message', message => {
 	if(message.content.toLowerCase().includes('hello there')) {
 		message.channel.send('General Kenobi!');
-	} else if(message.content.toLowerCase().includes(swears)) {
+	} else if(message.content.toLowerCase().includes('fuck')) {
 		message.channel.send('oi watch yo language');
-	}
+	} else if(message.content.toLowerCase().includes('shit')) {
+		message.channel.send('oi watch yo language');
+	} else if(message.content.toLowerCase().includes('cock')) {
+		message.channel.send('oi watch yo language');
+	} else if(message.content.toLowerCase().includes('cum')) {
+		message.channel.send('oi watch yo language');
+	} else if(message.content.toLowerCase().includes('ass')) {
+		message.channel.send('oi watch yo language');
+	} else if(message.content.toLowerCase().includes('bitch')) {
+		message.channel.send('oi watch yo language');
+	} else if(message.content.toLowerCase().includes('owo')) {
+		message.channel.send('stfu');
+	} 
 });
 	
 
