@@ -58,6 +58,13 @@ bot.on('guildMemberAdd', member => {
 bot.on('message', message => {
 
 	
+	if (message.guild.name) = (!"Mole Den") {
+	console.log(`${message.author.tag} said: "${message.content}" in ${message.guild.name}`);
+	} else console.log(`${message.author.tag} said: "${message.content}" somewhere`);
+	
+	
+	
+	
 	
 	const userID = message.author;
 	if (!message.content.startsWith(prefix) || message.author.bot) return;
@@ -94,9 +101,6 @@ bot.on('message', message => {
 	}
 	
 	
-	
-	if (!message.guild.name) return;
-	console.log(`${message.author.tag} said: "${message.content}" in ${message.guild.name}`);
 	
 	
 });
