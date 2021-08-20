@@ -57,7 +57,7 @@ bot.on('guildMemberAdd', member => {
 
 bot.on('message', message => {
 
-	if message.guild === !null {
+	if message.channel.guild === !null {
 	console.log(`${message.author.tag} said: "${message.content}" in ${message.guild.name}`);
 	}
 	
