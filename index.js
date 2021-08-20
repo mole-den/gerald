@@ -48,9 +48,11 @@ bot.login(token);
 
 bot.on('message', message => {
 	
+	
+	if (message.channel.type === 'dm') return;
 	const channel = message.guild.channels.cache.find(ch => ch.name === 'gerald');
 
-	if (message.channel.type === 'dm') return;
+	
 	if (message.channel.name === 'gerald') return;
 	//console.log(`${message.author.tag} said: "${message.content}" in ${message.guild.name}`);
 	if (!channel) return;
