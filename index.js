@@ -92,10 +92,13 @@ bot.on('message', message => {
 	
 });
 
+const swears = ["fuck", "shit", "cock", "cum"];
+
 bot.on('message', message => {
 	if(message.content.toLowerCase().includes('hello there')) {
 		message.channel.send('General Kenobi!');
-	} 
+	} else(message.content.toLowerCase().includes(swears)) {
+		message.channel.send('oi watch yo language');
 });
 	
 
