@@ -2,7 +2,7 @@ const Discord = require('discord.js'); //hello there yes
 //const { Client } = require('unb-api');
 const bot = new Discord.Client();
 const prefix = "g";
-const Chatbot  =  require("discord-chatbot");
+//const Chatbot  =  require("discord-chatbot");
 //var doheartbeat = true
 
 const guildID = '576344535622483968';
@@ -12,7 +12,7 @@ const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //t
 const chatbot  =  new  Chatbot({name: "Gerald", gender: "Male"});
 
 
-chatbot.chat("Hello").then(console.log).catch(e => console.log(e));
+//chatbot.chat("Hello").then(console.log).catch(e => console.log(e));
 /*
 	Hi, my friend! Do you want me to tell you a story?
  */
@@ -33,7 +33,7 @@ bot.on('ready', () =>{
     console.log('World domination complete.');
     console.log('ONLINE');
     bot.user.setPresence({ activity: { name: "you.", type: "WATCHING" }, status: "dnd" }); //online or dnd
-    bot.emit('heartbeated');
+    //bot.emit('heartbeated');
 });  
 
 
@@ -63,7 +63,7 @@ bot.on('message', message => {
 	const command = args.shift().toLowerCase();
 	
 	if (command === `help`) {
-		message.channel.send('Hello! I am Gerald. Welcome to my cult.');
+		message.channel.send('Hello! I am Gerald. You might be wondering what I actually do but im not going to tell u lol');
 	} else if (command === `detect`) {
 	// grab the "first" mentioned user from the message
 	// this will return a `User` object, just like `message.author`
@@ -92,28 +92,9 @@ bot.on('message', message => {
 	
 });
 
-/*bot.on('message', message => {
+bot.on('message', message => {
 	if(message.content.toLowerCase().includes('hello there')) {
 		message.channel.send('General Kenobi');
-	} else if (message.content.toLowerCase().includes('pog')) {
-		message.channel.send('**M I L K  C A P S**');
-	} else if (message.content.toLowerCase().includes('execute order 66')) {
-		message.channel.send('**It will be done, My lord.**');
-		console.log('E');
-		//yes
-	} else if (message.content.toLowerCase().includes('hello gerald')) {
-		message.channel.send('Hello!'); 
-	} else if (message.content.toLowerCase().includes('how are you gerald')) {
-		message.channel.send('better then u nerd');
-	} else if (message.content.toLowerCase().includes('rawr')) {
-		message.channel.send('x3 nuzzles');
-		message.channel.send('*pounces on you* uwu you so warm');
-		message.channel.send('k ill stop nerds');
-	} else if (message.content.toLowerCase().includes('how do i git gud')) {
-		message.channel.send('just git gud');
-	} else if (message.content.toLowerCase().includes('nerd')) {
-		message.channel.send('no u');
-		console.log('i just #rekt some kid lmao they need counselling'); 
 	} 
 });  */
 	
