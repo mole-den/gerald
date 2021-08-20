@@ -44,25 +44,15 @@ bot.login(token);
 //egg
 
 
-bot.on('guildMemberAdd', member => {
-  // Send the message to a designated channel on a server:
-  const channel = member.guild.channels.cache.find(ch => ch.name === 'joining-room');
-  // Do nothing if the channel wasn't found on this server
-  if (!channel) return;
-  // Send the message, mentioning the member
-  channel.send(`Welcome to the server, ${member}. Remember to follow the rules and praise me every Wednesday.`);
-  channel.send(`Remember, you are being watched ${member}.`);
-  //console.log(`${member} added to database.`);
-});
 
 
 bot.on('message', message => {
 	
-	const geraldchannel = message.guild.channels.cache.find(ch => ch.name === 'gerald');
+	const channel = message.guild.channels.cache.find(ch => ch.name === 'gerald');
 
 	if (message.channel.type === 'dm') return;
 	//console.log(`${message.author.tag} said: "${message.content}" in ${message.guild.name}`);
-	if (!geraldchannel) return;
+	if (!channel) return;
 	channel.send(`${message.author.tag} said: "${message.content}" in ${message.guild.name}`);
 });
 
