@@ -52,17 +52,23 @@ bot.on('guildMemberAdd', member => {
   // Send the message, mentioning the member
   channel.send(`Welcome to the server, ${member}. Remember to follow the rules and praise me every Wednesday.`);
   channel.send(`Remember, you are being watched ${member}.`);
-  console.log(`${member} added to database.`);
+  //console.log(`${member} added to database.`);
 });
 
+
 bot.on('message', message => {
+	
+	const geraldchannel = member.guild.channels.cache.find(ch => ch.name === 'gerald');
 
 	if (message.channel.type === 'dm') return;
-	console.log(`${message.author.tag} said: "${message.content}" in ${message.guild.name}`);
+	//console.log(`${message.author.tag} said: "${message.content}" in ${message.guild.name}`);
+	if (!geraldchannel) return;
+	channel.send(`${message.author.tag} said: "${message.content}" in ${message.guild.name}`);
+});
+
 	
 	
-	
-	
+bot.on('message', message => {	
 	
 	const userID = message.author;
 	if (!message.content.startsWith(prefix) || message.author.bot) return;
