@@ -118,8 +118,12 @@ bot.on('message', message => {
 		message.channel.send('oi watch yo language');
 	} else if(message.content.toLowerCase().includes('bitch')) {
 		message.channel.send('oi watch yo language');
+		
 	} else if(message.content.toLowerCase().includes('owo')) {
 		message.channel.send('stfu');
+		
+	} else if(message.content.toLowerCase().includes('zac')) {
+		message.channel.send('ew i hate that guy');
 	} 
 });
 	
