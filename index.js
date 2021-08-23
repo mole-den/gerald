@@ -124,6 +124,9 @@ bot.on('message', message => {
 		
 	} else if(message.content.toLowerCase().includes('zac')) {
 		message.channel.send('ew i hate that guy');
+		
+	} else if(message.content.toLowerCase().includes('big')) {
+		message.channel.send('ew hes worse than z*c');
 	} 
 });
 	
