@@ -106,28 +106,7 @@ bot.on('message', message => {
 bot.on('message', message => {
 	if(message.content.toLowerCase().includes('hello there')) {
 		message.channel.send('General Kenobi!');
-	} /*else if(message.content.toLowerCase().includes('fuck')) {
-		message.channel.send('oi watch yo language');
-	} else if(message.content.toLowerCase().includes('shit')) {
-		message.channel.send('oi watch yo language');
-	} else if(message.content.toLowerCase().includes('cock')) {
-		message.channel.send('oi watch yo language');
-	} else if(message.content.toLowerCase().includes('cum')) {
-		message.channel.send('oi watch yo language');
-	} else if(message.content.toLowerCase().includes('ass')) {
-		message.channel.send('oi watch yo language');
-	} else if(message.content.toLowerCase().includes('bitch')) {
-		message.channel.send('oi watch yo language');
-		
-	} else if(message.content.toLowerCase().includes('owo')) {
-		message.channel.send('stfu');
-		
-	} else if(message.content.toLowerCase().includes('zac')) {
-		message.channel.send('ew i hate that guy');
-		
-	} else if(message.content.toLowerCase().includes('big')) {
-		message.channel.send('ew hes worse than z*c');
-	} */
+	}
 });
 	
 
