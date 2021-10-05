@@ -93,7 +93,7 @@ bot.on('message', message => {
 		message.channel.send(`no u`);
 	} else if (command === `cool`) {
 		message.channel.send(`You are not as cool as me.`);
-	} else if (command ==== `invite`) {
+	} else if (command === `invite`) {
 		message.channel.send(`https://discord.com/oauth2/authorize?client_id=671156130483011605&scope=bot&permissions=8`);
 	}
 	
