@@ -2,8 +2,6 @@ const Discord = require('discord.js'); //hello there yes
 //const { Client } = require('unb-api');
 const bot = new Discord.Client();
 const prefix = "g";
-
-//const Chatbot  =  require("discord-chatbot");
 //var doheartbeat = true
 
 //const guildID = '576344535622483968';
@@ -11,7 +9,7 @@ const prefix = "g";
 const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //the sacred texts!
 
 
-bot.on('ready', () =>{
+bot.on('ready', () => {
     console.log('Preparing to take over the world...');
     console.log('World domination complete.');
     console.log('ONLINE');
@@ -20,12 +18,10 @@ bot.on('ready', () =>{
 });  
 
 
-//bot.on('message', (message) => antiSpam.message(message)); 
+)); 
 
 bot.login(token);
 //egg
-
-
 
 
 bot.on('message', message => {
