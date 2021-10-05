@@ -10,24 +10,6 @@ const prefix = "g";
 
 const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //the ancient texts!
 
-//const chatbot  =  new  Chatbot({name: "Gerald", gender: "Male"});
-
-
-//chatbot.chat("Hello").then(console.log).catch(e => console.log(e));
-/*
-	Hi, my friend! Do you want me to tell you a story?
- */
-
-//const logs = guild.channels.cache.find(ch => ch.name === 'gerldlog');
-
-/*
-Hello! I am Gerald. Praise me or nerd. I am a flightless bird in a suit with a fedora and a cane. I am the 2nd coolest thing to exist. 1st is my creator obv.
-
-I was originally intended to be a server protection bot. Now I am used for raids? I dont even know.
-*/
-
-//wip -> for new verification system
-
 
 bot.on('ready', () =>{
     console.log('Preparing to take over the world...');
@@ -123,6 +105,3 @@ setInterval(heartbeat, 5000);
 bot.on('heartbeated', () =>{
 	//console.log(`Heartbeat recived. Logged in as ${bot.user.tag}`);
 });
-
-// the spanish inquisition
-// do u want a banana
