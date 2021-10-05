@@ -15,11 +15,12 @@ const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //t
 
 const blacklist = [866502219972608010, 884614962763419718]
 
+console.log(process.version);
+
 bot.on('ready', () => {
     console.log('Preparing to take over the world...');
     console.log('World domination complete.');
     console.log('ONLINE');
-    console.log(process.version);
     bot.user.setPresence({ activity: { name: "you.", type: "WATCHING" }, status: "dnd" }); //online or dnd
     //bot.emit('heartbeated');
 });  
