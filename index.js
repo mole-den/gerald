@@ -52,7 +52,7 @@ bot.on('message', message => {
 	const command = args.shift().toLowerCase();
 	
 	if (command === `help`) {
-		message.channel.send('Hello! I am Gerald. I will enable you to take control of your server by my rules >:) (invite link coming soonish)');
+		message.channel.send('Hello! I am Gerald. I will enable you to take control of your server by my rules >:)');
 	} else if (command === `detect`) {
 	// grab the "first" mentioned user from the message
 	// this will return a `User` object, just like `message.author`
