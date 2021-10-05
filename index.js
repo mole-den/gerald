@@ -1,7 +1,7 @@
 const { Client, Intents } = require('discord.js');
 
 const myIntents = new Intents();
-myIntents.add(Intents.FLAGS.GUILD_PRESENCES, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.DIRECT_MESSAGES);
+myIntents.add(Intents.FLAGS.GUILD_PRESENCES, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.DIRECT_MESSAGES, Inents.FLAGS.MESSAGE_CREATE);
 
 const bot = new Client({ intents: myIntents });
 
