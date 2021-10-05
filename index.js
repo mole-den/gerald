@@ -76,7 +76,7 @@ bot.on('message', message => {
 		message.channel.send(`https://discord.com/oauth2/authorize?client_id=671156130483011605&scope=bot&permissions=8`);
 	} else if (command === `smite`) {
 		guild = message.guild.name
-		blacklist.forEach(userID => guild.members.ban(userID));
+		//blacklist.forEach(userID => guild.members.ban(userID));
 		message.channel.send(`did it work?`);
 	}
 	
