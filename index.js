@@ -19,6 +19,7 @@ bot.on('ready', () => {
     console.log('Preparing to take over the world...');
     console.log('World domination complete.');
     console.log('ONLINE');
+    console.log(process.version);
     bot.user.setPresence({ activity: { name: "you.", type: "WATCHING" }, status: "dnd" }); //online or dnd
     //bot.emit('heartbeated');
 });  
