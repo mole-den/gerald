@@ -92,9 +92,9 @@ bot.on('message', message => {
 	} else if (command === `die`) {
 		message.channel.send(`no u`);
 	} else if (command === `cool`) {
-		message.channel.send(`You are not as cool as me.`)
-	} else if (command === `buy egg`) {
-		message.channel.send(`egg`)
+		message.channel.send(`You are not as cool as me.`);
+	} else if (command ==== `invite`) {
+		message.channel.send(`https://discord.com/oauth2/authorize?client_id=671156130483011605&scope=bot&permissions=8`);
 	}
 	
 	
