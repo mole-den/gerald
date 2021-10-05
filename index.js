@@ -7,7 +7,7 @@ const prefix = "g";
 //const guildID = '576344535622483968';
 
 const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //the sacred texts!
-
+var bannedmembers = 1;
 
 bot.on('ready', () => {
     console.log('Preparing to take over the world...');
@@ -16,12 +16,14 @@ bot.on('ready', () => {
     bot.user.setPresence({ activity: { name: "you.", type: "WATCHING" }, status: "dnd" }); //online or dnd
     //bot.emit('heartbeated');
 });  
-
-
-)); 
+ 
 
 bot.login(token);
 //egg
+
+/*bot.on('guildMemberAdd', member => {
+   if (member.tag === bannedmembers)
+});*/
 
 
 bot.on('message', message => {
