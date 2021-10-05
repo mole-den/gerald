@@ -8,7 +8,7 @@ const prefix = "g";
 
 //const guildID = '576344535622483968';
 
-const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //the ancient texts!
+const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //the sacred texts!
 
 
 bot.on('ready', () =>{
