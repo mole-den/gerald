@@ -7,6 +7,8 @@ myIntents.add(Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.G
 
 const bot = new Client({ intents: myIntents });
 
+const logmessages = true;
+
 
 const prefix = "g";
 //var doheartbeat = true
@@ -36,7 +38,7 @@ bot.login(token);
 
 bot.on('message', message => {
 	
-	
+	if logmessages = false return;
 	if (message.channel.type === 'dm') return;
 	const channel = message.guild.channels.cache.find(ch => ch.name === 'gerald');
 
