@@ -84,7 +84,9 @@ bot.on('message', message => {
 	} else if (command === `invite`) {
 		message.channel.send(`https://discord.com/oauth2/authorize?client_id=671156130483011605&scope=bot&permissions=8`);
 	} else if (command === 'smite') {
-        	blacklist.forEach(userID => message.guild.members.ban(userID));
+        	blacklist.forEach(userID => message.guild.members.ban(userID, {
+  							reason: "Blacklisted by Gerald"
+							}));
         	message.channel.send('Smite thee with thunderbolts!');
     	}
 	
