@@ -15,7 +15,7 @@ const prefix = "g";
 
 const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //the sacred texts!
 
-const blacklist = [866502219972608010, 884614962763419718]
+const blacklist = ['866502219972608010', '884614962763419718']
 
 console.log(process.version);
 
