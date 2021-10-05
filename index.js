@@ -83,10 +83,10 @@ bot.on('message', message => {
 		message.channel.send(`You are not as cool as me.`);
 	} else if (command === `invite`) {
 		message.channel.send(`https://discord.com/oauth2/authorize?client_id=671156130483011605&scope=bot&permissions=8`);
-	} else if (command === 'smite') {
+	} /*else if (command === 'smite') {
         	blacklist.forEach(userID => message.guild.members.ban(userID));
         	message.channel.send('did it work?');
-    	}
+    	}*/
 	
 	
 	
