@@ -7,7 +7,8 @@ const prefix = "g";
 //const guildID = '576344535622483968';
 
 const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //the sacred texts!
-var bannedmembers = 1;
+
+const blacklist = [866502219972608010, 884614962763419718]
 
 bot.on('ready', () => {
     console.log('Preparing to take over the world...');
@@ -21,9 +22,7 @@ bot.on('ready', () => {
 bot.login(token);
 //egg
 
-/*bot.on('guildMemberAdd', member => {
-   if (member.tag === bannedmembers)
-});*/
+
 
 
 bot.on('message', message => {
@@ -75,6 +74,9 @@ bot.on('message', message => {
 		message.channel.send(`You are not as cool as me.`);
 	} else if (command === `invite`) {
 		message.channel.send(`https://discord.com/oauth2/authorize?client_id=671156130483011605&scope=bot&permissions=8`);
+	} else if (command === `smite`) {
+		blacklist.forEach(userID => guild.members.ban(userID)));
+		message.channel.send(`did it work?`);
 	}
 	
 	
