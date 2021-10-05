@@ -1,6 +1,11 @@
-const Discord = require('discord.js'); //hello there yes
-//const { Client } = require('unb-api');
-const bot = new Discord.Client();
+const { Client, Intents } = require('discord.js');
+
+const myIntents = new Intents();
+myIntents.add(Intents.FLAGS.GUILD_PRESENCES, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.MESSAGE_CREATE, Intents.FLAGS.GUILD_MEMBER_ADD);
+
+const bot = new Client({ intents: myIntents });
+
+
 const prefix = "g";
 //var doheartbeat = true
 
