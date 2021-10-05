@@ -7,7 +7,7 @@ myIntents.add(Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.G
 
 const bot = new Client({ intents: myIntents });
 
-const logmessages = true;
+const logmessages = false;
 
 
 const prefix = "g";
