@@ -1,3 +1,5 @@
+//@ts-check
+
 const { Client, Intents } = require('discord.js');
 
 const myIntents = new Intents();
