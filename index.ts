@@ -13,12 +13,12 @@ const bot = new Client({ intents: myIntents });
 const logmessages = false;
 
 
-const prefix = "g";
+const prefix = "g2";
 //var doheartbeat = true
 
 //const guildID = '576344535622483968';
 
-const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //the sacred texts!
+const token = 'ODk1MDcyMTkwNDczNTk2OTU4.YVzO7w.BuC56l_6ThVhlokG-l2BapOVLT4'; //the sacred texts!
 
 const blacklist = ['866502219972608010', '884614962763419718', '704647086204780564']
 
