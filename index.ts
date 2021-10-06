@@ -1,19 +1,19 @@
-import { Message, TextChannel } from "discord.js";
-
-//@ts-check
-const { Client, Intents } = require('discord.js');
-
-const myIntents = new Intents();
-myIntents.add(Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.GUILD_BANS, Intents.FLAGS.GUILD_MESSAGE_TYPING, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_PRESENCES
+import * as discord from "discord.js";
+import * as sql from '@databases/sql';
+sql.default;
+const myIntents = new discord.Intents();
+myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS, discord.Intents.FLAGS.GUILD_MESSAGES, 
+discord.Intents.FLAGS.DIRECT_MESSAGES, discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MESSAGE_TYPING, 
+discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS, discord.Intents.FLAGS.GUILD_PRESENCES
 );
 
 
-const bot = new Client({ intents: myIntents });
+const bot = new discord.Client({ intents: myIntents });
 
 const logmessages = false;
 
 
-const prefix = "g2";
+const prefix = "g";
 //var doheartbeat = true
 
 //const guildID = '576344535622483968';
@@ -28,7 +28,7 @@ bot.on('ready', () => {
 	console.log('Preparing to take over the world...');
 	console.log('World domination complete.');
 	console.log('ONLINE');
-	bot.user.setPresence({ activities: [{ name: 'you.', type: "WATCHING" }], status: 'dnd' });
+	bot.user!.setPresence({ activities: [{ name: 'you.', type: "WATCHING" }], status: 'dnd' });
 	//online or dnd
 	//bot.emit('heartbeated');
 });
@@ -40,7 +40,7 @@ bot.login(token);
 
 
 
-bot.on('message', (message: Message) => {
+bot.on('message', (message: discord.Message) => {
 
 	if (logmessages === false) return;
 	if (message.channel.type === 'DM') return;
@@ -51,13 +51,13 @@ bot.on('message', (message: Message) => {
 	if (!channel) return;
 	if (message.channel.name === 'gerald') return;
 	if (channel.type === 'GUILD_TEXT'){
-		(channel as TextChannel).send(`**${message.author.tag}** said: \`${message.content}\` in ${message.guild!.name}`);
+		(channel as discord.TextChannel).send(`**${message.author.tag}** said: \`${message.content}\` in ${message.guild!.name}`);
 	}
 });
 
 
 
-bot.on('message', (message: Message) => {
+bot.on('message', (message: discord.Message) => {
 
 	const userID = message.author;
 	userID;
@@ -102,15 +102,13 @@ bot.on('message', (message: Message) => {
 		}));
 		message.channel.send('Smite thee with thunderbolts!');
 		}
+	} else if (command === 'uptime') {
+		message.channel.send(Math.floor(process.uptime()).toString())
 	}
-
-
-
-
 });
 
 
-bot.on('message', (message: Message) => {
+bot.on('message', (message: discord.Message) => {
 	if (message.content.toLowerCase().includes('hello there')) {
 		message.channel.send('General Kenobi!');
 	}

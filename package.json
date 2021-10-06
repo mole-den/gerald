@@ -11,9 +11,12 @@
   "scripts": {
 
     "start": "npx tsc && node build/index.js"
+
   },
 
   "dependencies": {
+
+    "@databases/sql": "^3.2.0",
 
     "discord.js": "13.1.0"
 
