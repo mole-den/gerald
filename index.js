@@ -48,7 +48,9 @@ bot.on('message', message => {
 	console.log(`${message.author.tag} said: "${message.content}" in ${message.guild.name}`);
 	if (!channel) return;
 	if (message.channel.name === 'gerald') return;
-	channel.send(`**${message.author.tag}** said: \`${message.content}\` in ${message.guild.name}`);
+	if (channel.type === 'GUILD_TEXT'){
+		channel.send(`**${message.author.tag}** said: \`${message.content}\` in ${message.guild.name}`);
+	}
 });
 
 
