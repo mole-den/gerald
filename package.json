@@ -10,8 +10,8 @@
 
   "scripts": {
 
-    "start": "npx tsc && node build/index.js"
-
+    "start": "node build/index.js",
+    "postinstall": "tsc"
   },
 
   "dependencies": {
