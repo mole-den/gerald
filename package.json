@@ -10,7 +10,7 @@
 
   "scripts": {
 
-    "start": "node build/index.js",
+    "start": "node build/index.ts",
     "postinstall": "tsc"
   },
 
