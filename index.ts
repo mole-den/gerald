@@ -138,3 +138,9 @@ setInterval(heartbeat, 5000);
 bot.on('heartbeated', () => {
 	//console.log(`Heartbeat recived. Logged in as ${bot.user.tag}`);
 });
+
+process.on('uncaughtException', error => {
+	console.log(error)
+	lastChannel.send(`<@471907923056918528>, <@811413512743813181>\n ERR: Unhandled exception: \n ${error}\n **Exiting...**`);
+	process.exit()
+});
