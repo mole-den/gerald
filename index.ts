@@ -9,7 +9,6 @@ myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS,
 
 
 const bot = new discord.Client({ intents: myIntents });
-const debug = true
 const logmessages = false;
 
 
@@ -58,7 +57,7 @@ bot.on('message', (message: discord.Message) => {
 
 
 bot.on('message', (message: discord.Message) => {
-
+	try {
 	const userID = message.author;
 	userID;
 	if (!message.content.startsWith(prefix) || message.author.bot) return;
@@ -113,6 +112,10 @@ bot.on('message', (message: discord.Message) => {
 		console.log(args[0])
 		createConnectionPool(args[0])
 	}
+	} catch (error) {
+		console.log(error)
+		lastChannel.send(`<@471907923056918528>, <@811413512743813181>\n ERR: Unhandled exception: \n ${error}`);
+	}
 });
 
 
@@ -135,14 +138,3 @@ setInterval(heartbeat, 5000);
 bot.on('heartbeated', () => {
 	//console.log(`Heartbeat recived. Logged in as ${bot.user.tag}`);
 });
-if (debug === true) {
-	process.on('unhandledRejection', error => {
-		console.log(error)
-		lastChannel.send(`<@471907923056918528>, <@811413512743813181>\n ERR: Unhandled promise rejection: \n ${error}`);
-	});
-
-	process.on('uncaughtException', error => {
-		console.log(error)
-		lastChannel.send(`<@471907923056918528>, <@811413512743813181>\n ERR: Unhandled exception: \n ${error}`);
-	});
-}
