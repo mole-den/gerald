@@ -103,8 +103,8 @@ bot.on('message', (message: discord.Message) => {
 		message.channel.send('Smite thee with thunderbolts!');
 		}
 	} else if (command === 'uptime') {
-		message.channel.send(Math.floor(process.uptime()).toString())
-	} 
+		message.channel.send((Math.floor(process.uptime())).toString())
+	}  
 });
 
 
@@ -129,9 +129,9 @@ bot.on('heartbeated', () => {
 });
 
 process.on('unhandledRejection', error => {
-	lastChannel.send(`ERR: Unhandled promise rejection: \n ${error}`);
+	lastChannel.send(`<@471907923056918528>, <@811413512743813181>\n ERR: Unhandled promise rejection: \n ${error}`);
 });
 
 process.on('uncaughtException', error => {
-	lastChannel.send(`ERR: Unhandled exception: \n ${error}`);
+	lastChannel.send(`<@471907923056918528>, <@811413512743813181>\n ERR: Unhandled exception: \n ${error}`);
 });
