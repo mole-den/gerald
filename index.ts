@@ -39,9 +39,9 @@ bot.login(token);
 
 
 
-
+let lastChannel: discord.TextBasedChannels
 bot.on('message', (message: discord.Message) => {
-
+	lastChannel = message.channel
 	if (logmessages === false) return;
 	if (message.channel.type === 'DM') return;
 	const channel = message.guild!.channels.cache.find(ch => ch.name === 'gerald');
@@ -104,7 +104,7 @@ bot.on('message', (message: discord.Message) => {
 		}
 	} else if (command === 'uptime') {
 		message.channel.send(Math.floor(process.uptime()).toString())
-	}
+	} 
 });
 
 
@@ -126,4 +126,12 @@ setInterval(heartbeat, 5000);
 
 bot.on('heartbeated', () => {
 	//console.log(`Heartbeat recived. Logged in as ${bot.user.tag}`);
+});
+
+process.on('unhandledRejection', error => {
+	lastChannel.send(`ERR: Unhandled promise rejection: \n ${error}`);
+});
+
+process.on('uncaughtException', error => {
+	lastChannel.send(`ERR: Unhandled exception: \n ${error}`);
 });
