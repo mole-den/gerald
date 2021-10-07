@@ -17,7 +17,7 @@ const prefix = "g";
 
 //const guildID = '576344535622483968';
 
-const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //the sacred texts!
+const token: string = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //the sacred texts!
 
 const blacklist: Array<string> = ['866502219972608010', '884614962763419718', '704647086204780564']
 
