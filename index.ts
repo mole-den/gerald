@@ -18,7 +18,7 @@ const prefix = "g";
 
 //const guildID = '576344535622483968';
 
-const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //the sacred texts!
+const token = 'ODk1MDcyMTkwNDczNTk2OTU4.YVzO7w.BuC56l_6ThVhlokG-l2BapOVLT4'; //the sacred texts!
 
 const blacklist = ['866502219972608010', '884614962763419718', '704647086204780564']
 
@@ -109,7 +109,8 @@ bot.on('message', (message: discord.Message) => {
 		let minutes = Math.floor(totalSeconds / 60);
 		let seconds = totalSeconds % 60;
 		message.channel.send(`${hours} hours, ${minutes} mins, ${seconds} seconds`)
-	} else if (command === 'connectDB') {
+	} else if (command === 'connect') {
+		console.log(args[0])
 		createConnectionPool(args[0])
 	}
 });
@@ -136,10 +137,12 @@ bot.on('heartbeated', () => {
 });
 if (debug === true) {
 	process.on('unhandledRejection', error => {
+		console.log(error)
 		lastChannel.send(`<@471907923056918528>, <@811413512743813181>\n ERR: Unhandled promise rejection: \n ${error}`);
 	});
 
 	process.on('uncaughtException', error => {
+		console.log(error)
 		lastChannel.send(`<@471907923056918528>, <@811413512743813181>\n ERR: Unhandled exception: \n ${error}`);
 	});
 }
