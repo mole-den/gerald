@@ -103,12 +103,12 @@ bot.on('message', (message: discord.Message) => {
 			message.channel.send('Smite thee with thunderbolts!');
 		}
 	} else if (command === 'uptime') {
-		let totalSeconds = process.uptime()
+		let totalSeconds = Math.round(process.uptime())
 		let hours = Math.floor(totalSeconds / 3600);
 		totalSeconds %= 3600;
 		let minutes = Math.floor(totalSeconds / 60);
 		let seconds = totalSeconds % 60;
-		message.channel.send(`${hours}hours, ${minutes}mins, ${seconds}seconds`)
+		message.channel.send(`${hours} hours, ${minutes} mins, ${seconds} seconds`)
 	}
 });
 
