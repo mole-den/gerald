@@ -2,14 +2,14 @@ import * as discord from "discord.js";
 import * as sql from '@databases/sql';
 sql.default;
 const myIntents = new discord.Intents();
-myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS, discord.Intents.FLAGS.GUILD_MESSAGES, 
-discord.Intents.FLAGS.DIRECT_MESSAGES, discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MESSAGE_TYPING, 
-discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS, discord.Intents.FLAGS.GUILD_PRESENCES
+myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS, discord.Intents.FLAGS.GUILD_MESSAGES,
+	discord.Intents.FLAGS.DIRECT_MESSAGES, discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
+	discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS, discord.Intents.FLAGS.GUILD_PRESENCES
 );
 
 
 const bot = new discord.Client({ intents: myIntents });
-
+const debug = true
 const logmessages = false;
 
 
@@ -50,7 +50,7 @@ bot.on('message', (message: discord.Message) => {
 	console.log(`${message.author.tag} said: "${message.content}" in ${message.guild!.name}`);
 	if (!channel) return;
 	if (message.channel.name === 'gerald') return;
-	if (channel.type === 'GUILD_TEXT'){
+	if (channel.type === 'GUILD_TEXT') {
 		(channel as discord.TextChannel).send(`**${message.author.tag}** said: \`${message.content}\` in ${message.guild!.name}`);
 	}
 });
@@ -96,15 +96,20 @@ bot.on('message', (message: discord.Message) => {
 	} else if (command === `invite`) {
 		message.channel.send(`https://discord.com/oauth2/authorize?client_id=671156130483011605&scope=bot&permissions=8`);
 	} else if (command === 'smite') {
-		if (message.channel.type !== 'DM') { 
-		blacklist.forEach(userID => message.guild!.members.ban(userID, {
-			reason: "Blacklisted by Gerald"
-		}));
-		message.channel.send('Smite thee with thunderbolts!');
+		if (message.channel.type !== 'DM') {
+			blacklist.forEach(userID => message.guild!.members.ban(userID, {
+				reason: "Blacklisted by Gerald"
+			}));
+			message.channel.send('Smite thee with thunderbolts!');
 		}
 	} else if (command === 'uptime') {
-		message.channel.send((Math.floor(process.uptime())).toString())
-	}  
+		let totalSeconds = process.uptime()
+		let hours = Math.floor(totalSeconds / 3600);
+		totalSeconds %= 3600;
+		let minutes = Math.floor(totalSeconds / 60);
+		let seconds = totalSeconds % 60;
+		message.channel.send(`${hours}hours, ${minutes}mins, ${seconds}seconds`)
+	}
 });
 
 
@@ -127,11 +132,12 @@ setInterval(heartbeat, 5000);
 bot.on('heartbeated', () => {
 	//console.log(`Heartbeat recived. Logged in as ${bot.user.tag}`);
 });
+if (debug === true) {
+	process.on('unhandledRejection', error => {
+		lastChannel.send(`<@471907923056918528>, <@811413512743813181>\n ERR: Unhandled promise rejection: \n ${error}`);
+	});
 
-process.on('unhandledRejection', error => {
-	lastChannel.send(`<@471907923056918528>, <@811413512743813181>\n ERR: Unhandled promise rejection: \n ${error}`);
-});
-
-process.on('uncaughtException', error => {
-	lastChannel.send(`<@471907923056918528>, <@811413512743813181>\n ERR: Unhandled exception: \n ${error}`);
-});
+	process.on('uncaughtException', error => {
+		lastChannel.send(`<@471907923056918528>, <@811413512743813181>\n ERR: Unhandled exception: \n ${error}`);
+	});
+}
