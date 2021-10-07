@@ -11,10 +11,14 @@
   "scripts": {
 
     "start": "node build/index.js",
+
     "postinstall": "tsc"
+
   },
 
   "dependencies": {
+
+    "@databases/pg": "^5.1.1",
 
     "@databases/sql": "^3.2.0",
 

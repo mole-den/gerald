@@ -1,6 +1,5 @@
 import * as discord from "discord.js";
-import * as sql from '@databases/sql';
-sql.default;
+import createConnectionPool ,{sql} from '@databases/pg';
 const myIntents = new discord.Intents();
 myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS, discord.Intents.FLAGS.GUILD_MESSAGES,
 	discord.Intents.FLAGS.DIRECT_MESSAGES, discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
@@ -109,6 +108,8 @@ bot.on('message', (message: discord.Message) => {
 		let minutes = Math.floor(totalSeconds / 60);
 		let seconds = totalSeconds % 60;
 		message.channel.send(`${hours} hours, ${minutes} mins, ${seconds} seconds`)
+	} else if (command === 'connectDB') {
+		createConnectionPool(args[0])
 	}
 });
 
