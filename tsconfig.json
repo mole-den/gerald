@@ -7,7 +7,6 @@
     "module": "commonJS",
     "moduleResolution": "node",
     "sourceMap": true,
-    "allowJs": true,
     "outDir": "build",
     "removeComments": true,
     "noEmitOnError": true,
