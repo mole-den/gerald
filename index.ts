@@ -14,7 +14,7 @@ const prefix = "g";
 //const guildID = '576344535622483968';
 
 const token: string = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //the sacred texts!
-const blacklist = ['866502219972608010', '884614962763419718', '704647086204780564', '647533813454340116', '781214757477810216']
+const blacklist = ['866502219972608010', '884614962763419718', '704647086204780564', '647533813454340116', '781214757477810216', '609414787935371274']
 console.log(process.version);
 
 bot.on('ready', () => {
@@ -114,7 +114,8 @@ bot.on('message', async (message: discord.Message) => {
 			let str = message.content;
 			let out = str.substring(str.indexOf('```') + 3, str.lastIndexOf('```'));
 			if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
-				message.channel.send('You do not have the required permissions')
+				message.channel.send('You do not have the required permissions');
+				return;
 			}
 			if (dbConnected === true) {
 				console.log(out)
