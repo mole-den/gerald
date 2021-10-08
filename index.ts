@@ -1,26 +1,20 @@
 import * as discord from "discord.js";
-import createConnectionPool ,{sql} from '@databases/pg';
-sql
+import * as pg from 'pg'
 const myIntents = new discord.Intents();
 myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS, discord.Intents.FLAGS.GUILD_MESSAGES,
 	discord.Intents.FLAGS.DIRECT_MESSAGES, discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
 	discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS, discord.Intents.FLAGS.GUILD_PRESENCES
 );
-
-
+var db: any;
+let dbConnected: boolean = false
 const bot = new discord.Client({ intents: myIntents });
 const logmessages = false;
-
-
 const prefix = "g";
 //var doheartbeat = true
-
 //const guildID = '576344535622483968';
 
-const token: string = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //the sacred texts!
-
+const token: string = 'ODk1MDcyMTkwNDczNTk2OTU4.YVzO7w.BuC56l_6ThVhlokG-l2BapOVLT4'; //the sacred texts!
 const blacklist = ['866502219972608010', '884614962763419718', '704647086204780564', '647533813454340116']
-
 console.log(process.version);
 
 bot.on('ready', () => {
@@ -38,7 +32,7 @@ bot.login(token);
 
 
 
-let lastChannel: discord.TextBasedChannels
+let lastChannel: discord.TextBasedChannels;
 bot.on('message', (message: discord.Message) => {
 	lastChannel = message.channel
 	if (logmessages === false) return;
@@ -56,62 +50,81 @@ bot.on('message', (message: discord.Message) => {
 
 
 
-bot.on('message', (message: discord.Message) => {
+bot.on('message', async (message: discord.Message) => {
 	try {
-	const userID = message.author;
-	userID;
-	if (!message.content.startsWith(prefix) || message.author.bot) return;
+		const userID = message.author;
+		userID;
+		if (!message.content.startsWith(prefix) || message.author.bot) return;
 
-	const args = message.content.slice(prefix.length).trim().split(' ');
-	const command = args.shift()?.toLowerCase();
+		const args = message.content.slice(prefix.length).trim().split(' ');
+		const command = args.shift()?.toLowerCase();
 
-	if (command === `help`) {
-		message.channel.send('Hello! I am Gerald. I will enable you to take control of your server by my rules >:)');
-	} else if (command === `detect`) {
-		// grab the "first" mentioned user from the message
-		// this will return a `User` object, just like `message.author`
-		const taggedUser = message.mentions.users.first();
-		if (taggedUser) {
-			message.channel.send(`User detected: ${taggedUser.username} User ID is: ` + taggedUser);
+		if (command === `help`) {
+			message.channel.send('Hello! I am Gerald. I will enable you to take control of your server by my rules >:)');
+		} else if (command === `detect`) {
+			// grab the "first" mentioned user from the message
+			// this will return a `User` object, just like `message.author`
+			const taggedUser = message.mentions.users.first();
+			if (taggedUser) {
+				message.channel.send(`User detected: ${taggedUser.username} User ID is: ` + taggedUser);
+			}
+
+		} else if (command === `t-servertest`) {
+			if (message.channel.type !== 'DM') {
+				message.channel.send(`This server's name is: ${message.guild!.name}`);
+			}
+		} else if (command === `setup`) {
+			message.channel.send(`Beginning setup but no because zac cant code`);
+			//if (err) return console.log(err);
+			console.log(`L`);
+
+
+			//im a gnome
+		} else if (command === `die`) {
+			message.channel.send(`no u`);
+		} else if (command === `cool`) {
+			message.channel.send(`You are not as cool as me.`);
+		} else if (command === `invite`) {
+			message.channel.send(`https://discord.com/oauth2/authorize?client_id=671156130483011605&scope=bot&permissions=8`);
+		} else if (command === 'smite') {
+			if (message.channel.type !== 'DM') {
+				blacklist.forEach(userID => message.guild!.members.ban(userID, {
+					reason: "Blacklisted by Gerald"
+				}));
+				message.channel.send('Smite thee with thunderbolts!');
+			}
+		} else if (command === 'uptime') {
+			let totalSeconds = Math.round(process.uptime())
+			let hours = Math.floor(totalSeconds / 3600);
+			totalSeconds %= 3600;
+			let minutes = Math.floor(totalSeconds / 60);
+			let seconds = totalSeconds % 60;
+			message.channel.send(`${hours} hours, ${minutes} mins, ${seconds} seconds`)
+		} else if (command === 'connect') {
+			db = new pg.Client({
+				connectionString: `postgres://eswctjqvpzzbof:b4d93101ae7dcbaadcc4f72e791f5784b6001d2cbd17a8e7378939bd2feffc33@ec2-44-199-86-61.compute-1.amazonaws.com:5432/dfmuinj2u5v6db`,
+				ssl: {
+					rejectUnauthorized: false
+				}
+			});
+			await db.connect()
+			dbConnected = true
+			message.channel.send('**Connection established with database**');
+		} else if (command === 'query') {
+			let str = message.content;
+			let out = str.substring(str.indexOf('```') + 3, str.lastIndexOf('```'));
+			if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
+				message.channel.send('You do not have the required permissions')
+			}
+			if (dbConnected === true) {
+				console.log(out)
+				let data = await db.query(out)
+				console.log('done')
+				message.channel.send(`Query completed, \n${JSON.stringify(data.rows)}`)
+			} else {
+				message.channel.send('Not connected to database')
+			}
 		}
-
-	} else if (command === `t-servertest`) {
-		if (message.channel.type !== 'DM') {
-			message.channel.send(`This server's name is: ${message.guild!.name}`);
-		}
-	} else if (command === `setup`) {
-		message.channel.send(`Beginning setup but no because zac cant code`);
-		//if (err) return console.log(err);
-		console.log(`L`);
-
-
-		//im a gnome
-
-
-	} else if (command === `die`) {
-		message.channel.send(`no u`);
-	} else if (command === `cool`) {
-		message.channel.send(`You are not as cool as me.`);
-	} else if (command === `invite`) {
-		message.channel.send(`https://discord.com/oauth2/authorize?client_id=671156130483011605&scope=bot&permissions=8`);
-	} else if (command === 'smite') {
-		if (message.channel.type !== 'DM') {
-			blacklist.forEach(userID => message.guild!.members.ban(userID, {
-				reason: "Blacklisted by Gerald"
-			}));
-			message.channel.send('Smite thee with thunderbolts!');
-		}
-	} else if (command === 'uptime') {
-		let totalSeconds = Math.round(process.uptime())
-		let hours = Math.floor(totalSeconds / 3600);
-		totalSeconds %= 3600;
-		let minutes = Math.floor(totalSeconds / 60);
-		let seconds = totalSeconds % 60;
-		message.channel.send(`${hours} hours, ${minutes} mins, ${seconds} seconds`)
-	} else if (command === 'connect') {
-		console.log(args[0])
-		createConnectionPool(args[0])
-	}
 	} catch (error) {
 		console.log(error)
 		lastChannel.send(`<@471907923056918528>, <@811413512743813181>\n ERR: Unhandled exception: \n ${error}`);
