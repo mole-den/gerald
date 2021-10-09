@@ -136,7 +136,7 @@ bot.on('message', async (message: discord.Message) => {
 				return;
 			}
 			eval(out);
-			message.channel.send('Completed \n')
+			message.channel.send('Completed \n');
 		}
 	} catch (error) {
 		console.log(error)
