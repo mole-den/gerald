@@ -133,10 +133,10 @@ bot.on('message', async (message: discord.Message) => {
 			let out = str.substring(str.indexOf('```') + 3, str.lastIndexOf('```'));
 			if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
 				message.channel.send('You do not have the required permissions.');
-				return;
+				return
 			}
 			eval(out);
-			message.channel.send('Completed \n')
+			message.channel.send('Completed \n ')
 		}
 	} catch (error) {
 		console.log(error)
