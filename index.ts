@@ -87,6 +87,9 @@ bot.on('message', async (message: discord.Message) => {
 		} else if (command === `invite`) {
 			message.channel.send(`https://discord.com/oauth2/authorize?client_id=671156130483011605&scope=bot&permissions=8`);
 		} else if (command === 'smite') {
+			if (args[0] && args[0] === "add") {
+				db.query(``)
+			}
 			if (message.channel.type !== 'DM') {
 				blacklist.forEach(userID => message.guild!.members.ban(userID, {
 					reason: "Blacklisted by Gerald"
@@ -125,6 +128,15 @@ bot.on('message', async (message: discord.Message) => {
 			} else {
 				message.channel.send('Not connected to database')
 			}
+		} else if (command === "eval") {
+			let str = message.content;
+			let out = str.substring(str.indexOf('```') + 3, str.lastIndexOf('```'));
+			if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
+				message.channel.send('You do not have the required permissions.');
+				return;
+			}
+			let x = eval(out);
+			message.channel.send('Completed: \n' + x)
 		}
 	} catch (error) {
 		console.log(error)
