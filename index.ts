@@ -135,8 +135,8 @@ bot.on('message', async (message: discord.Message) => {
 				message.channel.send('You do not have the required permissions.');
 				return;
 			}
-			let x = await eval(out);
-			message.channel.send('Completed: \n' + x)
+			eval(out);
+			message.channel.send('Completed \n')
 		}
 	} catch (error) {
 		console.log(error)
