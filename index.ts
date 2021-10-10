@@ -88,7 +88,9 @@ bot.on('message', async (message: discord.Message) => {
 			message.channel.send(`https://discord.com/oauth2/authorize?client_id=671156130483011605&scope=bot&permissions=8`);
 		} else if (command === 'smite') {
 			if (args[0] && args[0] === "add") {
-				db.query(``)
+				let user = message.mentions.users?.first();
+				user
+				db.query(``);
 			}
 			if (message.channel.type !== 'DM') {
 				blacklist.forEach(userID => message.guild!.members.ban(userID, {
@@ -105,7 +107,7 @@ bot.on('message', async (message: discord.Message) => {
 			message.channel.send(`${hours} hours, ${minutes} mins, ${seconds} seconds`)
 		} else if (command === 'connect') {
 			db = new pg.Client({
-				connectionString: `postgres://eswctjqvpzzbof:b4d93101ae7dcbaadcc4f72e791f5784b6001d2cbd17a8e7378939bd2feffc33@ec2-44-199-86-61.compute-1.amazonaws.com:5432/dfmuinj2u5v6db`,
+				connectionString: args[0],
 				ssl: {
 					rejectUnauthorized: false
 				}
