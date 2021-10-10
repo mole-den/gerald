@@ -141,8 +141,12 @@ bot.on('message', async (message: discord.Message) => {
 			message.channel.send('Completed \n');
 		}
 	} catch (error) {
-		console.log(error)
-		lastChannel.send(`<@471907923056918528>, <@811413512743813181>\n ERR: Unhandled exception: \n ${error}`);
+		console.log(error);
+		if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
+			lastChannel.send(`Unhandled exception: \n ${error}`);
+			return;
+		}
+		lastChannel.send(`<@471907923056918528>, <@811413512743813181>\n Unhandled exception: \n ${error}`);
 	}
 });
 
