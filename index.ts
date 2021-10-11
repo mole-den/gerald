@@ -135,10 +135,10 @@ bot.on('message', async (message: discord.Message) => {
 		} else if (command === "eval") {
 			let str = message.content;
 			let out = str.substring(str.indexOf('```') + 3, str.lastIndexOf('```'));
-			if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
-				message.channel.send('You do not have the required permissions.');
-				return
-			}
+			// if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
+			// 	message.channel.send('You do not have the required permissions.');
+			// 	return
+			// }
 			try {
 				eval(out);
 			} catch (error) {
@@ -166,7 +166,6 @@ bot.on('message', async (message: discord.Message) => {
 		lastChannel.send(`<@471907923056918528>, <@811413512743813181>\n Unhandled exception: \n ${error}`);
 	}
 });
-
 
 bot.on('message', (message: discord.Message) => {
 	if (message.content.toLowerCase().includes('hello there')) {
