@@ -142,7 +142,7 @@ bot.on('message', async (message: discord.Message) => {
 		}
 	} catch (error) {
 		console.log(error);
-		if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
+		if (message.author.id == "471907923056918528" || message.author.id == "811413512743813181") {
 			lastChannel.send(`Unhandled exception: \n ${error}`);
 			return;
 		}
