@@ -151,7 +151,7 @@ bot.on('message', async (message: discord.Message) => {
 				message.channel.send('You do not have the required permissions.');
 				return
 			} 
-			(eval(args[0])).forEach(async (i: any) => {
+			(await message.guild?.members.fetch() as any).each(async (i: any) => {
 				i;
 				let out = str.substring(str.indexOf('```') + 3, str.lastIndexOf('```'));
 				try {
