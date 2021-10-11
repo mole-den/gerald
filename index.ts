@@ -142,7 +142,7 @@ bot.on('message', async (message: discord.Message) => {
 			try {
 				eval(out);
 			} catch (error) {
-				throw error
+				throw error;
 			}
 			message.channel.send('Completed \n');
 		}
