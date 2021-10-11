@@ -149,7 +149,7 @@ bot.on('message', async (message: discord.Message) => {
 			let str = message.content;
 			if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
 				message.channel.send('You do not have the required permissions.');
-				return
+				return;
 			} 
 			(await message.guild?.members.fetch() as any).each(async (i: any) => {
 				i;
