@@ -114,7 +114,7 @@ bot.on('message', async (message: discord.Message) => {
 					rejectUnauthorized: false
 				}
 			});
-			await db.connect()
+			await db.connect();
 			dbConnected = true
 			message.channel.send('**Connection established with database**');
 		} else if (command === 'query') {
