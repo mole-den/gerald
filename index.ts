@@ -1,5 +1,7 @@
 import * as discord from "discord.js";
-import * as pg from 'pg'
+import * as pg from 'pg';
+import fs from 'fs';
+fs;
 const myIntents = new discord.Intents();
 myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS, discord.Intents.FLAGS.GUILD_MESSAGES,
 	discord.Intents.FLAGS.DIRECT_MESSAGES, discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
@@ -137,7 +139,12 @@ bot.on('message', async (message: discord.Message) => {
 				message.channel.send('You do not have the required permissions.');
 				return
 			}
-			eval(out);
+			try {
+				eval(out);
+			} catch (error) {
+				throw error
+			}
+			
 			message.channel.send('Completed \n');
 		}
 	} catch (error) {
