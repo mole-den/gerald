@@ -144,7 +144,6 @@ bot.on('message', async (message: discord.Message) => {
 			} catch (error) {
 				throw error
 			}
-			
 			message.channel.send('Completed \n');
 		}
 	} catch (error) {
