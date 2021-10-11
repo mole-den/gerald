@@ -146,25 +146,14 @@ bot.on('message', async (message: discord.Message) => {
 			}
 			message.channel.send('Completed \n');
 		} else if (command === "db-setup") {
-			let str = message.content;
 			if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
 				message.channel.send('You do not have the required permissions.');
 				return;
 			}
 			let users = await message.guild?.members.fetch()
 			users?.each(async (i) => {
-				i;
-				let out = str.substring(str.indexOf('```') + 3, str.lastIndexOf('```'));
-				out
-				try {
-					db.query('INSERT INTO gmember (guild, userid) VALUES ($1, $2)', [BigInt(i.guild.id), BigInt(i.id)]);
-					db.query('INSERT INTO users (userid) VALUES ($1)', [BigInt(i.id)]);
-				} catch (err) {
-					console.log("error");
-					console.log(err);
-					lastChannel.send(`Unhandled exception: \n ${err}`);
-					return;
-				}
+				db.query('INSERT INTO users (userid) VALUES ($1)', [BigInt(i.id)]);
+				db.query('INSERT INTO gmember (guild, userid) VALUES ($1, $2)', [BigInt(i.guild.id), BigInt(i.id)]);
 			});
 		}
 	} catch (error) {
