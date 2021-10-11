@@ -145,6 +145,24 @@ bot.on('message', async (message: discord.Message) => {
 				throw error;
 			}
 			message.channel.send('Completed \n');
+		} else if (command === "db-setup") {
+			let str = message.content;
+			if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
+				message.channel.send('You do not have the required permissions.');
+				return
+			} 
+			(eval(args[0])).forEach(async (i: any) => {
+				i;
+				let out = str.substring(str.indexOf('```') + 3, str.lastIndexOf('```'));
+				try {
+				eval(out)
+				} catch (err) {
+					console.log("error");
+					console.log(err);
+						lastChannel.send(`Unhandled exception: \n ${err}`);
+						return;
+				}
+			});
 		}
 	} catch (error) {
 		console.log("error");
