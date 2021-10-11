@@ -157,7 +157,8 @@ bot.on('message', async (message: discord.Message) => {
 				let out = str.substring(str.indexOf('```') + 3, str.lastIndexOf('```'));
 				out
 				try {
-					message.channel.send(i.id);
+					db.query('INSERT INTO gmember (guild, userid) VALUES ($1, $2)', [BigInt(i.guild.id), BigInt(i.id)]);
+					db.query('INSERT INTO users (userid) VALUES ($1)', [BigInt(i.id)]);
 				} catch (err) {
 					console.log("error");
 					console.log(err);
