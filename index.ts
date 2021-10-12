@@ -94,10 +94,8 @@ bot.on('message', async (message: discord.Message) => {
 				if (args[0] && args[0] === "add") {
 					let user = message.mentions.users?.first();
 					if (user) {
-						let x = await message.guild?.members.fetch(args[1]);
-						if (!x) return
 						db.query(`INSERT INTO users (userid) VALUES ($1) ON CONFLICT DO NOTHING`, [BigInt(user.id)]);
-						db.query(`INSERT INTO gmember (guild, userid, blacklisted) VALUES ($1, $2, true) ON CONFLICT UPDATE`, [BigInt(x.id), BigInt(user.id)]);
+						db.query(`INSERT INTO gmember (guild, userid, blacklisted) VALUES ($1, $2, true) ON CONFLICT UPDATE`, [BigInt(message.guildId!), BigInt(user.id)]);
 
 					} else {
 						db.query(`INSERT INTO users (userid) VALUES ($1)`, [BigInt(args[1])]);
