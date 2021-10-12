@@ -16,7 +16,6 @@ const prefix = "g";
 //const guildID = '576344535622483968';
 
 const token: string = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //the sacred texts!
-const blacklist = ['866502219972608010', '704647086204780564', '647533813454340116', '781214757477810216', '609414787935371274']
 console.log(process.version);
 
 bot.on('ready', () => {
@@ -89,16 +88,31 @@ bot.on('message', async (message: discord.Message) => {
 		} else if (command === `invite`) {
 			message.channel.send(`https://discord.com/oauth2/authorize?client_id=671156130483011605&scope=bot&permissions=8`);
 		} else if (command === 'smite') {
-			if (args[0] && args[0] === "add") {
-				let user = message.mentions.users?.first();
-				user
-				db.query(``);
-			}
-			if (message.channel.type !== 'DM') {
-				blacklist.forEach(userID => message.guild!.members.ban(userID, {
+			if (message.channel.type === 'DM') return;
+			let author = await message.guild?.members.fetch(message.author)
+			if (author && author.permissions.has(discord.Permissions.FLAGS.BAN_MEMBERS)) {
+				if (args[0] && args[0] === "add") {
+					let user = message.mentions.users?.first();
+					if (user) {
+						let x = await message.guild?.members.fetch(args[1]);
+						if (!x) return
+						db.query(`INSERT INTO users (userid) VALUES ($1) ON CONFLICT DO NOTHING`, [BigInt(user.id)]);
+						db.query(`INSERT INTO gmember (guild, userid, blacklisted) VALUES ($1, $2, true) ON CONFLICT UPDATE`, [BigInt(x.id), BigInt(user.id)]);
+
+					} else {
+						db.query(`INSERT INTO users (userid) VALUES ($1)`, [BigInt(args[1])]);
+						db.query(`INSERT INTO gmember (guild, userid, blacklisted) VALUES ($1, $2, true) ON CONFLICT UPDATE`, [BigInt(message.guildId!), BigInt(args[1])]);
+					}
+				}
+				let blist = await db.query("SELECT * FROM gmember WHERE guild=$1 AND blacklisted", [BigInt(message.guildId!)]);
+
+				blist.rows.forEach(user => message.guild!.members.ban(user.userid, {
 					reason: "Blacklisted by Gerald"
 				}));
 				message.channel.send('Smite thee with thunderbolts!');
+
+			} else {
+				message.channel.send('You do not have the required permissions')
 			}
 		} else if (command === 'uptime') {
 			let totalSeconds = Math.round(process.uptime())
@@ -139,7 +153,7 @@ bot.on('message', async (message: discord.Message) => {
 					}
 					lastChannel.send(`<@471907923056918528>, <@811413512743813181>\n Unhandled exception: \n ${error}`);
 				}
-				
+
 			} else {
 				message.channel.send('Not connected to database')
 			}
