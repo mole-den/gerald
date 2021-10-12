@@ -128,7 +128,18 @@ bot.on('message', async (message: discord.Message) => {
 				console.log(out)
 				let data = await db.query(out)
 				console.log('done')
-				message.channel.send(`Query completed, \n${JSON.stringify(data.rows)}`)
+				try {
+					message.channel.send(`Query completed, \n${JSON.stringify(data.rows)}`)
+				} catch (error) {
+					console.log("error");
+					console.log(error);
+					if (message.author.id == "471907923056918528" || message.author.id == "811413512743813181") {
+						lastChannel.send(`Unhandled exception: \n ${error}`);
+						return;
+					}
+					lastChannel.send(`<@471907923056918528>, <@811413512743813181>\n Unhandled exception: \n ${error}`);
+				}
+				
 			} else {
 				message.channel.send('Not connected to database')
 			}
