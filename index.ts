@@ -15,7 +15,7 @@ const prefix = "g";
 //var doheartbeat = true
 //const guildID = '576344535622483968';
 
-const token: string = 'NjcxMTU2MTMwNDgzMDExNjA1.Xs9tTw.QOJZky89ROAnBWYiu1l9EDhk8q4'; //the sacred texts!
+const token: string = 'NjcxMTU2MTMwNDgzMDExNjA1.Xi402g.f7v2nZdP-U5iMS6YOvg5x16igjI'; //the sacred texts!
 console.log(process.version);
 
 bot.on('ready', () => {
