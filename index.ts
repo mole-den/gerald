@@ -178,11 +178,6 @@ bot.on('message', async (message: discord.Message) => {
 	}
 });
 
-bot.on('message', (message: discord.Message) => {
-	if (message.content.toLowerCase().includes('hello there')) {
-		message.channel.send('General Kenobi!');
-	}
-});
 
 async function heartbeat() {
 	//console.log('Heartbeat sent.');
