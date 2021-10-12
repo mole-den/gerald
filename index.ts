@@ -7,7 +7,6 @@ myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS,
 	discord.Intents.FLAGS.DIRECT_MESSAGES, discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
 	discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS, discord.Intents.FLAGS.GUILD_PRESENCES
 );
-var db: pg.Client;
 let dbConnected: boolean = false
 const bot = new discord.Client({ intents: myIntents });
 const logmessages = false;
@@ -27,9 +26,21 @@ bot.on('ready', () => {
 	//bot.emit('heartbeated');
 });
 
+const db = new pg.Client({
+	connectionString: `postgres://eswctjqvpzzbof:b4d93101ae7dcbaadcc4f72e791f5784b6001d2cb
+	d17a8e7378939bd2feffc33@ec2-44-199-86-61.compute-1.amazonaws.com:5432/dfmuinj2u5v6db`,
+	ssl: {
+		rejectUnauthorized: false
+	}
+});
 
 bot.login(token);
 //egg
+
+( async() => {
+	await db.connect();
+	dbConnected = true
+})()
 
 
 
@@ -111,16 +122,6 @@ bot.on('message', async (message: discord.Message) => {
 			let minutes = Math.floor(totalSeconds / 60);
 			let seconds = totalSeconds % 60;
 			message.channel.send(`${hours} hours, ${minutes} mins, ${seconds} seconds`)
-		} else if (command === 'connect') {
-			db = new pg.Client({
-				connectionString: args[0],
-				ssl: {
-					rejectUnauthorized: false
-				}
-			});
-			await db.connect();
-			dbConnected = true
-			message.channel.send('**Connection established with database**');
 		} else if (command === 'query') {
 			let str = message.content;
 			let out = str.substring(str.indexOf('```') + 3, str.lastIndexOf('```'));
@@ -143,7 +144,6 @@ bot.on('message', async (message: discord.Message) => {
 					}
 					lastChannel.send(`<@471907923056918528>, <@811413512743813181>\n Unhandled exception: \n ${error}`);
 				}
-
 			} else {
 				message.channel.send('Not connected to database')
 			}
@@ -163,6 +163,7 @@ bot.on('message', async (message: discord.Message) => {
 					lastChannel.send(`Unhandled exception: \n ${error}`);
 					return;
 				}
+				
 				lastChannel.send(`<@471907923056918528>, <@811413512743813181>\n Unhandled exception: \n ${error}`);
 			}
 			message.channel.send('Completed \n');
