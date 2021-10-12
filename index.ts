@@ -129,7 +129,7 @@ bot.on('message', async (message: discord.Message) => {
 				let data = await db.query(out)
 				console.log('done')
 				try {
-					message.channel.send(`Query completed, \n${JSON.stringify(data.rows)}`)
+					message.channel.send(`${data.command} completed - ${data.rowCount} rows, \n${JSON.stringify(data.rows)}`)
 				} catch (error) {
 					console.log("error");
 					console.log(error);
