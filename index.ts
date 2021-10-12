@@ -79,7 +79,6 @@ bot.on('message', async (message: discord.Message) => {
 			//if (err) return console.log(err);
 			console.log(`L`);
 
-
 			//im a gnome
 		} else if (command === `die`) {
 			message.channel.send(`no u`);
@@ -158,7 +157,13 @@ bot.on('message', async (message: discord.Message) => {
 			try {
 				eval(out);
 			} catch (error) {
-				throw error;
+				console.log("error");
+				console.log(error);
+				if (message.author.id == "471907923056918528" || message.author.id == "811413512743813181") {
+					lastChannel.send(`Unhandled exception: \n ${error}`);
+					return;
+				}
+				lastChannel.send(`<@471907923056918528>, <@811413512743813181>\n Unhandled exception: \n ${error}`);
 			}
 			message.channel.send('Completed \n');
 		} else if (command === "db-setup") {
