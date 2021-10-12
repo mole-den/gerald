@@ -103,9 +103,8 @@ bot.on('message', async (message: discord.Message) => {
 						db.query(`INSERT INTO users (userid) VALUES ($1)`, [BigInt(args[1])]);
 						db.query(`INSERT INTO gmember (guild, userid, blacklisted) VALUES ($1, $2, true) ON CONFLICT UPDATE`, [BigInt(message.guildId!), BigInt(args[1])]);
 					}
-				}
+				};
 				let blist = await db.query("SELECT * FROM gmember WHERE guild=$1 AND blacklisted", [BigInt(message.guildId!)]);
-
 				blist.rows.forEach(user => message.guild!.members.ban(user.userid, {
 					reason: "Blacklisted by Gerald"
 				}));
