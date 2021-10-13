@@ -2,6 +2,15 @@ import * as discord from "discord.js";
 import * as pg from 'pg';
 import fs from 'fs';
 fs;
+
+process.on('uncaughtException', async error => {
+	console.log(error);
+	console.log('err');
+	let x= await (await bot.guilds.fetch('809675885330432051')).channels.fetch('809675885849739296') as discord.TextChannel
+	await x.send(`<@471907923056918528>, <@811413512743813181>\n fatal:\n ${error}\n Exiting`)
+	process.exit()
+});
+
 const myIntents = new discord.Intents();
 myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS, discord.Intents.FLAGS.GUILD_MESSAGES,
 	discord.Intents.FLAGS.DIRECT_MESSAGES, discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
@@ -15,6 +24,7 @@ const prefix = "g";
 //const guildID = '576344535622483968';
 
 const token: string = 'NjcxMTU2MTMwNDgzMDExNjA1.Xi402g.Qt5Ueo_U5m87MLtcnXnM_3xx0yo'; //the sacred texts!
+const dbToken: string = `postgres://eswctjqvpzzbof:b4d93101ae7dcbaadcc4f72e791f5784b6001d2cbd17a8e7378939bd2feffc33@ec2-44-199-86-61.compute-1.amazonaws.com:5432/dfmuinj2u5v6db`;
 console.log(process.version);
 
 bot.on('ready', () => {
@@ -27,20 +37,19 @@ bot.on('ready', () => {
 });
 
 const db = new pg.Client({
-	connectionString: `postgres://eswctjqvpzzbof:b4d93101ae7dcbaadcc4f72e791f5784b6001d2cb
-	d17a8e7378939bd2feffc33@ec2-44-199-86-61.compute-1.amazonaws.com:5432/dfmuinj2u5v6db`,
+	connectionString: dbToken,
 	ssl: {
 		rejectUnauthorized: false
 	}
 });
+(async () => {
+	await db.connect();
+	dbConnected = true
+})()
 
 bot.login(token);
 //egg
 
-( async() => {
-	await db.connect();
-	dbConnected = true
-})()
 
 
 
@@ -163,7 +172,7 @@ bot.on('message', async (message: discord.Message) => {
 					lastChannel.send(`Unhandled exception: \n ${error}`);
 					return;
 				}
-				
+
 				lastChannel.send(`<@471907923056918528>, <@811413512743813181>\n Unhandled exception: \n ${error}`);
 			}
 			message.channel.send('Completed \n');
@@ -204,8 +213,3 @@ bot.on('heartbeated', () => {
 	//console.log(`Heartbeat recived. Logged in as ${bot.user.tag}`);
 });
 
-process.on('uncaughtException', error => {
-	console.log(error)
-	lastChannel.send(`<@471907923056918528>, <@811413512743813181>\n ERR: Unhandled exception: \n ${error}\n **Exiting...**`);
-	process.exit()
-});
