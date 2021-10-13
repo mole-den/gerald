@@ -116,8 +116,7 @@ bot.on('message', async (message: discord.Message) => {
 			if (author && author.permissions.has(discord.Permissions.FLAGS.BAN_MEMBERS)) {
 				if (args[0] && args[0] === "add") {
 					let user = message.mentions.users?.first();
-					db.query(`INSERT INTO users (userid) VALUES ($1)`, [BigInt(user?.id || args[1])]);
-					db.query(`INSERT INTO gmember (guild, userid, blacklisted) VALUES ($1, $2, true) ON CONFLICT UPDATE`, [BigInt(message.guildId!), BigInt(user?.id || args[1])]);
+					db.query(`INSERT INTO gmember (guildid, userid, blacklisted) VALUES ($1, $2, true) ON CONFLICT UPDATE`, [BigInt(message.guildId!), BigInt(user?.id || args[1])]);
 				};
 				let blist = await db.query("SELECT * FROM gmember WHERE guild=$1 AND blacklisted", [BigInt(message.guildId!)]);
 				blist.rows.forEach(user => message.guild!.members.ban(user.userid, {
@@ -187,7 +186,7 @@ bot.on('message', async (message: discord.Message) => {
 			}
 			let users = await message.guild?.members.fetch()
 			users?.forEach((i) => {
-				db.query('INSERT INTO gmember (guild, userid) VALUES ($1, $2)', [BigInt(i.guild.id), BigInt(i.id)]);
+				db.query('INSERT INTO gmember (guildid, userid) VALUES ($1, $2)', [BigInt(i.guild.id), BigInt(i.id)]);
 			});
 		}
 	} catch (error) {
