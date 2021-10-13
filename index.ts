@@ -7,7 +7,7 @@ process.on('uncaughtException', async error => {
 	console.log(error);
 	console.log('err');
 	let x= await (await bot.guilds.fetch('809675885330432051')).channels.fetch('809675885849739296') as discord.TextChannel
-	await x.send(`<@471907923056918528>, <@811413512743813181>\n fatal:\n ${error}\n Exiting`)
+	await x.send(`<@471907923056918528>, <@811413512743813181>\n FATAL:\n ${error}\n Exiting process`)
 	process.exit()
 });
 
@@ -24,8 +24,7 @@ const prefix = "g";
 //const guildID = '576344535622483968';
 
 const token: string = 'NjcxMTU2MTMwNDgzMDExNjA1.Xi402g.Qt5Ueo_U5m87MLtcnXnM_3xx0yo'; //the sacred texts!
-const dbToken: string = `postgres://eswctjqvpzzbof:b4d93101ae7dcbaadcc4f72e791f5784b6001d2cbd17a8e7378939bd2feffc33@ec2-44-199-86-61.compute-1.amazonaws.com:5432/dfmuinj2u5v6db`;
-console.log(process.version);
+const dbToken: string = `postgres://eswctjqvpzzbof:b4d93101ae7dcbaadcc4f72e791f5784b6001d2cbd17a8e7378939bd2feffc33@ec2-44-199-86-61.compute-1.amazonaws.com:5432/dfmuinj2u5v6db`;console.log(process.version);
 
 bot.on('ready', () => {
 	console.log('Preparing to take over the world...');
