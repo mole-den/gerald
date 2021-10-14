@@ -187,7 +187,7 @@ bot.on('message', async (message: discord.Message) => {
 			}
 			let users = await message.guild?.members.fetch()
 			users?.forEach((i) => {
-				db.query('INSERT INTO gmember (guild, userid) VALUES ($1, $2)', [BigInt(i.guild.id), BigInt(i.id)]);
+				db.query('INSERT INTO gmember (guildid, userid) VALUES ($1, $2)', [BigInt(i.guild.id), BigInt(i.id)]);
 			});
 		}
 	} catch (error) {
