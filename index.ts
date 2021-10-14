@@ -181,6 +181,7 @@ bot.on('message', async (message: discord.Message) => {
 			}
 			message.channel.send('Completed \n');
 		} else if (command === "db-setup") {
+			return;
 			if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
 				message.channel.send('You do not have the required permissions.');
 				return;
@@ -189,6 +190,17 @@ bot.on('message', async (message: discord.Message) => {
 			users?.forEach((i) => {
 				db.query('INSERT INTO gmember (guildid, userid) VALUES ($1, $2)', [BigInt(i.guild.id), BigInt(i.id)]);
 			});
+		} else if (command === 'status') {
+			let user = message.mentions.users.first()
+			if (user) {
+				let member = await message.guild?.members.fetch(user);
+				if (member && member.presence) {
+					let presence = member.presence.activities.filter(x => x.type === "PLAYING")   
+					message.channel.send(`${user.username} is ${member.presence.status} \n Playing ${presence[0].name}`)
+				}
+			}
+		} else if (command === 'ping') {
+			message.channel.send(`Websocket heartbeat: ${bot.ws.ping}ms`)
 		}
 	} catch (error) {
 		console.log("error");
