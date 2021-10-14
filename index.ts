@@ -197,7 +197,7 @@ bot.on('message', async (message: discord.Message) => {
 				if (member && member.presence) {
 					let presence = member.presence.activities.filter(x => x.type === "PLAYING");
 					let x= "";
-					if (presence[0].name !== undefined || presence[0] !== undefined) x = `Playing ${presence[0].name}`;
+					if (presence[0]) x = `Playing ${presence[0].name}`;
 					message.channel.send(`${user.username} is ${member.presence.status} \n ${x}`)
 				}
 			}
