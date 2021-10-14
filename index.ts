@@ -112,7 +112,7 @@ bot.on('message', async (message: discord.Message) => {
 		} else if (command === `invite`) {
 			message.channel.send(`https://discord.com/oauth2/authorize?client_id=671156130483011605&scope=bot&permissions=8`);
 		} else if (command === 'smite') {
-			if (message.channel.type === 'DM') return;
+			if (message.type === 'DM') return;
 			let author = await message.guild?.members.fetch(message.author)
 			if (author && author.permissions.has(discord.Permissions.FLAGS.BAN_MEMBERS)) {
 				if (args[0] && args[0] === "add") {
