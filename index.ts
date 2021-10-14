@@ -199,7 +199,7 @@ bot.on('message', async (message: discord.Message) => {
 					let x= "";
 					if (presence[0]) x = `Playing **${presence[0].name}**`;
 					let status = (member.id !== "536047005085204480") ? member.presence.status : "cringe";
-					message.channel.send(`${member.nickname} is ${status}\n${x}`);
+					message.channel.send(`${(member.nickname || user.username)} is ${status}\n${x}`);
 				}
 			}
 		} else if (command === 'ping') {
