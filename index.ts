@@ -198,7 +198,8 @@ bot.on('message', async (message: discord.Message) => {
 					let presence = member.presence.activities.filter(x => x.type === "PLAYING");
 					let x= "";
 					if (presence[0]) x = `Playing **${presence[0].name}**`;
-					message.channel.send(`${user.username} is ${member.presence.status} \n${x}`)
+					let status = (member.id === "536047005085204480") ? "cringe" : member.presence.status
+					message.channel.send(`${user.username} is ${status}\n${x}`)
 				}
 			}
 		} else if (command === 'ping') {
