@@ -148,10 +148,10 @@ bot.on('message', async (message: discord.Message) => {
 				message.channel.send(`${data.command} completed - ${data.rowCount} rows, \n${JSONdata}`);
 				return;
 			} else {
-				let attachment = new discord.MessageAttachment(Buffer.from(JSONdata, 'utf-8'));
-				message.channel.send({
-					files: [attachment]
-				});
+				const buffer = Buffer.from(JSONdata)
+				const attachment = new discord.MessageAttachment(buffer, 'file.txt');
+				message.channel.send(`${data.command} completed - ${data.rowCount} rows,`);
+				message.channel.send({files: [attachment]});
 			}
 
 		} else if (command === "eval") {
