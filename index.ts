@@ -16,7 +16,6 @@ myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS,
 	discord.Intents.FLAGS.DIRECT_MESSAGES, discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
 	discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS, discord.Intents.FLAGS.GUILD_PRESENCES
 );
-let dbConnected: boolean = false
 const bot = new discord.Client({ intents: myIntents });
 const logmessages = false;
 const prefix = "g";
@@ -43,7 +42,6 @@ const db = new pg.Client({
 });
 (async () => {
 	await db.connect();
-	dbConnected = true
 })()
 
 bot.login(token);
@@ -142,24 +140,20 @@ bot.on('message', async (message: discord.Message) => {
 				message.channel.send('You do not have the required permissions');
 				return;
 			}
-			if (dbConnected === true) {
-				console.log(out)
-				let data = await db.query(out)
-				console.log('done')
-				try {
-					message.channel.send(`${data.command} completed - ${data.rowCount} rows, \n${JSON.stringify(data.rows)}`)
-				} catch (error) {
-					console.log("error");
-					console.log(error);
-					if (message.author.id == "471907923056918528" || message.author.id == "811413512743813181") {
-						lastChannel.send(`Unhandled exception: \n ${error}`);
-						return;
-					}
-					lastChannel.send(`<@471907923056918528>, <@811413512743813181>\n Unhandled exception: \n ${error}`);
-				}
+			console.log(out)
+			let data = await db.query(out)
+			console.log('done');
+			let JSONdata = JSON.stringify(data.rows);
+			if (JSONdata.length < 4000) {
+				message.channel.send(`${data.command} completed - ${data.rowCount} rows, \n${JSONdata}`);
+				return;
 			} else {
-				message.channel.send('Not connected to database')
+				let attachment = new discord.MessageAttachment(Buffer.from(JSONdata, 'utf-8'));
+				message.channel.send({
+					files: [attachment]
+				});
 			}
+
 		} else if (command === "eval") {
 			let str = message.content;
 			let out = str.substring(str.indexOf('```') + 3, str.lastIndexOf('```'));
