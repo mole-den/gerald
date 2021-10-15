@@ -149,7 +149,7 @@ bot.on('message', async (message: discord.Message) => {
 				return;
 			} else {
 				const buffer = Buffer.from(JSONdata)
-				const attachment = new discord.MessageAttachment(buffer, 'file.txt');
+				const attachment = new discord.MessageAttachment(buffer, 'file.json');
 				message.channel.send(`${data.command} completed - ${data.rowCount} rows,`);
 				message.channel.send({files: [attachment]});
 			}
