@@ -198,9 +198,6 @@ bot.on('message', async (message: discord.Message) => {
 			}
 		} else if (command === 'ping') {
 			message.channel.send(`Websocket heartbeat: ${bot.ws.ping}ms`)
-		} else if (command === 'shutdown') {
-			await message.channel.send('Exiting process...\n')
-			process.exit();
 		}
 	} catch (error) {
 		console.log("error");
