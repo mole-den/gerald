@@ -203,7 +203,8 @@ bot.on('message', async (message: discord.Message) => {
 			if(args[0] === 'add') {
 				await db.query('UPDATE gmember SET sexuality=$1 WHERE userid = $2', 
 					[args[1], message.author.username]);
-				message.channel.send(`set ${message.author.username} to ${args[1]}`)
+				message.channel.send(`set ${message.author.username} to ${args[1]}`);
+				return
 			}
 			if (user) {
 				let s = await db.query('SELECT * FROM gmember WHERE userid = $1', [BigInt(user.id)])
