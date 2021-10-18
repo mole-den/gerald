@@ -198,12 +198,17 @@ bot.on('message', async (message: discord.Message) => {
 			}
 		} else if (command === 'ping') {
 			message.channel.send(`Websocket heartbeat: ${bot.ws.ping}ms`)
-		} else if (command === 'gay')
-			if (message.mentions.members?.first()) {
-				let g = Math.floor(Math.random() * 3);
-				let x = ["straight", "gay", 'bi']
-				message.channel.send(`${message.mentions.members.first()?.user.username} is ${x[g]}`)
+		} else if (command === 'gay') {
+			let user = message.mentions.members?.first();
+			if (user) {
+				let s = await db.query('SELECT * FROM gmember WHERE userid = $1', [BigInt(user.id)])
+				if (s.rows[0].sexuality === null) {
+					message.channel.send('sexuality not specified ');
+					return;
+				}
+				message.channel.send(`${user.nickname} is ${s.rows[0].sexuality}`)
 			}
+		}
 	} catch (error) {
 		console.log("error");
 		console.log(error);
