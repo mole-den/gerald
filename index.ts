@@ -201,10 +201,9 @@ bot.on('message', async (message: discord.Message) => {
 		} else if (command === 'gay') {
 			let user = message.mentions.members?.first();
 			if(args[0] === 'add') {
-				let x = (user) ? user.id : message.author.id
 				await db.query('UPDATE gmember SET sexuality=$1 WHERE userid = $2', 
-				[args[1], x]);
-				message.channel.send(`set ${(user) ? user.nickname : message.author.username} to ${args[1]}`)
+					[args[1], message.author.username]);
+				message.channel.send(`set ${message.author.username} to ${args[1]}`)
 			}
 			if (user) {
 				let s = await db.query('SELECT * FROM gmember WHERE userid = $1', [BigInt(user.id)])
