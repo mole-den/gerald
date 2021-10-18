@@ -6,7 +6,7 @@ fs;
 process.on('uncaughtException', async error => {
 	console.log(error);
 	console.log('err');
-	let x= await (await bot.guilds.fetch('809675885330432051')).channels.fetch('809675885849739296') as discord.TextChannel
+	let x = await (await bot.guilds.fetch('809675885330432051')).channels.fetch('809675885849739296') as discord.TextChannel
 	await x.send(`<@471907923056918528>, <@811413512743813181>\n FATAL:\n ${error}\n Exiting process`)
 	process.exit()
 });
@@ -23,7 +23,7 @@ const prefix = "g";
 //const guildID = '576344535622483968';
 
 const token: string = 'NjcxMTU2MTMwNDgzMDExNjA1.Xi402g.Qt5Ueo_U5m87MLtcnXnM_3xx0yo'; //the sacred texts!
-const dbToken: string = `postgres://eswctjqvpzzbof:b4d93101ae7dcbaadcc4f72e791f5784b6001d2cbd17a8e7378939bd2feffc33@ec2-44-199-86-61.compute-1.amazonaws.com:5432/dfmuinj2u5v6db`;console.log(process.version);
+const dbToken: string = `postgres://eswctjqvpzzbof:b4d93101ae7dcbaadcc4f72e791f5784b6001d2cbd17a8e7378939bd2feffc33@ec2-44-199-86-61.compute-1.amazonaws.com:5432/dfmuinj2u5v6db`; console.log(process.version);
 
 bot.on('ready', () => {
 	console.log('Preparing to take over the world...');
@@ -47,10 +47,10 @@ const db = new pg.Client({
 bot.login(token);
 //egg
 
-bot.on('guildMemberAdd' , (member) => {
+bot.on('guildMemberAdd', (member) => {
 	member;
-	db.query('INSERT INTO gmember (guildid, userid) VALUES ($1, $2)', 
-	[BigInt(member.guild.id), BigInt(member.id)])
+	db.query('INSERT INTO gmember (guildid, userid) VALUES ($1, $2)',
+		[BigInt(member.guild.id), BigInt(member.id)])
 })
 
 
@@ -151,7 +151,7 @@ bot.on('message', async (message: discord.Message) => {
 				const buffer = Buffer.from(JSONdata)
 				const attachment = new discord.MessageAttachment(buffer, 'file.json');
 				message.channel.send(`${data.command} completed - ${data.rowCount} rows,`);
-				message.channel.send({files: [attachment]});
+				message.channel.send({ files: [attachment] });
 			}
 
 		} else if (command === "eval") {
@@ -190,7 +190,7 @@ bot.on('message', async (message: discord.Message) => {
 				let member = await message.guild?.members.fetch(user);
 				if (member && member.presence) {
 					let presence = member.presence.activities.filter(x => x.type === "PLAYING");
-					let x= "";
+					let x = "";
 					if (presence[0]) x = `Playing **${presence[0].name}**`;
 					let status = (member.id !== "536047005085204480") ? member.presence.status : "cringe";
 					message.channel.send(`${(member.nickname || user.username)} is ${status}\n${x}`);
@@ -198,7 +198,12 @@ bot.on('message', async (message: discord.Message) => {
 			}
 		} else if (command === 'ping') {
 			message.channel.send(`Websocket heartbeat: ${bot.ws.ping}ms`)
-		}
+		} else if (command === 'gay')
+			if (message.mentions.members?.first()) {
+				let g = Math.floor(Math.random() * 3);
+				let x = ["straight", "gay", 'bi']
+				message.channel.send(`${message.mentions.members.first()?.user.username} is ${x[g]}`)
+			}
 	} catch (error) {
 		console.log("error");
 		console.log(error);
