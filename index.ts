@@ -239,7 +239,8 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				let messages = await channel.messages.fetch({limit: lim});
 				messages = messages.filter(msg => (msg.author.bot === false));
 				messages = messages.filter(msg => (msg.system === false));
-				messages.each(async msg => {
+				let messagesArray = Array.from(messages.values()).reverse();
+				messagesArray.forEach(async msg => {
 					let member= await msg.guild?.members.fetch(msg);
 					if (!member) return;
 					let name = (member.nickname) ? member.nickname : `${msg.author.username}#${msg.author.discriminator}`;
