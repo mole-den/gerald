@@ -18,7 +18,7 @@ myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS,
 	discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS, discord.Intents.FLAGS.GUILD_PRESENCES);
 const bot = new discord.Client({ intents: myIntents });
 const logmessages = false;
-const prefix = "gl";
+const prefix = "g";
 //var doheartbeat = true
 //const guildID = '576344535622483968';
 
@@ -221,13 +221,13 @@ bot.on('message', async (message: discord.Message) => {
 				message.channel.send(`${user.nickname} is ${s.rows[0].sexuality}`)
 			}
 		} else if (command === 'og') {
-			await message.channel.send(`*2021-10-19T06:48:04.000000+00:00 app[api]*: **Build started by user** ofoxsmith@outlook.com\n*2021-10-19T06:48:27.413737+00:00 app[api]*: **Deploy bb6bd08f by user** ofoxsmith@outlook.com\n*2021-10-19T06:48:27.413737+00:00 app[api]*: **Release v515 created by user** ofoxsmith@outlook.com\n`)
-			setTimeout(async () => {
-				await message.channel.send(`*2021-10-19T06:48:27.668513+00:00 heroku[worker.1]*: Restarting\n*2021-10-19T06:48:27.690876+00:00 heroku[worker.1]*: State changed from up to starting\n*2021-10-19T06:48:28.680630+00:00 heroku[worker.1]*: Stopping all processes with SIGTERM\n*2021-10-19T06:48:28.963661+00:00 heroku[worker.1]*: Process exited with status 143\n*2021-10-19T06:48:29.381437+00:00 heroku[worker.1]*: Starting process with command 'node build / index.js'\n*2021-10-19T06:48:30.000000+00:00 app[api]*: Build succeeded\n*2021-10-19T06:48:30.079669+00:00 heroku[worker.1]*: State changed from starting to up\n`);
-				setTimeout(() => {
-					message.channel.send(`*2021-10-19T06:48:30.327177+00:00 app[worker.1]*: v16.10.0\n*2021-10-19T06:48:30.726099+00:00 app[worker.1]*: Preparing to take over the world...\n*2021-10-19T06:48:30.726148+00:00 app[worker.1]*: World domination complete.\n*2021-10-19T06:48:30.726190+00:00 app[worker.1]*: ONLINE\n`)
-				}, 2000);
-			}, 8000);
+			// await message.channel.send(`*2021-10-19T06:48:04.000000+00:00 app[api]*: **Build started by user** ofoxsmith@outlook.com\n*2021-10-19T06:48:27.413737+00:00 app[api]*: **Deploy bb6bd08f by user** ofoxsmith@outlook.com\n*2021-10-19T06:48:27.413737+00:00 app[api]*: **Release v515 created by user** ofoxsmith@outlook.com\n`)
+			// setTimeout(async () => {
+			// 	await message.channel.send(`*2021-10-19T06:48:27.668513+00:00 heroku[worker.1]*: Restarting\n*2021-10-19T06:48:27.690876+00:00 heroku[worker.1]*: State changed from up to starting\n*2021-10-19T06:48:28.680630+00:00 heroku[worker.1]*: Stopping all processes with SIGTERM\n*2021-10-19T06:48:28.963661+00:00 heroku[worker.1]*: Process exited with status 143\n*2021-10-19T06:48:29.381437+00:00 heroku[worker.1]*: Starting process with command 'node build / index.js'\n*2021-10-19T06:48:30.000000+00:00 app[api]*: Build succeeded\n*2021-10-19T06:48:30.079669+00:00 heroku[worker.1]*: State changed from starting to up\n`);
+			// 	setTimeout(() => {
+			// 		message.channel.send(`*2021-10-19T06:48:30.327177+00:00 app[worker.1]*: v16.10.0\n*2021-10-19T06:48:30.726099+00:00 app[worker.1]*: Preparing to take over the world...\n*2021-10-19T06:48:30.726148+00:00 app[worker.1]*: World domination complete.\n*2021-10-19T06:48:30.726190+00:00 app[worker.1]*: ONLINE\n`)
+			// 	}, 2000);
+			// }, 8000);
 		}
 	} catch (error) {
 		console.log("error");
