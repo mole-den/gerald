@@ -6,7 +6,7 @@ fs;
 process.on('uncaughtException', async error => {
 	console.log(error);
 	console.log('err');
-	if(!bot) { process.exit() }
+	if (!bot) { process.exit() }
 	let x = await (await bot.guilds.fetch('809675885330432051')).channels.fetch('809675885849739296') as discord.TextChannel
 	await x.send(`<@471907923056918528>, <@811413512743813181>\n FATAL:\n ${error}\n Exiting process`)
 	process.exit()
@@ -56,8 +56,8 @@ bot.on('guildMemberAdd', (member) => {
 bot.on('userUpdate', async (user) => {
 	console.log('changed');
 	let fullUser = ((user.partial) ? (await user.fetch()) : user);
-	db.query('UPDATE gmember SET username = $1 WHERE userid = $2', 
-	[`${fullUser.username}#${fullUser.discriminator}`, fullUser.id]);
+	db.query('UPDATE gmember SET username = $1 WHERE userid = $2',
+		[`${fullUser.username}#${fullUser.discriminator}`, fullUser.id]);
 });
 
 let lastChannel: discord.TextBasedChannels;
@@ -67,7 +67,7 @@ bot.on('message', (message: discord.Message) => {
 	if (logmessages === false) return;
 	if (message.channel.type === 'DM') return;
 	const channel = message.guild!.channels.cache.find(ch => ch.name === 'gerald');
-	if (message.content.includes('zac') || message.content.includes('sir mole'))message.channel.send('zac is gay')
+	if (message.content.includes('zac') || message.content.includes('sir mole')) message.channel.send('zac is gay')
 
 	console.log(`${message.author.tag} said: "${message.content}" in ${message.guild!.name}`);
 	if (!channel) return;
@@ -218,9 +218,10 @@ bot.on('message', async (message: discord.Message) => {
 			message.channel.send(`Websocket heartbeat: ${bot.ws.ping}ms`)
 		} else if (command === 'gay') {
 			let user = message.mentions.members?.first();
-			if(args[0] === 'add') {
-				await db.query('UPDATE gmember SET sexuality=$1 WHERE userid = $2', 
-					[args[1], message.author.id]);
+			if (args[0] === 'add') {
+				let updated = args.slice(1).join('');
+				await db.query('UPDATE gmember SET sexuality=$1 WHERE userid = $2',
+					[updated, message.author.id]);
 				message.channel.send(`set ${message.author.username} to ${args[1]}`);
 				return;
 			}
@@ -230,7 +231,7 @@ bot.on('message', async (message: discord.Message) => {
 					message.channel.send('sexuality not specified ');
 					return;
 				}
-				message.channel.send(`${(user.nickname !== null) ? user.nickname : user.user.username } is ${s.rows[0].sexuality}`)
+				message.channel.send(`${(user.nickname !== null) ? user.nickname : user.user.username} is ${s.rows[0].sexuality}`)
 			}
 		} else if (command === 'og') {
 			// await message.channel.send(`*2021-10-19T06:48:04.000000+00:00 app[api]*: **Build started by user** ofoxsmith@outlook.com\n*2021-10-19T06:48:27.413737+00:00 app[api]*: **Deploy bb6bd08f by user** ofoxsmith@outlook.com\n*2021-10-19T06:48:27.413737+00:00 app[api]*: **Release v515 created by user** ofoxsmith@outlook.com\n`)
