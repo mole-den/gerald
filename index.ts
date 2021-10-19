@@ -193,14 +193,9 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			}
 			message.channel.send('Completed \n');
 		} else if (command === "db-setup") {
-			return;
-			if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
-				message.channel.send('You do not have the required permissions.');
-				return;
-			}
 			let users = await message.guild?.members.fetch()
 			users?.forEach((i) => {
-				db.query('INSERT INTO gmember (guildid, userid) VALUES ($1, $2)', [BigInt(i.guild.id), BigInt(i.id)]);
+				message.channel.send(`Updated user ${i.id}`)
 			});
 		} else if (command === 'status') {
 			let user = message.mentions.users.first()
