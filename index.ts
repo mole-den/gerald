@@ -6,6 +6,7 @@ fs;
 process.on('uncaughtException', async error => {
 	console.log(error);
 	console.log('err');
+	if(!bot) { process.exit() }
 	let x = await (await bot.guilds.fetch('809675885330432051')).channels.fetch('809675885849739296') as discord.TextChannel
 	await x.send(`<@471907923056918528>, <@811413512743813181>\n FATAL:\n ${error}\n Exiting process`)
 	process.exit()
@@ -14,11 +15,10 @@ process.on('uncaughtException', async error => {
 const myIntents = new discord.Intents();
 myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS, discord.Intents.FLAGS.GUILD_MESSAGES,
 	discord.Intents.FLAGS.DIRECT_MESSAGES, discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
-	discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS, discord.Intents.FLAGS.GUILD_PRESENCES
-);
+	discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS, discord.Intents.FLAGS.GUILD_PRESENCES);
 const bot = new discord.Client({ intents: myIntents });
 const logmessages = false;
-const prefix = "g";
+const prefix = "gl";
 //var doheartbeat = true
 //const guildID = '576344535622483968';
 
@@ -54,6 +54,7 @@ bot.on('guildMemberAdd', (member) => {
 })
 
 bot.on('userUpdate', async (user) => {
+	console.log('changed');
 	let fullUser = ((user.partial) ? (await user.fetch()) : user);
 	db.query('UPDATE gmember SET username = $1 WHERE userid = $2', 
 	[`${fullUser.username}#${fullUser.discriminator}`, fullUser.id]);
@@ -219,6 +220,14 @@ bot.on('message', async (message: discord.Message) => {
 				}
 				message.channel.send(`${user.nickname} is ${s.rows[0].sexuality}`)
 			}
+		} else if (command === 'og') {
+			await message.channel.send(`*2021-10-19T06:48:04.000000+00:00 app[api]*: **Build started by user** ofoxsmith@outlook.com\n*2021-10-19T06:48:27.413737+00:00 app[api]*: **Deploy bb6bd08f by user** ofoxsmith@outlook.com\n*2021-10-19T06:48:27.413737+00:00 app[api]*: **Release v515 created by user** ofoxsmith@outlook.com\n`)
+			setTimeout(async () => {
+				await message.channel.send(`*2021-10-19T06:48:27.668513+00:00 heroku[worker.1]*: Restarting\n*2021-10-19T06:48:27.690876+00:00 heroku[worker.1]*: State changed from up to starting\n*2021-10-19T06:48:28.680630+00:00 heroku[worker.1]*: Stopping all processes with SIGTERM\n*2021-10-19T06:48:28.963661+00:00 heroku[worker.1]*: Process exited with status 143\n*2021-10-19T06:48:29.381437+00:00 heroku[worker.1]*: Starting process with command 'node build / index.js'\n*2021-10-19T06:48:30.000000+00:00 app[api]*: Build succeeded\n*2021-10-19T06:48:30.079669+00:00 heroku[worker.1]*: State changed from starting to up\n`);
+				setTimeout(() => {
+					message.channel.send(`*2021-10-19T06:48:30.327177+00:00 app[worker.1]*: v16.10.0\n*2021-10-19T06:48:30.726099+00:00 app[worker.1]*: Preparing to take over the world...\n*2021-10-19T06:48:30.726148+00:00 app[worker.1]*: World domination complete.\n*2021-10-19T06:48:30.726190+00:00 app[worker.1]*: ONLINE\n`)
+				}, 2000);
+			}, 8000);
 		}
 	} catch (error) {
 		console.log("error");
