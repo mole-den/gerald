@@ -249,7 +249,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 					moment_tz
 					let timeString = timestamp.clone().tz("Australia/Sydney").format('llll');
 					let name = (member.nickname) ? member.nickname : `${msg.author.username}#${msg.author.discriminator}`;
-					await message.channel.send(`**Message from ${name}** Sent ${timeString}\n ${msg.content}`)
+					await message.channel.send(`**Message from ${name}**: *${timeString}*\n ${msg.content}`)
 				})
 			}
 		}
