@@ -1,6 +1,8 @@
 import * as discord from "discord.js";
 import * as pg from 'pg';
 import fs from 'fs';
+import moment from 'moment';
+import * as moment_tz from 'moment-timezone'
 fs;
 
 process.on('uncaughtException', async error => {
@@ -243,8 +245,11 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				messagesArray.forEach(async msg => {
 					let member= await msg.guild?.members.fetch(msg);
 					if (!member) return;
+					let timestamp = moment(msg.createdTimestamp);
+					moment_tz
+					let timeString = timestamp.clone().tz("Australia/Sydney").format('llll');
 					let name = (member.nickname) ? member.nickname : `${msg.author.username}#${msg.author.discriminator}`;
-					await message.channel.send(`**Message from ${name}** \n ${msg.content}`)
+					await message.channel.send(`**Message from ${name}** Sent ${timeString}\n ${msg.content}`)
 				})
 			}
 		}

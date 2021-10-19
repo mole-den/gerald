@@ -20,7 +20,9 @@
 
     "@databases/sql": "^3.2.0",
 
-    "discord.js": "13.1.0",
+    "@types/moment-timezone": "^0.5.30",
+
+    "discord.js": "^13.1.0",
 
     "pg": "^8.7.1"
 
