@@ -62,13 +62,12 @@ bot.on('userUpdate', async (user) => {
 
 let lastChannel: discord.TextBasedChannels;
 bot.on('message', (message: discord.Message) => {
+	if (message.content.includes('zac') || message.content.includes('sir mole')) message.channel.send('zac is stupid')
 	lastChannel = message.channel
 	if (message.author.bot) return
 	if (logmessages === false) return;
 	if (message.channel.type === 'DM') return;
 	const channel = message.guild!.channels.cache.find(ch => ch.name === 'gerald');
-	if (message.content.includes('zac') || message.content.includes('sir mole')) message.channel.send('zac is gay')
-
 	console.log(`${message.author.tag} said: "${message.content}" in ${message.guild!.name}`);
 	if (!channel) return;
 	if (message.channel.name === 'gerald') return;
@@ -230,14 +229,24 @@ bot.on('message', async (message: discord.Message) => {
 				let s = await db.query('SELECT * FROM gmember WHERE userid = $1', [BigInt(user.id)])
 				message.channel.send(`${(user.nickname !== null) ? user.nickname : user.user.username} is ${s.rows[0].sexuality}`)
 			}
-		} else if (command === 'og') {
-			// await message.channel.send(`*2021-10-19T06:48:04.000000+00:00 app[api]*: **Build started by user** ofoxsmith@outlook.com\n*2021-10-19T06:48:27.413737+00:00 app[api]*: **Deploy bb6bd08f by user** ofoxsmith@outlook.com\n*2021-10-19T06:48:27.413737+00:00 app[api]*: **Release v515 created by user** ofoxsmith@outlook.com\n`)
-			// setTimeout(async () => {
-			// 	await message.channel.send(`*2021-10-19T06:48:27.668513+00:00 heroku[worker.1]*: Restarting\n*2021-10-19T06:48:27.690876+00:00 heroku[worker.1]*: State changed from up to starting\n*2021-10-19T06:48:28.680630+00:00 heroku[worker.1]*: Stopping all processes with SIGTERM\n*2021-10-19T06:48:28.963661+00:00 heroku[worker.1]*: Process exited with status 143\n*2021-10-19T06:48:29.381437+00:00 heroku[worker.1]*: Starting process with command 'node build / index.js'\n*2021-10-19T06:48:30.000000+00:00 app[api]*: Build succeeded\n*2021-10-19T06:48:30.079669+00:00 heroku[worker.1]*: State changed from starting to up\n`);
-			// 	setTimeout(() => {
-			// 		message.channel.send(`*2021-10-19T06:48:30.327177+00:00 app[worker.1]*: v16.10.0\n*2021-10-19T06:48:30.726099+00:00 app[worker.1]*: Preparing to take over the world...\n*2021-10-19T06:48:30.726148+00:00 app[worker.1]*: World domination complete.\n*2021-10-19T06:48:30.726190+00:00 app[worker.1]*: ONLINE\n`)
-			// 	}, 2000);
-			// }, 8000);
+		} else if (command === 'dump') {
+			let id = message.mentions.channels.first()?.id;
+			if (id) {
+				let channel = await message.guild?.channels.fetch(id);
+				if (!channel || channel.type === 'GUILD_STAGE_VOICE' || channel.type === 'GUILD_VOICE' 
+				|| channel.type === 'GUILD_CATEGORY' || channel.type === 'GUILD_STORE')return;
+				let lim = parseInt(args[1]);
+				if (lim === NaN) return;
+				let messages = await channel.messages.fetch({limit: lim});
+				messages = messages.filter(msg => (msg.author.bot === false));
+				
+				messages.each(async msg => {
+					let member= await msg.guild?.members.fetch(msg);
+					if (!member) return;
+					let name = (member.nickname) ? member.nickname : `${msg.author.username + msg.author.discriminator}`
+					message.channel.send(`Message from ${name} *${msg.createdAt}*`)
+				})
+			}
 		}
 	} catch (error) {
 		console.log("error");
