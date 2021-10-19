@@ -107,6 +107,17 @@ bot.on('message', async (message: discord.Message) => {
 			console.log(`L`);
 
 			//im a gnome
+		} else if (command === 'updatedb') {
+			if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
+				message.channel.send('Go away');
+				return;
+			}
+			await message.channel.send('Updating database rows');
+			let users = await message.guild?.members.fetch()
+			users?.forEach((i) => {
+				db.query('UPDATE gmember SET username = $1 WHERE userid = $2',
+					[`${i.user.username}#${i.user.discriminator}`, i.id]);
+			});
 		} else if (command === `die`) {
 			message.channel.send(`no u`);
 		} else if (command === `politics`) {
