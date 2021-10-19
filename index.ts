@@ -49,7 +49,7 @@ bot.login(token);
 
 bot.on('guildMemberAdd', (member) => {
 	member;
-	db.query('INSERT INTO gmember (guildid, userid) VALUES ($1, $2)',
+	db.query(`INSERT INTO gmember (guildid, userid, sexuality) VALUES ($1, $2, 'straight')`,
 		[BigInt(member.guild.id), BigInt(member.id)])
 })
 
