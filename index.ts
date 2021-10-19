@@ -238,12 +238,13 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				if (lim === NaN) return;
 				let messages = await channel.messages.fetch({limit: lim});
 				messages = messages.filter(msg => (msg.author.bot === false));
-				
+				messages = messages.filter(msg => (msg.system === false));
 				messages.each(async msg => {
 					let member= await msg.guild?.members.fetch(msg);
 					if (!member) return;
-					let name = (member.nickname) ? member.nickname : `${msg.author.username + msg.author.discriminator}`
-					message.channel.send(`Message from ${name} \n ${msg.content}`)
+					let name = (member.nickname) ? member.nickname : `${msg.author.username}#${msg.author.discriminator}`;
+					console.log(`Message from ${ name } \n ${ msg.content }`)
+					await message.channel.send(`**Message from ${name}** \n ${msg.content}`)
 				})
 			}
 		}
