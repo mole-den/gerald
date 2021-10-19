@@ -61,7 +61,7 @@ bot.on('userUpdate', async (user) => {
 });
 
 let lastChannel: discord.TextBasedChannels;
-bot.on('message', (message: discord.Message) => {
+bot.on('messageCreate', (message: discord.Message) => {
 	lastChannel = message.channel
 	if (message.author.bot) return
 	if (logmessages === false) return;
@@ -77,7 +77,7 @@ bot.on('message', (message: discord.Message) => {
 
 
 
-bot.on('message', async (message: discord.Message) => {
+bot.on('messageCreate', async (message: discord.Message) => {
 	try {
 		const userID = message.author;
 		userID;
