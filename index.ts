@@ -62,7 +62,6 @@ bot.on('userUpdate', async (user) => {
 
 let lastChannel: discord.TextBasedChannels;
 bot.on('message', (message: discord.Message) => {
-	if (message.content.includes('zac') || message.content.includes('sir mole')) message.channel.send('zac is stupid')
 	lastChannel = message.channel
 	if (message.author.bot) return
 	if (logmessages === false) return;
