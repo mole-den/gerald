@@ -234,7 +234,7 @@ bot.on('message', async (message: discord.Message) => {
 				let channel = await message.guild?.channels.fetch(id);
 				if (!channel || channel.type === 'GUILD_STAGE_VOICE' || channel.type === 'GUILD_VOICE' 
 				|| channel.type === 'GUILD_CATEGORY' || channel.type === 'GUILD_STORE')return;
-				let lim = parseInt(args[1]);
+				let lim = parseInt(args[2]);
 				if (lim === NaN) return;
 				let messages = await channel.messages.fetch({limit: lim});
 				messages = messages.filter(msg => (msg.author.bot === false));
