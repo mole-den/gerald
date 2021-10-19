@@ -244,7 +244,6 @@ bot.on('messageCreate', async (message: discord.Message) => {
 					let member= await msg.guild?.members.fetch(msg);
 					if (!member) return;
 					let name = (member.nickname) ? member.nickname : `${msg.author.username}#${msg.author.discriminator}`;
-					console.log(`Message from ${ name } \n ${ msg.content }`)
 					await message.channel.send(`**Message from ${name}** \n ${msg.content}`)
 				})
 			}
