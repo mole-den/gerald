@@ -243,7 +243,7 @@ bot.on('message', async (message: discord.Message) => {
 					let member= await msg.guild?.members.fetch(msg);
 					if (!member) return;
 					let name = (member.nickname) ? member.nickname : `${msg.author.username + msg.author.discriminator}`
-					message.channel.send(`Message from ${name} *${msg.createdAt}*`)
+					message.channel.send(`Message from ${name} *${msg.createdAt.toLocaleTimeString()}*`)
 				})
 			}
 		}
