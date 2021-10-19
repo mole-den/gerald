@@ -219,6 +219,7 @@ bot.on('message', async (message: discord.Message) => {
 		} else if (command === 'gay') {
 			let user = message.mentions.members?.first();
 			if (args[0] === 'add') {
+				if (args[1] === undefined) return;
 				let updated = args.slice(1).join('');
 				await db.query('UPDATE gmember SET sexuality=$1 WHERE userid = $2',
 					[updated, message.author.id]);
@@ -227,10 +228,6 @@ bot.on('message', async (message: discord.Message) => {
 			}
 			if (user) {
 				let s = await db.query('SELECT * FROM gmember WHERE userid = $1', [BigInt(user.id)])
-				if (s.rows[0].sexuality === null) {
-					message.channel.send('sexuality not specified ');
-					return;
-				}
 				message.channel.send(`${(user.nickname !== null) ? user.nickname : user.user.username} is ${s.rows[0].sexuality}`)
 			}
 		} else if (command === 'og') {
