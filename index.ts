@@ -229,7 +229,7 @@ bot.on('message', async (message: discord.Message) => {
 					message.channel.send('sexuality not specified ');
 					return;
 				}
-				message.channel.send(`${user.nickname} is ${s.rows[0].sexuality}`)
+				message.channel.send(`${(user.nickname !== null) ? user.nickname : user.user.username } is ${s.rows[0].sexuality}`)
 			}
 		} else if (command === 'og') {
 			// await message.channel.send(`*2021-10-19T06:48:04.000000+00:00 app[api]*: **Build started by user** ofoxsmith@outlook.com\n*2021-10-19T06:48:27.413737+00:00 app[api]*: **Deploy bb6bd08f by user** ofoxsmith@outlook.com\n*2021-10-19T06:48:27.413737+00:00 app[api]*: **Release v515 created by user** ofoxsmith@outlook.com\n`)
