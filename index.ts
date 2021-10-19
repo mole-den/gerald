@@ -67,7 +67,7 @@ bot.on('message', (message: discord.Message) => {
 	if (logmessages === false) return;
 	if (message.channel.type === 'DM') return;
 	const channel = message.guild!.channels.cache.find(ch => ch.name === 'gerald');
-	if(message.content.includes('zac'))message.channel.send('zac is gay')
+	if (message.content.includes('zac') || message.content.includes('sir mole'))message.channel.send('zac is gay')
 
 	console.log(`${message.author.tag} said: "${message.content}" in ${message.guild!.name}`);
 	if (!channel) return;
