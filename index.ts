@@ -53,6 +53,11 @@ bot.on('guildMemberAdd', (member) => {
 		[BigInt(member.guild.id), BigInt(member.id)])
 })
 
+bot.on('userUpdate', async (user) => {
+	let fullUser = ((user.partial) ? (await user.fetch()) : user);
+	db.query('UPDATE gmember SET username = $1 WHERE userid = $2', 
+	[`${fullUser.username}#${fullUser.discriminator}`, fullUser.id]);
+});
 
 let lastChannel: discord.TextBasedChannels;
 bot.on('message', (message: discord.Message) => {
@@ -204,7 +209,7 @@ bot.on('message', async (message: discord.Message) => {
 				await db.query('UPDATE gmember SET sexuality=$1 WHERE userid = $2', 
 					[args[1], message.author.id]);
 				message.channel.send(`set ${message.author.username} to ${args[1]}`);
-				return
+				return;
 			}
 			if (user) {
 				let s = await db.query('SELECT * FROM gmember WHERE userid = $1', [BigInt(user.id)])
