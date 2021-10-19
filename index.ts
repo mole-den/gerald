@@ -63,10 +63,11 @@ bot.on('userUpdate', async (user) => {
 let lastChannel: discord.TextBasedChannels;
 bot.on('message', (message: discord.Message) => {
 	lastChannel = message.channel
+	if (message.author.bot) return
 	if (logmessages === false) return;
 	if (message.channel.type === 'DM') return;
 	const channel = message.guild!.channels.cache.find(ch => ch.name === 'gerald');
-
+	if(message.content.includes('zac'))message.channel.send('zac is gay')
 
 	console.log(`${message.author.tag} said: "${message.content}" in ${message.guild!.name}`);
 	if (!channel) return;
@@ -265,4 +266,3 @@ setInterval(heartbeat, 5000);
 bot.on('heartbeated', () => {
 	//console.log(`Heartbeat recived. Logged in as ${bot.user.tag}`);
 });
-
