@@ -224,7 +224,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			if (user) {
 				let s = await db.query('SELECT * FROM gmember WHERE userid = $1', [BigInt(user.id)])
 				if ((s.rows[0].sexuality as string).includes('<@!')) {
-					(s.rows[0].sexuality as string).replace(/\<\@\!/, '<@')
+					s.rows[0].sexuality = (s.rows[0].sexuality as string).replace(/\<\@\!/, '<@')
 				}
 				message.channel.send(`${(user.nickname !== null) ? user.nickname : user.user.username} is ${s.rows[0].sexuality}`)
 			}
