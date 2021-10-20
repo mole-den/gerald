@@ -20,9 +20,9 @@
 
     "@databases/sql": "^3.2.0",
 
-    "@types/moment-timezone": "^0.5.30",
-
     "discord.js": "^13.1.0",
+
+    "luxon": "^2.0.2",
 
     "pg": "^8.7.1"
 
@@ -35,6 +35,8 @@
   },
 
   "devDependencies": {
+
+    "@types/luxon": "^2.0.5",
 
     "@types/pg": "^8.6.1",
 

@@ -1,8 +1,7 @@
 import * as discord from "discord.js";
 import * as pg from 'pg';
 import fs from 'fs';
-import moment from 'moment';
-import * as moment_tz from 'moment-timezone'
+import * as lux from 'luxon'
 fs;
 
 process.on('uncaughtException', async error => {
@@ -82,7 +81,7 @@ bot.on('messageDelete', async (message) => {
 	if (message.partial || !message.guild || message.author.bot) return;
 	console.log('passed')
 	db.query(`INSERT INTO deletedmsg (author, content, guildid, timestamp) VALUES ($1, $2, $3, $4)`,
-		[BigInt(message.author.id), message.cleanContent, BigInt(message.guild.id), moment(message.createdAt).unix()])
+		[BigInt(message.author.id), message.cleanContent, BigInt(message.guild.id), lux.DateTime.fromJSDate(message.createdAt).toSeconds()])
 });
 
 bot.on('messageCreate', async (message: discord.Message) => {
@@ -254,9 +253,8 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				messagesArray.forEach(async msg => {
 					let member = await msg.guild?.members.fetch(msg);
 					if (!member) return;
-					let timestamp = moment(msg.createdTimestamp);
-					moment_tz
-					let timeString = timestamp.clone().tz("Australia/Sydney").format('llll');
+					let timestamp = lux.DateTime.fromJSDate(msg.createdAt);
+					let timeString = timestamp.setZone("Australia/Sydney").toFormat('llll');
 					let name = (member.nickname) ? member.nickname : `${msg.author.username}#${msg.author.discriminator}`;
 					await message.channel.send(`**Message from ${name}**: *${timeString}*\n ${msg.content}`)
 				})
@@ -268,7 +266,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				let member = await message.guild?.members.fetch(msg.author);
 				if (!member) return;
 				message.channel.send(JSON.stringify(msg))
-				let timeString = moment((msg.timestamp as number).toString()).tz("Australia/Sydney").format('llll');
+				let timeString = lux.DateTime.fromSeconds(msg.timestamp).setLocale("Australia/Sydney").toFormat('llll');
 				let name = (member?.nickname) ? member.nickname : `${member?.user.username}#${member.user.discriminator}`;
 				await message.channel.send(`**Deleted Message from ${name}**: *${timeString}*\n ${msg.content}`)
 			})
