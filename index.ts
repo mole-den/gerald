@@ -215,7 +215,8 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			let user = message.mentions.members?.first();
 			if (args[0] === 'add') {
 				if (args[1] === undefined) return;
-				let updated = args[1].replace('<@!', '<@')
+				message.channel.send(message.cleanContent)
+				let updated = args[1].replace('<@!', '<@');
 				await db.query('UPDATE gmember SET sexuality=$1 WHERE userid = $2',
 					[updated, message.author.id]);
 				message.channel.send(`set ${message.author.username} to ${updated}`);
