@@ -78,19 +78,11 @@ bot.on('messageCreate', (message: discord.Message) => {
 });
 bot.on('messageDelete', async (message) => {
 	console.log('here')
-        let x = await (await bot.guilds.fetch('809675885330432051')).channels.fetch('809675885849739296') as discord.TextChannel;
-	await x.send(`
-<@471907923056918528>, <@811413512743813181>\n
- FATAL:\n
- error: invalid input syntax for type integer: "1634728188.485"\n
- Exiting process `);
-        return;
-        throw new Error('no pg_hba.conf entry for host "139.28.216.34", user "tlnjcyrrehuvfw", database "d61trk6httm3q3", SSL off');
+	if (message.partial || !message.guild || message.author.bot) return;
 	console.log('passed')
-	db.query(`INSERT INTO deletedmsg (author, content, guildid, timestamp) VALUES ($1, $2, $3, $4)`,//@ts-expect-error
+	db.query(`INSERT INTO deletedmsg (author, content, guildid, timestamp) VALUES ($1, $2, $3, $4)`,
 		[BigInt(message.author.id), message.cleanContent, BigInt(message.guild.id), lux.DateTime.fromJSDate(message.createdAt).toSeconds()])
-})
-
+});
 
 bot.on('messageCreate', async (message: discord.Message) => {
 	try {
@@ -176,10 +168,10 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			let data = await db.query(out)
 			console.log('done');
 			let JSONdata = JSON.stringify(data.rows, null, 1);
-			if ( JSONdata?.length && JSONdata.length < 2000) {
+			if (JSONdata?.length && JSONdata.length < 2000) {
 				message.channel.send(`${data.command} completed - ${data.rowCount} rows, \n${JSONdata}`);
 				return;
-			} else if (JSONdata?.length && JSONdata.length > 2000){
+			} else if (JSONdata?.length && JSONdata.length > 2000) {
 				const buffer = Buffer.from(JSONdata)
 				const attachment = new discord.MessageAttachment(buffer, 'file.json');
 				message.channel.send(`${data.command} completed - ${data.rowCount} rows,`);
@@ -269,7 +261,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			}
 		} else if (command === 'deleted') {
 			let del = await db.query('SELECT * FROM deletedmsg ORDER BY updated_at DESC LIMIT $1;',
-			[Number((args[1])? args[1]: 100)]);
+				[Number((args[1]) ? args[1] : 100)]);
 			del.rows.forEach(async (msg) => {
 				let member = await message.guild?.members.fetch(msg.author);
 				if (!member) return;
