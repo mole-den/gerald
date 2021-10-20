@@ -215,7 +215,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			let user = message.mentions.members?.first();
 			if (args[0] === 'add') {
 				if (args[1] === undefined) return;
-				if (user) {
+				if (user && false) {
 					message.channel.send('Cannot set to user');
 					return;
 				}
