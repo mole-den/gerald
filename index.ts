@@ -77,8 +77,12 @@ bot.on('messageCreate', (message: discord.Message) => {
 		(channel as discord.TextChannel).send(`**${message.author.tag}** said: \`${message.content}\` in ${message.guild!.name}`);
 	}
 });
-
-
+let messageDeleted : discord.Message;
+let deletedTime: Date
+bot.on('messageDelete', async (message) => {
+	messageDeleted = await message.fetch();
+	deletedTime = new Date();
+})
 
 bot.on('messageCreate', async (message: discord.Message) => {
 	try {
@@ -253,6 +257,12 @@ bot.on('messageCreate', async (message: discord.Message) => {
 					await message.channel.send(`**Message from ${name}**: *${timeString}*\n ${msg.content}`)
 				})
 			}
+		} else if (command === 'deleted') {
+			let msg = messageDeleted
+			let member = await msg.guild?.members.fetch(msg);
+			let timeString = moment(deletedTime).clone().tz("Australia/Sydney").format('llll');
+			let name = (member?.nickname) ? member.nickname : `${msg.author.username}#${msg.author.discriminator}`;
+			await message.channel.send(`**Deleted Message from ${name}**: *${timeString}*\n ${msg.content}`)
 		}
 	} catch (error) {
 		console.log("error");
