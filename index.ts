@@ -87,15 +87,16 @@ bot.on('messageCreate', (message: discord.Message) => {
 
 bot.on('messageDelete', async (message) => {
 	if (message.guild === null) return;
-	await db.query(`INSERT INTO deletedmsg (author, content, guildid, timestamp) VALUES ($1, $2, $3, $4)`,
-		[BigInt((message as discord.Message).author.id), message.cleanContent, BigInt(message.guild.id), Math.round(lux.DateTime.fromJSDate(message.createdAt).toSeconds())]);
+	if (message.partial) return;
+	await db.query(`INSERT INTO deletedmsg (author, content, guildid, timestamp, channel) VALUES ($1, $2, $3, $4, $5)`,
+		[BigInt(message.author.id), message.cleanContent, BigInt(message.guild.id), Math.round(lux.DateTime.fromJSDate(message.createdAt).toSeconds()), BigInt(message.channelId)]);
 });
 
 bot.on('messageDeleteBulk', async (array) => {
 	array.each(async (message) => {
 		if (message.partial || !message.guild || message.author.bot) return;
-		await db.query(`INSERT INTO deletedmsg (author, content, guildid, timestamp) VALUES ($1, $2, $3, $4)`,
-			[BigInt(message.author.id), message.cleanContent, BigInt(message.guild.id), Math.round(lux.DateTime.fromJSDate(message.createdAt).toSeconds())]);
+		await db.query(`INSERT INTO deletedmsg (author, content, guildid, timestamp, channel) VALUES ($1, $2, $3, $4, $5)`,
+			[BigInt(message.author.id), message.cleanContent, BigInt(message.guild.id), Math.round(lux.DateTime.fromJSDate(message.createdAt).toSeconds()), BigInt(message.channelId)]);
 	})
 });
 
@@ -283,7 +284,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				if (!member) return;
 				let timeString = lux.DateTime.fromSeconds(msg.timestamp).setZone("Australia/Sydney").toFormat('FFFF');
 				let name = (member?.nickname) ? member.nickname : `${member?.user.username}#${member.user.discriminator}`;
-				await message.channel.send(`**Deleted Message from ${name}**: *${timeString}*\n ${msg.content}`)
+				await message.channel.send(`**Deleted Message from ${name} in <#${msg.channel}>**: *${timeString}*\n ${msg.content}`)
 			})
 		}
 	} catch (error) {
