@@ -268,7 +268,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				let member = await message.guild?.members.fetch(msg.author);
 				if (!member) return;
 				message.channel.send(JSON.stringify(msg))
-				let timeString = moment(msg.timestamp).tz("Australia/Sydney").format('llll');
+				let timeString = moment((msg.timestamp as number).toString()).tz("Australia/Sydney").format('llll');
 				let name = (member?.nickname) ? member.nickname : `${member?.user.username}#${member.user.discriminator}`;
 				await message.channel.send(`**Deleted Message from ${name}**: *${timeString}*\n ${msg.content}`)
 			})
