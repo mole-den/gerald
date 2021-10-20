@@ -79,10 +79,13 @@ bot.on('messageCreate', (message: discord.Message) => {
 });
 let messageDeleted: discord.Message;
 let deletedTime: Date
+
 bot.on('messageDelete', async (message) => {
-	messageDeleted = (message as discord.Message)
+	if (message.partial || !message.guild) return;
+	db.query(`INSERT INTO deletedmsg (author, content, guildid, timestamp) VALUES ($1, $2, $3, $4)`,
+	[BigInt(message.author.id), message.cleanContent, BigInt(message.guild.id), message.createdAt])
 	deletedTime = new Date();
-})
+});
 
 bot.on('messageCreate', async (message: discord.Message) => {
 	try {
