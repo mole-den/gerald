@@ -226,10 +226,20 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				return;
 			}
 			if (user) {
+				let x;
 				message.mentions.members?.each(async (eachmem) => {
 					let s = await db.query('SELECT * FROM gmember WHERE userid = $1', [BigInt(eachmem.id)])
-					message.channel.send(`${(eachmem.nickname !== null) ? eachmem.nickname : eachmem.user.username} is ${s.rows[0].sexuality}`)
+					message.channel.send(`${(eachmem.nickname !== null) ? eachmem.nickname : eachmem.user.username} is ${s.rows[0].sexuality}`);
+					x = true
 				})
+				if (x === true) return;
+				message.mentions.roles?.each(async (eachrole) => {
+					eachrole.members.each(async (eachmem) => {
+						let s = await db.query('SELECT * FROM gmember WHERE userid = $1', [BigInt(eachmem.id)])
+						message.channel.send(`${(eachmem.nickname !== null) ? eachmem.nickname : eachmem.user.username} is ${s.rows[0].sexuality}`)
+					})
+				})
+
 			}
 		} else if (command === 'dump') {
 			let id = message.mentions.channels.first()?.id;
