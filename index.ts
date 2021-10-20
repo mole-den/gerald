@@ -216,6 +216,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			if (args[0] === 'add') {
 				if (args[1] === undefined) return;
 				let updated = args.slice(1).join('');
+				message.channel.send(`\\${args[0]}`)
 				await db.query('UPDATE gmember SET sexuality=$1 WHERE userid = $2',
 					[updated, message.author.id]);
 				message.channel.send(`set ${message.author.username} to ${args[1]}`);
@@ -223,9 +224,6 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			}
 			if (user) {
 				let s = await db.query('SELECT * FROM gmember WHERE userid = $1', [BigInt(user.id)])
-				if ((s.rows[0].sexuality as string).includes('<@!')) {
-					s.rows[0].sexuality = (s.rows[0].sexuality as string).replace(/\<\@\!/, '<@')
-				}
 				message.channel.send(`${(user.nickname !== null) ? user.nickname : user.user.username} is ${s.rows[0].sexuality}`)
 			}
 		} else if (command === 'dump') {
