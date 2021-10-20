@@ -9,7 +9,7 @@ process.on('uncaughtException', async error => {
 	console.log('err');
 	if (!bot) { process.exit() }
 	let x = await (await bot.guilds.fetch('809675885330432051')).channels.fetch('809675885849739296') as discord.TextChannel;
-	await x.send(`<@471907923056918528>, <@811413512743813181>\n FATAL:\n ${error}\n Exiting process`)
+	await x.send(`<@471907923056918528>, <@811413512743813181>\n\n ${error.stack}`)
 	process.exit()
 });
 
@@ -34,6 +34,16 @@ bot.on('ready', () => {
 	bot.user!.setPresence({ activities: [{ name: 'you', type: "WATCHING" }], status: 'dnd' });
 	//online or dnd
 	//bot.emit('heartbeated');
+	bot.guilds.fetch().then(async (g) => {
+		g.each(async (guild) => {
+			let x = await guild.fetch();
+			let channels = (await x.channels.fetch()).filter(c => c.type === 'GUILD_TEXT');
+			channels.each(async (ch) => {
+				let c = (await ch.fetch() as discord.TextChannel);
+				c.messages.fetch({limit: 100})
+			})
+		})
+	})
 });
 
 const db = new pg.Client({
@@ -76,14 +86,21 @@ bot.on('messageCreate', (message: discord.Message) => {
 		(channel as discord.TextChannel).send(`**${message.author.tag}** said: \`${message.content}\` in ${message.guild!.name}`);
 	}
 });
+
 bot.on('messageDelete', async (message) => {
-	console.log('here')
-	if (message.partial || !message.guild || message.author.bot) return;
-	console.log([BigInt(message.author.id), message.cleanContent, BigInt(message.guild.id), Math.round(lux.DateTime.fromJSDate(message.createdAt).toSeconds())])
+	if (message.guild === null) return;
 	await db.query(`INSERT INTO deletedmsg (author, content, guildid, timestamp) VALUES ($1, $2, $3, $4)`,
-		[BigInt(message.author.id), message.cleanContent, BigInt(message.guild.id), Math.round(lux.DateTime.fromJSDate(message.createdAt).toSeconds())]);
-	console.log('passed')
+		[BigInt((message as discord.Message).author.id), message.cleanContent, BigInt(message.guild.id), Math.round(lux.DateTime.fromJSDate(message.createdAt).toSeconds())]);
 });
+
+bot.on('messageDeleteBulk', async (array) => {
+	array.each(async (message) => {
+		if (message.partial || !message.guild || message.author.bot) return;
+		await db.query(`INSERT INTO deletedmsg (author, content, guildid, timestamp) VALUES ($1, $2, $3, $4)`,
+			[BigInt(message.author.id), message.cleanContent, BigInt(message.guild.id), Math.round(lux.DateTime.fromJSDate(message.createdAt).toSeconds())]);
+	})
+});
+
 
 bot.on('messageCreate', async (message: discord.Message) => {
 	try {
@@ -255,19 +272,19 @@ bot.on('messageCreate', async (message: discord.Message) => {
 					let member = await msg.guild?.members.fetch(msg);
 					if (!member) return;
 					let timestamp = lux.DateTime.fromJSDate(msg.createdAt);
-					let timeString = timestamp.setZone("Australia/Sydney").toFormat('llll');
+					let timeString = timestamp.setZone("Australia/Sydney").toFormat('FFFF');
 					let name = (member.nickname) ? member.nickname : `${msg.author.username}#${msg.author.discriminator}`;
 					await message.channel.send(`**Message from ${name}**: *${timeString}*\n ${msg.content}`)
 				})
 			}
 		} else if (command === 'deleted') {
 			let del = await db.query('SELECT * FROM deletedmsg ORDER BY updated_at DESC LIMIT $1;',
-				[Number((args[1]) ? args[1] : 100)]);
+				[(args[0]) ? Number((args[0])) : 100]);
 			del.rows.forEach(async (msg) => {
 				let member = await message.guild?.members.fetch(msg.author);
 				if (!member) return;
 				message.channel.send(JSON.stringify(msg))
-				let timeString = lux.DateTime.fromSeconds(msg.timestamp).setLocale("Australia/Sydney").toFormat('llll');
+				let timeString = lux.DateTime.fromSeconds(msg.timestamp).setZone("Australia/Sydney").toFormat('FFFF');
 				let name = (member?.nickname) ? member.nickname : `${member?.user.username}#${member.user.discriminator}`;
 				await message.channel.send(`**Deleted Message from ${name}**: *${timeString}*\n ${msg.content}`)
 			})
