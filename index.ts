@@ -23,7 +23,7 @@ const prefix = "g";
 //const guildID = '576344535622483968';
 
 const token = process.env.TOKEN as string
-const dbToken: string = process.env.DB as string
+const dbToken: string = process.env.DATABASE_URL as string
 
 bot.on('ready', () => {
 	console.log('Preparing to take over the world...');
