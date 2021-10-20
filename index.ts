@@ -212,35 +212,26 @@ bot.on('messageCreate', async (message: discord.Message) => {
 		} else if (command === 'ping') {
 			message.channel.send(`Websocket heartbeat: ${bot.ws.ping}ms`)
 		} else if (command === 'gay') {
-			let user = message.mentions.members?.first();
 			if (args[0] === 'add') {
 				if (args[1] === undefined) return;
-				if (user && false) {
-					message.channel.send('Cannot set to user');
-					return;
-				}
 				let updated = args[1].replace('<@!', '<@');
 				await db.query('UPDATE gmember SET sexuality=$1 WHERE userid = $2',
 					[updated, message.author.id]);
 				message.channel.send(`set ${message.author.username} to ${updated}`);
 				return;
 			}
-			if (user) {
-				let x;
-				message.mentions.members?.each(async (eachmem) => {
+			let x;
+			message.mentions.members?.each(async (eachmem) => {
+				let s = await db.query('SELECT * FROM gmember WHERE userid = $1', [BigInt(eachmem.id)])
+				message.channel.send(`${(eachmem.nickname !== null) ? eachmem.nickname : eachmem.user.username} is ${s.rows[0].sexuality}`);
+				x = true
+			})
+			message.mentions.roles?.each(async (eachrole) => {
+				eachrole.members.each(async (eachmem) => {
 					let s = await db.query('SELECT * FROM gmember WHERE userid = $1', [BigInt(eachmem.id)])
-					message.channel.send(`${(eachmem.nickname !== null) ? eachmem.nickname : eachmem.user.username} is ${s.rows[0].sexuality}`);
-					x = true
+					message.channel.send(`${(eachmem.nickname !== null) ? eachmem.nickname : eachmem.user.username} is ${s.rows[0].sexuality}`)
 				})
-				if (x === true) return;
-				message.mentions.roles?.each(async (eachrole) => {
-					eachrole.members.each(async (eachmem) => {
-						let s = await db.query('SELECT * FROM gmember WHERE userid = $1', [BigInt(eachmem.id)])
-						message.channel.send(`${(eachmem.nickname !== null) ? eachmem.nickname : eachmem.user.username} is ${s.rows[0].sexuality}`)
-					})
-				})
-
-			}
+			})
 		} else if (command === 'dump') {
 			let id = message.mentions.channels.first()?.id;
 			if (id) {
