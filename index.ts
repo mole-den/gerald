@@ -168,14 +168,16 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			let data = await db.query(out)
 			console.log('done');
 			let JSONdata = JSON.stringify(data.rows, null, 1);
-			if (JSONdata.length < 2000) {
+			if ( JSONdata?.length && JSONdata.length < 2000) {
 				message.channel.send(`${data.command} completed - ${data.rowCount} rows, \n${JSONdata}`);
 				return;
-			} else {
+			} else if (JSONdata?.length && JSONdata.length > 2000){
 				const buffer = Buffer.from(JSONdata)
 				const attachment = new discord.MessageAttachment(buffer, 'file.json');
 				message.channel.send(`${data.command} completed - ${data.rowCount} rows,`);
 				message.channel.send({ files: [attachment] });
+			} else {
+				message.channel.send(`${data.command} completed - ${data.rowCount} rows,`);
 			}
 
 		} else if (command === "eval") {
