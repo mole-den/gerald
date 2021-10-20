@@ -80,7 +80,7 @@ bot.on('messageCreate', (message: discord.Message) => {
 let messageDeleted : discord.Message;
 let deletedTime: Date
 bot.on('messageDelete', async (message) => {
-	messageDeleted = await message.fetch();
+	messageDeleted = (message as discord.Message)
 	deletedTime = new Date();
 })
 
