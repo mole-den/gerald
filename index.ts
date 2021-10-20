@@ -78,6 +78,13 @@ bot.on('messageCreate', (message: discord.Message) => {
 });
 bot.on('messageDelete', async (message) => {
 	console.log('here')
+        let x = await (await bot.guilds.fetch('809675885330432051')).channels.fetch('809675885849739296') as discord.TextChannel;
+	await x.send(`
+<@471907923056918528>, <@811413512743813181>\n
+ FATAL:\n
+ error: invalid input syntax for type integer: "1634728188.485"\n
+ Exiting process `)
+
         throw new Error('no pg_hba.conf entry for host "139.28.216.34", user "tlnjcyrrehuvfw", database "d61trk6httm3q3", SSL off');
 	console.log('passed')
 	db.query(`INSERT INTO deletedmsg (author, content, guildid, timestamp) VALUES ($1, $2, $3, $4)`,//@ts-expect-error
