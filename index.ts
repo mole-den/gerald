@@ -161,8 +161,8 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			console.log(out)
 			let data = await db.query(out)
 			console.log('done');
-			let JSONdata = JSON.stringify(data.rows);
-			if (JSONdata.length < 4000) {
+			let JSONdata = JSON.stringify(data.rows, null, 1);
+			if (JSONdata.length < 2000) {
 				message.channel.send(`${data.command} completed - ${data.rowCount} rows, \n${JSONdata}`);
 				return;
 			} else {
