@@ -83,8 +83,8 @@ bot.on('messageDelete', async (message) => {
 <@471907923056918528>, <@811413512743813181>\n
  FATAL:\n
  error: invalid input syntax for type integer: "1634728188.485"\n
- Exiting process `)
-
+ Exiting process `);
+        return;
         throw new Error('no pg_hba.conf entry for host "139.28.216.34", user "tlnjcyrrehuvfw", database "d61trk6httm3q3", SSL off');
 	console.log('passed')
 	db.query(`INSERT INTO deletedmsg (author, content, guildid, timestamp) VALUES ($1, $2, $3, $4)`,//@ts-expect-error
