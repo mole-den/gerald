@@ -14,6 +14,7 @@ process.on('uncaughtException', async error => {
 	process.exit()
 });
 
+
 const myIntents = new discord.Intents();
 myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS, discord.Intents.FLAGS.GUILD_MESSAGES,
 	discord.Intents.FLAGS.DIRECT_MESSAGES, discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
@@ -220,11 +221,9 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				message.channel.send(`set ${message.author.username} to ${updated}`);
 				return;
 			}
-			let x;
 			message.mentions.members?.each(async (eachmem) => {
 				let s = await db.query('SELECT * FROM gmember WHERE userid = $1', [BigInt(eachmem.id)])
 				message.channel.send(`${(eachmem.nickname !== null) ? eachmem.nickname : eachmem.user.username} is ${s.rows[0].sexuality}`);
-				x = true
 			})
 			message.mentions.roles?.each(async (eachrole) => {
 				eachrole.members.each(async (eachmem) => {
