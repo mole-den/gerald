@@ -12,8 +12,6 @@ process.on('uncaughtException', async error => {
 	await x.send(`<@471907923056918528>, <@811413512743813181>\n\n ${error.stack}`)
 	process.exit()
 });
-
-
 const myIntents = new discord.Intents();
 myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS, discord.Intents.FLAGS.GUILD_MESSAGES,
 	discord.Intents.FLAGS.DIRECT_MESSAGES, discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
@@ -283,7 +281,6 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			del.rows.forEach(async (msg) => {
 				let member = await message.guild?.members.fetch(msg.author);
 				if (!member) return;
-				message.channel.send(JSON.stringify(msg))
 				let timeString = lux.DateTime.fromSeconds(msg.timestamp).setZone("Australia/Sydney").toFormat('FFFF');
 				let name = (member?.nickname) ? member.nickname : `${member?.user.username}#${member.user.discriminator}`;
 				await message.channel.send(`**Deleted Message from ${name}**: *${timeString}*\n ${msg.content}`)
