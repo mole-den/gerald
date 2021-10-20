@@ -77,14 +77,12 @@ bot.on('messageCreate', (message: discord.Message) => {
 		(channel as discord.TextChannel).send(`**${message.author.tag}** said: \`${message.content}\` in ${message.guild!.name}`);
 	}
 });
-let messageDeleted: discord.Message;
-let deletedTime: Date
-
 bot.on('messageDelete', async (message) => {
-	if (message.partial || !message.guild) return;
+	console.log('here')
+	if (message.partial || !message.guild || message.author.bot) return;
+	console.log('passed')
 	db.query(`INSERT INTO deletedmsg (author, content, guildid, timestamp) VALUES ($1, $2, $3, $4)`,
-	[BigInt(message.author.id), message.cleanContent, BigInt(message.guild.id), message.createdAt])
-	deletedTime = new Date();
+		[BigInt(message.author.id), message.cleanContent, BigInt(message.guild.id), moment(message.createdAt).unix()])
 });
 
 bot.on('messageCreate', async (message: discord.Message) => {
@@ -264,11 +262,15 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				})
 			}
 		} else if (command === 'deleted') {
-			let msg = messageDeleted
-			let member = await msg.guild?.members.fetch(msg);
-			let timeString = moment(deletedTime).clone().tz("Australia/Sydney").format('llll');
-			let name = (member?.nickname) ? member.nickname : `${msg.author.username}#${msg.author.discriminator}`;
-			await message.channel.send(`**Deleted Message from ${name}**: *${timeString}*\n ${msg.content}`)
+			let del = await db.query('SELECT * FROM deletedmsg ORDER BY updated_at DESC LIMIT $1;',
+			[Number((args[1])? args[1]: 100)]);
+			del.rows.forEach(async (msg) => {
+				let member = await message.guild?.members.fetch(msg.author);
+				if (!member) return;
+				let timeString = moment(msg.timestamp).clone().tz("Australia/Sydney").format('llll');
+				let name = (member?.nickname) ? member.nickname : `${member?.user.username}#${member.user.discriminator}`;
+				await message.channel.send(`**Deleted Message from ${name}**: *${timeString}*\n ${msg.content}`)
+			})
 		}
 	} catch (error) {
 		console.log("error");
