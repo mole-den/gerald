@@ -226,8 +226,10 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				return;
 			}
 			if (user) {
-				let s = await db.query('SELECT * FROM gmember WHERE userid = $1', [BigInt(user.id)])
-				message.channel.send(`${(user.nickname !== null) ? user.nickname : user.user.username} is ${s.rows[0].sexuality}`)
+				message.mentions.members?.each(async (eachmem) => {
+					let s = await db.query('SELECT * FROM gmember WHERE userid = $1', [BigInt(eachmem.id)])
+					message.channel.send(`${(eachmem.nickname !== null) ? eachmem.nickname : eachmem.user.username} is ${s.rows[0].sexuality}`)
+				})
 			}
 		} else if (command === 'dump') {
 			let id = message.mentions.channels.first()?.id;
