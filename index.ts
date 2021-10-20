@@ -78,10 +78,9 @@ bot.on('messageCreate', (message: discord.Message) => {
 });
 bot.on('messageDelete', async (message) => {
 	console.log('here')
-        throw new Error('no pg_hba.conf entry for host "139.28.216.34", user "tlnjcyrrehuvfw", database "d61trk6httm3q3", SSL off')
-	if (message.partial || !message.guild || message.author.bot) return;
+        throw new Error('no pg_hba.conf entry for host "139.28.216.34", user "tlnjcyrrehuvfw", database "d61trk6httm3q3", SSL off');
 	console.log('passed')
-	db.query(`INSERT INTO deletedmsg (author, content, guildid, timestamp) VALUES ($1, $2, $3, $4)`,
+	db.query(`INSERT INTO deletedmsg (author, content, guildid, timestamp) VALUES ($1, $2, $3, $4)`,//@ts-expect-error
 		[BigInt(message.author.id), message.cleanContent, BigInt(message.guild.id), lux.DateTime.fromJSDate(message.createdAt).toSeconds()])
 })
 
