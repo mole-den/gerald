@@ -9,7 +9,7 @@ process.on('uncaughtException', async error => {
 	console.log(error);
 	console.log('err');
 	if (!bot) { process.exit() }
-	let x = await (await bot.guilds.fetch('809675885330432051')).channels.fetch('809675885849739296') as discord.TextChannel
+	let x = await (await bot.guilds.fetch('809675885330432051')).channels.fetch('809675885849739296') as discord.TextChannel;
 	await x.send(`<@471907923056918528>, <@811413512743813181>\n FATAL:\n ${error}\n Exiting process`)
 	process.exit()
 });
