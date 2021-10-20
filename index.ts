@@ -81,7 +81,7 @@ bot.on('messageDelete', async (message) => {
 	if (message.partial || !message.guild || message.author.bot) return;
 	console.log('passed')
 	db.query(`INSERT INTO deletedmsg (author, content, guildid, timestamp) VALUES ($1, $2, $3, $4)`,
-		[BigInt(message.author.id), message.cleanContent, BigInt(message.guild.id), lux.DateTime.fromJSDate(message.createdAt).toSeconds()])
+		[BigInt(message.author.id), message.cleanContent, BigInt(message.guild.id), Math.round(lux.DateTime.fromJSDate(message.createdAt).toSeconds())])
 });
 
 bot.on('messageCreate', async (message: discord.Message) => {
