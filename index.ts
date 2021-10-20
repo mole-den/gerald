@@ -215,7 +215,10 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			let user = message.mentions.members?.first();
 			if (args[0] === 'add') {
 				if (args[1] === undefined) return;
-				message.channel.send(message.cleanContent)
+				if (user) {
+					message.channel.send('Cannot set to user');
+					return;
+				}
 				let updated = args[1].replace('<@!', '<@');
 				await db.query('UPDATE gmember SET sexuality=$1 WHERE userid = $2',
 					[updated, message.author.id]);
@@ -230,16 +233,16 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			let id = message.mentions.channels.first()?.id;
 			if (id) {
 				let channel = await message.guild?.channels.fetch(id);
-				if (!channel || channel.type === 'GUILD_STAGE_VOICE' || channel.type === 'GUILD_VOICE' 
-				|| channel.type === 'GUILD_CATEGORY' || channel.type === 'GUILD_STORE')return;
+				if (!channel || channel.type === 'GUILD_STAGE_VOICE' || channel.type === 'GUILD_VOICE'
+					|| channel.type === 'GUILD_CATEGORY' || channel.type === 'GUILD_STORE') return;
 				let lim = parseInt(args[1]);
 				if (lim === NaN) return;
-				let messages = await channel.messages.fetch({limit: lim});
+				let messages = await channel.messages.fetch({ limit: lim });
 				messages = messages.filter(msg => (msg.author.bot === false));
 				messages = messages.filter(msg => (msg.system === false));
 				let messagesArray = Array.from(messages.values()).reverse();
 				messagesArray.forEach(async msg => {
-					let member= await msg.guild?.members.fetch(msg);
+					let member = await msg.guild?.members.fetch(msg);
 					if (!member) return;
 					let timestamp = moment(msg.createdTimestamp);
 					moment_tz
