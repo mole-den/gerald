@@ -86,6 +86,7 @@ bot.on('messageCreate', (message: discord.Message) => {
 });
 
 bot.on('messageDelete', async (message) => {
+	if (message.author?.bot) return
 	if (message.guild === null) return;
 	if (message.partial) return;
 	await db.query(`INSERT INTO deletedmsg (author, content, guildid, timestamp, channel) VALUES ($1, $2, $3, $4, $5)`,
