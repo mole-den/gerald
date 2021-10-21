@@ -159,7 +159,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			//im a gnome
 		} else if (command === 'updatedb') {
 			if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
-				message.channel.send('Go away');
+				message.channel.send('');
 				return;
 			}
 			await message.channel.send('Updating database rows');
@@ -227,10 +227,10 @@ bot.on('messageCreate', async (message: discord.Message) => {
 		} else if (command === "eval") {
 			let str = message.content;
 			let out = str.substring(str.indexOf('```') + 3, str.lastIndexOf('```'));
-			// if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
-			// 	message.channel.send('You do not have the required permissions.');
-			// 	return;
-			// }
+			if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
+				message.channel.send('You do not have the required permissions.');
+				return;
+			}
 			try {
 				eval(out);
 			} catch (error) {
