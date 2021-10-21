@@ -101,7 +101,7 @@ bot.on('messageDeleteBulk', async (array) => {
 	})
 });
 bot.on('messageCreate', async (message: discord.Message) => {
-	let adcheck = message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181"
+	let adcheck = message.author.id == "471907923056918528" || message.author.id == "811413512743813181"
 	if (!message.content.startsWith(prefix) || message.author.bot) { return };
 	const args = message.content.slice(prefix.length).trim().split(' ');
 	const command = args.shift()?.toLowerCase();
