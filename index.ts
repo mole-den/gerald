@@ -100,7 +100,18 @@ bot.on('messageDeleteBulk', async (array) => {
 			[BigInt(message.author.id), message.cleanContent, BigInt(message.guild.id), Math.round(lux.DateTime.fromJSDate(message.createdAt).toSeconds()), BigInt(message.channelId)]);
 	})
 });
-
+bot.on('messageCreate', async (message: discord.Message) => {
+	if (!message.content.startsWith(prefix) || message.author.bot) { return };
+	const args = message.content.slice(prefix.length).trim().split(' ');
+	const command = args.shift()?.toLowerCase();
+	if (command === 'cat') {
+		let user = message.mentions.members?.first();
+		function getRandomArbitrary(min: number, max: number) {
+			return Math.random() * (max - min) + min;
+		}
+		message.channel.send(`${(user?.nickname) ? user?.nickname : user?.user.username} has killed ${getRandomArbitrary(0, 100000)} kittens`)
+	}
+});
 
 bot.on('messageCreate', async (message: discord.Message) => {
 	try {
