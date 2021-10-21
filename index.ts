@@ -101,6 +101,7 @@ bot.on('messageDeleteBulk', async (array) => {
 	})
 });
 bot.on('messageCreate', async (message: discord.Message) => {
+	let adcheck = message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181"
 	if (!message.content.startsWith(prefix) || message.author.bot) { return };
 	const args = message.content.slice(prefix.length).trim().split(' ');
 	const command = args.shift()?.toLowerCase();
@@ -115,6 +116,16 @@ bot.on('messageCreate', async (message: discord.Message) => {
 		}
 		message.channel.send(`${(user?.nickname) ? user?.nickname : user?.user.username} has killed ${getRandomArbitrary(0, 2000)} kittens`)
 
+	}
+	if (command === 'ask') {
+		function getRandomArbitrary(min: number, max: number) {
+			return Math.round(Math.random() * (max - min) + min);
+		}
+		if (getRandomArbitrary(0 ,20) > 9 || adcheck) {
+			message.channel.send('yes')
+		} else {
+			message.channel.send('no')
+		}
 	}
 });
 
