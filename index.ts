@@ -109,7 +109,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 		function getRandomArbitrary(min: number, max: number) {
 			return Math.random() * (max - min) + min;
 		}
-		message.channel.send(`${(user?.nickname) ? user?.nickname : user?.user.username} has killed ${getRandomArbitrary(0, 100000)} kittens`)
+		message.channel.send(`${(user?.nickname) ? user?.nickname : user?.user.username} has killed ${getRandomArbitrary(0, 1000000)} kittens`)
 	}
 });
 
