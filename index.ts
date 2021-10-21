@@ -109,9 +109,10 @@ bot.on('messageCreate', async (message: discord.Message) => {
 		function getRandomArbitrary(min: number, max: number) {
 			return Math.round(Math.random() * (max - min) + min);
 		}
-		if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181")
-		message.channel.send(`${(user?.nickname) ? user?.nickname : user?.user.username} has killed ${getRandomArbitrary(0, 1000)} kittens`)
-
+		if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181"){
+		message.channel.send(`${(user?.nickname) ? user?.nickname : user?.user.username} has killed ${getRandomArbitrary(0, 1000)} kittens`);
+		return
+		}
 		message.channel.send(`${(user?.nickname) ? user?.nickname : user?.user.username} has killed ${getRandomArbitrary(0, 2000)} kittens`)
 
 	}
