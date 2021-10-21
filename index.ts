@@ -59,7 +59,7 @@ bot.login(token);
 
 bot.on('guildMemberAdd', (member) => {
 	member;
-	db.query(`INSERT INTO gmember (guildid, userid, sexuality) VALUES ($1, $2, 'straight')`,
+	db.query(`INSERT INTO gmember (guildid, userid, sexuality) VALUES ($1, $2, 'straight') ON CONFLICT DO NOTHING`,
 		[BigInt(member.guild.id), BigInt(member.id)])
 })
 
