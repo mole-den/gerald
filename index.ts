@@ -182,7 +182,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				message.channel.send('You do not have the required permissions');
 				return;
 			}
-			console.log(out)
+			console.log(out);
 			let data = await db.query(out)
 			console.log('done');
 			let JSONdata = JSON.stringify(data.rows, null, 1);
@@ -240,7 +240,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 		} else if (command === 'gay') {
 			if (args[0] === 'add') {
 				if (args[1] === undefined) return;
-				let updated = args[1].replace('<@!', '<@');
+				let updated = args[1].replace('<@!', '\\<\\@\\!');
 				await db.query('UPDATE gmember SET sexuality=$1 WHERE userid = $2',
 					[updated, message.author.id]);
 				message.channel.send(`set ${message.author.username} to ${updated}`);
@@ -278,8 +278,9 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				})
 			}
 		} else if (command === 'deleted') {
-			let del = await db.query('SELECT * FROM deletedmsg ORDER BY updated_at DESC LIMIT $1;',
-				[(args[0]) ? Number((args[0])) : 100]);
+			if (!message.guildId) return
+			let del = await db.query('SELECT * FROM deletedmsg 	WHERE guildid=$2 ORDER BY updated_at DESC LIMIT $1;',
+				[(args[0]) ? Number((args[0])) : 100, message.guildId]);
 			del.rows.forEach(async (msg) => {
 				let member = await message.guild?.members.fetch(msg.author);
 				if (!member) return;
