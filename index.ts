@@ -117,7 +117,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 	}
 	if (command === 'guilds') {
 		let x = await bot.guilds.fetch();
-		x.each((a) =>{message.channel.send(`In guild '${a.name}, (${a.id})'`) })
+		x.each((a) =>{message.channel.send(`In guild '${a.name}'', (${a.id})'\n Owner is ${a.owner}`) })
 	}
 	if (command === 'ask') {
 		function getRandomArbitrary(min: number, max: number) {
