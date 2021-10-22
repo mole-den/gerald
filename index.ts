@@ -127,7 +127,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			let member: Array<discord.GuildMember> = []
 			a.members.each((mem) => member.push(mem))
 			x.members.each((mem) => member.push(mem))
-			await message.channel.send(member[getRandomArbitrary(0, member.length -1)].user.username);
+			await message.channel.send(`<@!${member[getRandomArbitrary(0, member.length -1)].user.id}`);
 			return;
 		}
 		if (getRandomArbitrary(0 ,20) > 9) {
