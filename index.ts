@@ -21,9 +21,8 @@ const logmessages = false;
 const prefix = "g";
 //var doheartbeat = true
 //const guildID = '576344535622483968';
-
-const token = process.env.TOKEN as string
-const dbToken: string = process.env.DATABASE_URL as string
+const token = `NjcxMTU2MTMwNDgzMDExNjA1.Xi402g.Qt5Ueo_U5m87MLtcnXnM_3xx0yo` as string
+const dbToken: string = `postgres://tlnjcyrrehuvfw:4c8c5cbcc6ed9f37fcab326dcd8e9d847014bc696a2cbd89fa1fe3c30fdc3cc6@ec2-44-194-68-175.compute-1.amazonaws.com:5432/d61trk6httm3q3` as string
 
 bot.on('ready', () => {
 	console.log('Preparing to take over the world...');
@@ -119,6 +118,17 @@ bot.on('messageCreate', async (message: discord.Message) => {
 	if (command === 'ask') {
 		function getRandomArbitrary(min: number, max: number) {
 			return Math.round(Math.random() * (max - min) + min);
+		}
+		if (args[0] === '-user') {
+			let x = await message.guild?.roles.fetch('877133047210852423');
+			if(!x) return;
+			let a = await message.guild?.roles.fetch('891897824730554389');
+			if (!a) return;
+			let member: Array<discord.GuildMember> = []
+			a.members.each((mem) => member.push(mem))
+			x.members.each((mem) => member.push(mem))
+			await message.channel.send(member[getRandomArbitrary(0, member.length -1)].user.username);
+			return;
 		}
 		if (getRandomArbitrary(0 ,20) > 9) {
 			message.channel.send('yes')
