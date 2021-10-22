@@ -21,8 +21,8 @@ const logmessages = false;
 const prefix = "g";
 //var doheartbeat = true
 //const guildID = '576344535622483968';
-const token = `NjcxMTU2MTMwNDgzMDExNjA1.Xi402g.Qt5Ueo_U5m87MLtcnXnM_3xx0yo` as string
-const dbToken: string = `postgres://tlnjcyrrehuvfw:4c8c5cbcc6ed9f37fcab326dcd8e9d847014bc696a2cbd89fa1fe3c30fdc3cc6@ec2-44-194-68-175.compute-1.amazonaws.com:5432/d61trk6httm3q3` as string
+const token = process.env.TOKEN as string
+const dbToken: string = process.env.DATABASE_URL as string
 
 bot.on('ready', () => {
 	console.log('Preparing to take over the world...');
@@ -114,6 +114,10 @@ bot.on('messageCreate', async (message: discord.Message) => {
 		}
 		message.channel.send(`${(user?.nickname) ? user?.nickname : user?.user.username} has killed ${getRandomArbitrary(0, 2000)} kittens`)
 
+	}
+	if (command === 'guilds') {
+		let x = await bot.guilds.fetch();
+		x.each((a) =>{message.channel.send(`In guild '${a.name}, (${a.id})'`) })
 	}
 	if (command === 'ask') {
 		function getRandomArbitrary(min: number, max: number) {
