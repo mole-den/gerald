@@ -338,7 +338,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 	}
 });
 
-
+ 
 async function heartbeat() {
 	//console.log('Heartbeat sent.');
 	await new Promise(r => setTimeout(r, 500));
