@@ -303,8 +303,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				let lim = parseInt(args[1]);
 				if (lim === NaN) return;
 				let messages = await channel.messages.fetch({ limit: lim });
-				messages = messages.filter(msg => (msg.author.bot === false));
-				messages = messages.filter(msg => (msg.system === false));
+				messages = messages.filter(msg => (msg.author.bot === false || msg.system === false));
 				let messagesArray = Array.from(messages.values()).reverse();
 				messagesArray.forEach(async msg => {
 					let member = await msg.guild?.members.fetch(msg);
