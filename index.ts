@@ -133,13 +133,13 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			return;
 		}
 		if (getRandomArbitrary(0 ,20) > 9) {
-			message.channel.send('yes')
+			message.channel.send('yes');
 		} else {
-			message.channel.send('no')
+			message.channel.send('no');
 		}
 	}
 });
-
+ 
 bot.on('messageCreate', async (message: discord.Message) => {
 	try {
 		const userID = message.author;
