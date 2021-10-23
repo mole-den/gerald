@@ -66,7 +66,7 @@ bot.on('userUpdate', async (user) => {
 	db.query('UPDATE gmember SET username = $1 WHERE userid = $2',
 		[`${fullUser.username}#${fullUser.discriminator}`, fullUser.id]);
 });
-
+ 
 let lastChannel: discord.TextBasedChannels;
 bot.on('messageCreate', (message: discord.Message) => {
 	lastChannel = message.channel
