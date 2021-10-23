@@ -280,7 +280,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			if (args[0] === 'add') {
 				if (args[1] === undefined) return;
 				await db.query('UPDATE gmember SET sexuality=$1 WHERE userid = $2',
-					[args[2], message.author.id]);
+					[args[1], message.author.id]);
 				message.channel.send(`set ${message.author.username} to ${args[1]}`);
 				return;
 			}
