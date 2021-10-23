@@ -23,6 +23,7 @@ const prefix = "g";
 //const guildID = '576344535622483968';
 const token = process.env.TOKEN as string
 const dbToken: string = process.env.DATABASE_URL as string
+
 bot.on('ready', () => {
 	console.log('Preparing to take over the world...');
 	console.log('World domination complete.');
@@ -278,10 +279,9 @@ bot.on('messageCreate', async (message: discord.Message) => {
 		} else if (command === 'gay') {
 			if (args[0] === 'add') {
 				if (args[1] === undefined) return;
-				let updated = args[1].replace('<@!', '\\<\\@\\!');
 				await db.query('UPDATE gmember SET sexuality=$1 WHERE userid = $2',
-					[updated, message.author.id]);
-				message.channel.send(`set ${message.author.username} to ${updated}`);
+					[args[2], message.author.id]);
+				message.channel.send(`set ${message.author.username} to ${args[1]}`);
 				return;
 			}
 			message.mentions.members?.each(async (eachmem) => {
