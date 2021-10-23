@@ -326,7 +326,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				let name = (member?.nickname) ? member.nickname : `${member?.user.username}#${member.user.discriminator}`;
 				await message.channel.send(`**Deleted Message from ${name} in <#${msg.channel}>**: *${timeString}*\n ${msg.content}`)
 			})
-		}
+		} 
 	} catch (error) {
 		console.log("error");
 		console.log(error);
