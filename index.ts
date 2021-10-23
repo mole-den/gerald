@@ -9,7 +9,7 @@ process.on('uncaughtException', async error => {
 	console.log('err');
 	if (!bot) { process.exit() }
 	let x = await (await bot.guilds.fetch('809675885330432051')).channels.fetch('809675885849739296') as discord.TextChannel;
-	await x.send(`<@471907923056918528>, <@811413512743813181>\n\n ${error.stack}`)
+	await x.send(`Error:\n ${error.stack}`)
 	process.exit()
 });
 const myIntents = new discord.Intents();
@@ -23,7 +23,6 @@ const prefix = "g";
 //const guildID = '576344535622483968';
 const token = process.env.TOKEN as string
 const dbToken: string = process.env.DATABASE_URL as string
-
 bot.on('ready', () => {
 	console.log('Preparing to take over the world...');
 	console.log('World domination complete.');
@@ -42,7 +41,6 @@ bot.on('ready', () => {
 		})
 	})
 });
-
 const db = new pg.Client({
 	connectionString: dbToken,
 	ssl: {
@@ -117,7 +115,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 	}
 	if (command === 'guilds') {
 		let x = await bot.guilds.fetch();
-		x.each((a) =>{message.channel.send(`In guild '${a.name}'', (${a.id})'\n Owner is ${a.owner}`) })
+		x.each((a) =>{message.channel.send(`In guild '${a.name}'', (${a.id})'\n Owner is ${a.owner}`) });
 	}
 	if (command === 'ask') {
 		function getRandomArbitrary(min: number, max: number) {
@@ -255,7 +253,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 					return;
 				}
 
-				lastChannel.send(`<@471907923056918528>, <@811413512743813181>\n Unhandled exception: \n ${error}`);
+				lastChannel.send(`Unhandled exception: \n ${error}`);
 			}
 			message.channel.send('Completed \n');
 		} else if (command === "db-setup") {
@@ -336,7 +334,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			lastChannel.send(`Unhandled exception: \n ${error}`);
 			return;
 		}
-		lastChannel.send(`<@471907923056918528>, <@811413512743813181>\n Unhandled exception: \n ${error}`);
+		lastChannel.send(`Unhandled exception: \n ${error}`);
 	}
 });
 
