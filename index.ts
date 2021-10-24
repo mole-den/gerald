@@ -283,6 +283,14 @@ bot.on('messageCreate', async (message: discord.Message) => {
 					[args[1], message.author.id]);
 				message.channel.send(`set ${message.author.username} to ${args[1]}`);
 				return;
+			} else if (args[1] === 'alter') {
+				let mem = message.mentions.members?.first()
+				if (!mem) return;
+				if (message.member?.permissions.has(discord.Permissions.FLAGS.MANAGE_NICKNAMES)) {
+					await db.query('UPDATE gmember SET sexuality=$1 WHERE userid = $2',
+						[args[3], mem.id]);
+					message.channel.send(`set ${mem.user.username} to ${args[3]}`);
+				}
 			}
 			message.mentions.members?.each(async (eachmem) => {
 				let s = await db.query('SELECT * FROM gmember WHERE userid = $1', [BigInt(eachmem.id)])
