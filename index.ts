@@ -290,7 +290,8 @@ bot.on('messageCreate', async (message: discord.Message) => {
 					await db.query('UPDATE gmember SET sexuality=$1 WHERE userid = $2',
 						[args[2], mem.id]);
 					message.channel.send(`set ${mem.user.username} to ${args[2]}`);
-				}
+				};
+				return;
 			}
 			message.mentions.members?.each(async (eachmem) => {
 				let s = await db.query('SELECT * FROM gmember WHERE userid = $1', [BigInt(eachmem.id)])
