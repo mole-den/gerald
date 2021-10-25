@@ -258,9 +258,12 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			}
 			message.channel.send('Completed \n');
 		} else if (command === "db-setup") {
-			let users = await message.guild?.members.fetch()
+			if (message.author.id !== '811413512743813181') return;
+			if (!message.guild) return
+			let users = await message.guild.members.fetch();
 			users?.forEach((i) => {
-				message.channel.send(`Updated user ${i.id}`)
+				db.query('INSERT INTO gmember(guild, userid, username) VALUES ($1, $2, $3)' , 
+				[BigInt(i.guild.id), BigInt(i.user.id), `${i.user.username}#${i.user.discriminator}`])
 			});
 		} else if (command === 'status') {
 			let user = message.mentions.users.first()
