@@ -141,10 +141,6 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			message.channel.send('no');
 		}
 	}
-	if (command === 'ask.') {
-		await message.channel.send(`${(await message.guild?.members.fetch('471907923056918528'))!.user.username}`);
-
-	}
 });
  
 bot.on('messageCreate', async (message: discord.Message) => {
