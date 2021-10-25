@@ -84,14 +84,16 @@ bot.on('messageCreate', (message: discord.Message) => {
 });
 
 bot.on('messageDelete', async (message) => {
+	return;
 	if (message.author?.bot) return
 	if (message.guild === null) return;
 	if (message.partial) return;
 	await db.query(`INSERT INTO deletedmsg (author, content, guildid, timestamp, channel) VALUES ($1, $2, $3, $4, $5)`,
-		[BigInt(message.author.id), message.cleanContent, BigInt(message.guild.id), Math.round(lux.DateTime.fromJSDate(message.createdAt).toSeconds()), BigInt(message.channelId)]);
+		[BigInt(message.author!.id), message.cleanContent, BigInt(message.guild!.id), Math.round(lux.DateTime.fromJSDate(message.createdAt).toSeconds()), BigInt(message.channelId)]);
 });
 
 bot.on('messageDeleteBulk', async (array) => {
+	return;
 	array.each(async (message) => {
 		if (message.partial || !message.guild || message.author.bot) return;
 		await db.query(`INSERT INTO deletedmsg (author, content, guildid, timestamp, channel) VALUES ($1, $2, $3, $4, $5)`,
