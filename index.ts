@@ -262,8 +262,18 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			if (!message.guild) return
 			let users = await message.guild.members.fetch();
 			users?.forEach((i) => {
-				db.query('INSERT INTO gmember(guild, userid, username) VALUES ($1, $2, $3)' , 
-				[BigInt(i.guild.id), BigInt(i.user.id), `${i.user.username}#${i.user.discriminator}`])
+				try {
+					db.query('INSERT INTO gmember(guild, userid, username) VALUES ($1, $2, $3)',
+						[BigInt(i.guild.id), BigInt(i.user.id), `${i.user.username}#${i.user.discriminator}`])
+				} catch (error) {
+					console.log("error");
+					console.log(error);
+					if (message.author.id == "471907923056918528" || message.author.id == "811413512743813181") {
+						lastChannel.send(`Unhandled exception: \n ${error}`);
+						return;
+					}
+					lastChannel.send(`Unhandled exception: \n ${error}`);
+				}
 			});
 		} else if (command === 'status') {
 			let user = message.mentions.users.first()
