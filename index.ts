@@ -141,7 +141,6 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			message.channel.send('no');
 		}
 	} else if (command === 'sex') {
-		return;
 		let msg = discord.Util.splitMessage(`
 It was a wonderful monday morning... 
 BigUniverse got out of bed and immediatly grabbed his phone to talk to his wonderful boyfriend, Gustavo. He messaged him, "Squish me daddy!!!"
