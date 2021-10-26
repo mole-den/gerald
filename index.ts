@@ -123,15 +123,9 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			return Math.round(Math.random() * (max - min) + min);
 		}
 		if (args[0] === '-user') {
-			let x = await message.guild?.roles.fetch('877133047210852423');
-			if(!x) return;
-			let a = await message.guild?.roles.fetch('891897824730554389');
-			if (!a) return;
 			let y = await message.guild?.roles.fetch('858473576335540224');
 			if (!y) return;
 			let member: Array<discord.GuildMember> = []
-			a.members.each((mem) => member.push(mem))
-			x.members.each((mem) => member.push(mem))
 			y.members.each((mem) => member.push(mem))
 			await message.channel.send(`${member[getRandomArbitrary(0, member.length -1)].user.username}`);
 			return;
