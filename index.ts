@@ -102,14 +102,15 @@ bot.on('messageCreate', async (message: discord.Message) => {
 	if (!message.content.startsWith(prefix) || message.author.bot) { return };
 	const args = message.content.slice(prefix.length).trim().split(' ');
 	const command = args.shift()?.toLowerCase();
+	function getRandomArbitrary(min: number, max: number) {
+		return Math.round(Math.random() * (max - min) + min);
+	}
 	if (message.author.id === '536047005085204480') {
-		message.reply('fuck you')
+		if (getRandomArbitrary(1, 20) > 10) await message.reply('fuck you');
+		return;
 	}
 	if (command === 'cat') {
 		let user = message.mentions.members?.first();
-		function getRandomArbitrary(min: number, max: number) {
-			return Math.round(Math.random() * (max - min) + min);
-		}
 		if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181"){
 		message.channel.send(`${(user?.nickname) ? user?.nickname : user?.user.username} has killed ${getRandomArbitrary(0, 1000)} kittens`);
 		return
