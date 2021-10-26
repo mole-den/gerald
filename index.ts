@@ -1,8 +1,6 @@
 import * as discord from "discord.js";
 import * as pg from 'pg';
-import fs from 'fs';
-import * as lux from 'luxon'
-fs;
+import * as lux from 'luxon';
 
 process.on('uncaughtException', async error => {
 	console.log(error);
