@@ -102,6 +102,9 @@ bot.on('messageCreate', async (message: discord.Message) => {
 	if (!message.content.startsWith(prefix) || message.author.bot) { return };
 	const args = message.content.slice(prefix.length).trim().split(' ');
 	const command = args.shift()?.toLowerCase();
+	if (message.author.id === '536047005085204480') {
+		message.reply('fuck you')
+	}
 	if (command === 'cat') {
 		let user = message.mentions.members?.first();
 		function getRandomArbitrary(min: number, max: number) {
