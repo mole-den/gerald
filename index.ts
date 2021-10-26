@@ -150,6 +150,9 @@ He had been programming an AI that would function as a boyfriend for him, but he
 "Im sorry but I dont think we can continue this relationship."
 BigUniverse was distraught. He replied, "I will 1v1 you minecraft bedwars!"
 But nothing could change this. Gustavo would date a robot.
+
+If u want more, dm me :)
+-sirmole
 		`);
 		msg.forEach(x => message.channel.send(x))
 	}
