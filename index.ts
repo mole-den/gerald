@@ -57,7 +57,7 @@ bot.login(token);
 
 bot.on('guildMemberAdd', (member) => {
 	member;
-	db.query(`INSERT INTO gmember (guildid, userid, sexuality) VALUES ($1, $2, 'straight') ON CONFLICT DO NOTHING`,
+	db.query(`INSERT INTO gmember (guild, userid) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
 		[BigInt(member.guild.id), BigInt(member.id)])
 })
 
@@ -198,9 +198,9 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			if (author && author.permissions.has(discord.Permissions.FLAGS.BAN_MEMBERS)) {
 				if (args[0] && args[0] === "add") {
 					let user = message.mentions.users?.first();
-					db.query(`INSERT INTO gmember (guildid, userid, blacklisted) VALUES ($1, $2, true) ON CONFLICT UPDATE`, [BigInt(message.guildId!), BigInt(user?.id || args[1])]);
+					db.query(`INSERT INTO gmember (guild, userid, blacklisted) VALUES ($1, $2, true) ON CONFLICT UPDATE`, [BigInt(message.guildId!), BigInt(user?.id || args[1])]);
 				};
-				let blist = await db.query("SELECT * FROM gmember WHERE guildid=$1 AND blacklisted", [BigInt(message.guildId!)]);
+				let blist = await db.query("SELECT * FROM gmember WHERE guild=$1 AND blacklisted", [BigInt(message.guildId!)]);
 				blist.rows.forEach(user => message.guild!.members.ban(user.userid, {
 					reason: "Blacklisted by Gerald"
 				}));
@@ -340,11 +340,11 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			}
 		} else if (command === 'deleted') {
 			if (!message.guildId) return
-			let del = await db.query('SELECT * FROM deletedmsg 	WHERE guildid=$2 ORDER BY updated_at DESC LIMIT $1;',
+			let del = await db.query('SELECT * FROM deletedmsg WHERE guild=$2 ORDER BY updated_at DESC LIMIT $1;',
 				[(args[0]) ? Number((args[0])) : 10, message.guildId]);
 			del.rows.forEach(async (msg) => {
 				let member = await message.guild?.members.fetch(msg.author);
-				if (!member) return;
+				if (!member) 	return;
 				let timeString = lux.DateTime.fromSeconds(msg.timestamp).setZone("Australia/Sydney").toFormat('tt DD');
 				let name = (member?.nickname) ? member.nickname : `${member?.user.username}#${member.user.discriminator}`;
 				let cnl = await (await bot.guilds.fetch(message.guildId!.toString())).channels.fetch(msg.channel) as discord.TextChannel;
