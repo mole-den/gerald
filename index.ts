@@ -7,7 +7,7 @@ process.on('uncaughtException', async error => {
 	console.log('err');
 	if (!bot) { process.exit() }
 	let x = await (await bot.guilds.fetch('809675885330432051')).channels.fetch('809675885849739296') as discord.TextChannel;
-	await x.send(`Error:\n ${error.stack}`)
+	await x.send(`Error:\n ${error.stack}`);
 	process.exit()
 });
 const myIntents = new discord.Intents();
