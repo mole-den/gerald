@@ -19,8 +19,8 @@ const logmessages = false;
 const prefix = "g";
 //var doheartbeat = true
 //const guildID = '576344535622483968';
-const token = process.env.TOKEN as string
-const dbToken: string = process.env.DATABASE_URL as string
+const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xi402g.Qt5Ueo_U5m87MLtcnXnM_3xx0yo'
+const dbToken = 'postgres://tlnjcyrrehuvfw:4c8c5cbcc6ed9f37fcab326dcd8e9d847014bc696a2cbd89fa1fe3c30fdc3cc6@ec2-44-194-68-175.compute-1.amazonaws.com:5432/d61trk6httm3q3'
 
 bot.on('ready', () => {
 	console.log('Preparing to take over the world...');
@@ -78,7 +78,7 @@ bot.on('messageCreate', (message: discord.Message) => {
 	if (message.channel.name === 'gerald') return;
 	if (channel.type === 'GUILD_TEXT') {
 		(channel as discord.TextChannel).send(`**${message.author.tag}** said: \`${message.content}\` in ${message.guild!.name}`);
-	}
+	};
 });
 
 bot.on('messageDelete', async (message) => {
@@ -140,6 +140,10 @@ bot.on('messageCreate', async (message: discord.Message) => {
 		} else {
 			message.channel.send('no');
 		}
+	} else if (command === 'sex') { 
+		let msg = discord.Util.splitMessage(`
+		`);
+		msg.forEach(x => message.channel.send(x))
 	}
 });
  
