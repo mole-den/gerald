@@ -106,7 +106,8 @@ bot.on('messageCreate', async (message: discord.Message) => {
 		return Math.round(Math.random() * (max - min) + min);
 	}
 	if (message.author.id === '536047005085204480') {
-		if (getRandomArbitrary(1, 20) > 10) await message.reply('fuck you');
+		let x = getRandomArbitrary(1, 20)
+		if (x > 10) await message.channel.send('fuck you');
 		return;
 	}
 	if (command === 'cat') {
