@@ -140,21 +140,6 @@ bot.on('messageCreate', async (message: discord.Message) => {
 		} else {
 			message.channel.send('no');
 		}
-	} else if (command === 'status') {
-		if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
-			message.channel.send('You do not have permission to change the bot status');
-			return;
-		}
-		let stat = args[0];
-		if (stat === 'online' || stat === 'idle' || stat === 'dnd' || stat === 'invisible') {
-			bot.user!.setStatus(stat);
-		};
-		if (args[1] === 'playing' || args[1] === 'streaming' || args[1] === 'watching' || args[1] === 'listening' || args[1] === 'none') {
-			let stat = (args[1] === 'none') ? undefined : args[1].toUpperCase();
-			let name = args.slice(2).join(' ')
-			bot.user!.setActivity(name, { type: (stat as any) });
-			return;
-		};
 	}
 });
 
@@ -312,7 +297,6 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				}
 			});
 		} else if (command === 'status') {
-			/*
 			let user = message.mentions.users.first()
 			if (user) {
 				let member = await message.guild?.members.fetch(user);
@@ -323,7 +307,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 					let status = (member.id !== "536047005085204480") ? member.presence.status : "cringe";
 					message.channel.send(`${(member.nickname || user.username)} is ${status}\n${x}`);
 				}
-			} */
+			}
 		} else if (command === 'ping') {
 			message.channel.send(`Websocket heartbeat: ${bot.ws.ping}ms`)
 		} else if (command === 'gay') {
