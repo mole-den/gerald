@@ -147,7 +147,7 @@ BigUniverse got out of bed and immediatly grabbed his phone to talk to his wonde
 Unfortunately, Gustavo had greater plans then going over to BigUniverse's house and railing him. Gustavo wanted a better boyfriend.
 He had been programming an AI that would function as a boyfriend for him, but he did not have a body for it. He messaged BigUniverse,
 "Im sorry but I dont think we can continue this relationship."
-BigUniverse was distraught. He replied, "I will 1v1 you minecraft bedwars!"
+BigUniverse was distraught. He replied, "I will 1v1 you in minecraft bedwars!"
 But nothing could change this. Gustavo would date a robot.
 
 If u want more, dm me :)
