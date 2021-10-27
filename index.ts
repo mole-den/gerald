@@ -145,13 +145,16 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			message.channel.send('You do not have permission to change the bot status');
 			return;
 		}
-		let stat = args[0]
+		let stat = args[0];
 		if (stat === 'online' || stat === 'idle' || stat === 'dnd' || stat === 'invisible') {
 			bot.user!.setStatus(stat);
-			message.channel.send('Status changed');
-			 return;
-		}
-		message.channel.send('Please enter a valid status');
+		};
+		if (args[1] === 'playing' || args[1] === 'streaming' || args[1] === 'watching' || args[1] === 'listening' || args[1] === 'none') {
+			let stat = (args[1] === 'none') ? undefined : args[1].toUpperCase();
+			let name = args.slice(2).join(' ')
+			bot.user!.setActivity(name, { type: (stat as any) });
+			return;
+		};
 	}
 });
 
