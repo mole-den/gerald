@@ -221,7 +221,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 						await db.query(`INSERT INTO gmember (userid, guild, blacklisted) VALUES ($1, $2, $3) 
 						ON CONFLICT (userid, guild) DO UPDATE SET blacklisted = $3`, [user.id, message.guild.id, true]);
 						message.guild.bans.create(user, {reason: 'Blacklisted', days: 0});
-						message.channel.send(`${user.user.username} has been added to the blacklist`);
+						message.channel.send(`${user.user.username} has been added to the blacklist and banned`);
 					} else {
 						let num = parseInt(args[1]);
 						if (num !== NaN) {
