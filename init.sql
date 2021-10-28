@@ -28,6 +28,18 @@ CREATE TABLE deletedmsg (
     FOREIGN KEY (author, guildid) REFERENCES gmember(userid, guild)
 );
 
+CREATE OR REPLACE FUNCTION delete_msg() RETURNS TRIGGER AS $$
+BEGIN
+	IF (SELECT count(*) FROM deletedmsg WHERE guildid = NEW.guildid) > 100 THEN
+	DELETE FROM deletedmsg
+	WHERE id IN (
+   		SELECT id FROM
+   		deletedmsg ORDER BY timestamp LIMIT 1);
+	END IF;
+END;
+$$ 
+LANGUAGE plpgsql;
+
 CREATE TRIGGER cycle_oldest
     AFTER UPDATE ON deletedmsg 
     FOR EACH ROW 
