@@ -1,6 +1,7 @@
 DROP TABLE guild IF EXISTS;
 DROP TABLE gmember IF EXISTS;
 DROP TABLE deletedmsg IF EXISTS;
+DROP FUNCTION replace_oldest IF EXISTS;
 
 CREATE TABLE guild (
     id INT GENERATED ALWAYS AS IDENTITY,
@@ -28,7 +29,7 @@ CREATE TABLE deletedmsg (
     FOREIGN KEY (author, guildid) REFERENCES gmember(userid, guild)
 );
 
-CREATE OR REPLACE FUNCTION delete_msg() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION replace_oldest() RETURNS TRIGGER AS $$
 BEGIN
 	IF (SELECT count(*) FROM deletedmsg WHERE guildid = NEW.guildid) > 100 THEN
 	DELETE FROM deletedmsg
