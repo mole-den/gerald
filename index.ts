@@ -10,6 +10,15 @@ process.on('uncaughtException', async error => {
 	x.send(` <@!811413512743813181> <@!471907923056918528>\n Unhandled exception: \n ${error}`);
 	process.exit()
 });
+process.on('unhandledRejection', async error => {
+	console.log(error);
+	console.log('err');
+	if (!bot) { process.exit() }
+	let x = await (await bot.guilds.fetch('895064783135592449')).channels.fetch('903400898397622283') as discord.TextChannel;
+	x.send(` <@!811413512743813181> <@!471907923056918528>\n Unhandled rejection: \n ${error}`);
+	process.exit()
+});
+
 const myIntents = new discord.Intents();
 myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS, discord.Intents.FLAGS.GUILD_MESSAGES,
 	discord.Intents.FLAGS.DIRECT_MESSAGES, discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
@@ -46,9 +55,10 @@ const db = new pg.Client({
 		rejectUnauthorized: false
 	}
 });
+
 (async () => {
 	await db.connect();
-})()
+})();
 
 bot.login(token);
 //egg
@@ -182,18 +192,6 @@ bot.on('messageCreate', async (message: discord.Message) => {
 
 		if (command === `help`) {
 			message.channel.send('Hello! I am Gerald. I will enable you to take control of your server by my rules >:)');
-		} else if (command === `detect`) {
-			// grab the "first" mentioned user from the message
-			// this will return a `User` object, just like `message.author`
-			const taggedUser = message.mentions.users.first();
-			if (taggedUser) {
-				message.channel.send(`User detected: ${taggedUser.username} User ID is: ` + taggedUser);
-			}
-
-		} else if (command === `t-servertest`) {
-			if (message.channel.type !== 'DM') {
-				message.channel.send(`This server's name is: ${message.guild!.name}`);
-			}
 		} else if (command === `setup`) {
 			message.channel.send(`Beginning setup but no because zac cant code`);
 			//if (err) return console.log(err);
@@ -235,7 +233,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 					} else {
 						let num = parseInt(args[1]);
 						if (num !== NaN) {
-							await db.query('INSERT INTO gmember (userid, blacklisted, guild) VALUES ($1, $2, $3) ON CONFLICT DO UPDATE SET blacklisted = $2', [num, true, message.guild.id]);
+							await db.query('INSERT INTO gmember (userid, blacklisted, guild) VALUES ($1, $2, $3) ON CONFLICT (userid, guild) DO UPDATE SET blacklisted = $2', [num, true, message.guild.id]);
 							message.channel.send(`${num} has been added to the blacklist`);
 						};
 					};
