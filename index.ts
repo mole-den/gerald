@@ -18,7 +18,6 @@ process.on('unhandledRejection', async error => {
 	x.send(` <@!811413512743813181> <@!471907923056918528>\n Unhandled rejection: \n ${error}`);
 	process.exit()
 });
-
 const myIntents = new discord.Intents();
 myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS, discord.Intents.FLAGS.GUILD_MESSAGES,
 	discord.Intents.FLAGS.DIRECT_MESSAGES, discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
@@ -59,7 +58,6 @@ const db = new pg.Client({
 (async () => {
 	await db.connect();
 })();
-
 bot.login(token);
 //egg
 
@@ -118,8 +116,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 	}
 	if (message.author.id === '536047005085204480') {
 		let x = getRandomArbitrary(1, 20)
-		if (x > 10) await message.channel.send('fuck you');
-		return;
+		if (x > 15) await message.channel.send('fuck you');
 	}
 	if (command === 'cat') {
 		let user = message.mentions.members?.first();
@@ -146,6 +143,10 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			await message.channel.send(`${member[getRandomArbitrary(0, member.length - 1)].user.username}`);
 			return;
 		}
+		 else if (args[0] === '-percent') {
+			 message.channel.send(`${getRandomArbitrary(0, 100)}%`);
+			 return;
+		 }
 		if (getRandomArbitrary(0, 20) > 9) {
 			message.channel.send('yes');
 		} else {
@@ -416,7 +417,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			})
 		}
 	} catch (error) {
-		let x = await (await bot.guilds.fetch('895064783135592449')).channels.fetch('903400898397622283') as discord.TextChannel;
+		let x = <discord.TextChannel> await (await bot.guilds.fetch('895064783135592449')).channels.fetch('903400898397622283')
 		console.log("error");
 		console.log(error);
 		x.send(` <@!811413512743813181> <@!471907923056918528>\n Unhandled exception: \n ${error}`);
