@@ -135,18 +135,35 @@ bot.on('messageCreate', async (message: discord.Message) => {
 		function getRandomArbitrary(min: number, max: number) {
 			return Math.round(Math.random() * (max - min) + min);
 		}
-		if (args[0] === '-user') {
+		if (/-user[0-9]+/gm.test(args[0])) {
+			if (message.content.includes('fuck') || message.content.includes('sex') 
+			|| message.content.includes('fuc') || message.content.includes('fucc')) {
+				message.channel.send('no');
+				return;
+			}
+			let y = await message.guild?.roles.fetch('858473576335540224');
+			if (!y) return;
+			let member: Array<discord.GuildMember> = []
+			y.members.each((mem) => member.push(mem))
+			let x = /[0-9]+/gm.exec(args[0])![0];
+			if (parseInt(x) > 10) return
+			for (let i = 0; i < parseInt(x); i++) {
+				await message.channel.send(`${member[getRandomArbitrary(0, member.length - 1)].user.username}`);
+			}
+			return
+		} else if (args[0] === '-user') {
 			let y = await message.guild?.roles.fetch('858473576335540224');
 			if (!y) return;
 			let member: Array<discord.GuildMember> = []
 			y.members.each((mem) => member.push(mem))
 			await message.channel.send(`${member[getRandomArbitrary(0, member.length - 1)].user.username}`);
 			return;
+
 		}
-		 else if (args[0] === '-percent') {
-			 message.channel.send(`${getRandomArbitrary(0, 100)}%`);
-			 return;
-		 }
+		else if (args[0] === '-percent') {
+			message.channel.send(`${getRandomArbitrary(0, 100)}%`);
+			return;
+		}
 		if (getRandomArbitrary(0, 20) > 9) {
 			message.channel.send('yes');
 		} else {
@@ -174,8 +191,8 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				let x = await guild.fetch()
 				db.query('INSERT INTO guild (guildid) VALUES ($1) ON CONFLICT DO NOTHING', [x.id]);
 				(await x.members.fetch()).each(async (mem) => {
-					db.query(`INSERT INTO gmember (guild, userid, username) VALUES ($1, $2, $3)`, 
-					[x.id, mem.id, `${mem.user.username}#${mem.user.discriminator}`]);
+					db.query(`INSERT INTO gmember (guild, userid, username) VALUES ($1, $2, $3)`,
+						[x.id, mem.id, `${mem.user.username}#${mem.user.discriminator}`]);
 				})
 			})
 		})
@@ -240,18 +257,19 @@ bot.on('messageCreate', async (message: discord.Message) => {
 					};
 					// if args[0] = 'remove' then update the database by removing the mentioned users id from the blacklisted users in the database
 				} else if (args[0] === 'remove') {
-					let user = message.mentions.members?.first();
+					let user = message.mentions.users?.first();
 					if (user) {
 						db.query('UPDATE gmember SET blacklisted = false WHERE userid = $1 AND guild = $2', [user.id, message.guild.id]);
-						message.channel.send(`${user.user.username} has been removed from the blacklist`);
+						message.channel.send(`${user.username} has been removed from the blacklist`);
 						message.guild.members.unban(user);
 					} else {
 						let num = parseInt(args[1]);
 						if (num === NaN) return;
 						let q = await db.query('UPDATE gmember SET blacklisted = false WHERE userid = $1 AND guild = $2', [num, message.guild.id]);
 						if (q.rowCount === 0) return;
-						message.channel.send(`${num} has been removed from the blacklist`);
-						message.guild.members.unban(num.toString());
+						await message.guild.members.unban(num.toString()).then(() => {
+							message.channel.send(`${num} has been removed from the blacklist`);
+						});
 					};
 					// if args[0] = 'list' then send a message containing all the blacklisted users in the database
 				} else if (args[0] === 'list') {
@@ -417,7 +435,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			})
 		}
 	} catch (error) {
-		let x = <discord.TextChannel> await (await bot.guilds.fetch('895064783135592449')).channels.fetch('903400898397622283')
+		let x = <discord.TextChannel>await (await bot.guilds.fetch('895064783135592449')).channels.fetch('903400898397622283')
 		console.log("error");
 		console.log(error);
 		x.send(` <@!811413512743813181> <@!471907923056918528>\n Unhandled exception: \n ${error}`);
