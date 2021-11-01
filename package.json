@@ -20,6 +20,8 @@
 
     "@databases/sql": "^3.2.0",
 
+    "axios": "^0.24.0",
+
     "discord.js": "^13.1.0",
 
     "luxon": "^2.0.2",

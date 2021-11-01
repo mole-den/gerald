@@ -1,7 +1,7 @@
 import * as discord from "discord.js";
 import * as pg from 'pg';
 import * as lux from 'luxon';
-
+import axios from 'axios'
 process.on('uncaughtException', async error => {
 	console.log(error);
 	console.log('err');
@@ -165,7 +165,6 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			y.members.each((mem) => member.push(mem))
 			await message.channel.send(`${member[getRandomArbitrary(0, member.length - 1)].user.username}`);
 			return;
-
 		}
 		else if (args[0] === '-percent') {
 			message.channel.send(`${getRandomArbitrary(0, 100)}%`);
@@ -185,8 +184,9 @@ bot.on('messageCreate', async (message: discord.Message) => {
 		if (stat === 'online' || stat === 'idle' || stat === 'dnd' || stat === 'invisible') {
 			bot.user!.setStatus(stat);
 		};
-		if (args[1] === 'playing' || args[1] === 'streaming' || args[1] === 'watching' || args[1] === 'listening' || args[1] === 'none') {
-			let stat = (args[1] === 'none') ? undefined : args[1].toUpperCase();
+		const activity = args[1];
+		if (activity === 'playing' || activity === 'streaming' || activity === 'watching' || activity === 'listening' || activity === 'none') {
+			let stat = (activity === 'none') ? undefined : <discord.ActivityType>activity.toUpperCase();
 			let name = args.slice(2).join(' ')
 			bot.user!.setActivity(name, { type: (stat as any) });
 			return;
@@ -203,7 +203,18 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				})
 			})
 		})
-	}
+	} else if (command === 'https') {
+		axios({
+			method: 'get',
+			url: args[0],
+			responseType: 'json'
+		}).then(function (response) {
+			const buffer = Buffer.from(response.data)
+			const attachment = new discord.MessageAttachment(buffer, 'file.json');
+			message.channel.send(`GET completed`);
+			message.channel.send({ files: [attachment] });
+			});
+	};
 });
 
 bot.on('messageCreate', async (message: discord.Message) => {
@@ -417,7 +428,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				let lim = parseInt(args[1]);
 				if (lim === NaN) return;
 				let messages = await channel.messages.fetch({ limit: lim });
-				messages = messages.filter(msg => (msg.author.bot === false || msg.system === false));
+				messages = messages.filter(msg => (msg.system === false));
 				let messagesArray = Array.from(messages.values()).reverse();
 				messagesArray.forEach(async msg => {
 					let member = await msg.guild?.members.fetch(msg);
@@ -463,3 +474,4 @@ setInterval(heartbeat, 5000);
 bot.on('heartbeated', () => {
 	//console.log(`Heartbeat recived. Logged in as ${bot.user.tag}`);
 });
+
