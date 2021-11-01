@@ -70,6 +70,18 @@ bot.on('guildMemberAdd', async (member) => {
 	}
 })
 
+bot.on('guildCreate', (guild) => {
+	db.query('INSERT INTO guild (guildid) VALUES ($1) ON CONFLICT DO NOTHING', [guild.id]);
+	guild.channels.fetch().then(async (channels) => {
+		channels.each(async (ch) => {
+			if (ch.type === 'GUILD_TEXT') {
+				let c = (await ch.fetch() as discord.TextChannel);
+				c.messages.fetch({ limit: 100 })
+			}
+		})
+	})
+});
+
 bot.on('userUpdate', async (user) => {
 	console.log('changed');
 	let fullUser = ((user.partial) ? (await user.fetch()) : user);
@@ -136,11 +148,6 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			return Math.round(Math.random() * (max - min) + min);
 		}
 		if (/-user[0-9]+/gm.test(args[0])) {
-			if (message.content.includes('fuck') || message.content.includes('sex') 
-			|| message.content.includes('fuc') || message.content.includes('fucc')) {
-				message.channel.send('no');
-				return;
-			}
 			let y = await message.guild?.roles.fetch('858473576335540224');
 			if (!y) return;
 			let member: Array<discord.GuildMember> = []
@@ -447,7 +454,7 @@ async function heartbeat() {
 	//console.log('Heartbeat sent.');
 	await new Promise(r => setTimeout(r, 500));
 	bot.emit('heartbeated');
-}
+};
 
 //if doheartbeat = true {
 setInterval(heartbeat, 5000);
