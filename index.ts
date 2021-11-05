@@ -96,14 +96,24 @@ bot.on('userUpdate', async (user) => {
 bot.on('messageCreate', (message: discord.Message) => {
 	if (/\bez\b/gmi.test(message.content)) {
 		message.delete();
-		const number = getRandomArbitrary(0, 2);
+		const number = getRandomArbitrary(0, 7);
 		if (number === 0) {
 			message.channel.send(`${message.author} likes long walks on the beach and talking in Mole Den!`);
 		} else if (number === 1) {
 			message.channel.send(`${message.author} tries to say bad things and this happens. :(`);
 		} else if (number === 2) {
 			message.channel.send(`${message.author} loves watching mole videos on youtube!`);
-		}
+		} else if (number === 3) {
+			message.channel.send(`${message.author} wants to know if anyone else really likes Rick Astley.`);
+		} else if (number === 4) {
+			message.channel.send(`This isnt what ${message.author} typed.`);
+		} else if (number === 5) {
+			message.channel.send(`I am truly better than ${message.author}.`);
+		} else if (number === 6) {
+			message.channel.send(`${message.author} sometimes sings soppy love songs in the car.`);
+		} else if (number === 7) {
+			message.channel.send(`My clicks per second are godly, ${message.author}!`);
+		} 
 	}
 	if (message.author.bot) return
 	if (logmessages === false) return;
