@@ -1,9 +1,9 @@
 import * as discord from "discord.js";
 import * as voice from '@discordjs/voice';
-voice;
 import * as pg from 'pg';
 import * as lux from 'luxon';
-import axios from 'axios'
+import axios from 'axios';
+voice
 process.on('uncaughtException', async error => {
 	console.log(error);
 	console.log('err');
@@ -97,6 +97,7 @@ bot.on('userUpdate', async (user) => {
 
 bot.on('messageCreate', (message: discord.Message) => {
 	if (/\bez\b/gmi.test(message.content)) {
+		if (message.author.bot) return;
 		message.delete();
 		const number = getRandomArbitrary(0, 7);
 		if (number === 0) {
@@ -417,7 +418,10 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				}
 			}
 		} else if (command === 'ping') {
-			message.channel.send(`Websocket heartbeat: ${bot.ws.ping}ms`)
+			let start = Date.now()
+			await db.query('select 1;')
+			let elapsed = Date.now() - start
+			message.channel.send(`Websocket heartbeat: ${bot.ws.ping}ms \n Database heartbeat: ${elapsed}ms`)
 		} else if (command === 'gay') {
 			if (args[0] === 'add') {
 				if (args[1] === undefined) return;
