@@ -486,4 +486,4 @@ setInterval(heartbeat, 5000);
 bot.on('heartbeated', () => {
 	//console.log(`Heartbeat recived. Logged in as ${bot.user.tag}`);
 });
-
+//gustavo cringe
