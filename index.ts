@@ -421,7 +421,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			let start = Date.now()
 			await db.query('select 1;')
 			let elapsed = Date.now() - start
-			message.channel.send(`Websocket heartbeat: ${bot.ws.ping}ms \n Database heartbeat: ${elapsed}ms`)
+			message.channel.send(`Websocket heartbeat: ${bot.ws.ping}ms \nDatabase heartbeat: ${elapsed}ms`)
 		} else if (command === 'gay') {
 			if (args[0] === 'add') {
 				if (args[1] === undefined) return;
