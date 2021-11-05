@@ -28,7 +28,7 @@ const prefix = "g";
 //var doheartbeat = true
 //const guildID = '576344535622483968';
 const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xi402g.HBaMIbEioxYq8r1ZCYvAn2xusbU'
-const dbToken = 'postgres://tlnjcyrrehuvfw:4c8c5cbcc6ed9f37fcab326dcd8e9d847014bc696a2cbd89fa1fe3c30fdc3cc6@ec2-44-194-68-175.compute-1.amazonaws.com:5432/d61trk6httm3q3'
+const dbToken = 'postgres://kivpldtxhvcjwt:92eaa0724d983ca89ff6b683be3e1d0ef1a6e7f884b5986816a3810c0eaa5284@ec2-34-194-100-156.compute-1.amazonaws.com:5432/ddo6pnpikd2ji3'
 
 bot.on('ready', () => {
 	console.log('Preparing to take over the world...');
