@@ -100,9 +100,9 @@ bot.on('messageCreate', (message: discord.Message) => {
 		if (number === 0) {
 			message.channel.send(`${message.author} likes long walks on the beach and talking in Mole Den!`);
 		} else if (number === 1) {
-			message.channel.send(`${message.author} tries to say bad things and this happens.`);
+			message.channel.send(`${message.author} tries to say bad things and this happens. :(`);
 		} else if (number === 2) {
-			message.channel.send(`${message.author} loves watching cat videos on youtube!`);
+			message.channel.send(`${message.author} loves watching mole videos on youtube!`);
 		}
 	}
 	if (message.author.bot) return
