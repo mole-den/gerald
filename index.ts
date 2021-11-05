@@ -55,6 +55,10 @@ const db = new pg.Client({
 	}
 });
 
+function getRandomArbitrary(min: number, max: number) {
+	return Math.round(Math.random() * (max - min) + min);
+}
+
 (async () => {
 	await db.connect();
 })();
@@ -90,6 +94,17 @@ bot.on('userUpdate', async (user) => {
 });
 
 bot.on('messageCreate', (message: discord.Message) => {
+	if (/\bez\b/gmi.test(message.content)) {
+		message.delete()
+		const number = getRandomArbitrary(0, 2);
+		if (number === 0) {
+			message.channel.send(`${message.author} likes long walks on the beach and talking in mole den!`);
+		} else if (number === 1) {
+			message.channel.send(`${message.author} tries to say bad things and this happens.`);
+		} else if (number === 2) {
+			message.channel.send(`${message.author} loves watching cat videos on youtube!`);
+		}
+	}
 	if (message.author.bot) return
 	if (logmessages === false) return;
 	if (message.channel.type === 'DM') return;
@@ -123,9 +138,6 @@ bot.on('messageCreate', async (message: discord.Message) => {
 	if (!message.content.startsWith(prefix) || message.author.bot) { return };
 	const args = message.content.slice(prefix.length).trim().split(' ');
 	const command = args.shift()?.toLowerCase();
-	function getRandomArbitrary(min: number, max: number) {
-		return Math.round(Math.random() * (max - min) + min);
-	}
 	if (message.author.id === '536047005085204480') {
 		let x = getRandomArbitrary(1, 20)
 		if (x > 15) await message.channel.send('fuck you');
