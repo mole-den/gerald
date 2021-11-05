@@ -152,6 +152,8 @@ bot.on('messageCreate', async (message: discord.Message) => {
 		let x = getRandomArbitrary(1, 20)
 		if (x > 15) await message.channel.send('fuck you');
 	}
+	let x = getRandomArbitrary(1, 100)
+	if (x === 1) await message.channel.send('Next time eat a salad!');
 	if (command === 'cat') {
 		let user = message.mentions.members?.first();
 		if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
