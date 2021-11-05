@@ -98,7 +98,7 @@ bot.on('messageCreate', (message: discord.Message) => {
 		message.delete();
 		const number = getRandomArbitrary(0, 2);
 		if (number === 0) {
-			message.channel.send(`${message.author} likes long walks on the beach and talking in mole den!`);
+			message.channel.send(`${message.author} likes long walks on the beach and talking in Mole Den!`);
 		} else if (number === 1) {
 			message.channel.send(`${message.author} tries to say bad things and this happens.`);
 		} else if (number === 2) {
