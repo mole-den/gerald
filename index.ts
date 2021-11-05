@@ -95,7 +95,7 @@ bot.on('userUpdate', async (user) => {
 
 bot.on('messageCreate', (message: discord.Message) => {
 	if (/\bez\b/gmi.test(message.content)) {
-		message.delete()
+		message.delete();
 		const number = getRandomArbitrary(0, 2);
 		if (number === 0) {
 			message.channel.send(`${message.author} likes long walks on the beach and talking in mole den!`);
