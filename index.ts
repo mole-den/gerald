@@ -50,7 +50,7 @@ bot.on('ready', () => {
 		})
 	})
 });
-const db = new pg.Client({
+const db = new pg.Pool({
 	connectionString: dbToken,
 	ssl: {
 		rejectUnauthorized: false
