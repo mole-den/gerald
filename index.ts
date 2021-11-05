@@ -384,7 +384,6 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				}
 				x.send(` <@!811413512743813181> <@!471907923056918528>\n Unhandled exception: \n ${error}`);
 			}
-			message.channel.send('Completed \n');
 		} else if (command === "db-setup") {
 			if (message.author.id !== '811413512743813181') return;
 			if (!message.guild) return
