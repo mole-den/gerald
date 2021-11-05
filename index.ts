@@ -1,4 +1,6 @@
 import * as discord from "discord.js";
+import * as voice from '@discordjs/voice';
+voice;
 import * as pg from 'pg';
 import * as lux from 'luxon';
 import axios from 'axios'
