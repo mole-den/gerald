@@ -9,9 +9,7 @@ CREATE TABLE members (
     blacklisted BOOL DEFAULT FALSE,
     userid BIGINT NOT NULL,
     sexuality VARCHAR(30) DEFAULT 'straight',
-    username VARCHAR(32) NOT NULL,
-    fullname DEFAULT CONCAT(username, '#', userid),
-    discrim CHAR(4) NOT NULL,
+    username VARCHAR(37)
     UNIQUE(guild, userid)
 );
 
@@ -32,7 +30,7 @@ CREATE TABLE punishments (
     type VARCHAR(5) NOT NULL,
     reason VARCHAR(255) DEFAULT 'not given',
     created_time TIMESTAMP NOT NULL,
-    duration INT DEFAULT 0,
+    duration INT DEFAULT 0
 );
 
 CREATE OR REPLACE FUNCTION replace_oldest() RETURNS TRIGGER AS $$
