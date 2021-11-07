@@ -388,12 +388,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			} catch (error) {
 				console.log("error");
 				console.log(error);
-				let x = await (await bot.guilds.fetch('895064783135592449')).channels.fetch('903400898397622283') as discord.TextChannel;
-				if (message.author.id == "471907923056918528" || message.author.id == "811413512743813181") {
-					x.send(` <@!811413512743813181> <@!471907923056918528>\n Unhandled exception: \n ${error}`);
-					return;
-				}
-				x.send(` <@!811413512743813181> <@!471907923056918528>\n Unhandled exception: \n ${error}`);
+				message.channel.send(`Unhandled exception: \n ${error}`);
 			}
 		} else if (command === "db-setup") {
 			return
