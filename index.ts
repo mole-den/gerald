@@ -492,7 +492,20 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				let cnl = await (await bot.guilds.fetch(message.guildId!.toString())).channels.fetch(msg.channel) as discord.TextChannel;
 				await message.channel.send(`**Deleted Message from ${name} in <#${msg.channel}>**: *${timeString}*\n ${discord.Util.cleanContent(msg.content, cnl)}`)
 			})
-		}
+		} else if (command === 'sex') {
+		let msg = discord.Util.splitMessage(`
+It was a wonderful monday morning... 
+BigUniverse got out of bed and immediatly grabbed his phone to talk to his wonderful boyfriend, Gustavo. He messaged him, "Squish me daddy!!!"
+Unfortunately, Gustavo had greater plans then going over to BigUniverse's house and railing him. Gustavo wanted a better boyfriend.
+He had been programming an AI that would function as a boyfriend for him, but he did not have a body for it. He messaged BigUniverse,
+"Im sorry but I dont think we can continue this relationship."
+BigUniverse was distraught. He replied, "I will 1v1 you in minecraft bedwars!"
+But nothing could change this. Gustavo would date a robot.
+If u want more, dm me :)
+-sirmole
+		`);
+		msg.forEach(x => message.channel.send(x))
+	}
 	} catch (error) {
 		let x = <discord.TextChannel>await (await bot.guilds.fetch('895064783135592449')).channels.fetch('903400898397622283')
 		console.log("error");
