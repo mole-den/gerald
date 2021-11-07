@@ -30,7 +30,7 @@ const prefix = "g";
 //var doheartbeat = true;
 //const guildID = '576344535622483968';
 const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xi402g.HBaMIbEioxYq8r1ZCYvAn2xusbU'
-const dbToken = <string>process.env.DATABASE_URL
+const dbToken = <string>process.env.HEROKU_POSTGRESQL_BLACK_URL
 
 bot.on('ready', () => {
 	console.log('Preparing to take over the world...');
