@@ -60,7 +60,7 @@ const db = new pg.Pool({
 
 function getRandomArbitrary(min: number, max: number) {
 	return Math.round(Math.random() * (max - min) + min);
-}
+};
 
 (async () => {
 	await db.connect();
