@@ -20,6 +20,7 @@ process.on('unhandledRejection', async error => {
 	x.send(` <@!811413512743813181> <@!471907923056918528>\n Unhandled rejection: \n ${error}`);
 	process.exit();
 });
+
 const myIntents = new discord.Intents();
 myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS, discord.Intents.FLAGS.GUILD_MESSAGES,
 	discord.Intents.FLAGS.DIRECT_MESSAGES, discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
