@@ -26,6 +26,8 @@
 
     "discord.js": "^13.3.1",
 
+    "ffmpeg-static": "^4.4.0",
+
     "libsodium-wrappers": "^0.7.9",
 
     "luxon": "^2.0.2",
