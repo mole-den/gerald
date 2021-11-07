@@ -186,7 +186,13 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			let x = /[0-9]+/gm.exec(args[0])![0];
 			if (parseInt(x) > 10) return
 			for (let i = 0; i < parseInt(x); i++) {
-				await message.channel.send(`${uniq[getRandomArbitrary(0, member.length - 1)].user.username}`);
+				let ask = uniq[getRandomArbitrary(0, member.length - 1)]
+				if (typeof ask === 'string') {
+					message.channel.send(`${ask}`);
+					return
+				} else {
+					await message.channel.send(`${(ask.nickname) ? ask.nickname : ask.user.username}`);
+				}
 			}
 			return
 		} else if (args[0] === '-user') {
@@ -194,11 +200,17 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			let i = await message.guild?.roles.fetch('877133047210852423');
 			if (!y) return;
 			if (!i) return;
-			let member: Array<discord.GuildMember> = []
+			let member: Array<discord.GuildMember | string> = []
 			y.members.each((mem) => member.push(mem));
 			i.members.each((mem) => member.push(mem));
+			member.push('nobody');
 			let uniq = [...new Set(member)];
-			await message.channel.send(`${uniq[getRandomArbitrary(0, member.length - 1)].user.username}`);
+			let ask = uniq[getRandomArbitrary(0, member.length - 1)]
+			if (typeof ask === 'string') {
+				message.channel.send(`${ask}`);
+				return
+			}
+			await message.channel.send(`${(ask.nickname) ? ask.nickname : ask.user.username}`);
 			return;
 		}
 		else if (args[0] === '-percent') {
