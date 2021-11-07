@@ -10,7 +10,7 @@ process.on('uncaughtException', async error => {
 	if (!bot) { process.exit() }
 	let x = await (await bot.guilds.fetch('895064783135592449')).channels.fetch('903400898397622283') as discord.TextChannel;
 	x.send(` <@!811413512743813181> <@!471907923056918528>\n Unhandled exception: \n ${error}`);
-	process.exit()
+	process.exit();
 });
 process.on('unhandledRejection', async error => {
 	console.log(error);
