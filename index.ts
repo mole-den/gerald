@@ -20,6 +20,7 @@ process.on('unhandledRejection', async error => {
 	x.send(` <@!811413512743813181> <@!471907923056918528>\n Unhandled rejection: \n ${error}`);
 	process.exit();
 });
+
 const myIntents = new discord.Intents();
 myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS, discord.Intents.FLAGS.GUILD_MESSAGES,
 	discord.Intents.FLAGS.DIRECT_MESSAGES, discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
@@ -59,7 +60,7 @@ const db = new pg.Pool({
 
 function getRandomArbitrary(min: number, max: number) {
 	return Math.round(Math.random() * (max - min) + min);
-}
+};
 
 (async () => {
 	await db.connect();
@@ -131,6 +132,8 @@ bot.on('messageCreate', (message: discord.Message) => {
 });
 
 bot.on('messageDelete', async (message) => {
+return
+//AAAAAAAAAAAAAA
 	let delTime = Math.round(+new Date() / 1000);
 	if (message.author?.bot) return
 	if (message.guild === null) return;
@@ -514,5 +517,6 @@ setInterval(heartbeat, 5000);
 bot.on('heartbeated', () => {
 	//console.log(`Heartbeat recived. Logged in as ${bot.user.tag}`);
 });
+//zac cringe 
 //gustavo cringe
-
+//gerald cringe 
