@@ -27,7 +27,7 @@ myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS,
 const bot = new discord.Client({ intents: myIntents });
 const logmessages = false;
 const prefix = "g";
-//var doheartbeat = true
+//var doheartbeat = true;
 //const guildID = '576344535622483968';
 const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xi402g.HBaMIbEioxYq8r1ZCYvAn2xusbU'
 const dbToken = 'postgres://kivpldtxhvcjwt:92eaa0724d983ca89ff6b683be3e1d0ef1a6e7f884b5986816a3810c0eaa5284@ec2-34-194-100-156.compute-1.amazonaws.com:5432/ddo6pnpikd2ji3'
