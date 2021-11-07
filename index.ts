@@ -370,7 +370,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				return;
 			}
 			console.log(out);
-			let data = await db.query(out)
+			let data = await db.query(out);
 			console.log('done');
 			let JSONdata = JSON.stringify(data.rows, null, 1);
 			if (JSONdata?.length && JSONdata.length < 2000) {
