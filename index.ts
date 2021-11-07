@@ -3,7 +3,7 @@ import * as voice from '@discordjs/voice';
 import * as pg from 'pg';
 import * as lux from 'luxon';
 import axios from 'axios';
-voice
+voice;
 process.on('uncaughtException', async error => {
 	console.log(error);
 	console.log('err');
