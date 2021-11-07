@@ -68,16 +68,16 @@ bot.login(token);
 //egg
 
 bot.on('guildMemberAdd', async (member) => {
-	db.query(`INSERT INTO gmember (guild, userid, username) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`,
+	db.query(`INSERT INTO members (guild, userid, username) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`,
 		[BigInt(member.guild.id), BigInt(member.id), member.user.username]);
-	let x = await db.query(`SELECT * FROM gmember WHERE guild = $1 AND userid = $2 AND blacklisted`, [BigInt(member.guild.id), BigInt(member.id)]);
+	let x = await db.query(`SELECT * FROM members WHERE guild = $1 AND userid = $2 AND blacklisted`, [BigInt(member.guild.id), BigInt(member.id)]);
 	if (x.rows.length > 0) {
 		member.ban({ reason: 'Blacklisted' });
 	}
 })
 
 bot.on('guildCreate', (guild) => {
-	db.query('INSERT INTO guild (guildid) VALUES ($1) ON CONFLICT DO NOTHING', [guild.id]);
+	db.query('INSERT INTO guilds (guildid) VALUES ($1) ON CONFLICT DO NOTHING', [guild.id]);
 	guild.channels.fetch().then(async (channels) => {
 		channels.each(async (ch) => {
 			if (ch.type === 'GUILD_TEXT') {
@@ -91,7 +91,7 @@ bot.on('guildCreate', (guild) => {
 bot.on('userUpdate', async (user) => {
 	console.log('changed');
 	let fullUser = ((user.partial) ? (await user.fetch()) : user);
-	db.query('UPDATE gmember SET username = $1 WHERE userid = $2',
+	db.query('UPDATE members SET username = $1 WHERE userid = $2',
 		[`${fullUser.username}#${fullUser.discriminator}`, fullUser.id]);
 });
 
@@ -135,7 +135,7 @@ bot.on('messageDelete', async (message) => {
 	if (message.author?.bot) return
 	if (message.guild === null) return;
 	if (message.partial) return;
-	await db.query(`INSERT INTO deletedmsg (author, content, guildid, timestamp, channel, deleted_time) VALUES ($1, $2, $3, $4, $5, $6)`,
+	await db.query(`INSERT INTO deletedmsgs (author, content, guildid, timestamp, channel, deleted_time) VALUES ($1, $2, $3, $4, $5, $6)`,
 		[BigInt(message.author.id), message.cleanContent, message.guild.id, Math.round((message.createdAt.getTime()) / 1000), message.channel.id, delTime]);
 });
 
@@ -143,7 +143,7 @@ bot.on('messageDeleteBulk', async (array) => {
 	let delTime = Math.round(+new Date() / 1000);
 	array.each(async (message) => {
 		if (message.partial || !message.guild || message.author.bot) return;
-		await db.query(`INSERT INTO deletedmsg (author, content, guildid, timestamp, channel, deleted_time) VALUES ($1, $2, $3, $4, $5, $6)`,
+		await db.query(`INSERT INTO deletedmsgs (author, content, guildid, timestamp, channel, deleted_time) VALUES ($1, $2, $3, $4, $5, $6)`,
 			[BigInt(message.author.id), message.cleanContent, message.guild.id, Math.round((message.createdAt.getTime()) / 1000), message.channel.id, delTime]);
 	})
 });
@@ -176,21 +176,29 @@ bot.on('messageCreate', async (message: discord.Message) => {
 		}
 		if (/-user[0-9]+/gm.test(args[0])) {
 			let y = await message.guild?.roles.fetch('858473576335540224');
+			let i = await message.guild?.roles.fetch('877133047210852423');
 			if (!y) return;
+			if (!i) return;
 			let member: Array<discord.GuildMember> = []
-			y.members.each((mem) => member.push(mem))
+			y.members.each((mem) => member.push(mem));
+			i.members.each((mem) => member.push(mem));
+			let uniq = [...new Set(member)];
 			let x = /[0-9]+/gm.exec(args[0])![0];
 			if (parseInt(x) > 10) return
 			for (let i = 0; i < parseInt(x); i++) {
-				await message.channel.send(`${member[getRandomArbitrary(0, member.length - 1)].user.username}`);
+				await message.channel.send(`${uniq[getRandomArbitrary(0, member.length - 1)].user.username}`);
 			}
 			return
 		} else if (args[0] === '-user') {
 			let y = await message.guild?.roles.fetch('858473576335540224');
+			let i = await message.guild?.roles.fetch('877133047210852423');
 			if (!y) return;
+			if (!i) return;
 			let member: Array<discord.GuildMember> = []
-			y.members.each((mem) => member.push(mem))
-			await message.channel.send(`${member[getRandomArbitrary(0, member.length - 1)].user.username}`);
+			y.members.each((mem) => member.push(mem));
+			i.members.each((mem) => member.push(mem));
+			let uniq = [...new Set(member)];
+			await message.channel.send(`${uniq[getRandomArbitrary(0, member.length - 1)].user.username}`);
 			return;
 		}
 		else if (args[0] === '-percent') {
@@ -223,9 +231,9 @@ bot.on('messageCreate', async (message: discord.Message) => {
 		bot.guilds.fetch().then(async (guilds) => {
 			guilds.each(async (guild) => {
 				let x = await guild.fetch()
-				db.query('INSERT INTO guild (guildid) VALUES ($1) ON CONFLICT DO NOTHING', [x.id]);
+				db.query('INSERT INTO guilds (guildid) VALUES ($1) ON CONFLICT DO NOTHING', [x.id]);
 				(await x.members.fetch()).each(async (mem) => {
-					db.query(`INSERT INTO gmember (guild, userid, username) VALUES ($1, $2, $3)`,
+					db.query(`INSERT INTO members (guild, userid, username) VALUES ($1, $2, $3)`,
 						[x.id, mem.id, `${mem.user.username}#${mem.user.discriminator}`]);
 				})
 			})
@@ -269,7 +277,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			await message.channel.send('Updating database rows');
 			let users = await message.guild?.members.fetch()
 			users?.forEach((i) => {
-				db.query('UPDATE gmember SET username = $1 WHERE userid = $2',
+				db.query('UPDATE members SET username = $1 WHERE userid = $2',
 					[`${i.user.username}#${i.user.discriminator}`, i.id]);
 			});
 			await message.channel.send('Update complete')
@@ -289,14 +297,14 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				if (args[0] === 'add') {
 					let user = message.mentions.members?.first();
 					if (user) {
-						await db.query(`INSERT INTO gmember (userid, guild, blacklisted) VALUES ($1, $2, $3) 
+						await db.query(`INSERT INTO members (userid, guild, blacklisted) VALUES ($1, $2, $3) 
 						ON CONFLICT (userid, guild) DO UPDATE SET blacklisted = $3`, [user.id, message.guild.id, true]);
 						message.guild.bans.create(user, { reason: 'Blacklisted', days: 0 });
 						message.channel.send(`${user.user.username} has been added to the blacklist and banned`);
 					} else {
 						let num = parseInt(args[1]);
 						if (num !== NaN) {
-							await db.query('INSERT INTO gmember (userid, blacklisted, guild) VALUES ($1, $2, $3) ON CONFLICT (userid, guild) DO UPDATE SET blacklisted = $2', [num, true, message.guild.id]);
+							await db.query('INSERT INTO members (userid, blacklisted, guild) VALUES ($1, $2, $3) ON CONFLICT (userid, guild) DO UPDATE SET blacklisted = $2', [num, true, message.guild.id]);
 							message.channel.send(`${num} has been added to the blacklist`);
 						};
 					};
@@ -304,13 +312,13 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				} else if (args[0] === 'remove') {
 					let user = message.mentions.users?.first();
 					if (user) {
-						db.query('UPDATE gmember SET blacklisted = false WHERE userid = $1 AND guild = $2', [user.id, message.guild.id]);
+						db.query('UPDATE members SET blacklisted = false WHERE userid = $1 AND guild = $2', [user.id, message.guild.id]);
 						message.channel.send(`${user.username} has been removed from the blacklist`);
 						message.guild.members.unban(user);
 					} else {
 						let num = parseInt(args[1]);
 						if (num === NaN) return;
-						let q = await db.query('UPDATE gmember SET blacklisted = false WHERE userid = $1 AND guild = $2', [num, message.guild.id]);
+						let q = await db.query('UPDATE members SET blacklisted = false WHERE userid = $1 AND guild = $2', [num, message.guild.id]);
 						if (q.rowCount === 0) return;
 						await message.guild.members.unban(num.toString()).then(() => {
 							message.channel.send(`${num} has been removed from the blacklist`);
@@ -318,15 +326,15 @@ bot.on('messageCreate', async (message: discord.Message) => {
 					};
 					// if args[0] = 'list' then send a message containing all the blacklisted users in the database
 				} else if (args[0] === 'list') {
-					let smite = await db.query('SELECT * FROM gmember WHERE blacklisted AND guild = $1', [message.guild.id]);
+					let smite = await db.query('SELECT * FROM members WHERE blacklisted AND guild = $1', [message.guild.id]);
 					if (smite.rowCount === 0) message.channel.send(`No users are blacklisted`);
 					smite.rows.forEach((i) => {
 						message.channel.send(`${i.userid} is blacklisted`);
 					});
 					// if args[0] = 'clear' then clear the database of all blacklisted users
 				} else if (args[0] === 'clear') {
-					let banned = await db.query('SELECT * FROM gmember WHERE blacklisted AND guild = $1', [message.guild.id]);
-					await db.query('UPDATE gmember SET blacklisted = false WHERE blacklisted AND guild = $1', [message.guild.id]);
+					let banned = await db.query('SELECT * FROM members WHERE blacklisted AND guild = $1', [message.guild.id]);
+					await db.query('UPDATE members SET blacklisted = false WHERE blacklisted AND guild = $1', [message.guild.id]);
 					message.channel.send(`The blacklist has been cleared`);
 					banned.rows.forEach((i) => {
 						message.guild!.members.unban(i.userid);
@@ -390,7 +398,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			let users = await message.guild.members.fetch();
 			users?.forEach(async (i) => {
 				try {
-					db.query('INSERT INTO gmember(guild, userid, username) VALUES ($1, $2, $3)',
+					db.query('INSERT INTO members(guild, userid, username) VALUES ($1, $2, $3)',
 						[BigInt(i.guild.id), BigInt(i.user.id), `${i.user.username}#${i.user.discriminator}`])
 				} catch (error) {
 					console.log("error");
@@ -424,7 +432,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 		} else if (command === 'gay') {
 			if (args[0] === 'add') {
 				if (args[1] === undefined) return;
-				await db.query('UPDATE gmember SET sexuality=$1 WHERE userid = $2',
+				await db.query('UPDATE members SET sexuality=$1 WHERE userid = $2',
 					[args[1], message.author.id]);
 				message.channel.send(`set ${message.author.username} to ${args[1]}`);
 				return;
@@ -432,19 +440,19 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				let mem = message.mentions.members?.first()
 				if (!mem) return;
 				if (message.member?.permissions.has(discord.Permissions.FLAGS.MANAGE_NICKNAMES)) {
-					await db.query('UPDATE gmember SET sexuality=$1 WHERE userid = $2',
+					await db.query('UPDATE members SET sexuality=$1 WHERE userid = $2',
 						[args[2], mem.id]);
 					message.channel.send(`set ${mem.user.username} to ${args[2]}`);
 				};
 				return;
 			}
 			message.mentions.members?.each(async (eachmem) => {
-				let s = await db.query('SELECT * FROM gmember WHERE userid = $1', [BigInt(eachmem.id)])
+				let s = await db.query('SELECT * FROM members WHERE userid = $1', [BigInt(eachmem.id)])
 				message.channel.send(`${(eachmem.nickname !== null) ? eachmem.nickname : eachmem.user.username} is ${s.rows[0].sexuality}`);
 			})
 			message.mentions.roles?.each(async (eachrole) => {
 				eachrole.members.each(async (eachmem) => {
-					let s = await db.query('SELECT * FROM gmember WHERE userid = $1', [BigInt(eachmem.id)])
+					let s = await db.query('SELECT * FROM members WHERE userid = $1', [BigInt(eachmem.id)])
 					message.channel.send(`${(eachmem.nickname !== null) ? eachmem.nickname : eachmem.user.username} is ${s.rows[0].sexuality}`)
 				})
 			})
@@ -470,7 +478,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			}
 		} else if (command === 'deleted') {
 			if (!message.guildId) return
-			let del = await db.query('SELECT * FROM deletedmsg WHERE guildid=$2 ORDER BY timestamp DESC LIMIT $1;',
+			let del = await db.query('SELECT * FROM deletedmsgs WHERE guildid=$2 ORDER BY timestamp DESC LIMIT $1;',
 				[(args[0]) ? Number((args[0])) : 10, message.guildId]);
 			del.rows.forEach(async (msg) => {
 				let member = await message.guild?.members.fetch(msg.author);
@@ -504,3 +512,4 @@ bot.on('heartbeated', () => {
 	//console.log(`Heartbeat recived. Logged in as ${bot.user.tag}`);
 });
 //gustavo cringe
+
