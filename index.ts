@@ -116,7 +116,7 @@ bot.on('messageCreate', (message: discord.Message) => {
 			message.channel.send(`${message.author} sometimes sings soppy love songs in the car.`);
 		} else if (number === 7) {
 			message.channel.send(`My clicks per second are godly, ${message.author}!`);
-		} 
+		}
 	}
 	if (message.author.bot) return
 	if (logmessages === false) return;
@@ -148,132 +148,122 @@ bot.on('messageDeleteBulk', async (array) => {
 	})
 });
 bot.on('messageCreate', async (message: discord.Message) => {
-	if (!message.content.startsWith(prefix) || message.author.bot) { return };
-	const args = message.content.slice(prefix.length).trim().split(' ');
-	const command = args.shift()?.toLowerCase();
-	if (message.author.id === '536047005085204480') {
-		let x = getRandomArbitrary(1, 20)
-		if (x > 15) await message.channel.send('fuck you');
-	}
-	let x = getRandomArbitrary(1, 100)
-	if (x === 1) await message.channel.send('Next time eat a salad!');
-	if (command === 'cat') {
-		let user = message.mentions.members?.first();
-		if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
-			message.channel.send(`${(user?.nickname) ? user?.nickname : user?.user.username} has killed ${getRandomArbitrary(0, 1000)} kittens`);
-			return
+	try {
+		if (!message.content.startsWith(prefix) || message.author.bot) { return };
+		const args = message.content.slice(prefix.length).trim().split(' ');
+		const command = args.shift()?.toLowerCase();
+		if (message.author.id === '536047005085204480') {
+			let x = getRandomArbitrary(1, 20)
+			if (x > 15) await message.channel.send('fuck you');
 		}
-		message.channel.send(`${(user?.nickname) ? user?.nickname : user?.user.username} has killed ${getRandomArbitrary(0, 2000)} kittens`)
+		let x = getRandomArbitrary(1, 100)
+		if (x === 1) await message.channel.send('Next time eat a salad!');
+		if (command === 'cat') {
+			let user = message.mentions.members?.first();
+			if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
+				message.channel.send(`${(user?.nickname) ? user?.nickname : user?.user.username} has killed ${getRandomArbitrary(0, 1000)} kittens`);
+				return
+			}
+			message.channel.send(`${(user?.nickname) ? user?.nickname : user?.user.username} has killed ${getRandomArbitrary(0, 2000)} kittens`)
 
-	}
-	if (command === 'guilds') {
-		let x = await bot.guilds.fetch();
-		x.each((a) => { message.channel.send(`In guild '${a.name}'', (${a.id})'\n Owner is ${a.owner}`) });
-	}
-	if (command === 'ask') {
-		function getRandomArbitrary(min: number, max: number) {
-			return Math.round(Math.random() * (max - min) + min);
-		}
-		if (/-user[0-9]+/gm.test(args[0])) {
-			let y = await message.guild?.roles.fetch('858473576335540224');
-			let i = await message.guild?.roles.fetch('877133047210852423');
-			if (!y) return;
-			if (!i) return;
-			let member: Array<discord.GuildMember> = []
-			y.members.each((mem) => member.push(mem));
-			i.members.each((mem) => member.push(mem));
-			let uniq = [...new Set(member)];
-			let x = /[0-9]+/gm.exec(args[0])![0];
-			if (parseInt(x) > 10) return
-			for (let i = 0; i < parseInt(x); i++) {
+		} else if (command === 'guilds') {
+			let x = await bot.guilds.fetch();
+			x.each((a) => { message.channel.send(`In guild '${a.name}'', (${a.id})'\n Owner is ${a.owner}`) });
+		} else if (command === 'ask') {
+			function getRandomArbitrary(min: number, max: number) {
+				return Math.round(Math.random() * (max - min) + min);
+			}
+			if (/-user[0-9]+/gm.test(args[0])) {
+				let y = await message.guild?.roles.fetch('858473576335540224');
+				let i = await message.guild?.roles.fetch('877133047210852423');
+				if (!y) return;
+				if (!i) return;
+				let member: Array<discord.GuildMember | string> = []
+				y.members.each((mem) => member.push(mem));
+				i.members.each((mem) => member.push(mem));
+				member.push('Illible');
+				let uniq = [...new Set(member)];
+				let x = /[0-9]+/gm.exec(args[0])![0];
+				if (parseInt(x) > 10) return
+				for (let i = 0; i < parseInt(x); i++) {
+					let ask = uniq[getRandomArbitrary(0, member.length - 1)]
+					if (typeof ask === 'string') {
+						message.channel.send(`${ask}`);
+						return
+					} else {
+						await message.channel.send(`${(ask.nickname) ? ask.nickname : ask.user.username}`);
+					}
+				}
+				return
+			} else if (args[0] === '-user') {
+				let y = await message.guild?.roles.fetch('858473576335540224');
+				let i = await message.guild?.roles.fetch('877133047210852423');
+				if (!y) return;
+				if (!i) return;
+				let member: Array<discord.GuildMember | string> = []
+				y.members.each((mem) => member.push(mem));
+				i.members.each((mem) => member.push(mem));
+				member.push('nobody');
+				member.push('Illible');
+				let uniq = [...new Set(member)];
 				let ask = uniq[getRandomArbitrary(0, member.length - 1)]
 				if (typeof ask === 'string') {
 					message.channel.send(`${ask}`);
 					return
-				} else {
-					await message.channel.send(`${(ask.nickname) ? ask.nickname : ask.user.username}`);
 				}
+				await message.channel.send(`${(ask.nickname) ? ask.nickname : ask.user.username}`);
+				return;
 			}
-			return
-		} else if (args[0] === '-user') {
-			let y = await message.guild?.roles.fetch('858473576335540224');
-			let i = await message.guild?.roles.fetch('877133047210852423');
-			if (!y) return;
-			if (!i) return;
-			let member: Array<discord.GuildMember | string> = []
-			y.members.each((mem) => member.push(mem));
-			i.members.each((mem) => member.push(mem));
-			member.push('nobody');
-			let uniq = [...new Set(member)];
-			let ask = uniq[getRandomArbitrary(0, member.length - 1)]
-			if (typeof ask === 'string') {
-				message.channel.send(`${ask}`);
-				return
+			else if (args[0] === '-percent') {
+				message.channel.send(`${getRandomArbitrary(0, 100)}%`);
+				return;
 			}
-			await message.channel.send(`${(ask.nickname) ? ask.nickname : ask.user.username}`);
-			return;
-		}
-		else if (args[0] === '-percent') {
-			message.channel.send(`${getRandomArbitrary(0, 100)}%`);
-			return;
-		}
-		if (getRandomArbitrary(0, 20) > 9) {
-			message.channel.send('yes');
-		} else {
-			message.channel.send('no');
-		}
-	} else if (command === 'setstatus') {
-		if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
-			message.channel.send('You do not have permission to change the bot status');
-			return;
-		}
-		let stat = args[0];
-		if (stat === 'online' || stat === 'idle' || stat === 'dnd' || stat === 'invisible') {
-			bot.user!.setStatus(stat);
-		};
-		const activity = args[1];
-		if (activity === 'playing' || activity === 'streaming' || activity === 'watching' || activity === 'listening' || activity === 'none') {
-			let stat = (activity === 'none') ? undefined : <discord.ActivityType>activity.toUpperCase();
-			let name = args.slice(2).join(' ')
-			bot.user!.setActivity(name, { type: (stat as any) });
-			return;
-		};
-	} else if (command === 'setdb') {
-		message.channel.send('rebuilding database');
-		bot.guilds.fetch().then(async (guilds) => {
-			guilds.each(async (guild) => {
-				let x = await guild.fetch()
-				db.query('INSERT INTO guilds (guildid) VALUES ($1) ON CONFLICT DO NOTHING', [x.id]);
-				(await x.members.fetch()).each(async (mem) => {
-					db.query(`INSERT INTO members (guild, userid, username) VALUES ($1, $2, $3)`,
-						[x.id, mem.id, `${mem.user.username}#${mem.user.discriminator}`]);
+			if (getRandomArbitrary(0, 20) > 9) {
+				message.channel.send('yes');
+			} else {
+				message.channel.send('no');
+			}
+		} else if (command === 'setstatus') {
+			if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
+				message.channel.send('You do not have permission to change the bot status');
+				return;
+			}
+			let stat = args[0];
+			if (stat === 'online' || stat === 'idle' || stat === 'dnd' || stat === 'invisible') {
+				bot.user!.setStatus(stat);
+			};
+			const activity = args[1];
+			if (activity === 'playing' || activity === 'streaming' || activity === 'watching' || activity === 'listening' || activity === 'none') {
+				let stat = (activity === 'none') ? undefined : <discord.ActivityType>activity.toUpperCase();
+				let name = args.slice(2).join(' ')
+				bot.user!.setActivity(name, { type: (stat as any) });
+				return;
+			};
+		} else if (command === 'setdb') {
+			message.channel.send('rebuilding database');
+			bot.guilds.fetch().then(async (guilds) => {
+				guilds.each(async (guild) => {
+					let x = await guild.fetch()
+					db.query('INSERT INTO guilds (guildid) VALUES ($1) ON CONFLICT DO NOTHING', [x.id]);
+					(await x.members.fetch()).each(async (mem) => {
+						db.query(`INSERT INTO members (guild, userid, username) VALUES ($1, $2, $3)`,
+							[x.id, mem.id, `${mem.user.username}#${mem.user.discriminator}`]);
+					})
 				})
 			})
-		})
-	} else if (command === 'https') {
-		axios({
-			method: 'get',
-			url: args[0],
-			responseType: 'json'
-		}).then(function (response) {
-			const buffer = Buffer.from(response.data)
-			const attachment = new discord.MessageAttachment(buffer, 'file.json');
-			message.channel.send(`GET completed`);
-			message.channel.send({ files: [attachment] });
+		} else if (command === 'https') {
+			axios({
+				method: 'get',
+				url: args[0],
+				responseType: 'json'
+			}).then(function (response) {
+				const buffer = Buffer.from(response.data)
+				const attachment = new discord.MessageAttachment(buffer, 'file.json');
+				message.channel.send(`GET completed`);
+				message.channel.send({ files: [attachment] });
 			});
-	};
-});
-
-bot.on('messageCreate', async (message: discord.Message) => {
-	try {
-		const userID = message.author;
-		userID;
-		if (!message.content.startsWith(prefix) || message.author.bot) return;
-
-		const args = message.content.slice(prefix.length).trim().split(' ');
-		const command = args.shift()?.toLowerCase();
-
-		if (command === `help`) {
+		} else if (command === 'vc') {
+		} else if (command === `help`) {
 			message.channel.send('Hello! I am Gerald. I will enable you to take control of your server by my rules >:)');
 		} else if (command === `setup`) {
 			message.channel.send(`Beginning setup but no because zac cant code`);
@@ -405,9 +395,10 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				x.send(` <@!811413512743813181> <@!471907923056918528>\n Unhandled exception: \n ${error}`);
 			}
 		} else if (command === "db-setup") {
+			return
 			if (message.author.id !== '811413512743813181') return;
 			if (!message.guild) return
-			let users = await message.guild.members.fetch();
+			let users = await message.guild!.members.fetch();
 			users?.forEach(async (i) => {
 				try {
 					db.query('INSERT INTO members(guild, userid, username) VALUES ($1, $2, $3)',
