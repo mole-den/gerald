@@ -132,6 +132,8 @@ bot.on('messageCreate', (message: discord.Message) => {
 });
 
 bot.on('messageDelete', async (message) => {
+return
+//AAAAAAAAAAAAAA
 	let delTime = Math.round(+new Date() / 1000);
 	if (message.author?.bot) return
 	if (message.guild === null) return;
