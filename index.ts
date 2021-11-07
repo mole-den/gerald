@@ -10,7 +10,7 @@ process.on('uncaughtException', async error => {
 	if (!bot) { process.exit() }
 	let x = await (await bot.guilds.fetch('895064783135592449')).channels.fetch('903400898397622283') as discord.TextChannel;
 	x.send(` <@!811413512743813181> <@!471907923056918528>\n Unhandled exception: \n ${error}`);
-	process.exit()
+	process.exit();
 });
 process.on('unhandledRejection', async error => {
 	console.log(error);
@@ -370,7 +370,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				return;
 			}
 			console.log(out);
-			let data = await db.query(out)
+			let data = await db.query(out);
 			console.log('done');
 			let JSONdata = JSON.stringify(data.rows, null, 1);
 			if (JSONdata?.length && JSONdata.length < 2000) {
