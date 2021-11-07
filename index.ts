@@ -3,7 +3,7 @@ import * as voice from '@discordjs/voice';
 import * as pg from 'pg';
 import * as lux from 'luxon';
 import axios from 'axios';
-voice
+voice;
 process.on('uncaughtException', async error => {
 	console.log(error);
 	console.log('err');
@@ -18,7 +18,7 @@ process.on('unhandledRejection', async error => {
 	if (!bot) { process.exit() }
 	let x = await (await bot.guilds.fetch('895064783135592449')).channels.fetch('903400898397622283') as discord.TextChannel;
 	x.send(` <@!811413512743813181> <@!471907923056918528>\n Unhandled rejection: \n ${error}`);
-	process.exit()
+	process.exit();
 });
 const myIntents = new discord.Intents();
 myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS, discord.Intents.FLAGS.GUILD_MESSAGES,
@@ -27,10 +27,10 @@ myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS,
 const bot = new discord.Client({ intents: myIntents });
 const logmessages = false;
 const prefix = "g";
-//var doheartbeat = true
+//var doheartbeat = true;
 //const guildID = '576344535622483968';
 const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xi402g.HBaMIbEioxYq8r1ZCYvAn2xusbU'
-const dbToken = 'postgres://kivpldtxhvcjwt:92eaa0724d983ca89ff6b683be3e1d0ef1a6e7f884b5986816a3810c0eaa5284@ec2-34-194-100-156.compute-1.amazonaws.com:5432/ddo6pnpikd2ji3'
+const dbToken = <string>process.env.HEROKU_POSTGRESQL_BLACK_URL
 
 bot.on('ready', () => {
 	console.log('Preparing to take over the world...');
