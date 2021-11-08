@@ -334,7 +334,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 					});
 				}
 			} else {
-				message.channel.send('You are not allowed to use this command.');
+				message.channel.send('You are missing permission \`BAN_MEMBERS\`.');
 			}
 		} else if (command === 'uptime') {
 			let totalSeconds = Math.round(process.uptime())
