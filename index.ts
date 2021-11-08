@@ -7,7 +7,7 @@ voice;
 process.on('uncaughtException', async error => {
 	console.log(error);
 	console.log('err');
-	if (!bot) { process.exit() }
+	if (!bot) process.exit();
 	let x = await (await bot.guilds.fetch('895064783135592449')).channels.fetch('903400898397622283') as discord.TextChannel;
 	x.send(` <@!811413512743813181> <@!471907923056918528>\n Unhandled exception: \n ${error}`);
 	process.exit();
@@ -28,8 +28,6 @@ myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS,
 const bot = new discord.Client({ intents: myIntents });
 const logmessages = false;
 const prefix = "g";
-//var doheartbeat = true;
-//const guildID = '576344535622483968';
 const token = <string>process.env.TOKEN
 const dbToken = <string>process.env.HEROKU_POSTGRESQL_BLACK_URL
 
@@ -62,9 +60,7 @@ function getRandomArbitrary(min: number, max: number) {
 	return Math.round(Math.random() * (max - min) + min);
 };
 
-(async () => {
-	await db.connect();
-})();
+db.connect();
 bot.login(token);
 //egg
 
@@ -77,8 +73,12 @@ bot.on('guildMemberAdd', async (member) => {
 	}
 })
 
-bot.on('guildCreate', (guild) => {
-	db.query('INSERT INTO guilds (guildid) VALUES ($1) ON CONFLICT DO NOTHING', [guild.id]);
+bot.on('guildCreate', async (guild) => {
+	db.query('INSERT INTO guilds (guildid, joined_at) VALUES ($1, $2) ON CONFLICT DO NOTHING', [guild.id, new Date()]);
+	(await guild.members.fetch()).each(async (mem) => {
+		db.query(`INSERT INTO members (guild, userid, username) VALUES ($1, $2, $3)`,
+			[guild.id, mem.id, `${mem.user.username}#${mem.user.discriminator}`]);
+	})
 	guild.channels.fetch().then(async (channels) => {
 		channels.each(async (ch) => {
 			if (ch.type === 'GUILD_TEXT') {
@@ -136,22 +136,23 @@ bot.on('messageCreate', (message: discord.Message) => {
 });
 
 bot.on('messageDelete', async (message) => {
-	let delTime = Math.round(+new Date() / 1000);
+	let delTime = new Date()
 	if (message.author?.bot) return
 	if (message.guild === null) return;
 	if (message.partial) return;
-	await db.query(`INSERT INTO deletedmsgs (author, content, guildid, timestamp, channel, deleted_time) VALUES ($1, $2, $3, $4, $5, $6)`,
-		[BigInt(message.author.id), message.cleanContent, message.guild.id, Math.round((message.createdAt.getTime()) / 1000), message.channel.id, delTime]);
+	await db.query(`INSERT INTO deletedmsgs (author, content, guildid, msgtime, channel, deleted_time) VALUES ($1, $2, $3, $4, $5, $6)`,
+		[BigInt(message.author.id), message.cleanContent, message.guild.id, new Date(message.createdAt.getTime()), message.channel.id, delTime]);
 });
 
 bot.on('messageDeleteBulk', async (array) => {
-	let delTime = Math.round(+new Date() / 1000);
+	let delTime = new Date()
 	array.each(async (message) => {
 		if (message.partial || !message.guild || message.author.bot) return;
-		await db.query(`INSERT INTO deletedmsgs (author, content, guildid, timestamp, channel, deleted_time) VALUES ($1, $2, $3, $4, $5, $6)`,
-			[BigInt(message.author.id), message.cleanContent, message.guild.id, Math.round((message.createdAt.getTime()) / 1000), message.channel.id, delTime]);
+		await db.query(`INSERT INTO deletedmsgs (author, content, guildid, msgtime, channel, deleted_time) VALUES ($1, $2, $3, $4, $5, $6)`,
+			[BigInt(message.author.id), message.cleanContent, message.guild.id, new Date(message.createdAt.getTime()), message.channel.id, delTime]);
 	})
 });
+
 bot.on('messageCreate', async (message: discord.Message) => {
 	try {
 		if (!message.content.startsWith(prefix) || message.author.bot) { return };
@@ -230,8 +231,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			}
 		} else if (command === 'setstatus') {
 			if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
-				message.channel.send('You do not have permission to change the bot status');
-				return;
+				return
 			}
 			let stat = args[0];
 			if (stat === 'online' || stat === 'idle' || stat === 'dnd' || stat === 'invisible') {
@@ -244,18 +244,6 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				bot.user!.setActivity(name, { type: (stat as any) });
 				return;
 			};
-		} else if (command === 'setdb') {
-			message.channel.send('rebuilding database');
-			bot.guilds.fetch().then(async (guilds) => {
-				guilds.each(async (guild) => {
-					let x = await guild.fetch()
-					db.query('INSERT INTO guilds (guildid) VALUES ($1) ON CONFLICT DO NOTHING', [x.id]);
-					(await x.members.fetch()).each(async (mem) => {
-						db.query(`INSERT INTO members (guild, userid, username) VALUES ($1, $2, $3)`,
-							[x.id, mem.id, `${mem.user.username}#${mem.user.discriminator}`]);
-					})
-				})
-			})
 		} else if (command === 'https') {
 			axios({
 				method: 'get',
@@ -276,18 +264,6 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			console.log(`L`);
 
 			//im a gnome
-		} else if (command === 'updatedb') {
-			if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
-				message.channel.send('');
-				return;
-			}
-			await message.channel.send('Updating database rows');
-			let users = await message.guild?.members.fetch()
-			users?.forEach((i) => {
-				db.query('UPDATE members SET username = $1 WHERE userid = $2',
-					[`${i.user.username}#${i.user.discriminator}`, i.id]);
-			});
-			await message.channel.send('Update complete')
 		} else if (command === `die`) {
 			message.channel.send(`no u`);
 		} else if (command === `politics`) {
@@ -295,7 +271,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 		} else if (command === `cool`) {
 			message.channel.send(`You are not as cool as me.`);
 		} else if (command === `invite`) {
-			message.channel.send(`https://discord.com/oauth2/authorize?client_id=671156130483011605&scope=bot&permissions=8`);
+			message.channel.send(`https://discord.com/oauth2/authorize?client_id=671156130483011605&scope=bot&permissions=829811966`);
 		} else if (command === 'smite') {
 			if (message.channel.type === 'DM') return;
 			if (message.guild === null) return;
@@ -348,7 +324,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 					});
 				}
 			} else {
-				message.channel.send('You are not allowed to use this command.');
+				message.channel.send('You are missing permission \`BAN_MEMBERS\`.');
 			}
 		} else if (command === 'uptime') {
 			let totalSeconds = Math.round(process.uptime())
@@ -361,7 +337,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			let str = message.content;
 			let out = str.substring(str.indexOf('```') + 3, str.lastIndexOf('```'));
 			if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
-				message.channel.send('You do not have the required permissions');
+				message.channel.send('You do not have permission to do this');
 				return;
 			}
 			console.log(out);
@@ -384,7 +360,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			let str = message.content;
 			let out = str.substring(str.indexOf('```') + 3, str.lastIndexOf('```'));
 			if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
-				message.channel.send('You do not have the required permissions.');
+				message.channel.send('You do not have permission to do this');
 				return;
 			}
 			try {
@@ -394,26 +370,6 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				console.log(error);
 				message.channel.send(`Unhandled exception: \n ${error}`);
 			}
-		} else if (command === "db-setup") {
-			return
-			if (message.author.id !== '811413512743813181') return;
-			if (!message.guild) return
-			let users = await message.guild!.members.fetch();
-			users?.forEach(async (i) => {
-				try {
-					db.query('INSERT INTO members(guild, userid, username) VALUES ($1, $2, $3)',
-						[BigInt(i.guild.id), BigInt(i.user.id), `${i.user.username}#${i.user.discriminator}`])
-				} catch (error) {
-					console.log("error");
-					console.log(error);
-					let x = await (await bot.guilds.fetch('895064783135592449')).channels.fetch('903400898397622283') as discord.TextChannel;
-					if (message.author.id == "471907923056918528" || message.author.id == "811413512743813181") {
-						x.send(` <@!811413512743813181> <@!471907923056918528>\n Unhandled exception: \n ${error}`);
-						return;
-					}
-					x.send(` <@!811413512743813181> <@!471907923056918528>\n Unhandled exception: \n ${error}`);
-				}
-			});
 		} else if (command === 'status') {
 
 			let user = message.mentions.users.first()
@@ -481,18 +437,18 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			}
 		} else if (command === 'deleted') {
 			if (!message.guildId) return
-			let del = await db.query('SELECT * FROM deletedmsgs WHERE guildid=$2 ORDER BY timestamp DESC LIMIT $1;',
+			let del = await db.query('SELECT * FROM deletedmsgs WHERE guildid=$2 ORDER BY msgtime DESC LIMIT $1;',
 				[(args[0]) ? Number((args[0])) : 10, message.guildId]);
 			del.rows.forEach(async (msg) => {
 				let member = await message.guild?.members.fetch(msg.author);
 				if (!member) return;
-				let timeString = lux.DateTime.fromSeconds(msg.timestamp).setZone("Australia/Sydney").toFormat('tt DD');
+				let timeString = lux.DateTime.fromJSDate(msg.msgtime).setZone("Australia/Sydney").toFormat('tt DD');
 				let name = (member?.nickname) ? member.nickname : `${member?.user.username}#${member.user.discriminator}`;
 				let cnl = await (await bot.guilds.fetch(message.guildId!.toString())).channels.fetch(msg.channel) as discord.TextChannel;
 				await message.channel.send(`**Deleted Message from ${name} in <#${msg.channel}>**: *${timeString}*\n ${discord.Util.cleanContent(msg.content, cnl)}`)
 			})
 		} else if (command === 'sex') {
-			if (getRandomArbitrary(1,100) === 19) {
+			if (getRandomArbitrary(1,50) === 19) {
 				let msg = discord.Util.splitMessage(`
 It was a wonderful monday morning... 
 BigUniverse got out of bed and immediatly grabbed his phone to talk to his wonderful boyfriend, Gustavo. He messaged him, "Squish me daddy!!!"
