@@ -141,7 +141,7 @@ bot.on('messageDelete', async (message) => {
 	let entry = logs.entries.first();
 	if (!entry) return
 	const executor = entry.executor ? entry.executor.tag : 'Unknown';
-	message.channel.send(executor)
+	console.log(executor)
 	if (message.author?.bot) return
 	if (message.guild === null) return;
 	if (message.partial) return;
