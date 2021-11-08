@@ -133,6 +133,15 @@ bot.on('messageCreate', (message: discord.Message) => {
 
 bot.on('messageDelete', async (message) => {
 	let delTime = new Date()
+	if (!message.guild) return
+	await discord.Util.delayFor(900);
+	let logs = await message.guild.fetchAuditLogs({
+		type: 72
+	});
+	let entry = logs.entries.first();
+	if (!entry) return
+	const executor = entry.executor ? entry.executor.tag : 'Unknown';
+	message.channel.send(executor)
 	if (message.author?.bot) return
 	if (message.guild === null) return;
 	if (message.partial) return;
@@ -492,3 +501,4 @@ bot.on('heartbeated', () => {
 //zac cringe 
 //gustavo cringe
 //gerald cringe 
+
