@@ -30,8 +30,8 @@ const logmessages = false;
 const prefix = "g";
 //var doheartbeat = true;
 //const guildID = '576344535622483968';
-const token = process.env.TOKEN
-const dbToken = process.env.HEROKU_POSTGRESQL_BLACK_URL
+const token = <string>process.env.TOKEN
+const dbToken = <string>process.env.HEROKU_POSTGRESQL_BLACK_URL
 
 bot.on('ready', () => {
 	console.log('Preparing to take over the world...');
