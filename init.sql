@@ -9,7 +9,7 @@ CREATE TABLE members (
     blacklisted BOOL DEFAULT FALSE,
     userid BIGINT NOT NULL,
     sexuality VARCHAR(30) DEFAULT 'straight',
-    username VARCHAR(37)
+    username VARCHAR(37),
     UNIQUE(guild, userid)
 );
 

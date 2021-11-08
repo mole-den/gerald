@@ -226,8 +226,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			}
 		} else if (command === 'setstatus') {
 			if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
-				message.channel.send('You do not have permission to change the bot status');
-				return;
+				return
 			}
 			let stat = args[0];
 			if (stat === 'online' || stat === 'idle' || stat === 'dnd' || stat === 'invisible') {
@@ -241,6 +240,9 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				return;
 			};
 		} else if (command === 'setdb') {
+			if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
+				return
+			}
 			message.channel.send('rebuilding database');
 			bot.guilds.fetch().then(async (guilds) => {
 				guilds.each(async (guild) => {
@@ -272,18 +274,6 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			console.log(`L`);
 
 			//im a gnome
-		} else if (command === 'updatedb') {
-			if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
-				message.channel.send('');
-				return;
-			}
-			await message.channel.send('Updating database rows');
-			let users = await message.guild?.members.fetch()
-			users?.forEach((i) => {
-				db.query('UPDATE members SET username = $1 WHERE userid = $2',
-					[`${i.user.username}#${i.user.discriminator}`, i.id]);
-			});
-			await message.channel.send('Update complete')
 		} else if (command === `die`) {
 			message.channel.send(`no u`);
 		} else if (command === `politics`) {
