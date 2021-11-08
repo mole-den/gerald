@@ -76,7 +76,7 @@ bot.on('guildMemberAdd', async (member) => {
 })
 
 bot.on('guildCreate', async (guild) => {
-	db.query('INSERT INTO guilds (guildid) VALUES ($1) ON CONFLICT DO NOTHING', [guild.id]);
+	db.query('INSERT INTO guilds (guildid, joined_at) VALUES ($1, $2) ON CONFLICT DO NOTHING', [guild.id, new Date()]);
 	(await guild.members.fetch()).each(async (mem) => {
 		db.query(`INSERT INTO members (guild, userid, username) VALUES ($1, $2, $3)`,
 			[guild.id, mem.id, `${mem.user.username}#${mem.user.discriminator}`]);
