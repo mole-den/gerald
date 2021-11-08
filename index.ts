@@ -119,6 +119,10 @@ bot.on('messageCreate', (message: discord.Message) => {
 			message.channel.send(`My clicks per second are godly, ${message.author}!`);
 		}
 	}
+	if (/\bfamily\b/gmi.test(message.content)) {
+		if (message.author.bot) return
+		message.channel.send(`Nothing is more important than family.`);
+	}
 	if (message.author.bot) return
 	if (logmessages === false) return;
 	if (message.channel.type === 'DM') return;
