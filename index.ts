@@ -438,7 +438,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			del.rows.forEach(async (msg) => {
 				let member = await message.guild?.members.fetch(msg.author);
 				if (!member) return;
-				let timeString = lux.DateTime.fromSeconds(msg.timestamp).setZone("Australia/Sydney").toFormat('tt DD');
+				let timeString = lux.DateTime.fromJSDate(msg.msgtime).setZone("Australia/Sydney").toFormat('tt DD');
 				let name = (member?.nickname) ? member.nickname : `${member?.user.username}#${member.user.discriminator}`;
 				let cnl = await (await bot.guilds.fetch(message.guildId!.toString())).channels.fetch(msg.channel) as discord.TextChannel;
 				await message.channel.send(`**Deleted Message from ${name} in <#${msg.channel}>**: *${timeString}*\n ${discord.Util.cleanContent(msg.content, cnl)}`)
