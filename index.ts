@@ -433,7 +433,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			}
 		} else if (command === 'deleted') {
 			if (!message.guildId) return
-			let del = await db.query('SELECT * FROM deletedmsgs WHERE guildid=$2 ORDER BY timestamp DESC LIMIT $1;',
+			let del = await db.query('SELECT * FROM deletedmsgs WHERE guildid=$2 ORDER BY msgtime DESC LIMIT $1;',
 				[(args[0]) ? Number((args[0])) : 10, message.guildId]);
 			del.rows.forEach(async (msg) => {
 				let member = await message.guild?.members.fetch(msg.author);
