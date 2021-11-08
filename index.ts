@@ -7,7 +7,7 @@ voice;
 process.on('uncaughtException', async error => {
 	console.log(error);
 	console.log('err');
-	if (!bot) { process.exit() }
+	if (!bot) process.exit();
 	let x = await (await bot.guilds.fetch('895064783135592449')).channels.fetch('903400898397622283') as discord.TextChannel;
 	x.send(` <@!811413512743813181> <@!471907923056918528>\n Unhandled exception: \n ${error}`);
 	process.exit();
@@ -30,8 +30,8 @@ const logmessages = false;
 const prefix = "g";
 //var doheartbeat = true;
 //const guildID = '576344535622483968';
-const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xi402g.HBaMIbEioxYq8r1ZCYvAn2xusbU'
-const dbToken = 'postgres://kivpldtxhvcjwt:92eaa0724d983ca89ff6b683be3e1d0ef1a6e7f884b5986816a3810c0eaa5284@ec2-34-194-100-156.compute-1.amazonaws.com:5432/ddo6pnpikd2ji3'
+const token = <string>process.env.TOKEN
+const dbToken = <string>process.env.HEROKU_POSTGRESQL_BLACK_URL
 
 bot.on('ready', () => {
 	console.log('Preparing to take over the world...');
@@ -281,7 +281,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 		} else if (command === `cool`) {
 			message.channel.send(`You are not as cool as me.`);
 		} else if (command === `invite`) {
-			message.channel.send(`https://discord.com/oauth2/authorize?client_id=671156130483011605&scope=bot&permissions=8`);
+			message.channel.send(`https://discord.com/oauth2/authorize?client_id=671156130483011605&scope=bot&permissions=829811966`);
 		} else if (command === 'smite') {
 			if (message.channel.type === 'DM') return;
 			if (message.guild === null) return;
@@ -478,10 +478,27 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				await message.channel.send(`**Deleted Message from ${name} in <#${msg.channel}>**: *${timeString}*\n ${discord.Util.cleanContent(msg.content, cnl)}`)
 			})
 		} else if (command === 'sex') {
+			if (getRandomArbitrary(1,100) === 19) {
+				let msg = discord.Util.splitMessage(`
+It was a wonderful monday morning... 
+BigUniverse got out of bed and immediatly grabbed his phone to talk to his wonderful boyfriend, Gustavo. He messaged him, "Squish me daddy!!!"
+Unfortunately, Gustavo had greater plans then going over to BigUniverse's house and railing him. Gustavo wanted a better boyfriend.
+He had been programming an AI that would function as a boyfriend for him, but he did not have a body for it. He messaged BigUniverse,
+"Im sorry but I dont think we can continue this relationship."
+BigUniverse was distraught. He replied, "I will 1v1 you in minecraft bedwars!"
+But nothing could change this. Gustavo would date a robot.
+If u want more, dm me :)
+-sirmole
+		`);
+				msg.forEach(x => message.channel.send(x));
+				return
+		}
+
 		let msg = discord.Util.splitMessage(`
 No. You aren't having this.
 		`);
-		msg.forEach(x => message.channel.send(x))
+		msg.forEach(x => message.channel.send(x));
+		
 	}
 	} catch (error) {
 		let x = <discord.TextChannel>await (await bot.guilds.fetch('895064783135592449')).channels.fetch('903400898397622283')
@@ -500,11 +517,12 @@ async function heartbeat() {
 
 //if doheartbeat = true {
 setInterval(heartbeat, 5000);
-//}
+//};
 
 bot.on('heartbeated', () => {
 	//console.log(`Heartbeat recived. Logged in as ${bot.user.tag}`);
 });
+
 //zac cringe 
 //gustavo cringe
 //gerald cringe 
