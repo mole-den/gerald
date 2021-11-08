@@ -60,9 +60,7 @@ function getRandomArbitrary(min: number, max: number) {
 	return Math.round(Math.random() * (max - min) + min);
 };
 
-(async () => {
-	await db.connect();
-})();
+db.connect();
 bot.login(token);
 //egg
 
@@ -134,22 +132,23 @@ bot.on('messageCreate', (message: discord.Message) => {
 });
 
 bot.on('messageDelete', async (message) => {
-	let delTime = Math.round(+new Date() / 1000);
+	let delTime = new Date()
 	if (message.author?.bot) return
 	if (message.guild === null) return;
 	if (message.partial) return;
-	await db.query(`INSERT INTO deletedmsgs (author, content, guildid, timestamp, channel, deleted_time) VALUES ($1, $2, $3, $4, $5, $6)`,
-		[BigInt(message.author.id), message.cleanContent, message.guild.id, Math.round((message.createdAt.getTime()) / 1000), message.channel.id, delTime]);
+	await db.query(`INSERT INTO deletedmsgs (author, content, guildid, msgtime, channel, deleted_time) VALUES ($1, $2, $3, $4, $5, $6)`,
+		[BigInt(message.author.id), message.cleanContent, message.guild.id, new Date(message.createdAt.getTime()), message.channel.id, delTime]);
 });
 
 bot.on('messageDeleteBulk', async (array) => {
-	let delTime = Math.round(+new Date() / 1000);
+	let delTime = new Date()
 	array.each(async (message) => {
 		if (message.partial || !message.guild || message.author.bot) return;
-		await db.query(`INSERT INTO deletedmsgs (author, content, guildid, timestamp, channel, deleted_time) VALUES ($1, $2, $3, $4, $5, $6)`,
-			[BigInt(message.author.id), message.cleanContent, message.guild.id, Math.round((message.createdAt.getTime()) / 1000), message.channel.id, delTime]);
+		await db.query(`INSERT INTO deletedmsgs (author, content, guildid, msgtime, channel, deleted_time) VALUES ($1, $2, $3, $4, $5, $6)`,
+			[BigInt(message.author.id), message.cleanContent, message.guild.id, new Date(message.createdAt.getTime()), message.channel.id, delTime]);
 	})
 });
+
 bot.on('messageCreate', async (message: discord.Message) => {
 	try {
 		if (!message.content.startsWith(prefix) || message.author.bot) { return };
