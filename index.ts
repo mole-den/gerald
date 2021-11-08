@@ -28,8 +28,6 @@ myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS,
 const bot = new discord.Client({ intents: myIntents });
 const logmessages = false;
 const prefix = "g";
-//var doheartbeat = true;
-//const guildID = '576344535622483968';
 const token = <string>process.env.TOKEN
 const dbToken = <string>process.env.HEROKU_POSTGRESQL_BLACK_URL
 
@@ -77,8 +75,12 @@ bot.on('guildMemberAdd', async (member) => {
 	}
 })
 
-bot.on('guildCreate', (guild) => {
+bot.on('guildCreate', async (guild) => {
 	db.query('INSERT INTO guilds (guildid) VALUES ($1) ON CONFLICT DO NOTHING', [guild.id]);
+	(await guild.members.fetch()).each(async (mem) => {
+		db.query(`INSERT INTO members (guild, userid, username) VALUES ($1, $2, $3)`,
+			[guild.id, mem.id, `${mem.user.username}#${mem.user.discriminator}`]);
+	})
 	guild.channels.fetch().then(async (channels) => {
 		channels.each(async (ch) => {
 			if (ch.type === 'GUILD_TEXT') {
@@ -239,21 +241,6 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				bot.user!.setActivity(name, { type: (stat as any) });
 				return;
 			};
-		} else if (command === 'setdb') {
-			if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
-				return
-			}
-			message.channel.send('rebuilding database');
-			bot.guilds.fetch().then(async (guilds) => {
-				guilds.each(async (guild) => {
-					let x = await guild.fetch()
-					db.query('INSERT INTO guilds (guildid) VALUES ($1) ON CONFLICT DO NOTHING', [x.id]);
-					(await x.members.fetch()).each(async (mem) => {
-						db.query(`INSERT INTO members (guild, userid, username) VALUES ($1, $2, $3)`,
-							[x.id, mem.id, `${mem.user.username}#${mem.user.discriminator}`]);
-					})
-				})
-			})
 		} else if (command === 'https') {
 			axios({
 				method: 'get',
@@ -380,26 +367,6 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				console.log(error);
 				message.channel.send(`Unhandled exception: \n ${error}`);
 			}
-		} else if (command === "db-setup") {
-			return
-			if (message.author.id !== '811413512743813181') return;
-			if (!message.guild) return
-			let users = await message.guild!.members.fetch();
-			users?.forEach(async (i) => {
-				try {
-					db.query('INSERT INTO members(guild, userid, username) VALUES ($1, $2, $3)',
-						[BigInt(i.guild.id), BigInt(i.user.id), `${i.user.username}#${i.user.discriminator}`])
-				} catch (error) {
-					console.log("error");
-					console.log(error);
-					let x = await (await bot.guilds.fetch('895064783135592449')).channels.fetch('903400898397622283') as discord.TextChannel;
-					if (message.author.id == "471907923056918528" || message.author.id == "811413512743813181") {
-						x.send(` <@!811413512743813181> <@!471907923056918528>\n Unhandled exception: \n ${error}`);
-						return;
-					}
-					x.send(` <@!811413512743813181> <@!471907923056918528>\n Unhandled exception: \n ${error}`);
-				}
-			});
 		} else if (command === 'status') {
 
 			let user = message.mentions.users.first()
