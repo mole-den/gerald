@@ -291,7 +291,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 		} else if (command === `cool`) {
 			message.channel.send(`You are not as cool as me.`);
 		} else if (command === `invite`) {
-			message.channel.send(`https://discord.com/oauth2/authorize?client_id=671156130483011605&scope=bot&permissions=8`);
+			message.channel.send(`https://discord.com/oauth2/authorize?client_id=671156130483011605&scope=bot&permissions=829811966`);
 		} else if (command === 'smite') {
 			if (message.channel.type === 'DM') return;
 			if (message.guild === null) return;
