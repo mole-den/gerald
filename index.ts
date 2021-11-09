@@ -149,9 +149,7 @@ bot.on('messageDelete', async (message) => {
 		Date.now() - a.createdTimestamp < 5000
 	);
 	let entry = auditEntry
-	if (!entry) return
-	const executor = entry.executor ? entry.executor.tag : 'Deleted by Author or Bot';
-	console.log(executor);
+	const executor = (entry && entry.executor) ? entry.executor.tag : 'Deleted by Author or Bot';
 	if (message.author?.bot) return
 	if (message.guild === null) return;
 	if (message.partial) return;
@@ -178,8 +176,7 @@ bot.on('messageDeleteBulk', async (array) => {
 			Date.now() - a.createdTimestamp < 5000
 		);
 		let entry = auditEntry
-		if (!entry) return
-		const executor = entry.executor ? entry.executor.tag : 'Deleted by Author or Bot';
+		const executor = (entry && entry.executor) ? entry.executor.tag : 'Deleted by Author or Bot';
 		console.log(executor);
 		if (message.author?.bot) return
 		if (message.guild === null) return;
