@@ -32,7 +32,7 @@ const logmessages = false;
 const prefix = "g";
 const token = <string>process.env.TOKEN
 const dbToken = <string>process.env.HEROKU_POSTGRESQL_BLACK_URL
-
+ODk1MDcyMTkwNDczNTk2OTU4.YVzO7w.I12T2-8rhvUQjik4QXpRNmf5IQo
 bot.on('ready', () => {
 	console.log('Preparing to take over the world...');
 	console.log('World domination complete.');
