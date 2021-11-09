@@ -317,6 +317,10 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				if (args[0] === 'add') {
 					let user = message.mentions.members?.first();
 					if (user) {
+						if (user.roles.highest.position >= message.member!.roles.highest.position) {
+							message.channel.send(`You do not have a high enough role to do this`);
+							return;
+						}
 						await db.query(`INSERT INTO members (userid, guild, blacklisted) VALUES ($1, $2, $3) 
 						ON CONFLICT (userid, guild) DO UPDATE SET blacklisted = $3`, [user.id, message.guild.id, true]);
 						message.guild.bans.create(user, { reason: 'Blacklisted', days: 0 });
