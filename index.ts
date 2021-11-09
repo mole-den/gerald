@@ -5,7 +5,7 @@ import * as lux from 'luxon';
 import axios from 'axios';
 import cron from 'node-cron';
 
-process.on('uncaughtException', async error => {
+process.on('uncaughtException', async (error) => {
 	console.log(error);
 	console.log('err');
 	if (!bot) process.exit();
