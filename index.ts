@@ -291,24 +291,24 @@ bot.on('messageDeleteBulk', async (array) => {
 				//if (err) return console.log(err);
 				console.log(`L`);
 
-				//im a gnome
-			} else if (command === `die`) {
-				message.channel.send(`no u`);
-			} else if (command === `politics`) {
-				message.channel.send(`https://cdn.discordapp.com/attachments/377228302336655362/886234477578301490/video0.mp4`);
-			} else if (command === `cool`) {
-				message.channel.send(`You are not as cool as me.`);
-			} else if (command === `invite`) {
-				message.channel.send(`https://discord.com/oauth2/authorize?client_id=671156130483011605&scope=bot&permissions=829811966`);
-			} else if (command === 'smite') {
-				if (message.channel.type === 'DM') return;
-				if (message.guild === null) return;
-				if (message.member!.permissions.has(discord.Permissions.FLAGS.BAN_MEMBERS)) {
-					// if args[0] = 'add' then update the database by adding the mentioned users id to the blacklisted users in the database
-					if (args[0] === 'add') {
-						let user = message.mentions.members?.first();
-						if (user) {
-							await db.query(`INSERT INTO members (userid, guild, blacklisted) VALUES ($1, $2, $3) 
+			//im a gnome
+		} else if (command === `die`) {
+			message.channel.send(`no u`);
+		} else if (command === `politics`) {
+			message.channel.send(`https://cdn.discordapp.com/attachments/377228302336655362/886234477578301490/video0.mp4`);
+		} else if (command === `repo`) {
+			message.channel.send(`https://github.com/mole-den/Gerald`);
+		} else if (command === `invite`) {
+			message.channel.send(`https://discord.com/oauth2/authorize?client_id=671156130483011605&scope=bot&permissions=829811966`);
+		} else if (command === 'smite') {
+			if (message.channel.type === 'DM') return;
+			if (message.guild === null) return;
+			if (message.member!.permissions.has(discord.Permissions.FLAGS.BAN_MEMBERS)) {
+				// if args[0] = 'add' then update the database by adding the mentioned users id to the blacklisted users in the database
+				if (args[0] === 'add') {
+					let user = message.mentions.members?.first();
+					if (user) {
+						await db.query(`INSERT INTO members (userid, guild, blacklisted) VALUES ($1, $2, $3) 
 						ON CONFLICT (userid, guild) DO UPDATE SET blacklisted = $3`, [user.id, message.guild.id, true]);
 							message.guild.bans.create(user, { reason: 'Blacklisted', days: 0 });
 							message.channel.send(`${user.user.username} has been added to the blacklist and banned`);
@@ -509,6 +509,7 @@ If u want more, dm me :)
 
 				let msg = discord.Util.splitMessage(`
 No. You aren't having this.
+But... you can have this https://www.youtube.com/watch?v=k4FF7x8vnZg&t=0s&ab_channel=Hepburn
 		`);
 				msg.forEach(x => message.channel.send(x));
 
