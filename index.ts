@@ -475,6 +475,7 @@ If u want more, dm me :)
 
 		let msg = discord.Util.splitMessage(`
 No. You aren't having this.
+But... you can have this https://www.youtube.com/watch?v=k4FF7x8vnZg&t=9s&ab_channel=Hepburn
 		`);
 		msg.forEach(x => message.channel.send(x));
 		
