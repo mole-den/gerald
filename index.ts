@@ -154,7 +154,7 @@ bot.on('messageDelete', async (message) => {
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
 		[BigInt(message.author.id), message.cleanContent,
 		message.guild.id, new Date(message.createdAt.getTime()),
-		message.channel.id, delTime, executor]);
+		message.channel.id, delTime, executor, message.id]);
 });
 
 bot.on('messageDeleteBulk', async (array) => {
@@ -177,7 +177,7 @@ bot.on('messageDeleteBulk', async (array) => {
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
 			[BigInt(message.author.id), message.cleanContent,
 			message.guild.id, new Date(message.createdAt.getTime()),
-			message.channel.id, delTime, executor]);
+			message.channel.id, delTime, executor, message.id]);
 
 	});
 });
