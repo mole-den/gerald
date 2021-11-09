@@ -476,6 +476,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			if (!message.guildId) return
 			if (!message.member?.permissions.has('MANAGE_MESSAGES')) {
 				message.channel.send('You are missing permission \`MANAGE_MESSAGES\`.');
+				return
 			}
 			let del = await db.query('SELECT * FROM deletedmsgs WHERE guildid=$2 ORDER BY msgtime DESC LIMIT $1;',
 				[(args[0]) ? Number((args[0])) : 10, message.guildId]);
