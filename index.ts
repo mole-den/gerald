@@ -3,6 +3,7 @@ import * as voice from '@discordjs/voice';
 import * as pg from 'pg';
 import * as lux from 'luxon';
 import axios from 'axios';
+import cron from 'node-cron';
 voice;
 process.on('uncaughtException', async error => {
 	console.log(error);
@@ -59,6 +60,62 @@ const db = new pg.Pool({
 function getRandomArbitrary(min: number, max: number) {
 	return Math.round(Math.random() * (max - min) + min);
 };
+
+function durationToMS(duration: string): number {
+	let timeRegex = / ([0-9]+( +|)(m |min |mins |minute |minutes |h |hr |hrs |hour |hours |d |day |days |wk |wks |week |weeks |mth |mths |month |months |y |yr |yrs |year |years ))+/gmi
+	let durationMS = 0;
+	let durationArr = duration.match(timeRegex);
+	if (!durationArr) return 0;
+	durationArr.forEach((d) => {
+		let time = d.match(/[0-9]+/gmi);
+		let unit = d.match(/[a-zA-Z]+/gmi);
+		if (!time || !unit) return;
+		let timeNum = parseInt(time[0]);
+		let unitNum = 0;
+		switch (unit[0].toLowerCase()) {
+			case 'm':
+			case 'min':
+			case 'mins':
+			case 'minute':
+			case 'minutes':
+				unitNum = 60000;
+				break;
+			case 'h':
+			case 'hr':
+			case 'hrs':
+			case 'hour':
+			case 'hours':
+				unitNum = 3600000;
+				break;
+			case 'd':
+			case 'day':
+			case 'days':
+				unitNum = 86400000;
+				break;
+			case 'wk':
+			case 'wks':
+			case 'week':
+			case 'weeks':
+				unitNum = 604800000;
+				break;
+			case 'mth':
+			case 'mths':
+			case 'month':
+			case 'months':
+				unitNum = 2592000000;
+				break;
+			case 'y':
+			case 'yr':
+			case 'yrs':
+			case 'year':
+			case 'years':
+				unitNum = 31536000000;
+				break;
+		}
+		durationMS += timeNum * unitNum;
+	})
+	return durationMS;
+}
 
 db.connect();
 bot.login(token);
@@ -315,20 +372,28 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			if (message.member!.permissions.has(discord.Permissions.FLAGS.BAN_MEMBERS)) {
 				// if args[0] = 'add' then update the database by adding the mentioned users id to the blacklisted users in the database
 				if (args[0] === 'add') {
+					let reason;
 					let user = message.mentions.members?.first();
+					let content =  args.slice(2, 4).join(' ');
+					let time = durationToMS(content);
+					if (time === 0) {
+
+					}
+					reason = args.slice(4).join(' ');
 					if (user) {
 						if (user.roles.highest.position >= message.member!.roles.highest.position) {
-							message.channel.send(`You do not have a high enough role to do this`);
+							message.channel.send(`You do not have a high enough role to do this.`);
 							return;
 						}
-						await db.query(`INSERT INTO members (userid, guild, blacklisted) VALUES ($1, $2, $3) 
-						ON CONFLICT (userid, guild) DO UPDATE SET blacklisted = $3`, [user.id, message.guild.id, true]);
+						await db.query(`INSERT INTO punishments (member, guild, type, reason, created_time, duration) VALUES ($1, $2, $3, $4, $5, $6) `, 
+						[user.id, message.guild.id, 'blist', reason, new Date(), time]);
 						message.guild.bans.create(user, { reason: 'Blacklisted', days: 0 });
 						message.channel.send(`${user.user.username} has been added to the blacklist and banned`);
 					} else {
 						let num = parseInt(args[1]);
 						if (num !== NaN) {
-							await db.query('INSERT INTO members (userid, blacklisted, guild) VALUES ($1, $2, $3) ON CONFLICT (userid, guild) DO UPDATE SET blacklisted = $2', [num, true, message.guild.id]);
+							await db.query(`INSERT INTO punishments (member, guild, type, reason, created_time, duration) VALUES ($1, $2, $3, $4, $5, $6) `,
+								[num, message.guild.id, 'blist', reason, new Date(), time]);
 							message.channel.send(`${num} has been added to the blacklist`);
 						};
 					};
@@ -548,3 +613,4 @@ bot.on('heartbeated', () => {
 //gustavo cringe
 //gerald cringe 
 
+cron
