@@ -145,12 +145,12 @@ bot.on('messageDelete', async (message) => {
 	let entry = logs.entries.first();
 	if (!entry) return
 	const executor = entry.executor ? entry.executor.tag : 'Unknown';
-	console.log(executor)
+	console.log(executor);
 	if (message.author?.bot) return
 	if (message.guild === null) return;
 	if (message.partial) return;
-	await db.query(`INSERT INTO deletedmsgs (author, content, guildid, msgtime, channel, deleted_time) VALUES ($1, $2, $3, $4, $5, $6)`,
-		[BigInt(message.author.id), message.cleanContent, message.guild.id, new Date(message.createdAt.getTime()), message.channel.id, delTime]);
+	await db.query(`INSERT INTO deletedmsgs (author, content, guildid, msgtime, channel, deleted_time, deleted_by) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+		[BigInt(message.author.id), message.cleanContent, message.guild.id, new Date(message.createdAt.getTime()), message.channel.id, delTime, executor]);
 });
 
 bot.on('messageDeleteBulk', async (array) => {
