@@ -613,4 +613,4 @@ bot.on('heartbeated', () => {
 //zac cringe
 //gustavo cringe
 //gerald cringe 
-o
+
