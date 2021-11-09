@@ -165,9 +165,15 @@ bot.on('messageDeleteBulk', async (array) => {
 		let logs = await message.guild.fetchAuditLogs({
 			type: 72
 		});
-		let entry = logs.entries.first();
+		const auditEntry = logs.entries.find(a =>
+			// @ts-expect-error
+			a.target.id === message.author.id &&
+			(a.extra as any).channel.id === message.channel.id &&
+			Date.now() - a.createdTimestamp < 20000
+		);
+		let entry = auditEntry
 		if (!entry) return
-		const executor = entry.executor ? entry.executor.tag : 'Unknown';
+		const executor = entry.executor ? entry.executor.tag : 'Deleted by Author or Bot';
 		console.log(executor);
 		if (message.author?.bot) return
 		if (message.guild === null) return;
