@@ -376,10 +376,11 @@ bot.on('messageCreate', async (message: discord.Message) => {
 					let user = message.mentions.members?.first();
 					let content =  args.slice(2, 4).join(' ');
 					let time = durationToMS(content);
-					if (time === 0) {
-
-					}
+					if (time === null) {
+						reason = args.slice(2).join(' ');
+					} else {
 					reason = args.slice(4).join(' ');
+					}
 					if (user) {
 						if (user.roles.highest.position >= message.member!.roles.highest.position) {
 							message.channel.send(`You do not have a high enough role to do this.`);
@@ -388,7 +389,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 						await db.query(`INSERT INTO punishments (member, guild, type, reason, created_time, duration) VALUES ($1, $2, $3, $4, $5, $6) `, 
 						[user.id, message.guild.id, 'blist', reason, new Date(), time]);
 						message.guild.bans.create(user, { reason: 'Blacklisted', days: 0 });
-						message.channel.send(`${user.user.username} has been added to the blacklist and banned`);
+						message.channel.send(`${user.user.username} has been added to the blacklist and banned${(time === null) ? '.': `for ${content}`}\n Provided reason: ${reason}`);
 					} else {
 						let num = parseInt(args[1]);
 						if (num !== NaN) {
