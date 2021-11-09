@@ -4,7 +4,8 @@ import * as pg from 'pg';
 import * as lux from 'luxon';
 import axios from 'axios';
 import cron from 'node-cron';
-voice
+voice;
+cron;
 process.on('uncaughtException', async (error) => {
 	console.log(error);
 	console.log('err');
