@@ -474,20 +474,10 @@ bot.on('messageDeleteBulk', async (array) => {
 				let del = await db.query('SELECT * FROM deletedmsgs WHERE guildid=$2 ORDER BY msgtime DESC LIMIT $1;',
 					[(args[0]) ? Number((args[0])) : 10, message.guildId]);
 				del.rows.forEach(async (msg) => {
-					let name;
-					let member = await message.guild?.members.fetch(msg.author);
-					//let timeString = lux.DateTime.fromJSDate(msg.msgtime).setZone("Australia/Sydney").toFormat('tt DD');
-					if (member) name = (member?.nickname) ? member.nickname : `${member?.user.username}#${member.user.discriminator}`;
-					if (!member) {
-						let query = await db.query('SELECT * FROM gmember WHERE userid = $1', [BigInt(msg.author)]);
-						if (query.rowCount > 0) {
-							name = query.rows[0].username
-						}
-					}
 					const DeleteEmbed = new discord.MessageEmbed()
 						.setTitle("Deleted Message")
 						.setColor("#fc3c3c")
-						.addField("Author", name, true)
+						.addField("Author", `<@${msg.author}>`, true)
 						.addField("Deleted By", msg.deleted_by, true)
 						.addField("Channel", `<#${msg.channel}>`, true)
 						.addField("Message", msg.content || "None")
