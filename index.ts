@@ -277,8 +277,8 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			message.channel.send(`no u`);
 		} else if (command === `politics`) {
 			message.channel.send(`https://cdn.discordapp.com/attachments/377228302336655362/886234477578301490/video0.mp4`);
-		} else if (command === `cool`) {
-			message.channel.send(`You are not as cool as me.`);
+		} else if (command === `repo`) {
+			message.channel.send(`https://github.com/mole-den/Gerald`);
 		} else if (command === `invite`) {
 			message.channel.send(`https://discord.com/oauth2/authorize?client_id=671156130483011605&scope=bot&permissions=829811966`);
 		} else if (command === 'smite') {
