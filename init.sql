@@ -23,7 +23,7 @@ CREATE TABLE deletedmsgs (
     channel BIGINT NOT NULL,
     deleted_time TIMESTAMP NOT NULL,
     deleted_by VARCHAR(37) NOT NULL,
-    msgid BIGINT UNIQUE
+    msgid BIGINT UNIQUE,
     FOREIGN KEY (author, guildid) REFERENCES members(userid, guild)
 );
 
