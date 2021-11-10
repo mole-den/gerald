@@ -44,8 +44,8 @@ const bot = new sapphire.SapphireClient({
 });
 const logmessages = false;
 const prefix = "g";
-const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xi402g.NaS2xXx9ChvAHYEli5nZrF9aoFY'
-const dbToken = 'postgres://zpvmxgoqlpigkv:32f3b8be8824c71127ca435408d6938942a935f16d7a52def8bb63a0a0b8abe2@ec2-34-194-100-156.compute-1.amazonaws.com:5432/ddo6pnpikd2ji3'
+const token = <string>process.env.TOKEN;
+const dbToken = <string>process.env.HEROKU_POSTGRESQL_BLACK_URL;
 bot.on('ready', () => {
 	console.log('Preparing to take over the world...');
 	console.log('World domination complete.');
