@@ -24,6 +24,12 @@ process.on('unhandledRejection', async error => {
 	x.send(` <@!811413512743813181> <@!471907923056918528>\n Unhandled rejection: \n ${error}`);
 	process.exit();
 });
+process.on('SIGTERM', async () => {
+	console.log('SIGTERM received');
+	let x = await(await bot.guilds.fetch('809675885330432051')).channels.fetch('809675885849739296') as discord.TextChannel;
+	await x.send(` <@!811413512743813181> <@!471907923056918528>\nSIGTERM recieved:\nProcess terminating`);
+	process.exit(1);
+});
 
 const myIntents = new discord.Intents();
 myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS, discord.Intents.FLAGS.GUILD_MESSAGES,
@@ -67,7 +73,7 @@ function getRandomArbitrary(min: number, max: number) {
 };
 
 
-db.connect();
+void db.connect();
 void bot.login(token);
 //egg
 
@@ -543,21 +549,6 @@ But... you can have this https://www.youtube.com/watch?v=k4FF7x8vnZg&t=0s&ab_cha
 		console.log(error);
 		x.send(` <@!811413512743813181> <@!471907923056918528>\n Unhandled exception: \n ${error}`);
 	}
-});
-
-
-async function heartbeat() {
-	//console.log('Heartbeat sent.');
-	await new Promise(r => setTimeout(r, 500));
-	bot.emit('heartbeated');
-};
-
-//if doheartbeat = true {
-setInterval(heartbeat, 5000);
-//};
-
-bot.on('heartbeated', () => {
-	//console.log(`Heartbeat recived. Logged in as ${bot.user.tag}`);
 });
 
 //zac cringe
