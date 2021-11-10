@@ -1,4 +1,4 @@
-export function durationToMS(duration: string): number | null {
+export default function durationToMS(duration: string): number | null {
     let timeRegex = /([0-9]+( +|)(m($| )|min($| )|mins($| )|minute($| )|minutes($| )|h($| )|hr($| )|hrs($| )|hour($| )|hours($| )|d($| )|day($| )|days($| )|wk($| )|wks($| )|week($| )|weeks($| )|mth($| )|mths($| )|month($| )|months($| )|y($| )|yr($| )|yrs($| )|year($| )|years($| )))+/gmi
     let durationMS = 0;
     let durationArr = duration.match(timeRegex);

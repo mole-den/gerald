@@ -5,7 +5,7 @@ import * as lux from 'luxon';
 import axios from 'axios';
 import cron from 'node-cron';
 import * as sapphire from '@sapphire/framework';
-import { durationToMS } from './functions'
+import durationToMS from './functions';
 voice;
 cron;
 process.on('uncaughtException', async (error) => {
