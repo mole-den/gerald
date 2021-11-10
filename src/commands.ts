@@ -10,11 +10,10 @@ export class testCommand extends sapphire.Command {
             description: 'short desc',
             detailedDescription: 'desc displayed when help command is called',
             requiredClientPermissions: [],
-            preconditions: ['OwnerOnly', new sapphire.ClientPermissionsPrecondition('MANAGE_MESSAGES')]
+            preconditions: ['OwnerOnly']
         });
     };
     public async messageRun(message: discord.Message) {
         message.channel.send('test');
-        
     };
 }

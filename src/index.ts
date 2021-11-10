@@ -5,6 +5,8 @@ import * as lux from 'luxon';
 import axios from 'axios';
 import cron from 'node-cron';
 import * as sapphire from '@sapphire/framework';
+import './commands';
+import './preconditions';
 voice;
 cron;
 process.on('uncaughtException', async (error) => {
@@ -42,8 +44,8 @@ const bot = new sapphire.SapphireClient({
 });
 const logmessages = false;
 const prefix = "g";
-const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xi402g.6MCKkUKtZ3vrkzp70-Gox8Dt2PE'
-const dbToken = 'postgres://cwpdcjzxkbisrn:cbf4e37054c8146a74c0b4a48e9b9c26c229d4732a3801a88fe5dc7db56ac969@ec2-34-194-100-156.compute-1.amazonaws.com:5432/ddo6pnpikd2ji3'
+const token = 'NjcxMTU2MTMwNDgzMDExNjA1.Xi402g.SqnUnWdUbZPmMge7dupff_7wEoI'
+const dbToken = 'postgres://zpvmxgoqlpigkv:32f3b8be8824c71127ca435408d6938942a935f16d7a52def8bb63a0a0b8abe2@ec2-34-194-100-156.compute-1.amazonaws.com:5432/ddo6pnpikd2ji3'
 bot.on('ready', () => {
 	console.log('Preparing to take over the world...');
 	console.log('World domination complete.');
@@ -128,7 +130,6 @@ function durationToMS(duration: string): number | null {
 	})
 	return durationMS;
 };
-
 void db.connect();
 void bot.login(token);
 //egg
