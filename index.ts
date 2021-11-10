@@ -27,7 +27,9 @@ process.on('unhandledRejection', async error => {
 process.on('SIGTERM', async () => {
 	console.log('SIGTERM received');
 	let x = await(await bot.guilds.fetch('809675885330432051')).channels.fetch('809675885849739296') as discord.TextChannel;
-	await x.send(` <@!811413512743813181> <@!471907923056918528>\nSIGTERM recieved:\nProcess terminating`);
+	await x.send(`SIGTERM recieved:\nProcess terminating`);
+	db.end();
+	bot.destroy();
 	process.exit(1);
 });
 
