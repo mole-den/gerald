@@ -29,8 +29,9 @@ export class ownerDisableCommand extends sapphire.Command {
         });
     };
     public async messageRun(message: discord.Message, args: sapphire.Args) {
-        let cmd = args.next();
-        let command = this.container.stores.get('commands').find(value => value.name === cmd);
+        let cmd = args.nextMaybe();
+        if (!cmd.exists) return
+        let command = this.container.stores.get('commands').find(value => value.name === cmd.value);
         if (!command) return message.channel.send('Command not found');
         command.unload();
         return message.channel.send(`Dismounted *${cmd}*`);
@@ -43,7 +44,6 @@ export class ownerEnableCommand extends sapphire.Command {
             ...options,
             name: 'mount',
             description: 'Enables a command globally',
-            requiredClientPermissions: [],
             preconditions: ['OwnerOnly']
         });
     };

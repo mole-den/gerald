@@ -9,16 +9,18 @@
   "main": "index.js",
 
   "scripts": {
+
     "start": "cd build && node index.js",
+
     "inspect-start": "cd build && node --inspect index.js",
+
     "postinstall": "tsc"
+
   },
 
   "dependencies": {
 
     "@databases/sql": "^3.2.0",
-
-    "@discordjs/voice": "^0.7.2",
 
     "@sapphire/framework": "^2.1.4",
 
