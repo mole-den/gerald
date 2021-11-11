@@ -1,11 +1,9 @@
 import * as discord from "discord.js";
-import * as voice from '@discordjs/voice';
 import * as pg from 'pg';
 import * as lux from 'luxon';
 import axios from 'axios';
 import cron from 'node-cron';
 import * as sapphire from '@sapphire/framework';
-voice;
 cron;
 process.on('uncaughtException', async (error) => {
 	console.log(error);
@@ -25,7 +23,7 @@ process.on('unhandledRejection', async error => {
 });
 process.on('SIGTERM', async () => {
 	console.log('SIGTERM received');
-	let x = await(await bot.guilds.fetch('809675885330432051')).channels.fetch('809675885849739296') as discord.TextChannel;
+	let x = await (await bot.guilds.fetch('809675885330432051')).channels.fetch('809675885849739296') as discord.TextChannel;
 	await x.send(`SIGTERM recieved:\nProcess terminating`);
 	db.end();
 	bot.destroy();
@@ -36,7 +34,7 @@ const myIntents = new discord.Intents();
 myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS, discord.Intents.FLAGS.GUILD_MESSAGES,
 	discord.Intents.FLAGS.DIRECT_MESSAGES, discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
 	discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS, discord.Intents.FLAGS.GUILD_PRESENCES);
-const bot = new sapphire.SapphireClient({ 
+const bot = new sapphire.SapphireClient({
 	intents: myIntents,
 	defaultPrefix: 'g',
 });
@@ -386,22 +384,22 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				if (args[0] === 'add') {
 					let reason;
 					let user = message.mentions.members?.first();
-					let content =  args.slice(2, 4).join(' ');
+					let content = args.slice(2, 4).join(' ');
 					let time = durationToMS(content);
 					if (time === null) {
 						reason = args.slice(2).join(' ');
 					} else {
-					reason = args.slice(4).join(' ');
+						reason = args.slice(4).join(' ');
 					}
 					if (user) {
 						if (user.roles.highest.position >= message.member!.roles.highest.position) {
 							message.channel.send(`You do not have a high enough role to do this.`);
 							return;
 						}
-						await db.query(`INSERT INTO punishments (member, guild, type, reason, created_time, duration) VALUES ($1, $2, $3, $4, $5, $6) `, 
-						[user.id, message.guild.id, 'blist', reason, new Date(), time]);
+						await db.query(`INSERT INTO punishments (member, guild, type, reason, created_time, duration) VALUES ($1, $2, $3, $4, $5, $6) `,
+							[user.id, message.guild.id, 'blist', reason, new Date(), time]);
 						message.guild.bans.create(user, { reason: 'Blacklisted', days: 0 });
-						message.channel.send(`${user.user.username} has been added to the blacklist and banned${(time === null) ? '.': `for ${content}`}\n Provided reason: ${reason}`);
+						message.channel.send(`${user.user.username} has been added to the blacklist and banned${(time === null) ? '.' : `for ${content}`}\n Provided reason: ${reason}`);
 					} else {
 						let num = parseInt(args[1]);
 						if (num !== NaN) {
@@ -478,14 +476,14 @@ bot.on('messageCreate', async (message: discord.Message) => {
 		} else if (command === "dbsetup") {
 			if (message.author.id !== "811413512743813181") {
 				message.channel.send('You do not have permission to do this');
-			return;
+				return;
 			}
-			
-                        db.query('INSERT INTO guilds (guildid, joined_at) VALUES ($1, $2) ON CONFLICT DO NOTHING', [message.guild.id, new Date()]);
-                        (await message.guild.members.fetch()).each(async (mem) => {
-                            db.query(`INSERT INTO members (guild, userid) VALUES ($1, $2)`,
-                            [guild.id, mem.id]);
-                        }) 
+			if (!message.guild) return;
+			db.query('INSERT INTO guilds (guildid, joined_at) VALUES ($1, $2) ON CONFLICT DO NOTHING', [message.guild.id, new Date()]);
+			(await message.guild.members.fetch()).each(async (mem) => {
+				db.query(`INSERT INTO members (guild, userid) VALUES ($1, $2)`,
+					[message.guild!.id, mem.id]);
+			})
 
 		} else if (command === 'status') {
 
