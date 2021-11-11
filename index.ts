@@ -475,20 +475,18 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				message.channel.send(`${data.command} completed - ${data.rowCount} rows,`);
 			}
 
-		} else if (command === "eval") {
-			let str = message.content;
-			let out = str.substring(str.indexOf('```') + 3, str.lastIndexOf('```'));
-			if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
+		} else if (command === "dbsetup") {
+			if (message.author.id !== "811413512743813181") {
 				message.channel.send('You do not have permission to do this');
-				return;
+			return;
 			}
-			try {
-				eval(out);
-			} catch (error) {
-				console.log("error");
-				console.log(error);
-				message.channel.send(`Unhandled exception: \n ${error}`);
-			}
+			
+                        db.query('INSERT INTO guilds (guildid, joined_at) VALUES ($1, $2) ON CONFLICT DO NOTHING', [message.guild.id, new Date()]);
+                        (await message.guild.members.fetch()).each(async (mem) => {
+                            db.query(`INSERT INTO members (guild, userid) VALUES ($1, $2)`,
+                            [guild.id, mem.id]);
+                        }) 
+
 		} else if (command === 'status') {
 
 			let user = message.mentions.users.first()
