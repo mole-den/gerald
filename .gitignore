@@ -4,3 +4,4 @@ build/
 local.ts
 politics.mp3
 .env
+process.env
