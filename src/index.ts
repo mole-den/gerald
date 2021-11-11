@@ -42,7 +42,7 @@ const bot = new sapphire.SapphireClient({
 const logmessages = false;
 const prefix = "g";
 const token = <string>process.env.TOKEN
-const dbToken = <string>process.env.HEROKU_POSTGRESQL_BLACK_URL
+const dbToken = <string>process.env.DATABASE_URL;
 bot.on('ready', () => {
 	console.log('Preparing to take over the world...');
 	console.log('World domination complete.');
