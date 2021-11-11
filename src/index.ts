@@ -473,20 +473,6 @@ bot.on('messageCreate', async (message: discord.Message) => {
 				message.channel.send(`${data.command} completed - ${data.rowCount} rows,`);
 			}
 
-		} else if (command === "eval") {
-			let str = message.content;
-			let out = str.substring(str.indexOf('```') + 3, str.lastIndexOf('```'));
-			if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
-				message.channel.send('You do not have permission to do this');
-				return;
-			}
-			try {
-				eval(out);
-			} catch (error) {
-				console.log("error");
-				console.log(error);
-				message.channel.send(`Unhandled exception: \n ${error}`);
-			}
 		} else if (command === 'status') {
 
 			let user = message.mentions.users.first()
