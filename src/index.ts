@@ -143,8 +143,8 @@ bot.on('guildMemberAdd', async (member) => {
 bot.on('guildCreate', async (guild) => {
 	db.query('INSERT INTO guilds (guildid, joined_at) VALUES ($1, $2) ON CONFLICT DO NOTHING', [guild.id, new Date()]);
 	(await guild.members.fetch()).each(async (mem) => {
-		db.query(`INSERT INTO members (guild, userid, username) VALUES ($1, $2, $3)`,
-			[guild.id, mem.id, `${mem.user.username}#${mem.user.discriminator}`]);
+		db.query(`INSERT INTO members (guild, userid) VALUES ($1, $2)`,
+			[guild.id, mem.id]);
 	})
 	guild.channels.fetch().then(async (channels) => {
 		channels.each(async (ch) => {
@@ -154,13 +154,6 @@ bot.on('guildCreate', async (guild) => {
 			}
 		})
 	})
-});
-
-bot.on('userUpdate', async (user) => {
-	console.log('changed');
-	let fullUser = ((user.partial) ? (await user.fetch()) : user);
-	db.query('UPDATE members SET username = $1 WHERE userid = $2',
-		[`${fullUser.username}#${fullUser.discriminator}`, fullUser.id]);
 });
 
 bot.on('messageCreate', (message: discord.Message) => {
