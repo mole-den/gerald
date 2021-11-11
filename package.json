@@ -10,7 +10,9 @@
 
   "scripts": {
 
-    "start": "node build/index.js",
+    "start": "cd build && node index.js",
+
+    "inspect-start": "cd build && node --inspect index.js",
 
     "postinstall": "tsc"
 
