@@ -1,1 +1,1 @@
-worker: node --inspect build/index.js
+worker: npm inspect-start

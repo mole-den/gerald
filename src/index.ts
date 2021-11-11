@@ -5,8 +5,6 @@ import * as lux from 'luxon';
 import axios from 'axios';
 import cron from 'node-cron';
 import * as sapphire from '@sapphire/framework';
-import './commands';
-import './preconditions';
 voice;
 cron;
 process.on('uncaughtException', async (error) => {
@@ -41,7 +39,9 @@ myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS,
 const bot = new sapphire.SapphireClient({ 
 	intents: myIntents,
 	defaultPrefix: 'g',
+	
 });
+console.log(bot.stores)
 const logmessages = false;
 const prefix = "g";
 const token = <string>process.env.TOKEN;

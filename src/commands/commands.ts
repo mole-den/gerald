@@ -10,11 +10,11 @@ export class testCommand extends sapphire.Command {
             description: 'short desc',
             detailedDescription: 'desc displayed when help command is called',
             requiredClientPermissions: [],
-            preconditions: ['OwnerOnly']
+            preconditions: []
         });
     };
     public async messageRun(message: discord.Message) {
-        message.channel.send('test');
+        return message.channel.send('test');
     };
 }
 
@@ -51,7 +51,7 @@ export class ownerEnableCommand extends sapphire.Command {
         let cmd = args.next();
         let command = this.container.stores.get('commands').find(value => value.name === cmd);
         if (!command) return message.channel.send('Command not found');
-        command.unload();
+        command.reload();
         return message.channel.send(`Mounted *${cmd}*`);
     };
 };
