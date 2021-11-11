@@ -1,1 +1,1 @@
-worker: npm inspect-start
+worker: npm run inspect-start
