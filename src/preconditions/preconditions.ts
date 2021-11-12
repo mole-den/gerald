@@ -9,11 +9,11 @@ export class OwnerOnlyCondition extends sapphire.Precondition {
         });
     }
     public async run(message: discord.Message) {
-        if (process.env.OWNERS === undefined) {
-            return this.error({message: 'No owners have been set.'});
-        }
-        let owners = process.env.OWNERS!.split(',');
-        return owners.includes(message.author.id) ? this.ok() : this.error({ message: 'This command can only be used by the owner.' });
+        let owners = process.env.OWNERS!.split(' ');
+        let x = owners.includes(message.author.id);
+        if (x) return this.ok();
+        message.channel.send('This command is owner only.')
+        return this.error(`This command can only be used by the owner.`); 
     };
 }
 
