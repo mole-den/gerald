@@ -126,8 +126,8 @@ function durationToMS(duration: string): number | null {
 	return durationMS;
 };
 
-void db.connect();
 void bot.login(token);
+void db.connect();
 //egg
 
 bot.on('guildMemberAdd', async (member) => {
