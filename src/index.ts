@@ -531,27 +531,6 @@ bot.on('messageCreate', async (message: discord.Message) => {
 					await message.channel.send(`**Message from ${name}**: *${timeString}*\n ${msg.content}`)
 				});
 			}
-		} else if (command === 'deleted') {
-			if (!message.guildId) return
-			if (!message.member?.permissions.has('MANAGE_MESSAGES')) {
-				message.channel.send('You are missing permission \`MANAGE_MESSAGES\`.');
-				return
-			}
-			let del = await db.query('SELECT * FROM deletedmsgs WHERE guildid=$2 ORDER BY msgtime DESC LIMIT $1;',
-				[(args[0]) ? Number((args[0])) : 10, message.guildId]);
-			del.rows.forEach(async (msg) => {
-				const DeleteEmbed = new discord.MessageEmbed()
-					.setTitle("Deleted Message")
-					.setColor("#fc3c3c")
-					.addField("Author", `<@${msg.author}>`, true)
-					.addField("Deleted By", msg.deleted_by, true)
-					.addField("Channel", `<#${msg.channel}>`, true)
-					.addField("Message", msg.content || "None")
-					.setFooter(`Message ID: ${msg.msgid} | Author ID: ${msg.author}`);
-				message.channel.send({
-					embeds: [DeleteEmbed]
-				})
-			})
 		} else if (command === 'sex') {
 			if (getRandomArbitrary(1, 50) === 2) {
 				let msg = discord.Util.splitMessage(`

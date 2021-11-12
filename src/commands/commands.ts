@@ -1,12 +1,19 @@
 import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
+import * as pg from 'pg';
+
+const db = new pg.Pool({
+    connectionString: <string>process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false
+    }
+});
 
 export class testCommand extends sapphire.Command {
     constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
         super(context, {
             ...options,
             name: 'test',
-            aliases: ['alternate name 1', 'alternate name 2'],
             description: 'short desc',
             detailedDescription: 'desc displayed when help command is called',
             requiredClientPermissions: [],
@@ -33,8 +40,8 @@ export class ownerDisableCommand extends sapphire.Command {
         if (!cmd.exists) return
         let command = this.container.stores.get('commands').find(value => value.name === cmd.value);
         if (!command) return message.channel.send('Command not found');
-        command.unload();
-        return message.channel.send(`Dismounted *${cmd}*`);
+        command.enabled = false;
+        return message.channel.send(`Dismounted *${cmd.value}*`);
     };
 }
 
@@ -51,6 +58,7 @@ export class ownerEnableCommand extends sapphire.Command {
         let cmd = args.next();
         let command = this.container.stores.get('commands').find(value => value.name === cmd);
         if (!command) return message.channel.send('Command not found');
+        command.enabled = true;
         command.reload();
         return message.channel.send(`Mounted *${cmd}*`);
     };
@@ -76,5 +84,39 @@ export class ownerEvalCommand extends sapphire.Command {
             console.log(error);
             message.channel.send(`Unhandled exception: \n ${error}`);
         }
+    };
+};
+
+export class DeletedMSGCommand extends sapphire.Command {
+    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
+        super(context, {
+            ...options,
+            name: 'deleted',
+            description: 'Deletes a message',
+            requiredClientPermissions: [],
+            preconditions: [new sapphire.UserPermissionsPrecondition('MANAGE_MESSAGES'), 'GuildOnly']
+        });
+    };
+    public async messageRun(message: discord.Message, args: sapphire.Args) {
+        let arg = args.nextMaybe();
+        if (!arg.exists) return message.channel.send('Please specify amount of messages to view.');
+        let amount = parseInt(arg.value);
+        if (isNaN(amount)) return message.channel.send('Please specify a valid amount of messages to view.');
+        let del = await db.query('SELECT * FROM deletedmsgs WHERE guildid=$2 ORDER BY msgtime DESC LIMIT $1;',
+            [amount, message.guildId]);
+        del.rows.forEach(async (msg) => {
+            const DeleteEmbed = new discord.MessageEmbed()
+                .setTitle("Deleted Message")
+                .setColor("#fc3c3c")
+                .addField("Author", `<@${msg.author}>`, true)
+                .addField("Deleted By", msg.deleted_by, true)
+                .addField("Channel", `<#${msg.channel}>`, true)
+                .addField("Message", msg.content || "None")
+                .setFooter(`Message ID: ${msg.msgid} | Author ID: ${msg.author}`);
+            message.channel.send({
+                embeds: [DeleteEmbed]
+            })
+        });
+        return;
     };
 }
