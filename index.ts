@@ -29,7 +29,6 @@ process.on('SIGTERM', async () => {
 	bot.destroy();
 	process.exit(1);
 });
-
 const myIntents = new discord.Intents();
 myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS, discord.Intents.FLAGS.GUILD_MESSAGES,
 	discord.Intents.FLAGS.DIRECT_MESSAGES, discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
@@ -41,7 +40,7 @@ const bot = new sapphire.SapphireClient({
 const logmessages = false;
 const prefix = "g";
 const token = <string>process.env.TOKEN
-const dbToken = <string>process.env.HEROKU_POSTGRESQL_BLACK_URL
+const dbToken = <string>process.env.DATABASE_URL;
 bot.on('ready', () => {
 	console.log('Preparing to take over the world...');
 	console.log('World domination complete.');
