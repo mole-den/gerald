@@ -40,10 +40,10 @@ CREATE TABLE punishments (
 
 CREATE OR REPLACE FUNCTION replace_oldest() RETURNS TRIGGER AS $$
 BEGIN
-	IF (SELECT count(*) FROM deletedmsg WHERE guildid = NEW.guildid) > 100 THEN
+    IF (SELECT count(*) FROM deletedmsg WHERE guildid = NEW.guildid) > 100 THEN
 	    DELETE FROM deletedmsg
-	    WHERE id IN (SELECT id FROM deletedmsg ORDER BY timestamp LIMIT 1);
-	END IF;
+	    WHERE id IN (SELECT id FROM deletedmsg WHERE guildid = NEW.guildid ORDER BY timestamp LIMIT 1);
+    END IF;
 END;
 $$ 
 LANGUAGE plpgsql;
