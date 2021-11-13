@@ -380,7 +380,8 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			if (message.channel.type === 'DM') return;
 			if (message.guild === null) return;
 			if (message.member!.permissions.has(discord.Permissions.FLAGS.BAN_MEMBERS)) {
-				// if args[0] = 'add' then update the database by adding the mentioned users id to the blacklisted users in the database
+				// if args[0] = 'add' then update the database by adding the mentioned users 
+				id to the blacklisted users in the database
 				if (args[0] === 'add') {
 					let reason;
 					let user = message.mentions.members?.first();
@@ -492,7 +493,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			let elapsed = Date.now() - start
 			message.channel.send(`Websocket heartbeat: ${bot.ws.ping}ms \nDatabase heartbeat: ${elapsed}ms`)
 		} else if (command === 'gay') {
-			if (args[0] === 'add') {
+			/* if (args[0] === 'add') {
 				if (args[1] === undefined) return;
 				await db.query('UPDATE members SET sexuality=$1 WHERE userid = $2',
 					[args[1], message.author.id]);
@@ -517,7 +518,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 					let s = await db.query('SELECT * FROM members WHERE userid = $1', [BigInt(eachmem.id)])
 					message.channel.send(`${(eachmem.nickname !== null) ? eachmem.nickname : eachmem.user.username} is ${s.rows[0].sexuality}`)
 				})
-			})
+			})*/
 		} else if (command === 'dump') {
 			let id = message.mentions.channels.first()?.id;
 			if (id) {
