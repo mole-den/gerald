@@ -380,8 +380,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			if (message.channel.type === 'DM') return;
 			if (message.guild === null) return;
 			if (message.member!.permissions.has(discord.Permissions.FLAGS.BAN_MEMBERS)) {
-				// if args[0] = 'add' then update the database by adding the mentioned users 
-				id to the blacklisted users in the database
+				// if args[0] = 'add' then update the database by adding the mentioned users id to the blacklisted users in the database
 				if (args[0] === 'add') {
 					let reason;
 					let user = message.mentions.members?.first();
