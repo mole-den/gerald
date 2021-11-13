@@ -8,13 +8,13 @@ export class OwnerOnlyCondition extends sapphire.Precondition {
             name: 'OwnerOnly',
         });
     }
-    public async run(message: discord.Message) {
+    public async run(message: discord.Message, command: sapphire.Command) {
         let owners = process.env.OWNERS!.split(' ');
         let x = owners.includes(message.author.id);
         if (x) return this.ok();
-        message.channel.send('This command is owner only.')
-        return this.error(`This command can only be used by the owner.`); 
+        return this.error(`This command is owner only.`); 
     };
+    
 }
 
 declare module '@sapphire/framework' {

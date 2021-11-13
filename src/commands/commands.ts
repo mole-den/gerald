@@ -92,7 +92,7 @@ export class DeletedMSGCommand extends sapphire.Command {
         super(context, {
             ...options,
             name: 'deleted',
-            description: 'Deletes a message',
+            description: '',
             requiredClientPermissions: [],
             preconditions: [new sapphire.UserPermissionsPrecondition('MANAGE_MESSAGES'), 'GuildOnly']
         });
@@ -119,4 +119,5 @@ export class DeletedMSGCommand extends sapphire.Command {
         });
         return;
     };
+    
 }

@@ -131,6 +131,13 @@ void db.connect();
 void bot.login(token);
 //egg
 
+bot.on('commandDenied', ({ context, message: content }: sapphire.UserError, { message }: sapphire.CommandDeniedPayload) => {
+	// `context: { silent: true }` should make UserError silent:
+	// Use cases for this are for example permissions error when running the `eval` command.
+	if (Reflect.get(Object(context), 'silent')) return;
+	message.channel.send({ content, allowedMentions: { users: [message.author.id], roles: [] } });
+});
+
 bot.on('guildMemberAdd', async (member) => {
 	db.query(`INSERT INTO members (guild, userid, username) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`,
 		[BigInt(member.guild.id), BigInt(member.id), member.user.username]);
