@@ -147,16 +147,16 @@ export class smiteCommand extends SubCommandPluginCommand {
     };
 
     public async add(message: discord.Message, args: sapphire.Args) {
-        let reason;
         let user = await args.pick('member').catch(() => {
             return args.pick('user')
         })
-        let content = await args.pick('string');
-        reason = await args.repeat('string');
-        let time = durationToMS(content);
+        let content = await args.pick('string').catch(() => null);
+        let reason = await args.repeat('string').catch(() => null);
+        let time = content !== null ? durationToMS(content) : null;
         if (time === null) {
-            reason.unshift(content)
+            if (content !== null && reason !== null) reason.unshift(content)
         };
+        let strReason = reason === null ? 'not given' : reason?.join(' ')
         if (user instanceof discord.GuildMember) {
             if (message.member!.roles.highest.position >= user.roles.highest.position && (message.guild!.ownerId !== message.member!.id)) {
                 message.channel.send(`You do not have a high enough role to do this.`);
@@ -166,13 +166,13 @@ export class smiteCommand extends SubCommandPluginCommand {
                 return message.channel.send("This user is not bannable by the bot.");
             }
             await db.query(`INSERT INTO punishments (member, guild, type, reason, created_time, duration) VALUES ($1, $2, $3, $4, $5, $6) `,
-                [user.id, message.guild!.id, 'blist', reason, new Date(), time]);
-            message.guild!.bans.create(user, { reason: reason?.join(' '), days: 0 });
-            message.channel.send(`${user.user.username} has been added to the blacklist and banned${(time === null) ? '.' : `for ${content}`}\n Provided reason: ${reason}`);
+                [user.id, message.guild!.id, 'blist', strReason, new Date(), time]);
+            message.guild!.bans.create(user, { reason: strReason, days: 0 });
+            message.channel.send(`${user.user.username} has been added to the blacklist and banned${(time === null) ? '.' : `for ${content}`}\n Provided reason: ${strReason}`);
         } else {
             await db.query(`INSERT INTO punishments (member, guild, type, reason, created_time, duration) VALUES ($1, $2, $3, $4, $5, $6) `,
-                [user.id, message.guild!.id, 'blist', reason, new Date(), time]);
-            message.channel.send(`${user.username} has been added to the blacklist and banned${(time === null) ? '.' : `for ${content}`}\n Provided reason: ${reason}`);
+                [user.id, message.guild!.id, 'blist', strReason, new Date(), time]);
+            message.channel.send(`${user.username} has been added to the blacklist and banned${(time === null) ? '.' : `for ${content}`}\n Provided reason: ${strReason}`);
         };
         return;
     }
@@ -241,4 +241,19 @@ export class queryCommand extends sapphire.Command {
 
     };
 
+};
+
+export class prefixCommand extends sapphire.Command {
+    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
+        super(context, {
+            ...options,
+            name: 'prefix',
+            description: 'Shows prefix',
+            requiredClientPermissions: [],
+            preconditions: []
+        });
+    };
+    public async messageRun(message: discord.Message) {
+        message
+    }
 }
