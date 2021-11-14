@@ -337,33 +337,6 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			await db.query('select 1;')
 			let elapsed = Date.now() - start
 			message.channel.send(`Websocket heartbeat: ${bot.ws.ping}ms \nDatabase heartbeat: ${elapsed}ms`)
-		} else if (command === 'gay') {
-			/* if (args[0] === 'add') {
-				if (args[1] === undefined) return;
-				await db.query('UPDATE members SET sexuality=$1 WHERE userid = $2',
-					[args[1], message.author.id]);
-				message.channel.send(`set ${message.author.username} to ${args[1]}`);
-				return;
-			} else if (args[0] === 'alter') {
-				let mem = message.mentions.members?.first()
-				if (!mem) return;
-				if (message.member?.permissions.has(discord.Permissions.FLAGS.MANAGE_NICKNAMES)) {
-					await db.query('UPDATE members SET sexuality=$1 WHERE userid = $2',
-						[args[2], mem.id]);
-					message.channel.send(`set ${mem.user.username} to ${args[2]}`);
-				};
-				return;
-			}
-			message.mentions.members?.each(async (eachmem) => {
-				let s = await db.query('SELECT * FROM members WHERE userid = $1', [BigInt(eachmem.id)])
-				message.channel.send(`${(eachmem.nickname !== null) ? eachmem.nickname : eachmem.user.username} is ${s.rows[0].sexuality}`);
-			})
-			message.mentions.roles?.each(async (eachrole) => {
-				eachrole.members.each(async (eachmem) => {
-					let s = await db.query('SELECT * FROM members WHERE userid = $1', [BigInt(eachmem.id)])
-					message.channel.send(`${(eachmem.nickname !== null) ? eachmem.nickname : eachmem.user.username} is ${s.rows[0].sexuality}`)
-				})
-			})*/
 		} else if (command === 'sex') {
 			if (getRandomArbitrary(1, 50) === 2) {
 				let msg = discord.Util.splitMessage(`
