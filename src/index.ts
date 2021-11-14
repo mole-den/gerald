@@ -2,23 +2,46 @@ import * as discord from "discord.js";
 import * as pg from 'pg';
 import axios from 'axios';
 import cron from 'node-cron';
+import NodeCache from "node-cache";
 import * as sapphire from '@sapphire/framework';
 import './functions'
 cron;
 process.on('SIGTERM', async () => {
 	console.log('SIGTERM received');
-	let x = await(await bot.guilds.fetch('809675885330432051')).channels.fetch('809675885849739296') as discord.TextChannel;
+	let x = await (await bot.guilds.fetch('809675885330432051')).channels.fetch('809675885849739296') as discord.TextChannel;
 	await x.send(`SIGTERM recieved:\nProcess terminating`);
 	db.end();
 	bot.destroy();
 	process.exit(1);
 });
+/*
+class Cache {
+	cache: NodeCache;
+	constructor(ttlSeconds: number) {
+		this.cache = new NodeCache({ stdTTL: ttlSeconds, checkperiod: ttlSeconds * 0.2, useClones: false });
+	}
+
+	async get(guild: discord.Guild, type: 'prefix' | 'disabled') {
+		let key = `${guild.id}-${type}`
+		const value = this.cache.get(key);
+		if (value) {
+			return Promise.resolve(value);
+		}
+		let data = await db.query('SELECT $1 FROM guilds WHERE guildid = $2', [type, guild.id])
+		if (data.rowCount === 0) throw new Error(`No data found in database for guild ${guild.id}`);
+		this.cache.set(key, data.rows[0]);
+		Promise.resolve(data.rows[0]);
+	}
+	change(guild: discord.Guild, type: 'prefix' | 'disabled', input: string): any {
+	}
+}
+*/NodeCache;
 
 const myIntents = new discord.Intents();
 myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS, discord.Intents.FLAGS.GUILD_MESSAGES,
 	discord.Intents.FLAGS.DIRECT_MESSAGES, discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
 	discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS, discord.Intents.FLAGS.GUILD_PRESENCES);
-const bot = new sapphire.SapphireClient({ 
+const bot = new sapphire.SapphireClient({
 	intents: myIntents,
 	defaultPrefix: 'g',
 	fetchPrefix: (message: discord.Message) => {
@@ -72,6 +95,12 @@ bot.on('commandDenied', ({ context, message: content }: sapphire.UserError, { me
 	// Use cases for this are for example permissions error when running the `eval` command.
 	if (Reflect.get(Object(context), 'silent')) return;
 	message.channel.send({ content, allowedMentions: { users: [message.author.id], roles: [] } });
+});
+
+bot.on('commandError', (error, payload) => {
+	if (error instanceof sapphire.UserError) {
+		payload.message.channel.send(error.message)
+	}
 });
 
 bot.on('guildMemberAdd', async (member) => {
