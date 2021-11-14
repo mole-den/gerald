@@ -5,22 +5,6 @@ import cron from 'node-cron';
 import * as sapphire from '@sapphire/framework';
 import './functions'
 cron;
-process.on('uncaughtException', async (error) => {
-	console.log(error);
-	console.log('err');
-	if (!bot) process.exit();
-	let x = await (await bot.guilds.fetch('895064783135592449')).channels.fetch('903400898397622283') as discord.TextChannel;
-	x.send(` <@!811413512743813181> <@!471907923056918528>\n Unhandled exception: \n ${error}`);
-	process.exit();
-});
-process.on('unhandledRejection', async error => {
-	console.log(error);
-	console.log('err');
-	if (!bot) { process.exit() }
-	let x = await (await bot.guilds.fetch('895064783135592449')).channels.fetch('903400898397622283') as discord.TextChannel;
-	x.send(` <@!811413512743813181> <@!471907923056918528>\n Unhandled rejection: \n ${error}`);
-	process.exit();
-});
 process.on('SIGTERM', async () => {
 	console.log('SIGTERM received');
 	let x = await(await bot.guilds.fetch('809675885330432051')).channels.fetch('809675885849739296') as discord.TextChannel;
@@ -71,6 +55,10 @@ const db = new pg.Pool({
 function getRandomArbitrary(min: number, max: number) {
 	return Math.round(Math.random() * (max - min) + min);
 };
+
+cron.schedule('0 0 * * * * *', () => {
+	db.query('SELECT ')
+});
 
 void db.connect();
 void bot.login(token);

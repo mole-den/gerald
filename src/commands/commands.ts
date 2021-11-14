@@ -158,9 +158,12 @@ export class smiteCommand extends SubCommandPluginCommand {
             reason.unshift(content)
         };
         if (user instanceof discord.GuildMember) {
-            if (user.roles.highest.position >= message.member!.roles.highest.position) {
+            if (message.member!.roles.highest.position >= user.roles.highest.position && (message.guild!.ownerId !== message.member!.id)) {
                 message.channel.send(`You do not have a high enough role to do this.`);
                 return;
+            } 
+            if (!user.bannable) {
+                return message.channel.send("This user is not bannable by the bot.");
             }
             await db.query(`INSERT INTO punishments (member, guild, type, reason, created_time, duration) VALUES ($1, $2, $3, $4, $5, $6) `,
                 [user.id, message.guild!.id, 'blist', reason, new Date(), time]);
@@ -171,6 +174,7 @@ export class smiteCommand extends SubCommandPluginCommand {
                 [user.id, message.guild!.id, 'blist', reason, new Date(), time]);
             message.channel.send(`${user.username} has been added to the blacklist and banned${(time === null) ? '.' : `for ${content}`}\n Provided reason: ${reason}`);
         };
+        return;
     }
 
     public async remove(message: discord.Message, args: sapphire.Args) {
