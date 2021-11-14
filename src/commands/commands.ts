@@ -2,6 +2,16 @@ import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
 import * as pg from 'pg';
 
+
+let permissionsPrecondition = (...args: discord.PermissionResolvable[]) => {
+    let preconditionArray: Array<sapphire.PreconditionEntryResolvable> = [];
+    args.forEach((item) => {
+        preconditionArray.push(new sapphire.UserPermissionsPrecondition(item))
+    });
+    preconditionArray.push('override')
+    return preconditionArray
+};
+
 const db = new pg.Pool({
     connectionString: <string>process.env.DATABASE_URL,
     ssl: {
@@ -94,7 +104,7 @@ export class DeletedMSGCommand extends sapphire.Command {
             name: 'deleted',
             description: '',
             requiredClientPermissions: [],
-            preconditions: [new sapphire.UserPermissionsPrecondition('MANAGE_MESSAGES'), 'GuildOnly']
+            preconditions: [permissionsPrecondition('MANAGE_MESSAGES'), 'GuildOnly']
         });
     };
     public async messageRun(message: discord.Message, args: sapphire.Args) {
