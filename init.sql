@@ -35,6 +35,7 @@ CREATE TABLE punishments (
     reason VARCHAR(255) DEFAULT 'not given',
     created_time TIMESTAMP NOT NULL,
     duration INT DEFAULT 0,
+    resolved BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (member, guild) REFERENCES members(userid, guild)
 );
 

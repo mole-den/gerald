@@ -1,6 +1,5 @@
 import * as discord from "discord.js";
 import * as pg from 'pg';
-import * as lux from 'luxon';
 import axios from 'axios';
 import cron from 'node-cron';
 import * as sapphire from '@sapphire/framework';
@@ -329,29 +328,6 @@ bot.on('messageCreate', async (message: discord.Message) => {
 			let minutes = Math.floor(totalSeconds / 60);
 			let seconds = totalSeconds % 60;
 			message.channel.send(`${hours} hours, ${minutes} mins, ${seconds} seconds`)
-		} else if (command === 'query') {
-			let str = message.content;
-			let out = str.substring(str.indexOf('```') + 3, str.lastIndexOf('```'));
-			if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
-				message.channel.send('You do not have permission to do this');
-				return;
-			}
-			console.log(out);
-			let data = await db.query(out);
-			console.log('done');
-			let JSONdata = JSON.stringify(data.rows, null, 1);
-			if (JSONdata?.length && JSONdata.length < 2000) {
-				message.channel.send(`${data.command} completed - ${data.rowCount} rows, \n${JSONdata}`);
-				return;
-			} else if (JSONdata?.length && JSONdata.length > 2000) {
-				const buffer = Buffer.from(JSONdata)
-				const attachment = new discord.MessageAttachment(buffer, 'file.json');
-				message.channel.send(`${data.command} completed - ${data.rowCount} rows,`);
-				message.channel.send({ files: [attachment] });
-			} else {
-				message.channel.send(`${data.command} completed - ${data.rowCount} rows,`);
-			}
-
 		} else if (command === 'status') {
 
 			let user = message.mentions.users.first()
@@ -397,26 +373,6 @@ bot.on('messageCreate', async (message: discord.Message) => {
 					message.channel.send(`${(eachmem.nickname !== null) ? eachmem.nickname : eachmem.user.username} is ${s.rows[0].sexuality}`)
 				})
 			})*/
-		} else if (command === 'dump') {
-			let id = message.mentions.channels.first()?.id;
-			if (id) {
-				let channel = await message.guild?.channels.fetch(id);
-				if (!channel || channel.type === 'GUILD_STAGE_VOICE' || channel.type === 'GUILD_VOICE'
-					|| channel.type === 'GUILD_CATEGORY' || channel.type === 'GUILD_STORE') return;
-				let lim = parseInt(args[1]);
-				if (lim === NaN) return;
-				let messages = await channel.messages.fetch({ limit: lim });
-				messages = messages.filter(msg => (msg.system === false));
-				let messagesArray = Array.from(messages.values()).reverse();
-				messagesArray.forEach(async msg => {
-					let member = await msg.guild?.members.fetch(msg);
-					if (!member) return;
-					let timestamp = lux.DateTime.fromJSDate(msg.createdAt);
-					let timeString = timestamp.setZone("Australia/Sydney").toFormat('FFFF');
-					let name = (member.nickname) ? member.nickname : `${msg.author.username}#${msg.author.discriminator}`;
-					await message.channel.send(`**Message from ${name}**: *${timeString}*\n ${msg.content}`)
-				});
-			}
 		} else if (command === 'sex') {
 			if (getRandomArbitrary(1, 50) === 2) {
 				let msg = discord.Util.splitMessage(`

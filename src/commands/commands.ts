@@ -1,8 +1,9 @@
 import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
 import * as pg from 'pg';
-
-
+import { SubCommandPluginCommand } from '@sapphire/plugin-subcommands';
+import { durationToMS } from '../functions';
+durationToMS; SubCommandPluginCommand
 let permissionsPrecondition = (...args: discord.PermissionResolvable[]) => {
     let preconditionArray: Array<sapphire.PreconditionEntryResolvable> = [];
     args.forEach((item) => {
@@ -129,5 +130,111 @@ export class DeletedMSGCommand extends sapphire.Command {
         });
         return;
     };
-    
+
+};
+
+export class smiteCommand extends SubCommandPluginCommand {
+    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
+        super(context, {
+            ...options,
+            name: 'smite',
+            description: '',
+            requiredClientPermissions: ['BAN_MEMBERS'],
+            preconditions: [permissionsPrecondition('BAN_MEMBERS'), 'GuildOnly'],
+            subCommands: ['add', 'remove', 'list', 'clear', { input: 'list', default: true }]
+
+        });
+    };
+
+    public async add(message: discord.Message, args: sapphire.Args) {
+        let reason;
+        let user = await args.pick('member').catch(() => {
+            return args.pick('user')
+        })
+        let content = await args.pick('string');
+        reason = await args.repeat('string');
+        let time = durationToMS(content);
+        if (time === null) {
+            reason.unshift(content)
+        };
+        if (user instanceof discord.GuildMember) {
+            if (user.roles.highest.position >= message.member!.roles.highest.position) {
+                message.channel.send(`You do not have a high enough role to do this.`);
+                return;
+            }
+            await db.query(`INSERT INTO punishments (member, guild, type, reason, created_time, duration) VALUES ($1, $2, $3, $4, $5, $6) `,
+                [user.id, message.guild!.id, 'blist', reason, new Date(), time]);
+            message.guild!.bans.create(user, { reason: reason?.join(' '), days: 0 });
+            message.channel.send(`${user.user.username} has been added to the blacklist and banned${(time === null) ? '.' : `for ${content}`}\n Provided reason: ${reason}`);
+        } else {
+            await db.query(`INSERT INTO punishments (member, guild, type, reason, created_time, duration) VALUES ($1, $2, $3, $4, $5, $6) `,
+                [user.id, message.guild!.id, 'blist', reason, new Date(), time]);
+            message.channel.send(`${user.username} has been added to the blacklist and banned${(time === null) ? '.' : `for ${content}`}\n Provided reason: ${reason}`);
+        };
+    }
+
+    public async remove(message: discord.Message, args: sapphire.Args) {
+        let user = await args.pick('user')
+        let q = await db.query('SELECT * FROM punishments WHERE type=\'blist\' AND userid = $2 AND guild = $1', [user.id, message.guild!.id]);
+        if (q.rowCount === 0) return;
+        await message.guild!.members.unban(user).catch(() => { })
+        db.query('UPDATE punishments SET resolved = true WHERE type=\'blist\' AND userid = $2 AND guild = $1', [user.id, message.guild!.id]);
+        message.channel.send(`${user.username} has been removed from the blacklist`);
+    }
+
+    public async list(message: discord.Message) {
+        let smite = await db.query(`SELECT * FROM punishments WHERE type='blist' AND guild = $1 AND NOT RESOLVED`, [message.guild!.id]);
+        if (smite.rowCount === 0) message.channel.send(`No users are blacklisted`);
+        smite.rows.forEach((i) => {
+            message.channel.send(`${i.userid} is blacklisted`);
+        });
+    }
+
+    public async reset(message: discord.Message) {
+        let banned = await db.query(`SELECT * FROM punishments WHERE type='blist' AND guild = $1 AND NOT RESOLVED`, [message.guild!.id]);
+        await db.query('UPDATE punishments SET resolved = true WHERE type=\'blist\' AND guild = $1', [message.guild!.id]);
+        message.channel.send(`The blacklist has been cleared`);
+        banned.rows.forEach((i) => {
+            message.guild!.members.unban(i.userid).catch((err) => {
+                console.log(err)
+            })
+        });
+    }
+}
+
+export class queryCommand extends sapphire.Command {
+    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
+        super(context, {
+            ...options,
+            name: 'query',
+            description: 'Runs SQL input against database',
+            requiredClientPermissions: [],
+            preconditions: ['OwnerOnly']
+        });
+    };
+    public async messageRun(message: discord.Message) {
+        let str = message.content;
+        let out = str.substring(str.indexOf('```') + 3, str.lastIndexOf('```'));
+        if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
+            message.channel.send('You do not have permission to do this');
+            return;
+        }
+        console.log(out);
+        let data = await db.query(out);
+        console.log('done');
+        let JSONdata = JSON.stringify(data.rows, null, 1);
+        if (JSONdata?.length && JSONdata.length < 2000) {
+            message.channel.send(`${data.command} completed - ${data.rowCount} rows, \n${JSONdata}`);
+            return;
+        } else if (JSONdata?.length && JSONdata.length > 2000) {
+            const buffer = Buffer.from(JSONdata)
+            const attachment = new discord.MessageAttachment(buffer, 'file.json');
+            message.channel.send(`${data.command} completed - ${data.rowCount} rows,`);
+            message.channel.send({ files: [attachment] });
+        } else {
+            message.channel.send(`${data.command} completed - ${data.rowCount} rows,`);
+        }
+
+    };
+
 }
