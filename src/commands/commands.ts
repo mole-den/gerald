@@ -256,3 +256,19 @@ export class prefixCommand extends sapphire.Command {
         message
     }
 }
+
+export class sirmoleCommand extends sapphire.Command {
+    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
+        super(context, {
+            ...options,
+            name: 'sirmole',
+            description: 'unfunny',
+            requiredClientPermissions: [],
+            preconditions: []
+        });
+    };
+    public async messageRun(message: discord.Message) {
+        message.channel.send('sir mole is unfunny')
+    }
+}
+
