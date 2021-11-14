@@ -21,7 +21,10 @@ myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS,
 const bot = new sapphire.SapphireClient({ 
 	intents: myIntents,
 	defaultPrefix: 'g',
-	
+	fetchPrefix: (message: discord.Message) => {
+		message;
+		return 'g'
+	}
 });
 const logmessages = false;
 const prefix = "g";
