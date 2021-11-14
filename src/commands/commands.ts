@@ -3,7 +3,6 @@ import * as discord from 'discord.js';
 import * as pg from 'pg';
 import { SubCommandPluginCommand } from '@sapphire/plugin-subcommands';
 import { durationToMS } from '../functions';
-durationToMS; SubCommandPluginCommand
 let permissionsPrecondition = (...args: discord.PermissionResolvable[]) => {
     let preconditionArray: Array<sapphire.PreconditionEntryResolvable> = [];
     args.forEach((item) => {
