@@ -26,7 +26,7 @@ myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS,
 	defaultPrefix: 'g',
 	fetchPrefix: async (message: discord.Message): Promise<string> => {
 		if (!message.guild) return 'g';
-		let x = guildDataCache.get(message.guild, 'prefix')
+		let x = await guildDataCache.get(message.guild.id, 'prefix') as string
 		return x
 	} 
 

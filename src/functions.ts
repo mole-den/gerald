@@ -1,6 +1,5 @@
 import NodeCache from "node-cache";
-import * as discord from 'discord.js';
-import {db} from './index'
+import { db } from './index'
 export function durationToMS(duration: string): number | null {
     let timeRegex = /([0-9]+(m($| )|min($| )|mins($| )|minute($| )|minutes($| )|h($| )|hr($| )|hrs($| )|hour($| )|hours($| )|d($| )|day($| )|days($| )|wk($| )|wks($| )|week($| )|weeks($| )|mth($| )|mths($| )|month($| )|months($| )|y($| )|yr($| )|yrs($| )|year($| )|years($| )))+/gmi
     let durationMS = 0;
@@ -63,35 +62,24 @@ class Cache {
         this.cache = new NodeCache({ stdTTL: ttlSeconds, checkperiod: ttlSeconds * 0.2, useClones: false });
     }
 
-    async get(guild: discord.Guild, type: 'prefix' | 'disabled'): Promise<string> {
-        let key = `${guild.id}-${type}`
+    async get(guild: string, type: string): Promise<any> {
+        let key = `${guild}-${type}`
         const value = this.cache.get(key) as string;
         if (value) {
             return Promise.resolve(value);
         }
-        let data = await db.query('SELECT $1 FROM guilds WHERE guildid = $2', [type, guild.id])
-        if (data.rowCount === 0) throw new Error(`No data found in database for guild ${guild.id}`);
+        let data = await db.query('SELECT $1 FROM guilds WHERE guildid = $2', [type, guild])
+        if (data.rowCount === 0) throw new Error(`No data found in database for guild ${guild}`);
         this.cache.set(key, data.rows[0]);
         return Promise.resolve(data.rows[0]);
-    }
-    async change(guild: discord.Guild, type: 'prefix' | 'disabled', input: string | Array<any>): Promise<any> {
-        if (type === 'disabled') {
-            if (input instanceof Array) {
-                await db.query("UPDATE guilds SET disabled = $1 WHERE guildid = $2", [input, guild.id]);
-                let x = await db.query("SELECT * FROM guilds WHERE guildid = $1", [guild.id]);
-                this.cache.set(`${guild.id}-${type}`, x.rows[0].disabled);
-                return;
-            }
-            await db.query("UPDATE guilds SET disabled = array_remove(disabled, $1) WHERE guildid = $2", [input, guild.id]);
-            let x = await db.query("SELECT * FROM guilds WHERE guildid = $1", [guild.id]);
-            this.cache.set(`${guild.id}-${type}`, x.rows[0].disabled);
-            return;
-        };
-        await db.query("UPDATE guilds SET prefix = $1 WHERE guildid = $2", [input, guild.id]);
-        let x = await db.query("SELECT * FROM guilds WHERE guildid = $1", [guild.id]);
-        this.cache.set(`${guild.id}-${type}`, x.rows[0].prefix);
+    };
+    async change(guild: string, type: string, input: any): Promise<any> {
+        await db.query("UPDATE guilds SET $1 = $2 WHERE guildid = $3", [type, input, guild]);
+        let x = await db.query("SELECT * FROM guilds WHERE guildid = $1", [guild]);
+        this.cache.set(`${guild}-${type}`, x.rows[0]);
         return;
     }
 }
 
 export const guildDataCache = new Cache(1800)
+
