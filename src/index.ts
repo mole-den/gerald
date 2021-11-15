@@ -2,9 +2,9 @@ import * as discord from "discord.js";
 import * as pg from 'pg';
 import axios from 'axios';
 import cron from 'node-cron';
-import NodeCache from "node-cache";
 import * as sapphire from '@sapphire/framework';
 import './functions'
+import { guildDataCache } from "./functions";
 cron;
 process.on('SIGTERM', async () => {
 	console.log('SIGTERM received');
@@ -14,41 +14,24 @@ process.on('SIGTERM', async () => {
 	bot.destroy();
 	process.exit(1);
 });
-/*
-class Cache {
-	cache: NodeCache;
-	constructor(ttlSeconds: number) {
-		this.cache = new NodeCache({ stdTTL: ttlSeconds, checkperiod: ttlSeconds * 0.2, useClones: false });
-	}
 
-	async get(guild: discord.Guild, type: 'prefix' | 'disabled') {
-		let key = `${guild.id}-${type}`
-		const value = this.cache.get(key);
-		if (value) {
-			return Promise.resolve(value);
-		}
-		let data = await db.query('SELECT $1 FROM guilds WHERE guildid = $2', [type, guild.id])
-		if (data.rowCount === 0) throw new Error(`No data found in database for guild ${guild.id}`);
-		this.cache.set(key, data.rows[0]);
-		Promise.resolve(data.rows[0]);
-	}
-	change(guild: discord.Guild, type: 'prefix' | 'disabled', input: string): any {
-	}
-}
-*/NodeCache;
 
 const myIntents = new discord.Intents();
 myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS, discord.Intents.FLAGS.GUILD_MESSAGES,
 	discord.Intents.FLAGS.DIRECT_MESSAGES, discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
 	discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS, discord.Intents.FLAGS.GUILD_PRESENCES);
-const bot = new sapphire.SapphireClient({
+
+	const bot = new sapphire.SapphireClient({
 	intents: myIntents,
 	defaultPrefix: 'g',
-	fetchPrefix: (message: discord.Message) => {
-		message;
-		return 'g'
-	}
+	fetchPrefix: async (message: discord.Message): Promise<string> => {
+		if (!message.guild) return 'g';
+		let x = guildDataCache.get(message.guild, 'prefix')
+		return x
+	} 
+
 });
+
 const logmessages = false;
 const prefix = "g";
 const token = <string>process.env.TOKEN
@@ -71,7 +54,7 @@ bot.on('ready', () => {
 		})
 	})
 });
-const db = new pg.Pool({
+export const db = new pg.Pool({
 	connectionString: dbToken,
 	ssl: {
 		rejectUnauthorized: false

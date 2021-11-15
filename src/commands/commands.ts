@@ -1,6 +1,6 @@
 import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
-import * as pg from 'pg';
+import { db } from '../index'
 import { SubCommandPluginCommand } from '@sapphire/plugin-subcommands';
 import { durationToMS } from '../functions';
 let permissionsPrecondition = (...args: discord.PermissionResolvable[]) => {
@@ -12,12 +12,6 @@ let permissionsPrecondition = (...args: discord.PermissionResolvable[]) => {
     return preconditionArray
 };
 
-const db = new pg.Pool({
-    connectionString: <string>process.env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false
-    }
-});
 
 export class testCommand extends sapphire.Command {
     constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {

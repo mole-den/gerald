@@ -1,6 +1,7 @@
 // @ts-nocheck
 import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
+import { db } from '../index'
 import '../functions'
 
 export class OwnerOnlyCondition extends sapphire.Precondition {
