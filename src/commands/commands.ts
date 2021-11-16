@@ -193,7 +193,7 @@ export class smiteCommand extends SubCommandPluginCommand {
             let x = await message.client.users.fetch(i.member);
             let date = i.ends ? (+new Date(i.ends) - Date.now()) : null;
             let duration = date === null ? 'permanently' : `for ${lux.Duration.fromMillis(date!)}`;
-            message.channel.send(`**${x.username}#${x.discriminator}** is blacklisted until *${duration}*`);
+            message.channel.send(`**${x.username}#${x.discriminator}** is blacklisted until *${duration}*. Case ID: ${i.id}`);
         });
     }
     public async reset(message: discord.Message) {
