@@ -2,7 +2,7 @@ import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
 import { db } from '../index'
 import { SubCommandPluginCommand } from '@sapphire/plugin-subcommands';
-import { durationToMS } from '../functions';
+import { durationToMS, guildDataCache } from '../functions';
 let permissionsPrecondition = (...args: discord.PermissionResolvable[]) => {
     let preconditionArray: Array<sapphire.PreconditionEntryResolvable> = [];
     args.forEach((item) => {
@@ -243,11 +243,13 @@ export class prefixCommand extends sapphire.Command {
             name: 'prefix',
             description: 'Shows prefix',
             requiredClientPermissions: [],
-            preconditions: []
+            preconditions: ['GuildOnly', permissionsPrecondition('ADMINISTRATOR')]
         });
     };
-    public async messageRun(message: discord.Message) {
-        message
+    public async messageRun(message: discord.Message, args: sapphire.Args) {
+        let x = args.next()
+        guildDataCache.change(message.guild!.id, 'prefix', x);
+        message.channel.send(`Changed prefix for ${message.guild!.name} to ${x}`);
     }
 }
 
