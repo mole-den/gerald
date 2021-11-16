@@ -22,9 +22,9 @@
 
     "@databases/sql": "^3.2.0",
 
-    "@discordjs/voice": "^0.7.2",
-
     "@sapphire/framework": "^2.1.4",
+
+    "@sapphire/plugin-subcommands": "^2.0.2",
 
     "axios": "^0.24.0",
 
@@ -35,6 +35,8 @@
     "libsodium-wrappers": "^0.7.9",
 
     "luxon": "^2.0.2",
+
+    "node-cache": "^5.1.2",
 
     "node-cron": "^3.0.0",
 

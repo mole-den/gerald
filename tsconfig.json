@@ -1,9 +1,7 @@
 {
-  "include": [
-    "*"
-  ],
+  "include": ["src/**/*"],
   "compilerOptions": {
-    "target": "es2020",
+    "target": "esnext",
     "module": "commonJS",
     "moduleResolution": "node",
     "sourceMap": true,

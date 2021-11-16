@@ -23,7 +23,7 @@ CREATE TABLE deletedmsgs (
     channel BIGINT NOT NULL,
     deleted_time TIMESTAMP NOT NULL,
     deleted_by VARCHAR(37) NOT NULL,
-    msgid BIGINT UNIQUE
+    msgid BIGINT UNIQUE,
     FOREIGN KEY (author, guildid) REFERENCES members(userid, guild)
 );
 
@@ -35,15 +35,16 @@ CREATE TABLE punishments (
     reason VARCHAR(255) DEFAULT 'not given',
     created_time TIMESTAMP NOT NULL,
     duration INT DEFAULT 0,
+    resolved BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (member, guild) REFERENCES members(userid, guild)
 );
 
 CREATE OR REPLACE FUNCTION replace_oldest() RETURNS TRIGGER AS $$
 BEGIN
-	IF (SELECT count(*) FROM deletedmsg WHERE guildid = NEW.guildid) > 100 THEN
+    IF (SELECT count(*) FROM deletedmsg WHERE guildid = NEW.guildid) > 100 THEN
 	    DELETE FROM deletedmsg
-	    WHERE id IN (SELECT id FROM deletedmsg ORDER BY timestamp LIMIT 1);
-	END IF;
+	    WHERE id IN (SELECT id FROM deletedmsg WHERE guildid = NEW.guildid ORDER BY timestamp LIMIT 1);
+    END IF;
 END;
 $$ 
 LANGUAGE plpgsql;
