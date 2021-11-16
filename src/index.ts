@@ -7,8 +7,6 @@ import NodeCache from "node-cache";
 cron;
 process.on('SIGTERM', async () => {
 	console.log('SIGTERM received');
-	let x = await (await bot.guilds.fetch('809675885330432051')).channels.fetch('809675885849739296') as discord.TextChannel;
-	await x.send(`SIGTERM recieved:\nProcess terminating`);
 	db.end();
 	bot.destroy();
 	process.exit(1);
