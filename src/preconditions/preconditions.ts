@@ -10,6 +10,7 @@ export class OwnerOnlyCondition extends sapphire.Precondition {
         });
     }
     public async run(message: discord.Message, command: sapphire.Command) {
+        
         let owners = process.env.OWNERS!.split(' ');
         let x = owners.includes(message.author.id);
         if (x) return this.ok();
@@ -31,12 +32,10 @@ export class overrideCondition extends sapphire.Precondition {
         });
     }
     public async run(message: discord.Message, command: sapphire.Command) {
-        /*let preconditions = command.preconditions.entries
-        preconditions.forEach(async (item) => {
-            console.log(item instanceof sapphire.PreconditionContainerArray)
-            let x = await item.run();
-            x.success
-        })*/
+        command.preconditions.entries.forEach(async (item) => {
+            console.log(item)
+            let x = await item.run()
+        });  
         let owners = process.env.OWNERS!.split(' ');
         let x = owners.includes(message.author.id);
         if (!x) return this.error();

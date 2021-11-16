@@ -240,15 +240,16 @@ bot.on('messageCreate', async (message: discord.Message) => {
 bot.on('messageDelete', async (message) => {
 	let delTime = new Date()
 	if (!message.guild) return
+	if (message.partial) return;
 	await discord.Util.delayFor(900);
 	let logs = await message.guild.fetchAuditLogs({
 		type: 72
 	});
 	const auditEntry = logs.entries.find(a =>
 		// @ts-expect-error
-		a.target.id === message.author.id &&
-		(a.extra as any).channel.id === message.channel.id &&
-		Date.now() - a.createdTimestamp < 5000
+		a.target.id === message.author.id 
+		&& (a.extra as any).channel.id === message.channel.id 
+		&& Date.now() - a.createdTimestamp < 5000
 	);
 	let entry = auditEntry
 	const executor = (entry && entry.executor) ? entry.executor.tag : 'Deleted by Author or Bot';
