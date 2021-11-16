@@ -32,9 +32,18 @@ export class overrideCondition extends sapphire.Precondition {
         });
     }
     public async run(message: discord.Message, command: sapphire.Command) {
+        parent:
         command.preconditions.entries.forEach(async (item) => {
-            console.log(item)
-            let x = await item.run()
+            if (item instanceof sapphire.PreconditionContainerArray) {
+                let i = item.entries.filter(x => x.name === 'UserPermissions');
+                i.forEach(async (item) => {
+                    let result = await item.run()
+                    if (result.error) {
+                        message.channel.send(result.error.message);
+                        break parent;
+                    }
+                })
+            }
         });  
         let owners = process.env.OWNERS!.split(' ');
         let x = owners.includes(message.author.id);
