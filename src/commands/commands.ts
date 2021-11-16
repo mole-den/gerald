@@ -1,7 +1,7 @@
 import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
 import { SubCommandPluginCommand } from '@sapphire/plugin-subcommands';
-import { durationToMS, guildDataCache, db } from '../index';
+import { durationToMS, guildDataCache, db, getRandomArbitrary } from '../index';
 let permissionsPrecondition = (...args: discord.PermissionResolvable[]) => {
     let preconditionArray: Array<sapphire.PreconditionEntryResolvable> = [];
     args.forEach((item) => {
@@ -265,5 +265,209 @@ export class sirmoleCommand extends sapphire.Command {
     };
     public async messageRun(message: discord.Message) {
         message.channel.send('sir mole is unfunny')
+    }
+}
+
+export class dieCommand extends sapphire.Command {
+    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
+        super(context, {
+            ...options,
+            name: 'die',
+        });
+    };
+    public async messageRun(message: discord.Message) {
+        message.channel.send(`no u`);
+    }
+}
+
+export class politicsCommand extends sapphire.Command {
+    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
+        super(context, {
+            ...options,
+            name: 'politics',
+        });
+    };
+    public async messageRun(message: discord.Message) {
+        message.channel.send(`https://cdn.discordapp.com/attachments/377228302336655362/886234477578301490/video0.mp4`);
+    }
+}
+
+export class repoCommand extends sapphire.Command {
+    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
+        super(context, {
+            ...options,
+            name: 'repo',
+        });
+    };
+    public async messageRun(message: discord.Message) {
+        message.channel.send(`https://github.com/mole-den/Gerald`);
+    }
+}
+
+export class inviteCommand extends sapphire.Command {
+    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
+        super(context, {
+            ...options,
+            name: 'invite',
+        });
+    };
+    public async messageRun(message: discord.Message) {
+        message.channel.send(`https://discord.com/oauth2/authorize?client_id=671156130483011605&scope=bot&permissions=829811966`);
+    }
+}
+
+export class uptimeCommand extends sapphire.Command {
+    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
+        super(context, {
+            ...options,
+            name: 'uptime',
+        });
+    };
+    public async messageRun(message: discord.Message) {
+        let uptime = process.uptime();
+        let uptimeString = "";
+        if (uptime >= 86400) {
+            uptimeString += Math.floor(uptime / 86400) + " days ";
+            uptime %= 86400;
+        }
+        if (uptime >= 3600) {
+            uptimeString += Math.floor(uptime / 3600) + " hours ";
+            uptime %= 3600;
+        }
+        if (uptime >= 60) {
+            uptimeString += Math.floor(uptime / 60) + " minutes ";
+            uptime %= 60;
+        }
+        uptimeString += Math.floor(uptime) + " seconds";
+        message.channel.send(`Uptime: ${uptimeString}`);
+    }
+}
+
+export class pingCommand extends sapphire.Command {
+    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
+        super(context, {
+            ...options,
+            name: 'ping',
+        });
+    };
+    public async messageRun(message: discord.Message) {
+        let start = Date.now()
+        await db.query('select 1;')
+        let elapsed = Date.now() - start
+        message.channel.send(`Websocket heartbeat: ${message.client.ws.ping}ms \nDatabase heartbeat: ${elapsed}ms`)
+    }
+}
+
+export class statusCommand extends sapphire.Command {
+    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
+        super(context, {
+            ...options,
+            name: 'status',
+        });
+    };
+    public async messageRun(message: discord.Message) {
+        let user = message.mentions.users.first()
+        if (user) {
+            let member = await message.guild?.members.fetch(user);
+            if (member && member.presence) {
+                let presence = member.presence.activities.filter(x => x.type === "PLAYING");
+                let x = "";
+                if (presence[0]) x = `Playing **${presence[0].name}**`;
+                let status = (member.id !== "536047005085204480") ? member.presence.status : "cringe";
+                message.channel.send(`${(member.nickname || user.username)} is ${status}\n${x}`);
+            }
+        }
+    }
+}
+
+export class setstatusCommand extends sapphire.Command {
+    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
+        super(context, {
+            ...options,
+            name: 'setstatus',
+            preconditions: ['OwnerOnly']
+        });
+    };
+    public async messageRun(message: discord.Message, args: sapphire.Args) {
+        let stat = args.next();
+        if (stat === 'online' || stat === 'idle' || stat === 'dnd' || stat === 'invisible') {
+            message.client.user!.setStatus(stat);
+        };
+        const activity = args.next()
+        if (activity === 'playing' || activity === 'streaming' || activity === 'watching' || activity === 'listening' || activity === 'none') {
+            let stat = (activity === 'none') ? undefined : <discord.ActivityType>activity.toUpperCase();
+            let name = (await args.repeat('string')).join(' ');
+            message.client.user!.setActivity(name, { type: (stat as any) });
+            return;
+        };
+    }
+}
+
+export class setupCommand extends sapphire.Command {
+    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
+        super(context, {
+            ...options,
+            name: 'setup',
+        });
+    };
+    public async messageRun(message: discord.Message) {
+        message.channel.send(`Beginning setup but no because zac cant code`);
+    }
+}
+
+export class sexCommand extends sapphire.Command {
+    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
+        super(context, {
+            ...options,
+            name: 'sex'
+        });
+    };
+    public async messageRun(message: discord.Message) {
+        if (getRandomArbitrary(1, 50) === 2) {
+            let msg = discord.Util.splitMessage(`
+It was a wonderful monday morning... 
+BigUniverse got out of bed and immediatly grabbed his phone to talk to his wonderful boyfriend, Gustavo. He messaged him, "Squish me daddy!!!"
+Unfortunately, Gustavo had greater plans then going over to BigUniverse's house and railing him. Gustavo wanted a better boyfriend.
+He had been programming an AI that would function as a boyfriend for him, but he did not have a body for it. He messaged BigUniverse,
+"Im sorry but I dont think we can continue this relationship."
+BigUniverse was distraught. He replied, "I will 1v1 you in minecraft bedwars!"
+But nothing could change this. Gustavo would date a robot.
+If u want more, dm me :)
+-sirmole
+		`);
+            msg.forEach(x => message.channel.send(x));
+            return
+        }
+
+        let msg = discord.Util.splitMessage(`
+No. You aren't having this.
+But... you can have this https://www.youtube.com/watch?v=k4FF7x8vnZg&t=0s&ab_channel=Hepburn
+		`);
+        msg.forEach(x => message.channel.send(x));
+    }
+};
+
+export class helpCommand extends sapphire.Command {
+    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
+        super(context, {
+            ...options,
+            name: 'help',
+        });
+    };
+    public async messageRun(message: discord.Message) {
+        message.channel.send('Hello! I am Gerald. I will enable you to take control of your server by my rules >:)');
+    }
+}
+
+export class guildsCommand extends sapphire.Command {
+    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
+        super(context, {
+            ...options,
+            name: 'guilds',
+        });
+    };
+    public async messageRun(message: discord.Message) {
+        let x = await message.client.guilds.fetch();
+        x.each((a) => { message.channel.send(`In guild '${a.name}'', (${a.id})'\n Owner is ${a.owner}`) });
     }
 }

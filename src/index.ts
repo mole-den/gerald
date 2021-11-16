@@ -1,6 +1,5 @@
 import * as discord from "discord.js";
 import * as pg from 'pg';
-import axios from 'axios';
 import cron from 'node-cron';
 import * as sapphire from '@sapphire/framework';
 import NodeCache from "node-cache";
@@ -112,7 +111,6 @@ class Cache {
 export const guildDataCache = new Cache(1800)
 
 const logmessages = false;
-const prefix = "g";
 const token = <string>process.env.TOKEN
 const dbToken = <string>process.env.DATABASE_URL;
 bot.on('ready', () => {
@@ -140,7 +138,7 @@ export const db = new pg.Pool({
 	}
 });
 
-function getRandomArbitrary(min: number, max: number) {
+export function getRandomArbitrary(min: number, max: number) {
 	return Math.round(Math.random() * (max - min) + min);
 };
 
@@ -190,7 +188,13 @@ bot.on('guildCreate', async (guild) => {
 	})
 });
 
-bot.on('messageCreate', (message: discord.Message) => {
+bot.on('messageCreate', async (message: discord.Message) => {
+	if (message.author.id === '536047005085204480') {
+		let x = getRandomArbitrary(1, 20)
+		if (x > 15) message.channel.send('fuck you');
+	}
+	let x = getRandomArbitrary(1, 100)
+	if (x === 1) message.channel.send('Next time eat a salad!');
 	if (/\bez\b/gmi.test(message.content)) {
 		if (message.author.bot) return;
 		message.delete();
@@ -283,181 +287,6 @@ bot.on('messageDeleteBulk', async (array) => {
 			message.channel.id, delTime, executor, message.id]);
 
 	});
-});
-bot.on('messageCreate', async (message: discord.Message) => {
-	try {
-		if (!message.content.startsWith(prefix) || message.author.bot) { return };
-		const args = message.content.slice(prefix.length).trim().split(' ');
-		const command = args.shift()?.toLowerCase();
-		if (message.author.id === '536047005085204480') {
-			let x = getRandomArbitrary(1, 20)
-			if (x > 15) await message.channel.send('fuck you');
-		}
-		let x = getRandomArbitrary(1, 100)
-		if (x === 1) await message.channel.send('Next time eat a salad!');
-		if (command === 'cat') {
-			let user = message.mentions.members?.first();
-			if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
-				message.channel.send(`${(user?.nickname) ? user?.nickname : user?.user.username} has killed ${getRandomArbitrary(0, 1000)} kittens`);
-				return
-			}
-			message.channel.send(`${(user?.nickname) ? user?.nickname : user?.user.username} has killed ${getRandomArbitrary(0, 2000)} kittens`)
-
-		} else if (command === 'guilds') {
-			let x = await bot.guilds.fetch();
-			x.each((a) => { message.channel.send(`In guild '${a.name}'', (${a.id})'\n Owner is ${a.owner}`) });
-		} else if (command === 'ask') {
-			function getRandomArbitrary(min: number, max: number) {
-				return Math.round(Math.random() * (max - min) + min);
-			}
-			if (/-user[0-9]+/gm.test(args[0])) {
-				let y = await message.guild?.roles.fetch('858473576335540224');
-				let i = await message.guild?.roles.fetch('877133047210852423');
-				if (!y) return;
-				if (!i) return;
-				let member: Array<discord.GuildMember | string> = []
-				y.members.each((mem) => member.push(mem));
-				i.members.each((mem) => member.push(mem));
-				member.push('Illible');
-				let uniq = [...new Set(member)];
-				let x = /[0-9]+/gm.exec(args[0])![0];
-				if (parseInt(x) > 10) return
-				for (let i = 0; i < parseInt(x); i++) {
-					let ask = uniq[getRandomArbitrary(0, member.length - 1)]
-					if (typeof ask === 'string') {
-						message.channel.send(`${ask}`);
-						return
-					} else {
-						await message.channel.send(`${(ask.nickname) ? ask.nickname : ask.user.username}`);
-					}
-				}
-				return
-			} else if (args[0] === '-user') {
-				let y = await message.guild?.roles.fetch('858473576335540224');
-				let i = await message.guild?.roles.fetch('877133047210852423');
-				if (!y) return;
-				if (!i) return;
-				let member: Array<discord.GuildMember | string> = []
-				y.members.each((mem) => member.push(mem));
-				i.members.each((mem) => member.push(mem));
-				member.push('nobody');
-				member.push('Illible');
-				let uniq = [...new Set(member)];
-				let ask = uniq[getRandomArbitrary(0, member.length - 1)]
-				if (typeof ask === 'string') {
-					message.channel.send(`${ask}`);
-					return
-				}
-				await message.channel.send(`${(ask.nickname) ? ask.nickname : ask.user.username}`);
-				return;
-			}
-			else if (args[0] === '-percent') {
-				message.channel.send(`${getRandomArbitrary(0, 100)}%`);
-				return;
-			}
-			if (getRandomArbitrary(0, 20) > 9) {
-				message.channel.send('yes');
-			} else {
-				message.channel.send('no');
-			}
-		} else if (command === 'setstatus') {
-			if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
-				return
-			}
-			let stat = args[0];
-			if (stat === 'online' || stat === 'idle' || stat === 'dnd' || stat === 'invisible') {
-				bot.user!.setStatus(stat);
-			};
-			const activity = args[1];
-			if (activity === 'playing' || activity === 'streaming' || activity === 'watching' || activity === 'listening' || activity === 'none') {
-				let stat = (activity === 'none') ? undefined : <discord.ActivityType>activity.toUpperCase();
-				let name = args.slice(2).join(' ')
-				bot.user!.setActivity(name, { type: (stat as any) });
-				return;
-			};
-		} else if (command === 'https') {
-			axios({
-				method: 'get',
-				url: args[0],
-				responseType: 'json'
-			}).then(function (response) {
-				const buffer = Buffer.from(response.data)
-				const attachment = new discord.MessageAttachment(buffer, 'file.json');
-				message.channel.send(`GET completed`);
-				message.channel.send({ files: [attachment] });
-			});
-		} else if (command === 'vc') {
-		} else if (command === `help`) {
-			message.channel.send('Hello! I am Gerald. I will enable you to take control of your server by my rules >:)');
-		} else if (command === `setup`) {
-			message.channel.send(`Beginning setup but no because zac cant code`);
-			//if (err) return console.log(err);
-			console.log(`L`);
-
-			//im a gnome
-		} else if (command === `die`) {
-			message.channel.send(`no u`);
-		} else if (command === `politics`) {
-			message.channel.send(`https://cdn.discordapp.com/attachments/377228302336655362/886234477578301490/video0.mp4`);
-		} else if (command === `repo`) {
-			message.channel.send(`https://github.com/mole-den/Gerald`);
-		} else if (command === `invite`) {
-			message.channel.send(`https://discord.com/oauth2/authorize?client_id=671156130483011605&scope=bot&permissions=829811966`);
-		} else if (command === 'uptime') {
-			let totalSeconds = Math.round(process.uptime())
-			let hours = Math.floor(totalSeconds / 3600);
-			totalSeconds %= 3600;
-			let minutes = Math.floor(totalSeconds / 60);
-			let seconds = totalSeconds % 60;
-			message.channel.send(`${hours} hours, ${minutes} mins, ${seconds} seconds`)
-		} else if (command === 'status') {
-
-			let user = message.mentions.users.first()
-			if (user) {
-				let member = await message.guild?.members.fetch(user);
-				if (member && member.presence) {
-					let presence = member.presence.activities.filter(x => x.type === "PLAYING");
-					let x = "";
-					if (presence[0]) x = `Playing **${presence[0].name}**`;
-					let status = (member.id !== "536047005085204480") ? member.presence.status : "cringe";
-					message.channel.send(`${(member.nickname || user.username)} is ${status}\n${x}`);
-				}
-			}
-		} else if (command === 'ping') {
-			let start = Date.now()
-			await db.query('select 1;')
-			let elapsed = Date.now() - start
-			message.channel.send(`Websocket heartbeat: ${bot.ws.ping}ms \nDatabase heartbeat: ${elapsed}ms`)
-		} else if (command === 'sex') {
-			if (getRandomArbitrary(1, 50) === 2) {
-				let msg = discord.Util.splitMessage(`
-It was a wonderful monday morning... 
-BigUniverse got out of bed and immediatly grabbed his phone to talk to his wonderful boyfriend, Gustavo. He messaged him, "Squish me daddy!!!"
-Unfortunately, Gustavo had greater plans then going over to BigUniverse's house and railing him. Gustavo wanted a better boyfriend.
-He had been programming an AI that would function as a boyfriend for him, but he did not have a body for it. He messaged BigUniverse,
-"Im sorry but I dont think we can continue this relationship."
-BigUniverse was distraught. He replied, "I will 1v1 you in minecraft bedwars!"
-But nothing could change this. Gustavo would date a robot.
-If u want more, dm me :)
--sirmole
-		`);
-				msg.forEach(x => message.channel.send(x));
-				return
-			}
-
-			let msg = discord.Util.splitMessage(`
-No. You aren't having this.
-But... you can have this https://www.youtube.com/watch?v=k4FF7x8vnZg&t=0s&ab_channel=Hepburn
-		`);
-			msg.forEach(x => message.channel.send(x));
-
-		}
-	} catch (error) {
-		let x = <discord.TextChannel>await (await bot.guilds.fetch('895064783135592449')).channels.fetch('903400898397622283')
-		console.log("error");
-		console.log(error);
-		x.send(` <@!811413512743813181> <@!471907923056918528>\n Unhandled exception: \n ${error}`);
-	}
 });
 
 //zac cringe
