@@ -161,11 +161,11 @@ export class smiteCommand extends SubCommandPluginCommand {
             await db.query(`INSERT INTO punishments (member, guild, type, reason, created_time, duration) VALUES ($1, $2, $3, $4, $5, $6) `,
                 [user.id, message.guild!.id, 'blist', strReason, new Date(), time]);
             message.guild!.bans.create(user, { reason: strReason, days: 0 });
-            message.channel.send(`${user.user.username} has been added to the blacklist and banned${(time === null) ? '.' : `for ${content}`}\n Provided reason: ${strReason}`);
+            message.channel.send(`${user.user.username} has been added to the blacklist and banned${(time === null) ? '.' : `for ${content}`}\nProvided reason: ${strReason}`);
         } else {
             await db.query(`INSERT INTO punishments (member, guild, type, reason, created_time, duration) VALUES ($1, $2, $3, $4, $5, $6) `,
                 [user.id, message.guild!.id, 'blist', strReason, new Date(), time]);
-            message.channel.send(`${user.username} has been added to the blacklist and banned${(time === null) ? '.' : `for ${content}`}\n Provided reason: ${strReason}`);
+            message.channel.send(`${user.username} has been added to the blacklist and banned${(time === null) ? '.' : `for ${content}`}\nProvided reason: ${strReason}`);
         };
         return;
     }
@@ -182,8 +182,9 @@ export class smiteCommand extends SubCommandPluginCommand {
     public async list(message: discord.Message) {
         let smite = await db.query(`SELECT * FROM punishments WHERE type='blist' AND guild = $1 AND NOT RESOLVED`, [message.guild!.id]);
         if (smite.rowCount === 0) message.channel.send(`No users are blacklisted`);
-        smite.rows.forEach((i) => {
-            message.channel.send(`${i.userid} is blacklisted`);
+        smite.rows.forEach(async (i) => {
+            let x = await message.client.users.fetch(i.id);
+            message.channel.send(`${x.username}#${x.discriminator} is blacklisted`);
         });
     }
 
