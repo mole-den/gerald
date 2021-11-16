@@ -108,13 +108,18 @@ export class DeletedMSGCommand extends sapphire.Command {
         let del = await db.query('SELECT * FROM deletedmsgs WHERE guildid=$2 ORDER BY msgtime DESC LIMIT $1;',
             [amount, message.guildId]);
         del.rows.forEach(async (msg) => {
+            if (msg.content.length > 1028) {
+                var content: string = msg.content.substring(0, 1025) + '...';
+            } else {
+                var content: string = msg.content;
+            }
             const DeleteEmbed = new discord.MessageEmbed()
                 .setTitle("Deleted Message")
                 .setColor("#fc3c3c")
                 .addField("Author", `<@${msg.author}>`, true)
                 .addField("Deleted By", msg.deleted_by, true)
                 .addField("Channel", `<#${msg.channel}>`, true)
-                .addField("Message", msg.content || "None")
+                .addField("Message", content || "None")
                 .setFooter(`Message ID: ${msg.msgid} | Author ID: ${msg.author}`);
             message.channel.send({
                 embeds: [DeleteEmbed]
