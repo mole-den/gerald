@@ -2,6 +2,7 @@ import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
 import { SubCommandPluginCommand } from '@sapphire/plugin-subcommands';
 import { durationToMS, guildDataCache, db, getRandomArbitrary } from '../index';
+import * as lux from 'luxon';
 let permissionsPrecondition = (...args: discord.PermissionResolvable[]) => {
     let preconditionArray: Array<sapphire.PreconditionEntryResolvable> = [];
     args.forEach((item) => {
@@ -138,7 +139,7 @@ export class smiteCommand extends SubCommandPluginCommand {
             description: '',
             requiredClientPermissions: ['BAN_MEMBERS'],
             preconditions: [permissionsPrecondition('BAN_MEMBERS'), 'GuildOnly'],
-            subCommands: ['add', 'remove', 'list', 'clear', {input: 'show', default: true }]
+            subCommands: ['add', 'remove', 'list', 'clear', { input: 'show', default: true }]
 
         });
     };
@@ -153,22 +154,23 @@ export class smiteCommand extends SubCommandPluginCommand {
         if (time === null) {
             if (content !== null && reason !== null) reason.unshift(content)
         };
-        let strReason = reason === null ? 'not given' : reason?.join(' ')
+        let strReason = reason === null ? 'not given' : reason?.join(' ');
+        let endsDate = (time !== null) ? new Date(Date.now() + time) : null;
         if (user instanceof discord.GuildMember) {
             if (message.member!.roles.highest.position >= user.roles.highest.position && (message.guild!.ownerId !== message.member!.id)) {
                 message.channel.send(`You do not have a high enough role to do this.`);
                 return;
-            } 
+            }
             if (!user.bannable) {
                 return message.channel.send("This user is not bannable by the bot.");
             }
-            await db.query(`INSERT INTO punishments (member, guild, type, reason, created_time, duration) VALUES ($1, $2, $3, $4, $5, $6) `,
-                [user.id, message.guild!.id, 'blist', strReason, new Date(), time]);
+            await db.query(`INSERT INTO punishments (member, guild, type, reason, created_time, ends) VALUES ($1, $2, $3, $4, $5, $6) `,
+                [user.id, message.guild!.id, 'blist', strReason, new Date(), endsDate]);
             message.guild!.bans.create(user, { reason: strReason, days: 0 });
             message.channel.send(`${user.user.username} has been added to the blacklist and banned${(time === null) ? '.' : `for ${content}`}\nProvided reason: ${strReason}`);
         } else {
-            await db.query(`INSERT INTO punishments (member, guild, type, reason, created_time, duration) VALUES ($1, $2, $3, $4, $5, $6) `,
-                [user.id, message.guild!.id, 'blist', strReason, new Date(), time]);
+            await db.query(`INSERT INTO punishments (member, guild, type, reason, created_time, ends) VALUES ($1, $2, $3, $4, $5, $6) `,
+                [user.id, message.guild!.id, 'blist', strReason, new Date(), endsDate]);
             message.channel.send(`${user.username} has been added to the blacklist and banned${(time === null) ? '.' : `for ${content}`}\nProvided reason: ${strReason}`);
         };
         return;
@@ -187,11 +189,13 @@ export class smiteCommand extends SubCommandPluginCommand {
         let smite = await db.query(`SELECT * FROM punishments WHERE type='blist' AND guild = $1 AND NOT RESOLVED`, [message.guild!.id]);
         if (smite.rowCount === 0) message.channel.send(`No users are blacklisted`);
         smite.rows.forEach(async (i) => {
-            let x = await message.client.users.fetch(i.id);
-            message.channel.send(`${x.username}#${x.discriminator} is blacklisted`);
+            console.log(i)
+            let x = await message.client.users.fetch(i.member);
+            let date = i.ends ? (+new Date(i.ends) - Date.now()) : null;
+            let duration = date === null ? 'permanently' : `for ${lux.Duration.fromMillis(date!)}`;
+            message.channel.send(`**${x.username}#${x.discriminator}** is blacklisted until *${duration}*`);
         });
     }
-
     public async reset(message: discord.Message) {
         let banned = await db.query(`SELECT * FROM punishments WHERE type='blist' AND guild = $1 AND NOT RESOLVED`, [message.guild!.id]);
         await db.query('UPDATE punishments SET resolved = true WHERE type=\'blist\' AND guild = $1', [message.guild!.id]);
