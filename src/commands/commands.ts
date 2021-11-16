@@ -1,8 +1,7 @@
 import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
-import { db } from '../index'
 import { SubCommandPluginCommand } from '@sapphire/plugin-subcommands';
-import { durationToMS, guildDataCache } from '../functions';
+import { durationToMS, guildDataCache, db } from '../index';
 let permissionsPrecondition = (...args: discord.PermissionResolvable[]) => {
     let preconditionArray: Array<sapphire.PreconditionEntryResolvable> = [];
     args.forEach((item) => {

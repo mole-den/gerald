@@ -3,8 +3,7 @@ import * as pg from 'pg';
 import axios from 'axios';
 import cron from 'node-cron';
 import * as sapphire from '@sapphire/framework';
-import './functions'
-import { guildDataCache } from "./functions";
+import NodeCache from "node-cache";
 cron;
 process.on('SIGTERM', async () => {
 	console.log('SIGTERM received');
@@ -26,11 +25,93 @@ myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS,
 	defaultPrefix: 'g',
 	fetchPrefix: async (message: discord.Message): Promise<string> => {
 		if (!message.guild) return 'g';
-		let x = await guildDataCache.get(message.guild.id, 'prefix') as string
+		let x = await guildDataCache.get(message.guild.id, 'prefix') as string;
 		return x
 	} 
 
 });
+export function durationToMS(duration: string): number | null {
+	let timeRegex = /([0-9]+(m($| )|min($| )|mins($| )|minute($| )|minutes($| )|h($| )|hr($| )|hrs($| )|hour($| )|hours($| )|d($| )|day($| )|days($| )|wk($| )|wks($| )|week($| )|weeks($| )|mth($| )|mths($| )|month($| )|months($| )|y($| )|yr($| )|yrs($| )|year($| )|years($| )))+/gmi
+	let durationMS = 0;
+	let durationArr = duration.match(timeRegex);
+	if (!durationArr) return null;
+	durationArr.forEach((d) => {
+		let time = d.match(/[0-9]+/gmi);
+		let unit = d.match(/[a-zA-Z]+/gmi);
+		if (!time || !unit) return;
+		let timeNum = parseInt(time[0]);
+		let unitNum = 0;
+		switch (unit[0].toLowerCase()) {
+			case 'm':
+			case 'min':
+			case 'mins':
+			case 'minute':
+			case 'minutes':
+				unitNum = 60000;
+				break;
+			case 'h':
+			case 'hr':
+			case 'hrs':
+			case 'hour':
+			case 'hours':
+				unitNum = 3600000;
+				break;
+			case 'd':
+			case 'day':
+			case 'days':
+				unitNum = 86400000;
+				break;
+			case 'wk':
+			case 'wks':
+			case 'week':
+			case 'weeks':
+				unitNum = 604800000;
+				break;
+			case 'mth':
+			case 'mths':
+			case 'month':
+			case 'months':
+				unitNum = 2592000000;
+				break;
+			case 'y':
+			case 'yr':
+			case 'yrs':
+			case 'year':
+			case 'years':
+				unitNum = 31536000000;
+				break;
+		}
+		durationMS += timeNum * unitNum;
+	})
+	return durationMS;
+};
+
+class Cache {
+	cache: NodeCache;
+	constructor(ttlSeconds: number) {
+		this.cache = new NodeCache({ stdTTL: ttlSeconds, checkperiod: ttlSeconds * 0.2, useClones: false });
+	}
+
+	async get(guild: string, type: string): Promise<any> {
+		let key = `${guild}-${type}`
+		const value = this.cache.get(key) as string;
+		if (value) {
+			return Promise.resolve(value);
+		}
+		let data = await db.query('SELECT * FROM guilds WHERE guildid = $1', [guild])
+		if (data.rowCount === 0) throw new Error(`No data found in database for guild ${guild}`);
+		this.cache.set(key, data.rows[0][type]);
+		return Promise.resolve(data.rows[0][type]);
+	};
+	async change(guild: string, type: string, input: any): Promise<any> {
+		await db.query(`UPDATE guilds SET ${type} = $1 WHERE guildid = $2`, [input, guild]);
+		let x = await db.query("SELECT * FROM guilds WHERE guildid = $1", [guild]);
+		this.cache.set(`${guild}-${type}`, x.rows[0][type]);
+		return Promise.resolve(x.rows[0][type]);
+	}
+}
+
+export const guildDataCache = new Cache(1800)
 
 const logmessages = false;
 const prefix = "g";
