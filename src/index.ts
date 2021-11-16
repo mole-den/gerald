@@ -6,9 +6,6 @@ import * as sapphire from '@sapphire/framework';
 import './functions'
 import { guildDataCache } from "./functions";
 cron;
-process.env.TOKEN = 'NjcxMTU2MTMwNDgzMDExNjA1.Xi402g.NHzwIQy24d9CmvA4KdrKMGlYIUY';
-process.env.DATABASE_URL = 'postgres://scitozbklgjuci:f8e96c43d16de31c929393bb9248520157b338a66ed4ba74a1e5bfb6cbc44be7@ec2-34-194-100-156.compute-1.amazonaws.com:5432/ddo6pnpikd2ji3';
-process.env.OWNERS = '471907923056918528 811413512743813181';
 process.on('SIGTERM', async () => {
 	console.log('SIGTERM received');
 	let x = await (await bot.guilds.fetch('809675885330432051')).channels.fetch('809675885849739296') as discord.TextChannel;
