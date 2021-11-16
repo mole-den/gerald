@@ -89,7 +89,7 @@ bot.on('commandError', (error, payload) => {
 bot.on('guildMemberAdd', async (member) => {
 	db.query(`INSERT INTO members (guild, userid, username) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`,
 		[BigInt(member.guild.id), BigInt(member.id), member.user.username]);
-	let x = await db.query(`SELECT * FROM members WHERE guild = $1 AND userid = $2 AND blacklisted`, [BigInt(member.guild.id), BigInt(member.id)]);
+	let x = await db.query(`SELECT * FROM punishments WHERE guild = $1 AND userid = $2 AND type = 'blist'`, [BigInt(member.guild.id), BigInt(member.id)]);
 	if (x.rows.length > 0) {
 		member.ban({ reason: 'Blacklisted' });
 	}

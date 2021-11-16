@@ -267,4 +267,3 @@ export class sirmoleCommand extends sapphire.Command {
         message.channel.send('sir mole is unfunny')
     }
 }
-
