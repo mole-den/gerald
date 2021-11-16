@@ -279,7 +279,6 @@ bot.on('messageDeleteBulk', async (array) => {
 		);
 		let entry = auditEntry
 		const executor = (entry && entry.executor) ? entry.executor.tag : 'Deleted by Author or Bot';
-		console.log(executor);
 		if (message.author?.bot) return
 		if (message.guild === null) return;
 		if (message.partial) return;

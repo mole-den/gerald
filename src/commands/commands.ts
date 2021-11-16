@@ -189,7 +189,6 @@ export class smiteCommand extends SubCommandPluginCommand {
         let smite = await db.query(`SELECT * FROM punishments WHERE type='blist' AND guild = $1 AND NOT RESOLVED`, [message.guild!.id]);
         if (smite.rowCount === 0) message.channel.send(`No users are blacklisted`);
         smite.rows.forEach(async (i) => {
-            console.log(i)
             let x = await message.client.users.fetch(i.member);
             let date = i.ends ? (+new Date(i.ends) - Date.now()) : null;
             let duration = date === null ? 'permanently' : `for ${lux.Duration.fromMillis(date!)}`;
@@ -225,9 +224,7 @@ export class queryCommand extends sapphire.Command {
             message.channel.send('You do not have permission to do this');
             return;
         }
-        console.log(out);
         let data = await db.query(out);
-        console.log('done');
         let JSONdata = JSON.stringify(data.rows, null, 1);
         if (JSONdata?.length && JSONdata.length < 2000) {
             message.channel.send(`${data.command} completed - ${data.rowCount} rows, \n${JSONdata}`);
