@@ -2,7 +2,7 @@
 import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
 import { db } from '../index'
-
+db;
 export class OwnerOnlyCondition extends sapphire.Precondition {
     constructor() {
         super({
@@ -14,7 +14,7 @@ export class OwnerOnlyCondition extends sapphire.Precondition {
         let owners = process.env.OWNERS!.split(' ');
         let x = owners.includes(message.author.id);
         if (x) return this.ok();
-        return this.error(`This command is owner only.`); 
+        return this.error({message: `This command is owner only.`}); 
     };
     
 }
