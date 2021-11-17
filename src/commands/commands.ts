@@ -491,3 +491,42 @@ export class guildsCommand extends sapphire.Command {
         x.each((a) => { message.channel.send(`In guild '${a.name}'', (${a.id})'\n Owner is ${a.owner}`) });
     }
 }
+
+
+export class gayCommand extends sapphire.Command {
+    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
+        super(context, {
+            ...options,
+            name: 'gay',
+        });
+    };
+    public async messageRun(message: discord.Message, args: sapphire.Args) {
+        let cmd = args.next()
+        if (cmd === 'add') {
+            let change = args.next()
+            await db.query('UPDATE members SET sexuality=$1 WHERE userid = $2',
+                [change, message.author.id]);
+            message.channel.send(`set ${message.author.username} to ${change}`);
+            return;
+        } else if (cmd === 'alter') {
+            let mem = await args.peek('member');
+            let updated = args.next()
+            if (message.member?.permissions.has(discord.Permissions.FLAGS.MANAGE_NICKNAMES)) {
+                await db.query('UPDATE members SET sexuality=$1 WHERE userid = $2',
+                    [updated, mem.id]);
+                message.channel.send(`set ${mem.user.username} to ${updated}`);
+            };
+            return;
+        }
+        message.mentions.members?.each(async (eachmem) => {
+            let s = await db.query('SELECT * FROM members WHERE userid = $1', [BigInt(eachmem.id)])
+            message.channel.send(`${(eachmem.nickname !== null) ? eachmem.nickname : eachmem.user.username} is ${s.rows[0].sexuality}`);
+        })
+        message.mentions.roles?.each(async (eachrole) => {
+            eachrole.members.each(async (eachmem) => {
+                let s = await db.query('SELECT * FROM members WHERE userid = $1', [BigInt(eachmem.id)])
+                message.channel.send(`${(eachmem.nickname !== null) ? eachmem.nickname : eachmem.user.username} is ${s.rows[0].sexuality}`)
+            })
+        })
+        }
+}
