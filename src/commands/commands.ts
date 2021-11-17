@@ -153,7 +153,7 @@ export class smiteCommand extends SubCommandPluginCommand {
             description: '',
             requiredClientPermissions: ['BAN_MEMBERS'],
             preconditions: [permissionsPrecondition('BAN_MEMBERS'), 'GuildOnly'],
-            subCommands: ['add', 'remove', 'list', 'clear', { input: 'show', default: true }]
+            subCommands: ['add', 'remove', 'list', 'clear', { input: 'add', default: true }]
 
         });
     };
