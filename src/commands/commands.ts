@@ -503,7 +503,7 @@ export class gayCommand extends sapphire.Command {
     public async messageRun(message: discord.Message, args: sapphire.Args) {
         let cmd = args.next()
         if (cmd === 'add') {
-            let change = (await args.repeat('string')).join('')
+            let change = (await args.repeat('string')).join(' ')
             await db.query('UPDATE members SET sexuality=$1 WHERE userid = $2',
                 [change, message.author.id]);
             message.channel.send(`set ${message.author.username} to ${change}`);
