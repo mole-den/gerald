@@ -27,7 +27,12 @@ export class testCommand extends sapphire.Command {
         });
     };
     public async messageRun(message: discord.Message) {
-        return message.channel.send('test');
+            let channel = await message.guild!.channels.fetch('809679012296654848')
+            voice.joinVoiceChannel({
+                channelId: channel!.id,
+                guildId: message.guild!.id,
+                adapterCreator: channel!.guild.voiceAdapterCreator,
+            });
     };
 }
 
