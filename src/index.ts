@@ -163,7 +163,7 @@ bot.on('commandError', (error, payload) => {
 	} else {
 		let owners = process.env.OWNERS!.split(' ');
 		let x = owners.includes(payload.message.author.id);
-		payload.message.channel.send(`${x ? '' : `<@!811413512743813181> <@!471907923056918528>\n`}${(error as any).message}`)
+		payload.message.channel.send(`${x ? 'Error:' : `<@!811413512743813181> <@!471907923056918528>\nError:`}${(error as any).message}`)
 	}
 });
 
