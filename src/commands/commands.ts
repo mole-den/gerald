@@ -5,10 +5,10 @@ import { durationToMS, guildDataCache, db, getRandomArbitrary } from '../index';
 import * as lux from 'luxon';
 let permissionsPrecondition = (...args: discord.PermissionResolvable[]) => {
     let preconditionArray: Array<sapphire.PreconditionEntryResolvable> = [];
+    preconditionArray.push('override')
     args.forEach((item) => {
         preconditionArray.push(new sapphire.UserPermissionsPrecondition(item))
     });
-    preconditionArray.push('override')
     return preconditionArray
 };
 

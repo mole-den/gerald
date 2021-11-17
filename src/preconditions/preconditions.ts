@@ -48,7 +48,7 @@ export class overrideCondition extends sapphire.Precondition {
         let owners = process.env.OWNERS!.split(' ');
         let x = owners.includes(message.author.id);
         if (!x) return this.error();
-        message.channel.send(`**Required permissions have been overwritten as you are the bot owner.**`)
+        //message.channel.send(`**Permissions have been overwritten as you are the bot owner.**`)
         return this.ok();
     };
 }
