@@ -192,7 +192,7 @@ export class smiteCommand extends SubCommandPluginCommand {
 
     public async remove(message: discord.Message, args: sapphire.Args) {
         let user = await args.pick('user')
-        let q = await db.query('SELECT * FROM punishments WHERE type=\'blist\' AND userid = $2 AND guild = $1', [user.id, message.guild!.id]);
+        let q = await db.query('SELECT * FROM punishments WHERE type=\'blist\' AND member = $2 AND guild = $1', [user.id, message.guild!.id]);
         if (q.rowCount === 0) return;
         await message.guild!.members.unban(user).catch(() => { })
         db.query('UPDATE punishments SET resolved = true WHERE type=\'blist\' AND member = $2 AND guild = $1', [user.id, message.guild!.id]);
