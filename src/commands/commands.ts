@@ -3,6 +3,8 @@ import * as discord from 'discord.js';
 import { SubCommandPluginCommand } from '@sapphire/plugin-subcommands';
 import { durationToMS, guildDataCache, db, getRandomArbitrary } from '../index';
 import * as lux from 'luxon';
+import * as voice from '@discordjs/voice';
+voice
 let permissionsPrecondition = (...args: discord.PermissionResolvable[]) => {
     let preconditionArray: Array<sapphire.PreconditionEntryResolvable> = [];
     preconditionArray.push('override')
@@ -157,7 +159,7 @@ export class smiteCommand extends SubCommandPluginCommand {
         let strReason = reason === null ? 'not given' : reason?.join(' ');
         let endsDate = (time !== null) ? new Date(Date.now() + time) : null;
         if (user instanceof discord.GuildMember) {
-            if (message.member!.roles.highest.position >= user.roles.highest.position && (message.guild!.ownerId !== message.member!.id)) {
+            if (message.member!.roles.highest.comparePositionTo(user.roles.highest) <= 0 && (message.guild!.ownerId !== message.member!.id)) {
                 message.channel.send(`You do not have a high enough role to do this.`);
                 return;
             }
@@ -181,7 +183,7 @@ export class smiteCommand extends SubCommandPluginCommand {
         let q = await db.query('SELECT * FROM punishments WHERE type=\'blist\' AND userid = $2 AND guild = $1', [user.id, message.guild!.id]);
         if (q.rowCount === 0) return;
         await message.guild!.members.unban(user).catch(() => { })
-        db.query('UPDATE punishments SET resolved = true WHERE type=\'blist\' AND userid = $2 AND guild = $1', [user.id, message.guild!.id]);
+        db.query('UPDATE punishments SET resolved = true WHERE type=\'blist\' AND member = $2 AND guild = $1', [user.id, message.guild!.id]);
         message.channel.send(`${user.username} has been removed from the blacklist`);
     }
 

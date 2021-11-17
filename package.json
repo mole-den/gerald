@@ -22,6 +22,8 @@
 
     "@databases/sql": "^3.2.0",
 
+    "@discordjs/voice": "^0.7.5",
+
     "@sapphire/framework": "^2.1.4",
 
     "@sapphire/plugin-subcommands": "^2.0.2",
