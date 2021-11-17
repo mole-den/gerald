@@ -516,8 +516,9 @@ export class gayCommand extends sapphire.Command {
         message.mentions.roles?.each(async (eachrole) => {
             eachrole.members.each(async (eachmem) => {
                 let s = await db.query('SELECT * FROM members WHERE userid = $1', [BigInt(eachmem.id)])
-                message.channel.send(`${(eachmem.nickname !== null) ? eachmem.nickname : eachmem.user.username} is ${s.rows[0].sexuality}`)
+                message.channel.send(`${(eachmem.nickname !== null) ? eachmem.nickname : eachmem.user.username} is ${s.rows[0].sexuality}`);
             })
+            
         })
     }
 }
