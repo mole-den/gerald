@@ -4,6 +4,7 @@ import { SubCommandPluginCommand } from '@sapphire/plugin-subcommands';
 import { durationToMS, guildDataCache, db, getRandomArbitrary } from '../index';
 import * as lux from 'luxon';
 import * as voice from '@discordjs/voice';
+import {join} from 'path'
 voice
 let permissionsPrecondition = (...args: discord.PermissionResolvable[]) => {
     let preconditionArray: Array<sapphire.PreconditionEntryResolvable> = [];
@@ -23,16 +24,22 @@ export class testCommand extends sapphire.Command {
             description: 'short desc',
             detailedDescription: 'desc displayed when help command is called',
             requiredClientPermissions: [],
-            preconditions: []
+            preconditions: [],
         });
     };
-    public async messageRun(message: discord.Message) {
-        let channel = await message.guild!.channels.fetch('809675885849739297')
-            voice.joinVoiceChannel({
-                channelId: channel!.id,
-                guildId: message.guild!.id,
-                adapterCreator: channel!.guild.voiceAdapterCreator,
-            });
+    public async messageRun(message: discord.Message, args: sapphire.Args) {
+        return;
+        let x = <discord.VoiceChannel>await message.guild?.channels.fetch(args.next());
+        if (message.member?.voice.channel === null) return;
+        let voiceChannel = x;
+        const connection = voice.joinVoiceChannel({
+            channelId: voiceChannel.id,
+            guildId: voiceChannel.guildId,
+            adapterCreator: voiceChannel.guild.voiceAdapterCreator
+        });
+        const audioPlayer = voice.createAudioPlayer();
+        audioPlayer.play(voice.createAudioResource(join(__dirname, 'video0.mp3')));
+        connection.subscribe(audioPlayer);
     };
 }
 
