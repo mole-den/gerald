@@ -27,7 +27,7 @@ export class testCommand extends sapphire.Command {
         });
     };
     public async messageRun(message: discord.Message) {
-            let channel = await message.guild!.channels.fetch('809679012296654848')
+        let channel = await message.guild!.channels.fetch('809675885849739297')
             voice.joinVoiceChannel({
                 channelId: channel!.id,
                 guildId: message.guild!.id,
