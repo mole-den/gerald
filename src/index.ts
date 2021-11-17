@@ -296,3 +296,4 @@ bot.on('messageDeleteBulk', async (array) => {
 //zac cringe
 //gustavo cringe
 //gerald cringe 
+
