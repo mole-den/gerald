@@ -4,7 +4,7 @@ import { SubCommandPluginCommand } from '@sapphire/plugin-subcommands';
 import { durationToMS, guildDataCache, db, getRandomArbitrary } from '../index';
 import * as lux from 'luxon';
 import * as voice from '@discordjs/voice';
-import {join} from 'path'
+import { join } from 'path'
 voice
 let permissionsPrecondition = (...args: discord.PermissionResolvable[]) => {
     let preconditionArray: Array<sapphire.PreconditionEntryResolvable> = [];
@@ -511,11 +511,13 @@ export class gayCommand extends sapphire.Command {
         } else if (cmd === 'alter') {
             let mem = await args.peek('member');
             let updated = args.next()
-            if (message.member?.permissions.has(discord.Permissions.FLAGS.MANAGE_NICKNAMES)) {
-                await db.query('UPDATE members SET sexuality=$1 WHERE userid = $2',
-                    [updated, mem.id]);
-                message.channel.send(`set ${mem.user.username} to ${updated}`);
-            };
+            let owners = process.env.OWNERS!.split(' ');
+            let x = owners.includes(message.author.id);
+            if (!x) return
+            await db.query('UPDATE members SET sexuality=$1 WHERE userid = $2',
+                [updated, mem.id]);
+            message.channel.send(`set ${mem.user.username} to ${updated}`);
+
             return;
         }
         message.mentions.members?.each(async (eachmem) => {
@@ -528,5 +530,5 @@ export class gayCommand extends sapphire.Command {
                 message.channel.send(`${(eachmem.nickname !== null) ? eachmem.nickname : eachmem.user.username} is ${s.rows[0].sexuality}`)
             })
         })
-        }
+    }
 }
