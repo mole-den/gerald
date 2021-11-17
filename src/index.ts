@@ -172,7 +172,7 @@ bot.on('guildMemberAdd', async (member) => {
 		[BigInt(member.guild.id), BigInt(member.id), member.user.username]);
 	let x = await db.query(`SELECT * FROM punishments WHERE guild = $1 AND userid = $2 AND type = 'blist'`, [BigInt(member.guild.id), BigInt(member.id)]);
 	if (x.rows.length > 0) {
-		member.ban({ reason: 'Blacklisted' });
+		member.ban({ reason: `Blacklisted with reason: ${x.rows[0].reason}`});
 	}
 })
 
