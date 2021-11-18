@@ -532,7 +532,8 @@ export class askCommand extends sapphire.Command {
         });
     };
     public async messageRun(message: discord.Message, args: sapphire.Args) {
-        if (args.getFlags('users')) {
+        let opt = args.nextMaybe()
+        if (opt.exists && opt.value === 'users') {
             let y = await message.guild?.roles.fetch('858473576335540224');
             let i = await message.guild?.roles.fetch('877133047210852423');
             if (!y) return;
@@ -548,7 +549,7 @@ export class askCommand extends sapphire.Command {
                     await message.channel.send(`${(ask.nickname) ? ask.nickname : ask.user.username}`);
             }
             return
-        } else if (args.getFlags('user')) {
+        } else if (opt.exists && opt.value === 'user') {
             let y = await message.guild?.roles.fetch('858473576335540224');
             let i = await message.guild?.roles.fetch('877133047210852423');
             if (!y) return;
@@ -557,7 +558,6 @@ export class askCommand extends sapphire.Command {
             y.members.each((mem) => member.push(mem));
             i.members.each((mem) => member.push(mem));
             member.push('nobody');
-            member.push('Illible');
             let uniq = [...new Set(member)];
             let ask = uniq[getRandomArbitrary(0, member.length - 1)]
             if (typeof ask === 'string') {
@@ -567,7 +567,7 @@ export class askCommand extends sapphire.Command {
             await message.channel.send(`${(ask.nickname) ? ask.nickname : ask.user.username}`);
             return;
         }
-        else if (args.getFlags('percent')) {
+        else if (opt.exists && opt.value === 'users') {
             message.channel.send(`${getRandomArbitrary(0, 100)}%`);
             return;
         }
