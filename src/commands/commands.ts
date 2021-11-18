@@ -443,7 +443,7 @@ export class sexCommand extends sapphire.Command {
         });
     };
     public async messageRun(message: discord.Message) {
-        if (getRandomArbitrary(1, 50) === 2) {
+        if (getRandomArbitrary(1, 50)) {
             let msg = discord.Util.splitMessage(`
 It was a wonderful monday morning... 
 BigUniverse got out of bed and immediatly grabbed his phone to talk to his wonderful boyfriend, Gustavo. He messaged him, "Squish me daddy!!!"
