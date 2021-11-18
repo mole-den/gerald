@@ -546,7 +546,7 @@ export class askCommand extends sapphire.Command {
             if (x > 10) return
             for (let i = 0; i < x; i++) {
                 let ask = uniq[getRandomArbitrary(0, member.length - 1)]
-                    await message.channel.send(`${(ask.nickname) ? ask.nickname : ask.user.username}`);
+                    await message.channel.send(`${(ask.nickname !== undefined) ? ask.nickname : ask.user.username}`);
             }
             return
         } else if (opt.exists && opt.value === 'user') {
@@ -564,7 +564,7 @@ export class askCommand extends sapphire.Command {
                 message.channel.send(`${ask}`);
                 return
             }
-            await message.channel.send(`${(ask.nickname) ? ask.nickname : ask.user.username}`);
+            await message.channel.send(`${(ask.nickname !== undefined) ? ask.nickname : ask.user.username}`);
             return;
         }
         else if (opt.exists && opt.value === 'users') {
