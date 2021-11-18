@@ -175,7 +175,6 @@ bot.on('guildMemberAdd', async (member) => {
 		member.ban({ reason: `Blacklisted with reason: ${x.rows[0].reason}`});
 	}
 })
-
 bot.on('guildCreate', async (guild) => {
 	db.query('INSERT INTO guilds (guildid, joined_at) VALUES ($1, $2) ON CONFLICT DO NOTHING', [guild.id, new Date()]);
 	(await guild.members.fetch()).each(async (mem) => {

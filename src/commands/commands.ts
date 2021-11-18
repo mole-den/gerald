@@ -522,3 +522,60 @@ export class gayCommand extends sapphire.Command {
         })
     }
 }
+
+
+export class askCommand extends sapphire.Command {
+    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
+        super(context, {
+            ...options,
+            name: 'ask',
+        });
+    };
+    public async messageRun(message: discord.Message, args: sapphire.Args) {
+        if (args.getFlags('users')) {
+            let y = await message.guild?.roles.fetch('858473576335540224');
+            let i = await message.guild?.roles.fetch('877133047210852423');
+            if (!y) return;
+            if (!i) return;
+            let member: Array<discord.GuildMember> = []
+            y.members.each((mem) => member.push(mem));
+            i.members.each((mem) => member.push(mem));
+            let uniq = [...new Set(member)];
+            let x = await args.pick('number');
+            if (x > 10) return
+            for (let i = 0; i < x; i++) {
+                let ask = uniq[getRandomArbitrary(0, member.length - 1)]
+                    await message.channel.send(`${(ask.nickname) ? ask.nickname : ask.user.username}`);
+            }
+            return
+        } else if (args.getFlags('user')) {
+            let y = await message.guild?.roles.fetch('858473576335540224');
+            let i = await message.guild?.roles.fetch('877133047210852423');
+            if (!y) return;
+            if (!i) return;
+            let member: Array<discord.GuildMember | string> = []
+            y.members.each((mem) => member.push(mem));
+            i.members.each((mem) => member.push(mem));
+            member.push('nobody');
+            member.push('Illible');
+            let uniq = [...new Set(member)];
+            let ask = uniq[getRandomArbitrary(0, member.length - 1)]
+            if (typeof ask === 'string') {
+                message.channel.send(`${ask}`);
+                return
+            }
+            await message.channel.send(`${(ask.nickname) ? ask.nickname : ask.user.username}`);
+            return;
+        }
+        else if (args.getFlags('percent')) {
+            message.channel.send(`${getRandomArbitrary(0, 100)}%`);
+            return;
+        }
+        if (getRandomArbitrary(0, 20) > 9) {
+            message.channel.send('yes');
+        } else {
+            message.channel.send('no');
+        }
+
+    }
+}
