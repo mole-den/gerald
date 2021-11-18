@@ -567,7 +567,7 @@ export class askCommand extends sapphire.Command {
             await message.channel.send(`${(ask.nickname !== null) ? ask.nickname : ask.user.username}`);
             return;
         }
-        else if (opt.exists && opt.value === 'users') {
+        else if (opt.exists && opt.value === 'percent') {
             message.channel.send(`${getRandomArbitrary(0, 100)}%`);
             return;
         }
