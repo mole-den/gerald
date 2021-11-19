@@ -601,3 +601,26 @@ export class askCommand extends sapphire.Command {
 
     }
 }
+
+
+export class ownerUpdateCommand extends sapphire.Command {
+    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
+        super(context, {
+            ...options,
+            name: 'updatedatabase',
+            description: 'rebuild database',
+            requiredClientPermissions: [],
+            preconditions: ['OwnerOnly']
+        });
+    };
+    public async messageRun(message: discord.Message) {
+        let x = await message.client.guilds.fetch();
+        x.each(async (g) => {
+        let guild = await g.fetch();
+        (await guild.members.fetch()).each(async (mem) => {
+            db.query(`INSERT INTO members (guild, userid) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
+                [guild.id, mem.id]);
+        })
+    });
+    };
+};
