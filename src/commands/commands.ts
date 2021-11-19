@@ -153,7 +153,7 @@ export class smiteCommand extends SubCommandPluginCommand {
             description: '',
             requiredClientPermissions: ['BAN_MEMBERS'],
             preconditions: [permissionsPrecondition('BAN_MEMBERS'), 'GuildOnly'],
-            subCommands: ['add', 'remove', 'list', 'clear', { input: 'add', default: true }]
+            subCommands: ['add', 'remove', 'list', 'reset', { input: 'add', default: true }]
 
         });
     };
@@ -191,12 +191,13 @@ export class smiteCommand extends SubCommandPluginCommand {
     }
 
     public async remove(message: discord.Message, args: sapphire.Args) {
-        let user = await args.pick('user')
-        let q = await db.query('SELECT * FROM punishments WHERE type=\'blist\' AND member = $2 AND guild = $1', [user.id, message.guild!.id]);
+        let user = await args.pick('user');
+        console.log(user.tag)
+        let q = await db.query(`SELECT * FROM punishments WHERE type='blist' AND member = $2 AND guild = $1`, [user.id, message.guild!.id]);
         if (q.rowCount === 0) return;
-        await message.guild!.members.unban(user).catch(() => { })
+        message.guild!.members.unban(user).catch(() => { })
         db.query('UPDATE punishments SET resolved = true WHERE type=\'blist\' AND member = $2 AND guild = $1', [user.id, message.guild!.id]);
-        message.channel.send(`${user.username} has been removed from the blacklist`);
+        message.channel.send(`${user.tag} has been removed from the blacklist`);
     }
 
     public async list(message: discord.Message) {
@@ -211,13 +212,33 @@ export class smiteCommand extends SubCommandPluginCommand {
     }
     public async reset(message: discord.Message) {
         let banned = await db.query(`SELECT * FROM punishments WHERE type='blist' AND guild = $1 AND NOT RESOLVED`, [message.guild!.id]);
-        await db.query('UPDATE punishments SET resolved = true WHERE type=\'blist\' AND guild = $1', [message.guild!.id]);
-        message.channel.send(`The blacklist has been cleared`);
-        banned.rows.forEach((i) => {
-            message.guild!.members.unban(i.userid).catch((err) => {
-                console.log(err)
-            })
+        message.channel.send(`Warning: This will unban all blacklisted users. Are you sure you want to do this?`);
+        const filter = (m: discord.Message) => m.author.id === message.author.id
+        const collector = message.channel.createMessageCollector({filter, time: 10000 });
+        let response = false
+        collector.on('collect', async m => {
+            if (m.content === 'yes') {
+                await db.query('UPDATE punishments SET resolved = true WHERE type=\'blist\' AND guild = $1', [message.guild!.id]);
+                banned.rows.forEach((i) => {
+                    message.guild!.members.unban(i.userid).catch((err) => {
+                        console.log(err)
+                    })
+                });
+                response = true
+                collector.stop();
+                return;
+            } else if (message.content === 'no') {
+                message.channel.send(`Command aborted.`);
+                response = true
+                collector.stop()
+                return
+            }
         });
+        collector.on('end', () => {
+            if (response === true) return
+            message.channel.send(`Command timed out`)
+        });
+
     }
 }
 
