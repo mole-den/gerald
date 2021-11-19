@@ -116,12 +116,26 @@ export class DeletedMSGCommand extends sapphire.Command {
         });
     };
     public async messageRun(message: discord.Message, args: sapphire.Args) {
-        let arg = args.nextMaybe();
-        if (!arg.exists) return message.channel.send('Please specify amount of messages to view.');
-        let amount = parseInt(arg.value);
-        if (isNaN(amount)) return message.channel.send('Please specify a valid amount of messages to view.');
-        let del = await db.query('SELECT * FROM deletedmsgs WHERE guildid=$2 ORDER BY msgtime DESC LIMIT $1;',
-            [amount, message.guildId]);
+        let amount: number | undefined;
+        let id: string | undefined;
+        let arg = await args.pick('number').catch(() => {
+            return args.getOption('id')
+        });
+        if (typeof arg === 'number' && isNaN(arg)) return message.channel.send('Please specify a valid amount of messages to view.');
+        if (typeof arg === 'number' ) amount = arg;
+        if (typeof arg === 'string') {
+            amount = 100;
+            id = arg;
+        }
+        let idget = async () => {
+            return await db.query('SELECT * FROM deletedmsgs WHERE guildid=$2 AND id = $3 ORDER BY msgtime DESC LIMIT $1;',
+                [amount, message.guildId, id]);
+        }
+        let get = async () => {
+            return await db.query('SELECT * FROM deletedmsgs WHERE guildid=$2 ORDER BY msgtime DESC LIMIT $1;',
+                [amount, message.guildId]);
+        }
+        let del = (id !== undefined) ?  await idget() : await get();
         del.rows.forEach(async (msg) => {
             if (msg.content.length > 1028) {
                 var content: string = msg.content.substring(0, 1025) + '...';
@@ -214,7 +228,7 @@ export class smiteCommand extends SubCommandPluginCommand {
         let banned = await db.query(`SELECT * FROM punishments WHERE type='blist' AND guild = $1 AND NOT RESOLVED`, [message.guild!.id]);
         message.channel.send(`Warning: This will unban all blacklisted users. Are you sure you want to do this?`);
         const filter = (m: discord.Message) => m.author.id === message.author.id
-        const collector = message.channel.createMessageCollector({filter, time: 10000 });
+        const collector = message.channel.createMessageCollector({ filter, time: 10000 });
         let response = false
         collector.on('collect', async m => {
             if (m.content === 'yes') {
@@ -540,7 +554,7 @@ export class gayCommand extends sapphire.Command {
                 let s = await db.query('SELECT * FROM members WHERE userid = $1', [BigInt(eachmem.id)])
                 message.channel.send(`${(eachmem.nickname !== null) ? eachmem.nickname : eachmem.user.username} is ${s.rows[0].sexuality}`);
             })
-            
+
         })
     }
 }
@@ -568,7 +582,7 @@ export class askCommand extends sapphire.Command {
             if (x > 10) return
             for (let i = 0; i < x; i++) {
                 let ask = uniq[getRandomArbitrary(0, member.length - 1)]
-                    await message.channel.send(`${(ask.nickname !== null) ? ask.nickname : ask.user.username}`);
+                await message.channel.send(`${(ask.nickname !== null) ? ask.nickname : ask.user.username}`);
             }
             return
         } else if (opt.exists && opt.value === 'user') {
@@ -617,6 +631,7 @@ export class ownerUpdateCommand extends sapphire.Command {
         let filter = (m: discord.Message) => m.author.id === message.author.id;
         const collector = message.channel.createMessageCollector({ filter, time: 10000 });
         let response = false
+        message.channel.send(``)
         collector.on('collect', async m => {
             if (m.content === 'yes') {
                 let x = await message.client.guilds.fetch();
