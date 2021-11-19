@@ -614,13 +614,33 @@ export class ownerUpdateCommand extends sapphire.Command {
         });
     };
     public async messageRun(message: discord.Message) {
-        let x = await message.client.guilds.fetch();
-        x.each(async (g) => {
-        let guild = await g.fetch();
-        (await guild.members.fetch()).each(async (mem) => {
-            db.query(`INSERT INTO members (guild, userid) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
-                [guild.id, mem.id]);
-        })
-    });
+        let filter = (m: discord.Message) => m.author.id === message.author.id;
+        const collector = message.channel.createMessageCollector({ filter, time: 10000 });
+        let response = false
+        collector.on('collect', async m => {
+            if (m.content === 'yes') {
+                let x = await message.client.guilds.fetch();
+                x.each(async (g) => {
+                    let guild = await g.fetch();
+                    (await guild.members.fetch()).each(async (mem) => {
+                        db.query(`INSERT INTO members (guild, userid) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
+                            [guild.id, mem.id]);
+                    })
+                })
+                message.channel.send(`Starting...`)
+                response = true
+                collector.stop();
+                return;
+            } else if (message.content === 'no') {
+                message.channel.send(`Cancelled`);
+                response = true
+                collector.stop();
+                return;
+            }
+        });
+        collector.on('end', () => {
+            if (response === true) return
+            message.channel.send(`Command timed out`)
+        });
     };
 };
