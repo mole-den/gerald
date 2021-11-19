@@ -224,6 +224,7 @@ export class smiteCommand extends SubCommandPluginCommand {
                         console.log(err)
                     })
                 });
+                message.channel.send(`Done`)
                 response = true
                 collector.stop();
                 return;
