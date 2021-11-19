@@ -196,8 +196,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 		let x = getRandomArbitrary(1, 20)
 		if (x > 15) message.channel.send('fuck you');
 	}
-	let x = getRandomArbitrary(1, 100)
-	if (x === 1) message.channel.send('Next time eat a salad!');
+	if (getRandomArbitrary(1, 1000) === 1) message.channel.send('Next time eat a salad!');
 	if (/\bez\b/gmi.test(message.content)) {
 		if (message.author.bot) return;
 		message.delete();
