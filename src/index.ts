@@ -17,14 +17,14 @@ myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS,
 	discord.Intents.FLAGS.DIRECT_MESSAGES, discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
 	discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS, discord.Intents.FLAGS.GUILD_PRESENCES);
 
-	const bot = new sapphire.SapphireClient({
+const bot = new sapphire.SapphireClient({
 	intents: myIntents,
 	defaultPrefix: 'g',
 	fetchPrefix: async (message: discord.Message): Promise<string> => {
 		if (!message.guild) return 'g';
 		let x = await guildDataCache.get(message.guild.id, 'prefix') as string;
 		return x
-	} 
+	}
 
 });
 export function durationToMS(duration: string): number | null {
@@ -156,7 +156,6 @@ bot.on('commandDenied', ({ context, message: content }: sapphire.UserError, { me
 	if (Reflect.get(Object(context), 'silent')) return;
 	message.channel.send({ content, allowedMentions: { users: [message.author.id], roles: [] } });
 });
-
 bot.on('commandError', (error, payload) => {
 	if (error instanceof sapphire.UserError) {
 		payload.message.channel.send(error.message)
@@ -172,7 +171,7 @@ bot.on('guildMemberAdd', async (member) => {
 		[BigInt(member.guild.id), BigInt(member.id), member.user.username]);
 	let x = await db.query(`SELECT * FROM punishments WHERE guild = $1 AND userid = $2 AND type = 'blist'`, [BigInt(member.guild.id), BigInt(member.id)]);
 	if (x.rows.length > 0) {
-		member.ban({ reason: `Blacklisted with reason: ${x.rows[0].reason}`});
+		member.ban({ reason: `Blacklisted with reason: ${x.rows[0].reason}` });
 	}
 })
 bot.on('guildCreate', async (guild) => {
@@ -244,9 +243,9 @@ bot.on('messageDelete', async (message) => {
 		type: 72
 	});
 	const auditEntry = logs.entries.find(a =>
-		// @ts-expect-error
-		a.target.id === message.author.id 
-		&& (a.extra as any).channel.id === message.channel.id 
+		// @ts-expect-error ts(2339)
+		a.target.id === message.author.id
+		&& (a.extra as any).channel.id === message.channel.id
 		&& Date.now() - a.createdTimestamp < 5000
 	);
 	let entry = auditEntry
@@ -254,12 +253,22 @@ bot.on('messageDelete', async (message) => {
 	if (message.author?.bot) return
 	if (message.guild === null) return;
 	if (message.partial) return;
+	let attachments: Array<{
+		url: string,
+		name: string | null
+	}> = [];
+	message.attachments.each((attachment) => {
+		attachments.push({
+			url: attachment.url,
+			name: attachment.name
+		});
+	});
 	await db.query(`
-	INSERT INTO deletedmsgs (author, content, guildid, msgtime, channel, deleted_time, deleted_by, msgid) 
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+	INSERT INTO deletedmsgs (author, content, guildid, msgtime, channel, deleted_time, deleted_by, msgid, attachments) 
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
 		[BigInt(message.author.id), message.content,
 		message.guild.id, new Date(message.createdAt.getTime()),
-		message.channel.id, delTime, executor, message.id]);
+		message.channel.id, delTime, executor, message.id, JSON.stringify(attachments)]);
 });
 
 bot.on('messageDeleteBulk', async (array) => {
