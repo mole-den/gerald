@@ -112,30 +112,28 @@ export class DeletedMSGCommand extends sapphire.Command {
             name: 'deleted',
             description: '',
             requiredClientPermissions: [],
-            preconditions: [permissionsPrecondition('MANAGE_MESSAGES'), 'GuildOnly']
+            preconditions: [permissionsPrecondition('MANAGE_MESSAGES'), 'GuildOnly'],
+            options: ['id']
         });
     };
     public async messageRun(message: discord.Message, args: sapphire.Args) {
         let amount: number | undefined;
-        let id: string | undefined;
-        let arg = await args.pick('number').catch(() => {
-            return args.getOption('id')
-        });
-        if (typeof arg === 'number' && isNaN(arg)) return message.channel.send('Please specify a valid amount of messages to view.');
-        if (typeof arg === 'number' ) amount = arg;
-        if (typeof arg === 'string') {
-            amount = 100;
-            id = arg;
-        }
-        let idget = async () => {
-            return await db.query('SELECT * FROM deletedmsgs WHERE guildid=$2 AND id = $3 ORDER BY msgtime DESC LIMIT $1;',
-                [amount, message.guildId, id]);
-        }
+        let arg = await args.pick('number')
+        if (isNaN(arg)) return message.channel.send('Please specify a valid amount of messages to view.');
+        /*let idget = async () => {
+            let i = args.getOption('id');
+            if (i === null) throw new sapphire.UserError({
+                identifier: 'invalidsyntax',
+                message: 'Invalid command syntax'
+            });
+            return await db.query('SELECT * FROM deletedmsgs WHERE guildid=$1 AND id = $2 ORDER BY msgtime DESC LIMIT 1;',
+                [message.guildId, id]);
+        }*/
         let get = async () => {
             return await db.query('SELECT * FROM deletedmsgs WHERE guildid=$2 ORDER BY msgtime DESC LIMIT $1;',
                 [amount, message.guildId]);
         }
-        let del = (id !== undefined) ?  await idget() : await get();
+        let del = await get();
         del.rows.forEach(async (msg) => {
             if (msg.content.length > 1028) {
                 var content: string = msg.content.substring(0, 1025) + '...';
@@ -149,7 +147,7 @@ export class DeletedMSGCommand extends sapphire.Command {
                 .addField("Deleted By", msg.deleted_by, true)
                 .addField("Channel", `<#${msg.channel}>`, true)
                 .addField("Message", content || "None")
-                .setFooter(`Message ID: ${msg.msgid} | Author ID: ${msg.author}`);
+                .setFooter(`ID: ${msg.id} | Message ID: ${msg.msgid}\nAuthor ID: ${msg.author}`)
             message.channel.send({
                 embeds: [DeleteEmbed]
             })
@@ -565,11 +563,15 @@ export class askCommand extends sapphire.Command {
         super(context, {
             ...options,
             name: 'ask',
+            options: ['user']
         });
     };
     public async messageRun(message: discord.Message, args: sapphire.Args) {
         let opt = args.nextMaybe()
-        if (opt.exists && opt.value === 'users') {
+        if (args.getOption('user')) {
+            let test = (args.getOption('user') === null) ? <string>args.getOption('user') : '1'
+            let num = parseInt(test);
+            if (!num || num < 1 || num > 10) return
             let y = await message.guild?.roles.fetch('858473576335540224');
             let i = await message.guild?.roles.fetch('877133047210852423');
             if (!y) return;
@@ -578,9 +580,7 @@ export class askCommand extends sapphire.Command {
             y.members.each((mem) => member.push(mem));
             i.members.each((mem) => member.push(mem));
             let uniq = [...new Set(member)];
-            let x = await args.pick('number');
-            if (x > 10) return
-            for (let i = 0; i < x; i++) {
+            for (let i = 0; i < num; i++) {
                 let ask = uniq[getRandomArbitrary(0, member.length - 1)]
                 await message.channel.send(`${(ask.nickname !== null) ? ask.nickname : ask.user.username}`);
             }
