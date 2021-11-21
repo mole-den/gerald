@@ -270,12 +270,11 @@ bot.on('messageDelete', async (message) => {
 		message.guild.id, new Date(message.createdAt.getTime()),
 		message.channel.id, delTime, executor, message.id, JSON.stringify(attachments)]);
 });
-
 bot.on('messageDeleteBulk', async (array) => {
-	let delTime = new Date()
+	let delTime = new Date();
+	await discord.Util.delayFor(1000);
 	array.each(async (message) => {
 		if (!message.guild) return
-		await discord.Util.delayFor(900);
 		let logs = await message.guild.fetchAuditLogs({
 			type: 72
 		});
@@ -299,8 +298,6 @@ bot.on('messageDeleteBulk', async (array) => {
 
 	});
 });
-
 //zac cringe
 //gustavo cringe
 //gerald cringe 
-

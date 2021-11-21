@@ -117,9 +117,16 @@ export class DeletedMSGCommand extends sapphire.Command {
         });
     };
     public async messageRun(message: discord.Message, args: sapphire.Args) {
-        let amount: number | undefined;
-        let arg = await args.pick('number')
+        let amount: number | never;
+        let arg = await args.pick('number');
+        console.log(arg);
         if (isNaN(arg)) return message.channel.send('Please specify a valid amount of messages to view.');
+        amount = (arg <= 10) ? arg : (() => {
+            throw new sapphire.UserError({ identifier: 'amount>10', message: 'Amount must be less than 10.'});
+        })();
+        amount = (arg >= 0) ? arg : (() => {
+            throw new sapphire.UserError({ identifier: 'amount<=0', message: 'Amount must be greater than 0.' });
+        })();
         /*let idget = async () => {
             let i = args.getOption('id');
             if (i === null) throw new sapphire.UserError({
@@ -147,7 +154,14 @@ export class DeletedMSGCommand extends sapphire.Command {
                 .addField("Deleted By", msg.deleted_by, true)
                 .addField("Channel", `<#${msg.channel}>`, true)
                 .addField("Message", content || "None")
-                .setFooter(`ID: ${msg.id} | Message ID: ${msg.msgid}\nAuthor ID: ${msg.author}`)
+                .setFooter(`ID: ${msg.id} | Message ID: ${msg.msgid}\nAuthor ID: ${msg.author}`);
+            if (msg.attachments) {
+                let attachArray: string[] = [];
+                msg.attachments.forEach((attach: any) => {
+                    attachArray.push(`[${attach.name}](${attach.url})`);
+                });
+                DeleteEmbed.addField('Attachments', attachArray.join('\n'));
+            }
             message.channel.send({
                 embeds: [DeleteEmbed]
             })
