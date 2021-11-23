@@ -59,7 +59,7 @@ declare module '@sapphire/framework' {
 
 export class CorePrecondition extends sapphire.Precondition {
     public constructor(context: PieceContext) {
-        super(context, { position: 10 });
+    super({...context,  name:'disabled'}, { position: 10 });
     }
 
     public run(_: Message, command: Command, context: sapphire.Precondition.Context): sapphire.Precondition.Result {
