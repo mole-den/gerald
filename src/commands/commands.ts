@@ -635,7 +635,7 @@ export class ownerUpdateCommand extends sapphire.Command {
     constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
         super(context, {
             ...options,
-            name: 'updatedatabase',
+            name: 'update-database',
             description: 'rebuild database',
             requiredClientPermissions: [],
             preconditions: ['OwnerOnly']
