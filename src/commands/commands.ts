@@ -15,7 +15,6 @@ let permissionsPrecondition = (...args: discord.PermissionResolvable[]) => {
     return preconditionArray
 };
 
-
 export class testCommand extends sapphire.Command {
     constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
         super(context, {

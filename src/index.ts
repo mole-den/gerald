@@ -243,8 +243,7 @@ bot.on('messageDelete', async (message) => {
 		type: 72
 	});
 	const auditEntry = logs.entries.find(a =>
-		// @ts-expect-error ts(2339)
-		a.target.id === message.author.id
+		(a.target as discord.GuildMember).id === message.author.id
 		&& (a.extra as any).channel.id === message.channel.id
 		&& Date.now() - a.createdTimestamp < 5000
 	);
