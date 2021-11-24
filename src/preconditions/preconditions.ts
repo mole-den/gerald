@@ -53,7 +53,7 @@ declare module '@sapphire/framework' {
         override: never;
     }
 }
-
+/*
 @ApplyOptions<sapphire.PreconditionOptions>({
     name: 'disabled',
     enabled: true,
@@ -61,10 +61,8 @@ declare module '@sapphire/framework' {
 })
 export class checkDisabledCondition extends sapphire.Precondition {
     public async run(message: discord.Message) {
-        let owners = process.env.OWNERS!.split(' ');
-        let x = owners.includes(message.author.id);
-        if (x) return this.ok();
-        return this.error({ message: `This command is owner only.` });
+        
+        return this.ok();
     };
 }
 
@@ -73,3 +71,4 @@ declare module '@sapphire/framework' {
         disabled: never;
     }
 }
+*/
