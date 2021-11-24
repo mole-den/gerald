@@ -1,7 +1,8 @@
 import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
-import { SubCommandPluginCommand } from '@sapphire/plugin-subcommands';
+import { SubCommandPluginCommand, SubCommandPluginCommandOptions } from '@sapphire/plugin-subcommands';
 import { durationToMS, guildDataCache, db, getRandomArbitrary } from '../index';
+import { ApplyOptions } from '@sapphire/decorators';
 import * as lux from 'luxon';
 import * as voice from '@discordjs/voice';
 import { join } from 'path'
@@ -15,17 +16,12 @@ let permissionsPrecondition = (...args: discord.PermissionResolvable[]) => {
     return preconditionArray
 };
 
+@ApplyOptions<sapphire.CommandOptions>({
+    name: 'test',
+    description: 'short desc',
+    detailedDescription: 'desc displayed when help command is called',
+})
 export class testCommand extends sapphire.Command {
-    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
-        super(context, {
-            ...options,
-            name: 'test',
-            description: 'short desc',
-            detailedDescription: 'desc displayed when help command is called',
-            requiredClientPermissions: [],
-            preconditions: [],
-        });
-    };
     public async messageRun(message: discord.Message, args: sapphire.Args) {
         return;
         let x = <discord.VoiceChannel>await message.guild?.channels.fetch(args.next());
@@ -42,16 +38,13 @@ export class testCommand extends sapphire.Command {
     };
 }
 
+@ApplyOptions<sapphire.CommandOptions>({
+    name: 'dismount',
+    description: 'Disables a command globally',
+    requiredClientPermissions: [],
+    preconditions: ['OwnerOnly']
+})
 export class ownerDisableCommand extends sapphire.Command {
-    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
-        super(context, {
-            ...options,
-            name: 'dismount',
-            description: 'Disables a command globally',
-            requiredClientPermissions: [],
-            preconditions: ['OwnerOnly']
-        });
-    };
     public async messageRun(message: discord.Message, args: sapphire.Args) {
         let cmd = args.nextMaybe();
         if (!cmd.exists) return
@@ -62,15 +55,12 @@ export class ownerDisableCommand extends sapphire.Command {
     };
 }
 
+@ApplyOptions<sapphire.CommandOptions>({
+    name: 'mount',
+    description: 'Enables a command globally',
+    preconditions: ['OwnerOnly']
+})
 export class ownerEnableCommand extends sapphire.Command {
-    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
-        super(context, {
-            ...options,
-            name: 'mount',
-            description: 'Enables a command globally',
-            preconditions: ['OwnerOnly']
-        });
-    };
     public async messageRun(message: discord.Message, args: sapphire.Args) {
         let cmd = args.next();
         let command = this.container.stores.get('commands').find(value => value.name === cmd);
@@ -81,16 +71,13 @@ export class ownerEnableCommand extends sapphire.Command {
     };
 };
 
+@ApplyOptions<sapphire.CommandOptions>({
+    name: 'eval',
+    description: 'Evaluates JS input',
+    requiredClientPermissions: [],
+    preconditions: ['OwnerOnly']
+})
 export class ownerEvalCommand extends sapphire.Command {
-    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
-        super(context, {
-            ...options,
-            name: 'eval',
-            description: 'Evaluates JS input',
-            requiredClientPermissions: [],
-            preconditions: ['OwnerOnly']
-        });
-    };
     public async messageRun(message: discord.Message) {
         let str = message.content;
         let out = str.substring(str.indexOf('```') + 3, str.lastIndexOf('```'));
@@ -104,24 +91,21 @@ export class ownerEvalCommand extends sapphire.Command {
     };
 };
 
+@ApplyOptions<sapphire.CommandOptions>({
+    name: 'deleted',
+    description: '',
+    requiredClientPermissions: [],
+    preconditions: [permissionsPrecondition('MANAGE_MESSAGES'), 'GuildOnly'],
+    options: ['id']
+})
 export class DeletedMSGCommand extends sapphire.Command {
-    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
-        super(context, {
-            ...options,
-            name: 'deleted',
-            description: '',
-            requiredClientPermissions: [],
-            preconditions: [permissionsPrecondition('MANAGE_MESSAGES'), 'GuildOnly'],
-            options: ['id']
-        });
-    };
     public async messageRun(message: discord.Message, args: sapphire.Args) {
         let amount: number | never;
         let arg = await args.pick('number');
         console.log(arg);
         if (isNaN(arg)) return message.channel.send('Please specify a valid amount of messages to view.');
         amount = (arg <= 10) ? arg : (() => {
-            throw new sapphire.UserError({ identifier: 'amount>10', message: 'Amount must be less than 10.'});
+            throw new sapphire.UserError({ identifier: 'amount>10', message: 'Amount must be less than 10.' });
         })();
         amount = (arg >= 0) ? arg : (() => {
             throw new sapphire.UserError({ identifier: 'amount<=0', message: 'Amount must be greater than 0.' });
@@ -170,19 +154,14 @@ export class DeletedMSGCommand extends sapphire.Command {
 
 };
 
+@ApplyOptions<SubCommandPluginCommandOptions>({
+    name: 'smite',
+    description: '',
+    requiredClientPermissions: ['BAN_MEMBERS'],
+    preconditions: [permissionsPrecondition('BAN_MEMBERS'), 'GuildOnly'],
+    subCommands: ['add', 'remove', 'list', 'reset', { input: 'add', default: true }]
+})
 export class smiteCommand extends SubCommandPluginCommand {
-    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
-        super(context, {
-            ...options,
-            name: 'smite',
-            description: '',
-            requiredClientPermissions: ['BAN_MEMBERS'],
-            preconditions: [permissionsPrecondition('BAN_MEMBERS'), 'GuildOnly'],
-            subCommands: ['add', 'remove', 'list', 'reset', { input: 'add', default: true }]
-
-        });
-    };
-
     public async add(message: discord.Message, args: sapphire.Args) {
         let user = await args.pick('member').catch(() => {
             return args.pick('user')
@@ -268,16 +247,13 @@ export class smiteCommand extends SubCommandPluginCommand {
     }
 }
 
+@ApplyOptions<sapphire.CommandOptions>({
+    name: 'query',
+    description: 'Runs SQL input against database',
+    requiredClientPermissions: [],
+    preconditions: ['OwnerOnly']
+})
 export class queryCommand extends sapphire.Command {
-    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
-        super(context, {
-            ...options,
-            name: 'query',
-            description: 'Runs SQL input against database',
-            requiredClientPermissions: [],
-            preconditions: ['OwnerOnly']
-        });
-    };
     public async messageRun(message: discord.Message) {
         let str = message.content;
         let out = str.substring(str.indexOf('```') + 3, str.lastIndexOf('```'));
@@ -303,16 +279,13 @@ export class queryCommand extends sapphire.Command {
 
 };
 
+@ApplyOptions<sapphire.CommandOptions>({
+    name: 'prefix',
+    description: 'Shows prefix',
+    requiredClientPermissions: [],
+    preconditions: ['GuildOnly', permissionsPrecondition('ADMINISTRATOR')]
+})
 export class prefixCommand extends sapphire.Command {
-    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
-        super(context, {
-            ...options,
-            name: 'prefix',
-            description: 'Shows prefix',
-            requiredClientPermissions: [],
-            preconditions: ['GuildOnly', permissionsPrecondition('ADMINISTRATOR')]
-        });
-    };
     public async messageRun(message: discord.Message, args: sapphire.Args) {
         let x = args.next()
         guildDataCache.change(message.guild!.id, 'prefix', x);
@@ -320,76 +293,57 @@ export class prefixCommand extends sapphire.Command {
     }
 }
 
+@ApplyOptions<sapphire.CommandOptions>({
+    name: 'sirmole',
+    description: 'unfunny',
+    requiredClientPermissions: [],
+    preconditions: []
+})
 export class sirmoleCommand extends sapphire.Command {
-    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
-        super(context, {
-            ...options,
-            name: 'sirmole',
-            description: 'unfunny',
-            requiredClientPermissions: [],
-            preconditions: []
-        });
-    };
     public async messageRun(message: discord.Message) {
         message.channel.send('sir mole is unfunny')
     }
 }
 
+@ApplyOptions<sapphire.CommandOptions>({
+    name: 'die',
+})
 export class dieCommand extends sapphire.Command {
-    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
-        super(context, {
-            ...options,
-            name: 'die',
-        });
-    };
     public async messageRun(message: discord.Message) {
         message.channel.send(`no u`);
     }
 }
 
+@ApplyOptions<sapphire.CommandOptions>({
+    name: 'politics',
+})
 export class politicsCommand extends sapphire.Command {
-    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
-        super(context, {
-            ...options,
-            name: 'politics',
-        });
-    };
     public async messageRun(message: discord.Message) {
         message.channel.send(`https://cdn.discordapp.com/attachments/377228302336655362/886234477578301490/video0.mp4`);
     }
 }
 
+@ApplyOptions<sapphire.CommandOptions>({
+    name: 'repo',
+})
 export class repoCommand extends sapphire.Command {
-    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
-        super(context, {
-            ...options,
-            name: 'repo',
-        });
-    };
     public async messageRun(message: discord.Message) {
         message.channel.send(`https://github.com/mole-den/Gerald`);
     }
 }
 
+@ApplyOptions<sapphire.CommandOptions>({
+    name: 'invite',
+})
 export class inviteCommand extends sapphire.Command {
-    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
-        super(context, {
-            ...options,
-            name: 'invite',
-        });
-    };
     public async messageRun(message: discord.Message) {
         message.channel.send(`https://discord.com/oauth2/authorize?client_id=671156130483011605&scope=bot&permissions=829811966`);
     }
 }
-
+@ApplyOptions<sapphire.CommandOptions>({
+    name: 'uptime',
+})
 export class uptimeCommand extends sapphire.Command {
-    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
-        super(context, {
-            ...options,
-            name: 'uptime',
-        });
-    };
     public async messageRun(message: discord.Message) {
         let uptime = process.uptime();
         let uptimeString = "";
@@ -410,13 +364,10 @@ export class uptimeCommand extends sapphire.Command {
     }
 }
 
+@ApplyOptions<sapphire.CommandOptions>({
+    name: 'ping',
+})
 export class pingCommand extends sapphire.Command {
-    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
-        super(context, {
-            ...options,
-            name: 'ping',
-        });
-    };
     public async messageRun(message: discord.Message) {
         let start = Date.now()
         await db.query('select 1;')
@@ -425,13 +376,9 @@ export class pingCommand extends sapphire.Command {
     }
 }
 
-export class statusCommand extends sapphire.Command {
-    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
-        super(context, {
-            ...options,
-            name: 'status',
-        });
-    };
+@ApplyOptions<sapphire.CommandOptions>({
+    name: 'status',
+}) export class statusCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
         let user = message.mentions.users.first()
         if (user) {
@@ -447,14 +394,10 @@ export class statusCommand extends sapphire.Command {
     }
 }
 
-export class setstatusCommand extends sapphire.Command {
-    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
-        super(context, {
-            ...options,
-            name: 'setstatus',
-            preconditions: ['OwnerOnly']
-        });
-    };
+@ApplyOptions<sapphire.CommandOptions>({
+    name: 'setstatus',
+    preconditions: ['OwnerOnly']
+}) export class setstatusCommand extends sapphire.Command {
     public async messageRun(message: discord.Message, args: sapphire.Args) {
         let stat = args.next();
         if (stat === 'online' || stat === 'idle' || stat === 'dnd' || stat === 'invisible') {
@@ -470,25 +413,17 @@ export class setstatusCommand extends sapphire.Command {
     }
 }
 
-export class setupCommand extends sapphire.Command {
-    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
-        super(context, {
-            ...options,
-            name: 'setup',
-        });
-    };
+@ApplyOptions<sapphire.CommandOptions>({
+    name: 'setup',
+}) export class setupCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
         message.channel.send(`Beginning setup but no because zac cant code`);
     }
 }
 
-export class sexCommand extends sapphire.Command {
-    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
-        super(context, {
-            ...options,
-            name: 'sex'
-        });
-    };
+@ApplyOptions<sapphire.CommandOptions>({
+    name: 'sex'
+}) export class sexCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
         if (getRandomArbitrary(1, 50) === 22) {
             let msg = discord.Util.splitMessage(`
@@ -514,25 +449,17 @@ But... you can have this https://www.youtube.com/watch?v=k4FF7x8vnZg&t=0s&ab_cha
     }
 };
 
-export class helpCommand extends sapphire.Command {
-    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
-        super(context, {
-            ...options,
-            name: 'help',
-        });
-    };
+@ApplyOptions<sapphire.CommandOptions>({
+    name: 'help',
+}) export class helpCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
         message.channel.send('Hello! I am Gerald. I will enable you to take control of your server by my rules >:)');
     }
 }
 
-export class guildsCommand extends sapphire.Command {
-    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
-        super(context, {
-            ...options,
-            name: 'guilds',
-        });
-    };
+@ApplyOptions<sapphire.CommandOptions>({
+    name: 'guilds',
+}) export class guildsCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
         let x = await message.client.guilds.fetch();
         x.each((a) => { message.channel.send(`In guild '${a.name}'', (${a.id})'\n Owner is ${a.owner}`) });
@@ -540,13 +467,9 @@ export class guildsCommand extends sapphire.Command {
 }
 
 
-export class gayCommand extends sapphire.Command {
-    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
-        super(context, {
-            ...options,
-            name: 'gay',
-        });
-    };
+@ApplyOptions<sapphire.CommandOptions>({
+    name: 'gay',
+}) export class gayCommand extends sapphire.Command {
     public async messageRun(message: discord.Message, args: sapphire.Args) {
         let cmd = args.next()
         if (cmd === 'add') {
@@ -571,14 +494,10 @@ export class gayCommand extends sapphire.Command {
 }
 
 
-export class askCommand extends sapphire.Command {
-    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
-        super(context, {
-            ...options,
-            name: 'ask',
-            options: ['user']
-        });
-    };
+@ApplyOptions<sapphire.CommandOptions>({
+    name: 'ask',
+    options: ['user']
+}) export class askCommand extends sapphire.Command {
     public async messageRun(message: discord.Message, args: sapphire.Args) {
         let opt = args.nextMaybe()
         if (args.getOption('user')) {
@@ -630,16 +549,12 @@ export class askCommand extends sapphire.Command {
 }
 
 
-export class ownerUpdateCommand extends sapphire.Command {
-    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
-        super(context, {
-            ...options,
-            name: 'update-database',
-            description: 'rebuild database',
-            requiredClientPermissions: [],
-            preconditions: ['OwnerOnly']
-        });
-    };
+@ApplyOptions<sapphire.CommandOptions>({
+    name: 'update-database',
+    description: 'rebuild database',
+    requiredClientPermissions: [],
+    preconditions: ['OwnerOnly']
+}) export class ownerUpdateCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
         let filter = (m: discord.Message) => m.author.id === message.author.id;
         const collector = message.channel.createMessageCollector({ filter, time: 10000 });
