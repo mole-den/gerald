@@ -13,6 +13,33 @@ let permissionsPrecondition = (...args: discord.PermissionResolvable[]) => {
 };
 
 
+const SamMessages = [
+    "https://cdn.discordapp.com/attachments/743369863103381505/912837273639321640/ImportVideo_11405.430098.mov",
+    "https://cdn.discordapp.com/attachments/848110249373466664/912871163577917440/Screen_Shot_2021-11-24_at_11.58.11_am.png",
+    "https://cdn.discordapp.com/attachments/848110249373466664/912871163846361118/Screen_Shot_2021-11-24_at_11.58.19_am.png",
+    "https://cdn.discordapp.com/attachments/848110249373466664/912871164265771051/Screen_Shot_2021-11-24_at_11.58.26_am.png",
+    "https://cdn.discordapp.com/attachments/848110249373466664/912871164538404914/Screen_Shot_2021-11-24_at_11.58.35_am.png",
+    "https://cdn.discordapp.com/attachments/848110249373466664/912871164878135306/Screen_Shot_2021-11-24_at_11.58.49_am.png",
+    "https://cdn.discordapp.com/attachments/848110249373466664/912871165243056168/Screen_Shot_2021-11-24_at_11.58.57_am.png",
+    "https://cdn.discordapp.com/attachments/848110249373466664/912871165515673680/Screen_Shot_2021-11-24_at_11.59.13_am.png",
+    "https://cdn.discordapp.com/attachments/848110249373466664/912871165796696094/Screen_Shot_2021-11-24_at_11.59.21_am.png",
+    "https://cdn.discordapp.com/attachments/848110249373466664/912871165796696094/Screen_Shot_2021-11-24_at_11.59.21_am.png",
+    "https://cdn.discordapp.com/attachments/848110249373466664/912871166241304587/Screen_Shot_2021-11-24_at_11.59.30_am.png",
+    "https://cdn.discordapp.com/attachments/848110249373466664/912871166601986098/Screen_Shot_2021-11-24_at_11.59.37_am.png",
+    "https://cdn.discordapp.com/attachments/848110249373466664/912871352577441862/Screen_Shot_2021-11-24_at_11.59.49_am.png",
+    "https://cdn.discordapp.com/attachments/848110249373466664/912871352862650428/Screen_Shot_2021-11-24_at_11.59.56_am.png",
+    "https://cdn.discordapp.com/attachments/848110249373466664/912871353143689216/Screen_Shot_2021-11-24_at_12.00.04_pm.png",
+    "https://cdn.discordapp.com/attachments/848110249373466664/912871353143689216/Screen_Shot_2021-11-24_at_12.00.04_pm.png",
+    "https://cdn.discordapp.com/attachments/848110249373466664/912871353340788786/Screen_Shot_2021-11-24_at_12.00.11_pm.png",
+    "https://cdn.discordapp.com/attachments/848110249373466664/912871353630220368/Screen_Shot_2021-11-24_at_12.00.17_pm.png",
+    "https://cdn.discordapp.com/attachments/848110249373466664/912871353869291530/Screen_Shot_2021-11-24_at_12.00.23_pm.png",
+    "https://cdn.discordapp.com/attachments/848110249373466664/912871354108346428/Screen_Shot_2021-11-24_at_12.00.32_pm.png",
+    "https://cdn.discordapp.com/attachments/848110249373466664/912871354401955850/Screen_Shot_2021-11-24_at_12.00.39_pm.png",
+    "https://cdn.discordapp.com/attachments/848110249373466664/912871354662010900/Screen_Shot_2021-11-24_at_12.00.49_pm.png",
+    "https://cdn.discordapp.com/attachments/848110249373466664/912871354934636574/Screen_Shot_2021-11-24_at_12.00.56_pm.png"
+];
+const randomSamMessage = SamMessages[Math.floor(Math.random() * SamMessages.length)];
+
 export class testCommand extends sapphire.Command {
     constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
         super(context, {
@@ -475,5 +502,21 @@ export class guildsCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
         let x = await message.client.guilds.fetch();
         x.each((a) => { message.channel.send(`In guild '${a.name}'', (${a.id})'\n Owner is ${a.owner}`) });
+    }
+}
+
+
+//Made by PlutosNotRed
+
+export class samCommand extends sapphire.Command {
+    constructor(context: sapphire.PieceContext, options: sapphire.CommandOptions | undefined) {
+        super(context, {
+            ...options,
+            name: 'sam',
+        });
+    };
+    public async messageRun(message: discord.Message) {
+        message.channel.send(randomSamMessage);
+        message.channel.send("credit to PlutosNotRed, Illible, Moduluss, Sir Mole and <333")
     }
 }
