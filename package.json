@@ -24,6 +24,8 @@
 
     "@discordjs/voice": "^0.7.5",
 
+    "@sapphire/decorators": "^3.1.4",
+
     "@sapphire/framework": "^2.1.4",
 
     "@sapphire/plugin-subcommands": "^2.0.2",
