@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
 import { db } from '../index'
@@ -7,9 +6,9 @@ export class OwnerOnlyCondition extends sapphire.Precondition {
     constructor() {
         super({
             name: 'OwnerOnly',
-        });
+        } as sapphire.PieceContext);
     }
-    public async run(message: discord.Message, command: sapphire.Command) {
+    public async run(message: discord.Message) {
         let owners = process.env.OWNERS!.split(' ');
         let x = owners.includes(message.author.id);
         if (x) return this.ok();
@@ -27,9 +26,9 @@ export class overrideCondition extends sapphire.Precondition {
     constructor() {
         super({
             name: 'override',
-        });
+        } as sapphire.PieceContext);
     }
-    public async run(message: discord.Message, command: sapphire.Command) {
+    public async run(message: discord.Message) {
         /*parent:
         command.preconditions.entries.forEach(async (item) => {
             if (item instanceof sapphire.PreconditionContainerArray) {
