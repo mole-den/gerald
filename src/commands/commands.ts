@@ -324,6 +324,7 @@ export class dieCommand extends sapphire.Command {
 		message.channel.send('<@!809675885330432051>');	
 		amongus = 0;
 	} else {
+		message.channel.send('not today');	
 		amongus = 0;
 	}
     }
