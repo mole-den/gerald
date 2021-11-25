@@ -1,6 +1,6 @@
 import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
-import { db } from '../index';
+import { db, guildDataCache } from '../index';
 import { ApplyOptions } from '@sapphire/decorators';
 db;
 
@@ -53,15 +53,17 @@ declare module '@sapphire/framework' {
         override: never;
     }
 }
-/*
+
 @ApplyOptions<sapphire.PreconditionOptions>({
     name: 'disabled',
     enabled: true,
     position: 1,
 })
+
 export class checkDisabledCondition extends sapphire.Precondition {
-    public async run(message: discord.Message) {
-        
+    public async run(message: discord.Message, command: sapphire.Command) {
+        let x = await guildDataCache.get(message.guild!.id, 'disabled')
+        if (command.name in x) return this.error();
         return this.ok();
     };
 }
@@ -71,4 +73,3 @@ declare module '@sapphire/framework' {
         disabled: never;
     }
 }
-*/

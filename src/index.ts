@@ -89,7 +89,7 @@ class Cache {
 		this.cache = new NodeCache({ stdTTL: ttlSeconds, checkperiod: ttlSeconds * 0.2, useClones: false });
 	}
 
-	async get(guild: string, type: string): Promise<any> {
+	public async get(guild: string, type: string): Promise<any> {
 		let key = `${guild}-${type}`
 		const value = this.cache.get(key) as string;
 		if (value) {
@@ -100,15 +100,26 @@ class Cache {
 		this.cache.set(key, data.rows[0][type]);
 		return Promise.resolve(data.rows[0][type]);
 	};
-	async change(guild: string, type: string, input: any): Promise<any> {
+	public async change(guild: string, type: string, input: any): Promise<any> {
 		await db.query(`UPDATE guilds SET ${type} = $1 WHERE guildid = $2`, [input, guild]);
 		let x = await db.query("SELECT * FROM guilds WHERE guildid = $1", [guild]);
 		this.cache.set(`${guild}-${type}`, x.rows[0][type]);
 		return Promise.resolve(x.rows[0][type]);
+	};
+
+	public async fetch(): Promise<boolean> {
+		let data = await db.query('SELECT * FROM guilds');
+		data.rows.forEach((row) => {
+			this.cache.set(`${row.guildid}-disabled`, row.disabled);
+			this.cache.set(`${row.guildid}-prefix`, row.prefix);
+
+		});
+		return true;
 	}
 }
 
 export const guildDataCache = new Cache(1800)
+guildDataCache.fetch();
 
 const logmessages = false;
 const token = <string>process.env.TOKEN
