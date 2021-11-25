@@ -119,7 +119,6 @@ class Cache {
 }
 
 export const guildDataCache = new Cache(1800)
-guildDataCache.fetch();
 
 const logmessages = false;
 const token = <string>process.env.TOKEN
@@ -128,6 +127,7 @@ bot.on('ready', () => {
 	console.log('Preparing to take over the world...');
 	console.log('World domination complete.');
 	console.log('ONLINE');
+	guildDataCache.fetch();
 	bot.user!.setPresence({ activities: [{ name: 'you', type: "WATCHING" }], status: 'dnd' });
 	//online or dnd
 	//bot.emit('heartbeated');
