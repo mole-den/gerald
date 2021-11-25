@@ -330,6 +330,14 @@ export class plutoCommand extends sapphire.Command {
         message.channel.send(`<@!453823323135016965>`);
     }
 }
+@ApplyOptions<sapphire.CommandOptions>({
+    name: 'sammy',
+})
+export class sammyCommand extends sapphire.Command {
+    public async messageRun(message: discord.Message) {
+        message.channel.send(`<@!696926289726144562>`);
+    }
+}
 
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'repo',
