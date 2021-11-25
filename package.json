@@ -26,7 +26,7 @@
 
     "@sapphire/decorators": "^3.1.4",
 
-    "@sapphire/framework": "^2.1.4",
+    "@sapphire/framework": "^2.2.0",
 
     "@sapphire/plugin-subcommands": "^2.0.2",
 
