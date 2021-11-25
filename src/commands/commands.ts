@@ -323,9 +323,9 @@ export class politicsCommand extends sapphire.Command {
     }
 }
 @ApplyOptions<sapphire.CommandOptions>({
-    name: 'ping',
+    name: 'pluto',
 })
-export class pingCommand extends sapphire.Command {
+export class plutoCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
         message.channel.send(`<@!453823323135016965>`);
     }
