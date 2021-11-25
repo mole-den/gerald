@@ -22,7 +22,7 @@ const bot = new sapphire.SapphireClient({
 	defaultPrefix: 'g',
 	fetchPrefix: async (message: discord.Message): Promise<string> => {
 		if (!message.guild) return 'g';
-		let x = await guildDataCache.get(message.guild.id, 'prefix') as string;
+		let x = await guildDataCache.get(message.guild.id, cacheType.prefix) as string;
 		return x
 	}
 
@@ -82,14 +82,17 @@ export function durationToMS(duration: string): number | null {
 	})
 	return durationMS;
 };
-
+export enum cacheType {
+	disabled = 'disabled',
+	prefix = 'prefix',
+}	
 class Cache {
 	cache: NodeCache;
 	constructor(ttlSeconds: number) {
 		this.cache = new NodeCache({ stdTTL: ttlSeconds, checkperiod: ttlSeconds * 0.2, useClones: false });
 	}
 
-	public async get(guild: string, type: string): Promise<any> {
+	public async get(guild: string, type: cacheType): Promise<any> {
 		let key = `${guild}-${type}`
 		const value = this.cache.get(key) as string;
 		if (value) {
@@ -100,7 +103,7 @@ class Cache {
 		this.cache.set(key, data.rows[0][type]);
 		return Promise.resolve(data.rows[0][type]);
 	};
-	public async change(guild: string, type: string, input: any): Promise<any> {
+	public async change(guild: string, type: cacheType, input: any): Promise<any> {
 		await db.query(`UPDATE guilds SET ${type} = $1 WHERE guildid = $2`, [input, guild]);
 		let x = await db.query("SELECT * FROM guilds WHERE guildid = $1", [guild]);
 		this.cache.set(`${guild}-${type}`, x.rows[0][type]);

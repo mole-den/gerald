@@ -1,11 +1,12 @@
 import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
 import { SubCommandPluginCommand, SubCommandPluginCommandOptions } from '@sapphire/plugin-subcommands';
-import { durationToMS, guildDataCache, db, getRandomArbitrary } from '../index';
+import { durationToMS, guildDataCache, db, getRandomArbitrary, cacheType } from '../index';
 import { ApplyOptions } from '@sapphire/decorators';
 import * as lux from 'luxon';
 import * as voice from '@discordjs/voice';
 import { join } from 'path'
+///<reference types="../index"/>
 voice
 let permissionsPrecondition = (...args: discord.PermissionResolvable[]) => {
     let preconditionArray: Array<sapphire.PreconditionEntryResolvable> = [];
@@ -288,7 +289,7 @@ export class queryCommand extends sapphire.Command {
 export class prefixCommand extends sapphire.Command {
     public async messageRun(message: discord.Message, args: sapphire.Args) {
         let x = args.next()
-        guildDataCache.change(message.guild!.id, 'prefix', x);
+        guildDataCache.change(message.guild!.id, cacheType.prefix, x);
         message.channel.send(`Changed prefix for ${message.guild!.name} to ${x}`);
     }
 }

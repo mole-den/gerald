@@ -1,8 +1,9 @@
 import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
-import { db, guildDataCache } from '../index';
+import { cacheType, db, guildDataCache } from '../index';
 import { ApplyOptions } from '@sapphire/decorators';
 db;
+///<reference types="../index"/>
 
 @ApplyOptions<sapphire.PreconditionOptions>({
     name: 'OwnerOnly',
@@ -62,7 +63,7 @@ declare module '@sapphire/framework' {
 
 export class checkDisabledCondition extends sapphire.Precondition {
     public async run(message: discord.Message, command: sapphire.Command) {
-        let x = await guildDataCache.get(message.guild!.id, 'disabled')
+        let x = await guildDataCache.get(message.guild!.id, cacheType.disabled)
         console.log(x)
         if (x !== null && command.name in x) return this.error();
         return this.ok();
