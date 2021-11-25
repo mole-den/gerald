@@ -63,7 +63,8 @@ declare module '@sapphire/framework' {
 export class checkDisabledCondition extends sapphire.Precondition {
     public async run(message: discord.Message, command: sapphire.Command) {
         let x = await guildDataCache.get(message.guild!.id, 'disabled')
-        if (command.name in x) return this.error();
+        console.log(x)
+        if (x !== null && command.name in x) return this.error();
         return this.ok();
     };
 }
