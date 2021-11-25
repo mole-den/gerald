@@ -7,7 +7,6 @@ import * as lux from 'luxon';
 import * as voice from '@discordjs/voice';
 import { join } from 'path'
 voice
-let amongus = 0;
 let permissionsPrecondition = (...args: discord.PermissionResolvable[]) => {
     let preconditionArray: Array<sapphire.PreconditionEntryResolvable> = [];
     preconditionArray.push('override')
@@ -319,13 +318,10 @@ export class dieCommand extends sapphire.Command {
 })
 export class amogusCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
-	amongus = getRandomArbitrary(0, 100)
-        if(amongus == 1){
-		message.channel.send('<@!809675885330432051>');	
-		amongus = 0;
+        if(getRandomArbitrary(0, 100) === 1){
+		message.channel.send('<&!809675885330432051>');	
 	} else {
 		message.channel.send('not today');	
-		amongus = 0;
 	}
     }
 }
