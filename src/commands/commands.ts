@@ -322,6 +322,14 @@ export class politicsCommand extends sapphire.Command {
         message.channel.send(`https://cdn.discordapp.com/attachments/377228302336655362/886234477578301490/video0.mp4`);
     }
 }
+@ApplyOptions<sapphire.CommandOptions>({
+    name: 'ping',
+})
+export class pingCommand extends sapphire.Command {
+    public async messageRun(message: discord.Message) {
+        message.channel.send(`<@!453823323135016965>`);
+    }
+}
 
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'repo',
