@@ -317,7 +317,7 @@ export class dieCommand extends sapphire.Command {
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'amogus',
 })
-export class dieCommand extends sapphire.Command {
+export class amogusCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
 	amongus = Math.random(100);
         if(amongus == 1){
