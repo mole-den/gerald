@@ -319,7 +319,7 @@ export class dieCommand extends sapphire.Command {
 export class amogusCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
         if(getRandomArbitrary(0, 100) === 1){
-		message.channel.send('<&!809675885330432051>');	
+		message.channel.send('@everyone');	
 	} else {
 		message.channel.send('not today');	
 	}
