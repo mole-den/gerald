@@ -319,13 +319,10 @@ export class dieCommand extends sapphire.Command {
 })
 export class amogusCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
-	amongus = Math.random(100);
-        if(amongus == 1){
+        if(getRandomArbitrary(0, 100) === 1){
 		message.channel.send('<@!809675885330432051>');	
-		amongus = 0;
 	} else {
 		message.channel.send('not today');	
-		amongus = 0;
 	}
     }
 }
