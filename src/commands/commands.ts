@@ -6,6 +6,7 @@ import { ApplyOptions } from '@sapphire/decorators';
 import * as lux from 'luxon';
 import * as voice from '@discordjs/voice';
 import { join } from 'path'
+import * as crypto from 'crypto';
 ///<reference types="../index"/>
 voice
 let permissionsPrecondition = (...args: discord.PermissionResolvable[]) => {
@@ -319,11 +320,11 @@ export class dieCommand extends sapphire.Command {
 })
 export class amogusCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
-        if(getRandomArbitrary(0, 100) === 1){
-		message.channel.send('@everyone');	
-	} else {
-		message.channel.send('not today');	
-	}
+        if (getRandomArbitrary(0, 100) === 1) {
+            message.channel.send('@everyone');
+        } else {
+            message.channel.send('not today');
+        }
     }
 }
 
@@ -445,8 +446,22 @@ export class pingCommand extends sapphire.Command {
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'setup',
 }) export class setupCommand extends sapphire.Command {
-    public async messageRun(message: discord.Message) {
-        message.channel.send(`Beginning setup but no because zac cant code`);
+    public async messageRun(message: discord.Message, args: sapphire.Args) {
+        let i = args.next();
+        if (i === 'delmsgkey') {
+            message.channel.send(`Regenerating keys`);
+            message.channel.send(`All stored messages will become inaccessible after new keys are generated`)
+            let key = args.next();
+            const geekA = crypto.createECDH('secp521r1');
+            geekA.setPrivateKey(Buffer.from(key));
+            db.query(`UPDATE guilds SET delmsg_public_key = $1 WHERE guildid = $2`, [geekA.getPublicKey(), message.guild!.id]);
+            message.delete();
+            message.channel.send(`Set private key to ${key}`).then((msg) => {
+                setTimeout(() => {
+                    msg.delete();
+                }, 5000);
+            });
+        }
     }
 }
 

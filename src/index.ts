@@ -94,7 +94,7 @@ class Cache {
 	}
 	public async get(guild: string, type: cacheType.disabled): Promise<Array<string>> 
 	public async get(guild: string, type: cacheType.prefix): Promise<string> 
-	public async get(guild: string, type: cacheType.delmsgPublicKey): Promise<string> 
+	public async get(guild: string, type: cacheType.delmsgPublicKey): Promise<Buffer> 
 	public async get(guild: string, type: cacheType): Promise<any> {
 		let key = `${guild}-${type}`
 		const value = this.cache.get(key) as string;
@@ -108,7 +108,7 @@ class Cache {
 	};
 	public async change(guild: string, type: cacheType.prefix, input: string): Promise<string> 
 	public async change(guild: string, type: cacheType.disabled, input: string): Promise<Array<string>>
-	public async change(guild: string, type: cacheType.delmsgPublicKey, input: null): Promise<string> 
+	public async change(guild: string, type: cacheType.delmsgPublicKey, input: null): Promise<void> 
 	public async change(guild: string, type: cacheType, input: any ): Promise<any> {
 		await db.query(`UPDATE guilds SET ${type} = $1 WHERE guildid = $2`, [input, guild]);
 		let x = await db.query("SELECT * FROM guilds WHERE guildid = $1", [guild]);
@@ -334,4 +334,4 @@ bot.on('messageDeleteBulk', async (array) => {
 });
 //zac cringe
 //gustavo cringe
-//gerald cringe 
+//gerald cringe
