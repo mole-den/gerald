@@ -3,6 +3,7 @@ import * as pg from 'pg';
 import cron from 'node-cron';
 import * as sapphire from '@sapphire/framework';
 import NodeCache from "node-cache";
+import crypto from "crypto";
 cron;
 process.on('SIGTERM', async () => {
 	console.log('SIGTERM received');
@@ -10,7 +11,6 @@ process.on('SIGTERM', async () => {
 	bot.destroy();
 	process.exit(1);
 });
-
 
 const myIntents = new discord.Intents();
 myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS, discord.Intents.FLAGS.GUILD_MESSAGES,
@@ -22,7 +22,7 @@ const bot = new sapphire.SapphireClient({
 	defaultPrefix: 'g',
 	fetchPrefix: async (message: discord.Message): Promise<string> => {
 		if (!message.guild) return 'g';
-		let x = await guildDataCache.get(message.guild.id, cacheType.prefix) as string;
+		let x = await guildDataCache.get(message.guild.id, cacheType.prefix);
 		return x
 	}
 
@@ -85,6 +85,7 @@ export function durationToMS(duration: string): number | null {
 export enum cacheType {
 	disabled = 'disabled',
 	prefix = 'prefix',
+	delmsgPublicKey = 'delmsgPublicKey',
 }	
 class Cache {
 	cache: NodeCache;
@@ -93,6 +94,7 @@ class Cache {
 	}
 	public async get(guild: string, type: cacheType.disabled): Promise<Array<string>> 
 	public async get(guild: string, type: cacheType.prefix): Promise<string> 
+	public async get(guild: string, type: cacheType.delmsgPublicKey): Promise<string> 
 	public async get(guild: string, type: cacheType): Promise<any> {
 		let key = `${guild}-${type}`
 		const value = this.cache.get(key) as string;
@@ -106,7 +108,8 @@ class Cache {
 	};
 	public async change(guild: string, type: cacheType.prefix, input: string): Promise<string> 
 	public async change(guild: string, type: cacheType.disabled, input: string): Promise<Array<string>>
-	public async change(guild: string, type: cacheType, input: any): Promise<any> {
+	public async change(guild: string, type: cacheType.delmsgPublicKey, input: null): Promise<string> 
+	public async change(guild: string, type: cacheType, input: any ): Promise<any> {
 		await db.query(`UPDATE guilds SET ${type} = $1 WHERE guildid = $2`, [input, guild]);
 		let x = await db.query("SELECT * FROM guilds WHERE guildid = $1", [guild]);
 		this.cache.set(`${guild}-${type}`, x.rows[0][type]);
@@ -279,10 +282,12 @@ bot.on('messageDelete', async (message) => {
 		});
 	});
 	if (attachments = []) attachments = null;
+	let key = await guildDataCache.get(message.guild.id, cacheType.delmsgPublicKey);
+	let encrypted = crypto.publicEncrypt(key, Buffer.from(message.content))
 	await db.query(`
 	INSERT INTO deletedmsgs (author, content, guildid, msgtime, channel, deleted_time, deleted_by, msgid, attachments) 
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-		[BigInt(message.author.id), message.content,
+		[BigInt(message.author.id), encrypted,
 		message.guild.id, new Date(message.createdAt.getTime()),
 		message.channel.id, delTime, executor, message.id, attachments]);
 });
@@ -291,26 +296,39 @@ bot.on('messageDeleteBulk', async (array) => {
 	await discord.Util.delayFor(1000);
 	array.each(async (message) => {
 		if (!message.guild) return
+		if (message.partial) return;
 		let logs = await message.guild.fetchAuditLogs({
 			type: 72
 		});
 		const auditEntry = logs.entries.find(a =>
-			// @ts-expect-error
-			a.target.id === message.author.id &&
-			(a.extra as any).channel.id === message.channel.id &&
-			Date.now() - a.createdTimestamp < 5000
+			(a.target as discord.GuildMember).id === message.author.id
+			&& (a.extra as any).channel.id === message.channel.id
+			&& Date.now() - a.createdTimestamp < 5000
 		);
 		let entry = auditEntry
 		const executor = (entry && entry.executor) ? entry.executor.tag : 'Deleted by Author or Bot';
 		if (message.author?.bot) return
 		if (message.guild === null) return;
 		if (message.partial) return;
+		let attachments: Array<{
+			url: string,
+			name: string | null
+		}> | null = [];
+		message.attachments.each((attachment) => {
+			attachments!.push({
+				url: attachment.url,
+				name: attachment.name
+			});
+		});
+		if (attachments = []) attachments = null;
+		let key = await guildDataCache.get(message.guild.id, cacheType.delmsgPublicKey);
+		let encrypted = crypto.publicEncrypt(key, Buffer.from(message.content))
 		await db.query(`
-	INSERT INTO deletedmsgs (author, content, guildid, msgtime, channel, deleted_time, deleted_by, msgid) 
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-			[BigInt(message.author.id), message.content,
+	INSERT INTO deletedmsgs (author, content, guildid, msgtime, channel, deleted_time, deleted_by, msgid, attachments) 
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+			[BigInt(message.author.id), encrypted,
 			message.guild.id, new Date(message.createdAt.getTime()),
-			message.channel.id, delTime, executor, message.id]);
+			message.channel.id, delTime, executor, message.id, attachments]);
 
 	});
 });
