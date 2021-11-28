@@ -315,6 +315,7 @@ export class dieCommand extends sapphire.Command {
         message.channel.send(`no u`);
     }
 }
+/*
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'amogus',
 })
@@ -326,7 +327,7 @@ export class amogusCommand extends sapphire.Command {
             message.channel.send('not today');
         }
     }
-}
+}*/
 
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'politics',
@@ -455,7 +456,6 @@ export class pingCommand extends sapphire.Command {
             const a = crypto.createECDH('secp521r1');
             a.setPrivateKey(Buffer.from(key));
             db.query(`UPDATE guilds SET delmsg_public_key = $1 WHERE guildid = $2`, [a.getPublicKey(), message.guild!.id]);
-            message.channel.send(`Changed keys`)
         }
     }
 }
