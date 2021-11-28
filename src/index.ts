@@ -85,7 +85,7 @@ export function durationToMS(duration: string): number | null {
 export enum cacheType {
 	disabled = 'disabled',
 	prefix = 'prefix',
-	delmsgPublicKey = 'delmsgPublicKey',
+	delmsgPublicKey = 'delmsg_public_key',
 }	
 class Cache {
 	cache: NodeCache;
@@ -175,6 +175,7 @@ bot.on('commandDenied', ({ context, message: content }: sapphire.UserError, { me
 	if (Reflect.get(Object(context), 'silent')) return;
 	message.channel.send({ content, allowedMentions: { users: [message.author.id], roles: [] } });
 });
+
 bot.on('commandError', (error, payload) => {
 	if (error instanceof sapphire.UserError) {
 		payload.message.channel.send(error.message)

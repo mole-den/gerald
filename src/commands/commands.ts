@@ -452,10 +452,11 @@ export class pingCommand extends sapphire.Command {
         if (i === 'delmsgkey') {
             message.channel.send(`Regenerating keys`);
             message.channel.send(`All stored messages will become inaccessible after new keys are generated`)
-            let key = args.next();
-            const a = crypto.createECDH('secp521r1');
-            a.setPrivateKey(Buffer.from(key));
-            db.query(`UPDATE guilds SET delmsg_public_key = $1 WHERE guildid = $2`, [a.getPublicKey(), message.guild!.id]);
+            let x = crypto.createDiffieHellman(120);
+            x.generateKeys('base64');
+            message.channel.send("public: " + x.getPublicKey('base64'));
+            message.channel.send("private: " + x.getPrivateKey('base64'));
+            db.query(`UPDATE guilds SET delmsg_public_key = $1 WHERE guildid = $2`, [x.getPublicKey('base64'), message.guild!.id]);
         }
     }
 }
