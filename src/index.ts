@@ -94,7 +94,7 @@ class Cache {
 	}
 	public async get(guild: string, type: cacheType.disabled): Promise<Array<string>> 
 	public async get(guild: string, type: cacheType.prefix): Promise<string> 
-	public async get(guild: string, type: cacheType.delmsgPublicKey): Promise<Buffer> 
+	public async get(guild: string, type: cacheType.delmsgPublicKey): Promise<string> 
 	public async get(guild: string, type: cacheType): Promise<any> {
 		let key = `${guild}-${type}`
 		const value = this.cache.get(key) as string;
@@ -284,6 +284,7 @@ bot.on('messageDelete', async (message) => {
 	});
 	if (attachments = []) attachments = null;
 	let key = await guildDataCache.get(message.guild.id, cacheType.delmsgPublicKey);
+	console.log(key)
 	let encrypted = crypto.publicEncrypt(key, Buffer.from(message.content))
 	await db.query(`
 	INSERT INTO deletedmsgs (author, content, guildid, msgtime, channel, deleted_time, deleted_by, msgid, attachments) 
