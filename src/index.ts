@@ -3,7 +3,7 @@ import * as pg from 'pg';
 import cron from 'node-cron';
 import * as sapphire from '@sapphire/framework';
 import NodeCache from "node-cache";
-import crypto from "crypto";
+//import crypto from "crypto";
 cron;
 process.on('SIGTERM', async () => {
 	console.log('SIGTERM received');
