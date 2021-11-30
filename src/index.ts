@@ -3,7 +3,7 @@ import * as pg from 'pg';
 import cron from 'node-cron';
 import * as sapphire from '@sapphire/framework';
 import NodeCache from "node-cache";
-import crypto from "crypto";
+//import crypto from "crypto";
 cron;
 process.on('SIGTERM', async () => {
 	console.log('SIGTERM received');
@@ -253,7 +253,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 		(channel as discord.TextChannel).send(`**${message.author.tag}** said: \`${message.content}\` in ${message.guild!.name}`);
 	};
 });
-
+/*
 bot.on('messageDelete', async (message) => {
 	let delTime = new Date()
 	if (!message.guild) return
@@ -333,7 +333,7 @@ bot.on('messageDeleteBulk', async (array) => {
 			message.channel.id, delTime, executor, message.id, attachments]);
 
 	});
-});
+});*/
 //zac cringe
 //gustavo cringe
 //gerald cringe
