@@ -139,6 +139,7 @@ bot.on('ready', () => {
 	bot.user!.setPresence({ activities: [{ name: 'you', type: "WATCHING" }], status: 'dnd' });
 	//online or dnd
 	//bot.emit('heartbeated');
+	/*
 	bot.guilds.fetch().then(async (g) => {
 		g.each(async (guild) => {
 			let x = await guild.fetch();
@@ -148,7 +149,7 @@ bot.on('ready', () => {
 				c.messages.fetch({ limit: 100 })
 			})
 		})
-	})
+	})*/
 });
 export const db = new pg.Pool({
 	connectionString: dbToken,
