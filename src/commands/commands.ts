@@ -394,7 +394,7 @@ export class infoCommand extends sapphire.Command {
         let start = Date.now()
         await db.query('select 1;')
         let elapsed = Date.now() - start;
-        message.channel.send(`Uptime: ${uptimeString}\n Websocket heartbeat: ${bot.ws.ping}ms \nDatabase heartbeat: ${elapsed}ms`);
+        message.channel.send(`**Uptime:** ${uptimeString}\n**Websocket heartbeat:** ${bot.ws.ping}ms\n**Database heartbeat:** ${elapsed}ms`);
     }
 }
 
