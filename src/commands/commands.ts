@@ -1,7 +1,7 @@
 import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
 import { SubCommandPluginCommand, SubCommandPluginCommandOptions } from '@sapphire/plugin-subcommands';
-import { durationToMS, guildDataCache, db, getRandomArbitrary, cacheType } from '../index';
+import { durationToMS, guildDataCache, db, getRandomArbitrary, cacheType, bot } from '../index';
 import { ApplyOptions } from '@sapphire/decorators';
 import * as lux from 'luxon';
 import * as voice from '@discordjs/voice';
@@ -210,7 +210,7 @@ export class smiteCommand extends SubCommandPluginCommand {
         let smite = await db.query(`SELECT * FROM punishments WHERE type='blist' AND guild = $1 AND NOT RESOLVED`, [message.guild!.id]);
         if (smite.rowCount === 0) message.channel.send(`No users are blacklisted`);
         smite.rows.forEach(async (i) => {
-            let x = await message.client.users.fetch(i.member);
+            let x = await bot.users.fetch(i.member);
             let date = i.ends ? (+new Date(i.ends) - Date.now()) : null;
             let duration = date === null ? 'permanently' : `for ${lux.Duration.fromMillis(date!)}`;
             message.channel.send(`**${x.username}#${x.discriminator}** is blacklisted until *${duration}*. Case ID: ${i.id}`);
@@ -372,9 +372,9 @@ export class inviteCommand extends sapphire.Command {
     }
 }
 @ApplyOptions<sapphire.CommandOptions>({
-    name: 'uptime',
+    name: 'info',
 })
-export class uptimeCommand extends sapphire.Command {
+export class infoCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
         let uptime = process.uptime();
         let uptimeString = "";
@@ -391,19 +391,10 @@ export class uptimeCommand extends sapphire.Command {
             uptime %= 60;
         }
         uptimeString += Math.floor(uptime) + " seconds";
-        message.channel.send(`Uptime: ${uptimeString}`);
-    }
-}
-
-@ApplyOptions<sapphire.CommandOptions>({
-    name: 'ping',
-})
-export class pingCommand extends sapphire.Command {
-    public async messageRun(message: discord.Message) {
         let start = Date.now()
         await db.query('select 1;')
-        let elapsed = Date.now() - start
-        message.channel.send(`Websocket heartbeat: ${message.client.ws.ping}ms \nDatabase heartbeat: ${elapsed}ms`)
+        let elapsed = Date.now() - start;
+        message.channel.send(`Uptime: ${uptimeString}\n Websocket heartbeat: ${bot.ws.ping}ms \nDatabase heartbeat: ${elapsed}ms`);
     }
 }
 
@@ -430,15 +421,16 @@ export class pingCommand extends sapphire.Command {
     preconditions: ['OwnerOnly']
 }) export class setstatusCommand extends sapphire.Command {
     public async messageRun(message: discord.Message, args: sapphire.Args) {
+        message
         let stat = args.next();
         if (stat === 'online' || stat === 'idle' || stat === 'dnd' || stat === 'invisible') {
-            message.client.user!.setStatus(stat);
+            bot.user!.setStatus(stat);
         };
         const activity = args.next()
         if (activity === 'playing' || activity === 'streaming' || activity === 'watching' || activity === 'listening' || activity === 'none') {
             let stat = (activity === 'none') ? undefined : <discord.ActivityType>activity.toUpperCase();
             let name = (await args.repeat('string')).join(' ');
-            message.client.user!.setActivity(name, { type: (stat as any) });
+            bot.user!.setActivity(name, { type: (stat as any) });
             return;
         };
     }
@@ -499,7 +491,7 @@ But... you can have this https://www.youtube.com/watch?v=k4FF7x8vnZg&t=0s&ab_cha
     name: 'guilds',
 }) export class guildsCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
-        let x = await message.client.guilds.fetch();
+        let x = await bot.guilds.fetch();
         x.each((a) => { message.channel.send(`In guild '${a.name}'', (${a.id})'\n Owner is ${a.owner}`) });
     }
 }
@@ -600,7 +592,7 @@ But... you can have this https://www.youtube.com/watch?v=k4FF7x8vnZg&t=0s&ab_cha
         message.channel.send(``)
         collector.on('collect', async m => {
             if (m.content === 'yes') {
-                let x = await message.client.guilds.fetch();
+                let x = await bot.guilds.fetch();
                 x.each(async (g) => {
                     let guild = await g.fetch();
                     (await guild.members.fetch()).each(async (mem) => {
