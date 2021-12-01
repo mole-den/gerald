@@ -254,7 +254,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 		(channel as discord.TextChannel).send(`**${message.author.tag}** said: \`${message.content}\` in ${message.guild!.name}`);
 	};
 });
-/*
+
 bot.on('messageDelete', async (message) => {
 	let delTime = new Date()
 	if (!message.guild) return
@@ -284,13 +284,10 @@ bot.on('messageDelete', async (message) => {
 		});
 	});
 	if (attachments = []) attachments = null;
-	let key = await guildDataCache.get(message.guild.id, cacheType.delmsgPublicKey);
-	console.log(key);
-	let encrypted = crypto.publicEncrypt(key, Buffer.from(message.content))
 	await db.query(`
 	INSERT INTO deletedmsgs (author, content, guildid, msgtime, channel, deleted_time, deleted_by, msgid, attachments) 
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-		[BigInt(message.author.id), encrypted,
+		[BigInt(message.author.id), message.content,
 		message.guild.id, new Date(message.createdAt.getTime()),
 		message.channel.id, delTime, executor, message.id, attachments]);
 });
@@ -324,17 +321,15 @@ bot.on('messageDeleteBulk', async (array) => {
 			});
 		});
 		if (attachments = []) attachments = null;
-		let key = await guildDataCache.get(message.guild.id, cacheType.delmsgPublicKey);
-		let encrypted = crypto.publicEncrypt(key, Buffer.from(message.content))
 		await db.query(`
 	INSERT INTO deletedmsgs (author, content, guildid, msgtime, channel, deleted_time, deleted_by, msgid, attachments) 
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-			[BigInt(message.author.id), encrypted,
+			[BigInt(message.author.id), message.content,
 			message.guild.id, new Date(message.createdAt.getTime()),
 			message.channel.id, delTime, executor, message.id, attachments]);
 
 	});
-});*/
+});
 //zac cringe
 //gustavo cringe
 //gerald cringe
