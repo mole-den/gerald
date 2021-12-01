@@ -17,7 +17,7 @@ myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS,
 	discord.Intents.FLAGS.DIRECT_MESSAGES, discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
 	discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS, discord.Intents.FLAGS.GUILD_PRESENCES);
 
-const bot = new sapphire.SapphireClient({
+export const bot = new sapphire.SapphireClient({
 	intents: myIntents,
 	defaultPrefix: 'g',
 	fetchPrefix: async (message: discord.Message): Promise<string> => {
