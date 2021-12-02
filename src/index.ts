@@ -7,8 +7,12 @@ import NodeCache from "node-cache";
 cron;
 process.on('SIGTERM', async () => {
 	console.log('SIGTERM received');
-	db.end();
+	bot.fetchPrefix = async () => {
+		return "_____________________";
+	};
+	await discord.Util.delayFor(3000)
 	bot.destroy();
+	db.end();
 	process.exit(1);
 });
 
