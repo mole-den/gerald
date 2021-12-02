@@ -315,19 +315,6 @@ export class dieCommand extends sapphire.Command {
         message.channel.send(`no u`);
     }
 }
-/*
-@ApplyOptions<sapphire.CommandOptions>({
-    name: 'amogus',
-})
-export class amogusCommand extends sapphire.Command {
-    public async messageRun(message: discord.Message) {
-        if (getRandomArbitrary(0, 100) === 1) {
-            message.channel.send('@everyone');
-        } else {
-            message.channel.send('not today');
-        }
-    }
-}*/
 
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'politics',
@@ -577,43 +564,3 @@ But... you can have this https://www.youtube.com/watch?v=k4FF7x8vnZg&t=0s&ab_cha
 
     }
 }
-
-
-@ApplyOptions<sapphire.CommandOptions>({
-    name: 'update-database',
-    description: 'rebuild database',
-    requiredClientPermissions: [],
-    preconditions: ['OwnerOnly']
-}) export class ownerUpdateCommand extends sapphire.Command {
-    public async messageRun(message: discord.Message) {
-        let filter = (m: discord.Message) => m.author.id === message.author.id;
-        const collector = message.channel.createMessageCollector({ filter, time: 10000 });
-        let response = false
-        message.channel.send(``)
-        collector.on('collect', async m => {
-            if (m.content === 'yes') {
-                let x = await bot.guilds.fetch();
-                x.each(async (g) => {
-                    let guild = await g.fetch();
-                    (await guild.members.fetch()).each(async (mem) => {
-                        db.query(`INSERT INTO members (guild, userid) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
-                            [guild.id, mem.id]);
-                    })
-                })
-                message.channel.send(`Starting...`)
-                response = true
-                collector.stop();
-                return;
-            } else if (message.content === 'no') {
-                message.channel.send(`Cancelled`);
-                response = true
-                collector.stop();
-                return;
-            }
-        });
-        collector.on('end', () => {
-            if (response === true) return
-            message.channel.send(`Command timed out`)
-        });
-    };
-};
