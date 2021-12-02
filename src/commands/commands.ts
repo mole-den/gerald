@@ -418,7 +418,7 @@ export class infoCommand extends sapphire.Command {
 
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'setstatus',
-    preconditions: ['OwnerOnly']
+    preconditions: ['OwnerOnly'],
 }) export class setstatusCommand extends sapphire.Command {
     public async messageRun(message: discord.Message, args: sapphire.Args) {
         message
