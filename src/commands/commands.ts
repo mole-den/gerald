@@ -572,7 +572,7 @@ But... you can have this https://www.youtube.com/watch?v=k4FF7x8vnZg&t=0s&ab_cha
     requiredClientPermissions: [],
     preconditions: ['OwnerOnly']
 }) export class ownerUpdateCommand extends sapphire.Command {
-    public async messageRun(message: discord.Message) {
+    public async messageRun() {
                 let x = await bot.guilds.fetch();
                 x.each(async (g) => {
                     let guild = await g.fetch();
