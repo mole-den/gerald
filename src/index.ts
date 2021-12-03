@@ -216,10 +216,6 @@ bot.on('guildCreate', async (guild) => {
 });
 
 bot.on('messageCreate', async (message: discord.Message) => {
-	if (message.author.id === '536047005085204480') {
-		let x = getRandomArbitrary(1, 20)
-		if (x > 15) message.channel.send('fuck you');
-	}
 	if (getRandomArbitrary(1, 1000) === 1) message.channel.send('Next time eat a salad!');
 	if (/\bez\b/gmi.test(message.content)) {
 		if (message.author.bot) return;
