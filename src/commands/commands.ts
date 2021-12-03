@@ -564,3 +564,23 @@ But... you can have this https://www.youtube.com/watch?v=k4FF7x8vnZg&t=0s&ab_cha
 
     }
 }
+
+
+@ApplyOptions<sapphire.CommandOptions>({
+    name: 'update-database',
+    description: 'rebuild database',
+    requiredClientPermissions: [],
+    preconditions: ['OwnerOnly']
+}) export class ownerUpdateCommand extends sapphire.Command {
+    public async messageRun(message: discord.Message) {
+                let x = await bot.guilds.fetch();
+                x.each(async (g) => {
+                    let guild = await g.fetch();
+                    (await guild.members.fetch()).each(async (mem) => {
+                        db.query(`INSERT INTO members (guild, userid) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
+                            [guild.id, mem.id]);
+                    })
+                })
+
+    };
+};
