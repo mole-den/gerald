@@ -8,7 +8,7 @@ cron;
 process.on('SIGTERM', async () => {
 	console.log('SIGTERM received');
 	bot.fetchPrefix = async () => {
-		return "_____________________";
+		return "EsRtvLIlJ3O5HuNV1Bo824FOzjelsmHmtYFTcBk57";
 	};
 	await discord.Util.delayFor(3000)
 	bot.destroy();
