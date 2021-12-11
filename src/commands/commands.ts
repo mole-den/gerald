@@ -493,7 +493,7 @@ But... you can have this https://www.youtube.com/watch?v=k4FF7x8vnZg&t=0s&ab_cha
             let change = (await args.repeat('string')).join(' ')
             await db.query('UPDATE members SET sexuality=$1 WHERE userid = $2',
                 [change, message.author.id]);
-            message.channel.send(`set ${message.author.username} to ${change}`);
+            message.channel.send(`set ${message.author.username} to ${cleanMentions(change)}`);
             return;
         }
         message.mentions.members?.each(async (eachmem) => {
