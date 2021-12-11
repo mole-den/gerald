@@ -1,7 +1,7 @@
 import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
 import { SubCommandPluginCommand, SubCommandPluginCommandOptions } from '@sapphire/plugin-subcommands';
-import { durationToMS, guildDataCache, db, getRandomArbitrary, cacheType, bot } from '../index';
+import { durationToMS, guildDataCache, db, getRandomArbitrary, cacheType, bot, cleanMentions } from '../index';
 import { ApplyOptions } from '@sapphire/decorators';
 import * as lux from 'luxon';
 import * as voice from '@discordjs/voice';
@@ -498,12 +498,12 @@ But... you can have this https://www.youtube.com/watch?v=k4FF7x8vnZg&t=0s&ab_cha
         }
         message.mentions.members?.each(async (eachmem) => {
             let s = await db.query('SELECT * FROM members WHERE userid = $1', [BigInt(eachmem.id)])
-            message.channel.send(`${(eachmem.nickname !== null) ? eachmem.nickname : eachmem.user.username} is ${s.rows[0].sexuality}`);
+            message.channel.send(`${(eachmem.nickname !== null) ? eachmem.nickname : eachmem.user.username} is ${cleanMentions(s.rows[0].sexuality)}`);
         })
         message.mentions.roles?.each(async (eachrole) => {
             eachrole.members.each(async (eachmem) => {
                 let s = await db.query('SELECT * FROM members WHERE userid = $1', [BigInt(eachmem.id)])
-                message.channel.send(`${(eachmem.nickname !== null) ? eachmem.nickname : eachmem.user.username} is ${s.rows[0].sexuality}`);
+                message.channel.send(`${(eachmem.nickname !== null) ? eachmem.nickname : eachmem.user.username} is ${cleanMentions(s.rows[0].sexuality)}`);
             })
 
         })
