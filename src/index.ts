@@ -86,11 +86,17 @@ export function durationToMS(duration: string): number | null {
 	})
 	return durationMS;
 };
+
 export enum cacheType {
 	disabled = 'disabled',
 	prefix = 'prefix',
 	delmsgPublicKey = 'delmsg_public_key',
 }
+
+export function cleanMentions(str: string): string {
+	return str.replace(/@everyone/g, '@\u200beveryone').replace(/@here/g, '@\u200bhere');
+};
+
 class Cache {
 	cache: NodeCache;
 	constructor(ttlSeconds: number) {
