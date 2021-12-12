@@ -13,7 +13,7 @@ export class OwnerOnlyCondition extends sapphire.Precondition {
         let owners = process.env.OWNERS!.split(' ');
         let x = owners.includes(message.author.id);
         if (x) return this.ok();
-        return this.error({message: `This command is owner only.`}); 
+        return this.error({ message: `This command is owner only.` });
     };
 }
 
@@ -75,3 +75,12 @@ declare module '@sapphire/framework' {
         disabled: never;
     }
 }
+
+export class dismountPrecondition extends sapphire.CorePreconditions.Enabled {
+    public run(_: discord.Message, command: sapphire.Command, context: sapphire.Precondition.Context): sapphire.Precondition.Result {
+        return command.enabled ? this.ok() : this.error({ 
+            identifier: sapphire.Identifiers.CommandDisabled, 
+            message: '', 
+            context: { ...context, silent: true } 
+        });
+}}
