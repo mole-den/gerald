@@ -99,23 +99,46 @@ export function cleanMentions(str: string): string {
 };
 
 class Cache {
-	cache: NodeCache;
+	private readonly ttlSeconds: number
+	private caches: {
+		[key: string]: NodeCache;
+	} = {};
 	constructor(ttlSeconds: number) {
-		this.cache = new NodeCache({ stdTTL: ttlSeconds, checkperiod: ttlSeconds * 0.2, useClones: false });
+		this.ttlSeconds = ttlSeconds;
+		db.query('SELECT * FROM guilds').then((data) => {
+			data.rows.forEach((row) => {
+				this.caches[`${row.guildid}`] = new NodeCache({
+					stdTTL: this.ttlSeconds,
+					checkperiod: this.ttlSeconds * 0.2,
+					useClones: false
+				});
+				db.query(`SELECT userid FROM members WHERE guild = $1`, [row.guildid]).then((data) => {
+					let i: Array<string> = [];
+					data.rows.forEach((row) => i.push(row.userid));
+					this.caches[`${row.guildid}`].set(`members`, i);
+				})
+				this.caches[`${row.guildid}`].set(`disabled`, row.disabled);
+				this.caches[`${row.guildid}`].set(`prefix`, row.prefix);
+			});
+		})
+		discord.Util.delayFor(10000).then(async() => {
+			let i = <Array<string>>await this.caches[`809675885330432051`].get('members');
+			console.log(i);
+			console.log(i.length);
+		})
 	}
 	public async get(guild: string, type: cacheType.disabled): Promise<Array<string>>
 	public async get(guild: string, type: cacheType.prefix): Promise<string>
 	public async get(guild: string, type: cacheType.delmsgPublicKey): Promise<string>
-	public async get(guild: string, type: cacheType.members): Promise<Array<string>> 
+	public async get(guild: string, type: cacheType.members): Promise<Array<string>>
 	public async get(guild: string, type: cacheType): Promise<any> {
-		let key = `${guild}-${type}`
-		const value = this.cache.get(key) as string;
+		const value = this.caches[`${guild}`].get(type)
 		if (value) {
 			return Promise.resolve(value);
 		}
 		let data = await db.query('SELECT * FROM guilds WHERE guildid = $1', [guild])
 		if (data.rowCount === 0) throw new Error(`No data found in database for guild ${guild}`);
-		this.cache.set(key, data.rows[0][type]);
+		this.caches[`${guild}`].set(type, data.rows[0][type]);
 		return Promise.resolve(data.rows[0][type]);
 	};
 	public async change(guild: string, type: cacheType.prefix, input: string): Promise<string>
@@ -123,22 +146,11 @@ class Cache {
 	public async change(guild: string, type: cacheType.disabled | cacheType.prefix, input: any): Promise<any> {
 		await db.query(`UPDATE guilds SET ${type} = $1 WHERE guildid = $2`, [input, guild]);
 		let x = await db.query("SELECT * FROM guilds WHERE guildid = $1", [guild]);
-		this.cache.set(`${guild}-${type}`, x.rows[0][type]);
+		this.caches[`${guild}`].set(`${type}`, x.rows[0][type]);
 		return Promise.resolve(x.rows[0][type]);
 	};
-
-	public async fetch(): Promise<boolean> {
-		let data = await db.query('SELECT * FROM guilds');
-		data.rows.forEach((row) => {
-			this.cache.set(`${row.guildid}-disabled`, row.disabled);
-			this.cache.set(`${row.guildid}-prefix`, row.prefix);
-
-		});
-		return true;
-	}
 }
-
-export const guildDataCache = new Cache(1800)
+export let guildDataCache: Cache
 const logmessages = false;
 const token = <string>process.env.TOKEN
 const dbToken = <string>process.env.DATABASE_URL;
@@ -146,7 +158,7 @@ bot.on('ready', () => {
 	console.log('Preparing to take over the world...');
 	console.log('World domination complete.');
 	console.log('ONLINE');
-	guildDataCache.fetch();
+	guildDataCache = new Cache(1800)
 	bot.user!.setPresence({ activities: [{ name: 'you', type: "WATCHING" }], status: 'dnd' });
 	//online or dnd
 	//bot.emit('heartbeated');
