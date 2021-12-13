@@ -191,9 +191,7 @@ bot.on('commandError', (error, payload) => {
 	if (error instanceof sapphire.UserError) {
 		payload.message.channel.send(error.message)
 	} else {
-		let owners = process.env.OWNERS!.split(' ');
-		let x = owners.includes(payload.message.author.id);
-		payload.message.channel.send(`${x ? 'Error: ' : `<@!811413512743813181> <@!471907923056918528>\nError: `}${(error as any).message}`)
+		payload.message.channel.send(`Error: ${(error as any).message}`)
 	}
 });
 
