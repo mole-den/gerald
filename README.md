@@ -1,2 +1,0 @@
-# Gerald
-Praise Gerald.
