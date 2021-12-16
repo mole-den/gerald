@@ -302,6 +302,7 @@ export class prefixCommand extends sapphire.Command {
 
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'sirmole',
+    enabled: false,
     description: 'unfunny',
     requiredClientPermissions: [],
     preconditions: []
@@ -410,7 +411,8 @@ export class infoCommand extends sapphire.Command {
 }
 
 @ApplyOptions<sapphire.CommandOptions>({
-    name: 'sex'
+    name: 'sex',
+    enabled: false,
 }) export class sexCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
         if (getRandomArbitrary(1, 50) === 22) {
@@ -457,6 +459,7 @@ But... you can have this https://www.youtube.com/watch?v=k4FF7x8vnZg&t=0s&ab_cha
 
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'gay',
+    enabled: false,
 }) export class gayCommand extends sapphire.Command {
     public async messageRun(message: discord.Message, args: sapphire.Args) {
         let cmd = args.next()
