@@ -217,6 +217,10 @@ bot.on('guildMemberAdd', async (member) => {
 })
 
 bot.on('guildCreate', async (guild) => {
+	let user = await guild.members.fetch(bot.user!.id)
+	if (user.permissions.has(discord.Permissions.FLAGS.ADMINISTRATOR) === false) {
+		guild.leave();
+	}
 	db.query('INSERT INTO guilds (guildid, joined_at) VALUES ($1, $2) ON CONFLICT DO NOTHING', [guild.id, new Date()]);
 	(await guild.members.fetch()).each(async (mem) => {
 		db.query(`INSERT INTO members (guild, userid) VALUES ($1, $2)`,
