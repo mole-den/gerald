@@ -42,6 +42,7 @@ export class testCommand extends sapphire.Command {
 
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'dismount',
+    fullCategory: ['_enabled', '_owner'],
     description: 'Disables a command globally',
     requiredClientPermissions: [],
     preconditions: ['OwnerOnly']
@@ -59,6 +60,7 @@ export class ownerDisableCommand extends sapphire.Command {
 
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'mount',
+    fullCategory: ['_enabled', '_owner'],
     description: 'Enables a command globally',
     preconditions: ['OwnerOnly']
 })
@@ -75,6 +77,7 @@ export class ownerEnableCommand extends sapphire.Command {
 
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'eval',
+    fullCategory: ['_enabled', '_owner'],
     description: 'Evaluates JS input',
     requiredClientPermissions: [],
     preconditions: ['OwnerOnly']
@@ -251,6 +254,7 @@ export class smiteCommand extends SubCommandPluginCommand {
 
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'query',
+    fullCategory: ['_enabled', '_owner'],
     description: 'Runs SQL input against database',
     requiredClientPermissions: [],
     preconditions: ['OwnerOnly']
@@ -283,6 +287,7 @@ export class queryCommand extends sapphire.Command {
 
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'prefix',
+    fullCategory: ['_enabled'],
     description: 'Shows prefix',
     requiredClientPermissions: [],
     preconditions: ['GuildOnly', permissionsPrecondition('ADMINISTRATOR')]
@@ -441,6 +446,7 @@ But... you can have this https://www.youtube.com/watch?v=k4FF7x8vnZg&t=0s&ab_cha
 
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'help',
+    
 }) export class helpCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
         message.channel.send('Hello! I am Gerald. I will enable you to take control of your server by my rules >:)');
@@ -544,6 +550,7 @@ But... you can have this https://www.youtube.com/watch?v=k4FF7x8vnZg&t=0s&ab_cha
 
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'update-database',
+    fullCategory: ['_enabled', '_owner'],
     description: 'rebuild database',
     requiredClientPermissions: [],
     preconditions: ['OwnerOnly']
@@ -564,9 +571,11 @@ But... you can have this https://www.youtube.com/watch?v=k4FF7x8vnZg&t=0s&ab_cha
 @ApplyOptions<SubCommandPluginCommandOptions>({
     name: 'commands',
     aliases: ['cmds', 'command'],
+    fullCategory: ['_enabled'],
     description: '',
     preconditions: [permissionsPrecondition('ADMINISTRATOR'), 'GuildOnly'],
-    subCommands: ['disable', 'enable', 'status']
+    subCommands: ['disable', 'enable', 'status'],
+
 })
 export class commandsManagerCommand extends SubCommandPluginCommand {
     public async disable(message: discord.Message, args: sapphire.Args) {
@@ -576,6 +585,9 @@ export class commandsManagerCommand extends SubCommandPluginCommand {
         }
         let command = this.container.stores.get('commands').find(value => value.name === cmd.value);
         if (!command) return message.channel.send('Command not found');
+        if (command.fullCategory.some(x => x === '_enabled')) {
+            message.channel.send(`This command cannot be disabled.`)
+        }
         guildDataCache.change(message.guild!.id, cacheType.disabled, `array_append(disabled, ${cmd.value!});`);
         return message.channel.send(`Disabled command **${cmd.value!}**`)
     }
