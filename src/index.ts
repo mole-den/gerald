@@ -268,6 +268,7 @@ bot.on('messageCreate', async (message: discord.Message) => {
 });
 
 bot.on('messageDelete', async (message) => {
+	console.log(JSON.stringify(message))
 	let delTime = new Date()
 	if (!message.guild) return
 	if (message.partial) return;
