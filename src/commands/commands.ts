@@ -489,6 +489,7 @@ But... you can have this https://www.youtube.com/watch?v=k4FF7x8vnZg&t=0s&ab_cha
     public async messageRun(message: discord.Message, args: sapphire.Args) {
         let opt = args.nextMaybe()
         if (args.getOption('user')) {
+            return message.channel.send(`Not implemented yet`);/*
             let test = (args.getOption('user') === null) ? <string>args.getOption('user') : '1'
             let num = parseInt(test);
             if (!num || num < 1 || num > 10) return
@@ -504,8 +505,9 @@ But... you can have this https://www.youtube.com/watch?v=k4FF7x8vnZg&t=0s&ab_cha
                 let ask = uniq[getRandomArbitrary(0, member.length - 1)]
                 await message.channel.send(`${(ask.nickname !== null) ? ask.nickname : ask.user.username}`);
             }
-            return
+            return*/
         } else if (opt.exists && opt.value === 'user') {
+            return message.channel.send(`Not implemented yet`);/*
             let y = await message.guild?.roles.fetch('858473576335540224');
             let i = await message.guild?.roles.fetch('877133047210852423');
             if (!y) return;
@@ -521,16 +523,16 @@ But... you can have this https://www.youtube.com/watch?v=k4FF7x8vnZg&t=0s&ab_cha
                 return
             }
             await message.channel.send(`${(ask.nickname !== null) ? ask.nickname : ask.user.username}`);
-            return;
+            return;*/
         }
         else if (opt.exists && opt.value === 'percent') {
             message.channel.send(`${getRandomArbitrary(0, 100)}%`);
             return;
         }
         if (getRandomArbitrary(0, 20) > 9) {
-            message.channel.send('yes');
+            return message.channel.send('yes');
         } else {
-            message.channel.send('no');
+            return message.channel.send('no');
         }
 
     }
