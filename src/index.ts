@@ -200,7 +200,6 @@ export const db = new pg.Pool({
 		rejectUnauthorized: false
 	}
 });
-
 export function getRandomArbitrary(min: number, max: number) {
 	return Math.round(Math.random() * (max - min) + min);
 };

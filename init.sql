@@ -24,7 +24,6 @@ CREATE TABLE members (
     id integer GENERATED ALWAYS AS IDENTITY,
     guild bigint,
     userid bigint NOT NULL,
-    sexuality text DEFAULT 'straight'::text,
     UNIQUE (guild, userid),
     FOREIGN KEY (guild) REFERENCES guilds(guildid)
 );
