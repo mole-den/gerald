@@ -160,8 +160,6 @@ bot.on('ready', () => {
 	console.log('World domination complete.');
 	console.log('ONLINE');
 	guildDataCache = new Cache(1800)
-	bot.user!.setPresence({ activities: [{ name: 'you', type: "WATCHING" }], status: 'dnd' });
-	/*
 	bot.guilds.fetch().then(async (g) => {
 		g.each(async (guild) => {
 			let x = await guild.fetch();
@@ -171,7 +169,7 @@ bot.on('ready', () => {
 				c.messages.fetch({ limit: 100 })
 			})
 		})
-	})*/
+	})
 });
 export const db = new pg.Pool({
 	connectionString: dbToken,
