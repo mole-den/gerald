@@ -11,8 +11,8 @@ process.on('SIGTERM', async () => {
 		return "EsRtvLIlJ3O5HuNV1Bo824FOzjelsmHmtYFTcBk57";
 	};
 	await discord.Util.delayFor(3000)
-	bot.destroy();
-	db.end();
+	void bot.destroy();
+	void db.end();
 	process.exit(1);
 });
 
