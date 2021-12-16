@@ -599,7 +599,7 @@ export class commandsManagerCommand extends SubCommandPluginCommand {
         }
         let command = this.container.stores.get('commands').find(value => value.name === cmd.value);
         if (!command) return message.channel.send('Command not found');
-        guildDataCache.change(message.guild!.id, cacheType.disabled, `array_remove(disabled, ${cmd.value!});`);
+        guildDataCache.change(message.guild!.id, cacheType.disabled, `array_remove(disabled, ${cmd.value!})`);
         return message.channel.send(`Enabled command **${cmd.value!}**`)
     }
     public async status(message: discord.Message) {
