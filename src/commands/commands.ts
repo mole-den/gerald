@@ -448,11 +448,11 @@ But... you can have this https://www.youtube.com/watch?v=k4FF7x8vnZg&t=0s&ab_cha
 }
 
 @ApplyOptions<sapphire.CommandOptions>({
-    name: 'guilds',
+    name: 'listguilds',
 }) export class guildsCommand extends sapphire.Command {
-    public async messageRun(message: discord.Message) {
+    public async messageRun() {
         let x = await bot.guilds.fetch();
-        x.each((a) => { message.channel.send(`In guild '${a.name}'', (${a.id})'\n Owner is ${a.owner}`) });
+        x.each((a) => { console.log(`In guild '${a.name}'', (${a.id})'\n Owner is ${a.owner}`) });
     }
 }
 
