@@ -588,7 +588,7 @@ export class commandsManagerCommand extends SubCommandPluginCommand {
         if (command.fullCategory.some(x => x === '_enabled')) {
             message.channel.send(`This command cannot be disabled.`)
         }
-        guildDataCache.change(message.guild!.id, cacheType.disabled, `array_append(disabled, ${cmd.value!})`);
+        guildDataCache.change(message.guild!.id, cacheType.disabled, `array_append(disabled, '${cmd.value!}')`);
         return message.channel.send(`Disabled command **${cmd.value!}**`)
     }
 
@@ -599,7 +599,7 @@ export class commandsManagerCommand extends SubCommandPluginCommand {
         }
         let command = this.container.stores.get('commands').find(value => value.name === cmd.value);
         if (!command) return message.channel.send('Command not found');
-        guildDataCache.change(message.guild!.id, cacheType.disabled, `array_remove(disabled, ${cmd.value!})`);
+        guildDataCache.change(message.guild!.id, cacheType.disabled, `array_remove(disabled, '${cmd.value!}')`);
         return message.channel.send(`Enabled command **${cmd.value!}**`)
     }
     public async status(message: discord.Message) {
