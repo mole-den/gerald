@@ -121,11 +121,6 @@ class Cache {
 				this.caches[`${row.guildid}`].set(`prefix`, row.prefix);
 			});
 		})
-		discord.Util.delayFor(10000).then(async() => {
-			let i = <Array<string>>await this.caches[`809675885330432051`].get('members');
-			console.log(i);
-			console.log(i.length);
-		})
 	}
 	public async get(guild: string, type: cacheType.disabled): Promise<Array<string>>
 	public async get(guild: string, type: cacheType.prefix): Promise<string>
