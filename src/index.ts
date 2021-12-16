@@ -19,7 +19,7 @@ process.on('SIGTERM', async () => {
 const myIntents = new discord.Intents();
 myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS, discord.Intents.FLAGS.GUILD_MESSAGES,
 	discord.Intents.FLAGS.DIRECT_MESSAGES, discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
-	discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS, discord.Intents.FLAGS.GUILD_PRESENCES);
+	discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS);
 
 export const bot = new sapphire.SapphireClient({
 	intents: myIntents,
@@ -151,7 +151,6 @@ class Cache {
 	};
 }
 export let guildDataCache: Cache
-const logmessages = false;
 const token = <string>process.env.TOKEN
 const dbToken = <string>process.env.DATABASE_URL;
 bot.on('ready', () => {
@@ -160,8 +159,6 @@ bot.on('ready', () => {
 	console.log('ONLINE');
 	guildDataCache = new Cache(1800)
 	bot.user!.setPresence({ activities: [{ name: 'you', type: "WATCHING" }], status: 'dnd' });
-	//online or dnd
-	//bot.emit('heartbeated');
 	/*
 	bot.guilds.fetch().then(async (g) => {
 		g.each(async (guild) => {
@@ -216,6 +213,7 @@ bot.on('guildMemberAdd', async (member) => {
 		member.ban({ reason: `Blacklisted with reason: ${x.rows[0].reason}` });
 	}
 })
+
 bot.on('guildCreate', async (guild) => {
 	db.query('INSERT INTO guilds (guildid, joined_at) VALUES ($1, $2) ON CONFLICT DO NOTHING', [guild.id, new Date()]);
 	(await guild.members.fetch()).each(async (mem) => {
@@ -260,16 +258,6 @@ bot.on('messageCreate', async (message: discord.Message) => {
 		if (message.author.bot) return
 		message.channel.send(`Nothing is more important than family.`);
 	}
-	if (message.author.bot) return
-	if (logmessages === false) return;
-	if (message.channel.type === 'DM') return;
-	const channel = message.guild!.channels.cache.find(ch => ch.name === 'gerald');
-	console.log(`${message.author.tag} said: "${message.content}" in ${message.guild!.name}`);
-	if (!channel) return;
-	if (message.channel.name === 'gerald') return;
-	if (channel.type === 'GUILD_TEXT') {
-		(channel as discord.TextChannel).send(`**${message.author.tag}** said: \`${message.content}\` in ${message.guild!.name}`);
-	};
 });
 
 bot.on('messageDelete', async (message) => {

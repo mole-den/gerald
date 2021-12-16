@@ -289,9 +289,14 @@ export class queryCommand extends sapphire.Command {
 })
 export class prefixCommand extends sapphire.Command {
     public async messageRun(message: discord.Message, args: sapphire.Args) {
-        let x = args.next()
-        guildDataCache.change(message.guild!.id, cacheType.prefix, x);
-        message.channel.send(`Changed prefix for ${message.guild!.name} to ${x}`);
+        let x = args.nextMaybe()
+        if (!x.exists) {
+            let prefix = await guildDataCache.get(message.guild!.id, cacheType.prefix);
+            message.channel.send(`The prefix for this server is \`${prefix}\``);
+            return
+        }
+        guildDataCache.change(message.guild!.id, cacheType.prefix, x.value);
+        message.channel.send(`Changed prefix for ${message.guild!.name} to ${x.value}`);
     }
 }
 
@@ -303,27 +308,10 @@ export class prefixCommand extends sapphire.Command {
 })
 export class sirmoleCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
-        message.channel.send('sir mole is unfunny')
+        message.channel.send('sir mole is a very cringe man who gets extremely angy and likes to ban people for no reason')
     }
 }
 
-@ApplyOptions<sapphire.CommandOptions>({
-    name: 'die',
-})
-export class dieCommand extends sapphire.Command {
-    public async messageRun(message: discord.Message) {
-        message.channel.send(`no u`);
-    }
-}
-
-@ApplyOptions<sapphire.CommandOptions>({
-    name: 'politics',
-})
-export class politicsCommand extends sapphire.Command {
-    public async messageRun(message: discord.Message) {
-        message.channel.send(`https://cdn.discordapp.com/attachments/377228302336655362/886234477578301490/video0.mp4`);
-    }
-}
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'pluto',
 })
@@ -346,7 +334,7 @@ export class sammyCommand extends sapphire.Command {
 })
 export class repoCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
-        message.channel.send(`https://github.com/mole-den/Gerald`);
+        message.channel.send(`https://github.com/ofoxsmith/gerard-scelzi`);
     }
 }
 
@@ -355,9 +343,10 @@ export class repoCommand extends sapphire.Command {
 })
 export class inviteCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
-        message.channel.send(`https://discord.com/oauth2/authorize?client_id=671156130483011605&scope=bot&permissions=8`);
+        message.channel.send(`TODO: add invite`);
     }
 }
+
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'info',
 })
@@ -382,24 +371,6 @@ export class infoCommand extends sapphire.Command {
         await db.query('select 1;')
         let elapsed = Date.now() - start;
         message.channel.send(`**Uptime:** ${uptimeString}\n**Websocket heartbeat:** ${bot.ws.ping}ms\n**Database heartbeat:** ${elapsed}ms`);
-    }
-}
-
-@ApplyOptions<sapphire.CommandOptions>({
-    name: 'status',
-}) export class statusCommand extends sapphire.Command {
-    public async messageRun(message: discord.Message) {
-        let user = message.mentions.users.first()
-        if (user) {
-            let member = await message.guild?.members.fetch(user);
-            if (member && member.presence) {
-                let presence = member.presence.activities.filter(x => x.type === "PLAYING");
-                let x = "";
-                if (presence[0]) x = `Playing **${presence[0].name}**`;
-                let status = (member.id !== "536047005085204480") ? member.presence.status : "cringe";
-                message.channel.send(`${(member.nickname || user.username)} is ${status}\n${x}`);
-            }
-        }
     }
 }
 
