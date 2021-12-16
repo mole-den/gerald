@@ -560,3 +560,37 @@ But... you can have this https://www.youtube.com/watch?v=k4FF7x8vnZg&t=0s&ab_cha
 
     };
 };
+
+@ApplyOptions<SubCommandPluginCommandOptions>({
+    name: 'commands',
+    aliases: ['cmds', 'command'],
+    description: '',
+    preconditions: [permissionsPrecondition('ADMINISTRATOR'), 'GuildOnly'],
+    subCommands: ['disable', 'enable', 'status']
+})
+export class commandsManagerCommand extends SubCommandPluginCommand {
+    public async disable(message: discord.Message, args: sapphire.Args) {
+        let cmd = args.nextMaybe()
+        if (cmd.exists === false) {
+            throw new sapphire.UserError({ identifier: 'invalidsyntax', message: 'Specify a command to disable' });
+        }
+        let command = this.container.stores.get('commands').find(value => value.name === cmd.value);
+        if (!command) return message.channel.send('Command not found');
+        guildDataCache.change(message.guild!.id, cacheType.disabled, `array_append(disabled, ${cmd.value!});`);
+        return message.channel.send(`Disabled command ${cmd.value!}`)
+    }
+
+    public async enable(message: discord.Message, args: sapphire.Args) {
+        let cmd = args.nextMaybe()
+        if (cmd.exists === false) {
+            throw new sapphire.UserError({ identifier: 'invalidsyntax', message: 'Specify a command to enable' });
+        }
+        let command = this.container.stores.get('commands').find(value => value.name === cmd.value);
+        if (!command) return message.channel.send('Command not found');
+        guildDataCache.change(message.guild!.id, cacheType.disabled, `array_remove(disabled, ${cmd.value!});`);
+        return message.channel.send(`Enabled command ${cmd.value!}`)
+    }
+    public async status(message: discord.Message) {
+        return message.channel.send(`Not implemented`)
+    }
+}
