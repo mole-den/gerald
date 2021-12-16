@@ -25,9 +25,16 @@ export const bot = new sapphire.SapphireClient({
 	intents: myIntents,
 	defaultPrefix: 'g',
 	fetchPrefix: async (message: discord.Message): Promise<string> => {
-		if (!message.guild) return 'g!';
-		let x = await guildDataCache.get(message.guild.id, cacheType.prefix);
-		return x
+		try {
+			if (!message.guild) return 'g!';
+			let x = await guildDataCache.get(message.guild.id, cacheType.prefix);
+			return x
+		} catch (error) {
+			if (!message.guild) return 'g!';
+			await guildDataCache.new(message.guild.id);
+			let x = await guildDataCache.get(message.guild.id, cacheType.prefix);
+			return x
+		}
 	}
 
 });
