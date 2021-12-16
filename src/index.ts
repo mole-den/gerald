@@ -4,6 +4,9 @@ import cron from 'node-cron';
 import * as sapphire from '@sapphire/framework';
 import NodeCache from "node-cache";
 //import crypto from "crypto";
+process.env.TOKEN = 'OTIwNzU2MTY1Mjg0MDY5Mzk4.Ybo_AA.MNqKBBxhTdCLV2f6AvYAeRZVHLk'
+process.env.DATABASE_URL = 'postgres://zxrxhtbhzfizfv:84fe763132b72143ea0d5647393cf47e0aa1a7a507d268c8dcf14657e5ad9956@ec2-34-233-214-228.compute-1.amazonaws.com:5432/d282ttnf02pikk'
+process.env.OWNERS = '811413512743813181'
 cron;
 process.on('SIGTERM', async () => {
 	console.log('SIGTERM received');
@@ -97,7 +100,7 @@ export function durationToMS(duration: string): number | null {
 export enum cacheType {
 	disabled = 'disabled',
 	prefix = 'prefix',
-	delmsgPublicKey = 'delmsg_public_key',
+	delmsgPublicKey = 'delmsgPublicKey',
 	members = 'members',
 }
 
@@ -119,28 +122,44 @@ class Cache {
 					checkperiod: this.ttlSeconds * 0.2,
 					useClones: false
 				});
-				db.query(`SELECT userid FROM members WHERE guild = $1`, [row.guildid]).then((data) => {
+				db.query(`SELECT userid FROM members WHERE guild = $1`, [BigInt(row.guildid)]).then((data) => {
 					let i: Array<string> = [];
 					data.rows.forEach((row) => i.push(row.userid));
 					this.caches[`${row.guildid}`].set(`members`, i);
 				})
 				this.caches[`${row.guildid}`].set(`disabled`, row.disabled);
 				this.caches[`${row.guildid}`].set(`prefix`, row.prefix);
+				discord.Util.delayFor(5000).then(() => {
+					this.get('652383576117084160', cacheType.delmsgPublicKey)
+				})
 			});
 		})
 	}
-	public async new(guild: string) {
-		this.caches[`${guild}`] = new NodeCache({
+	public async new(guildid: string) {
+		this.caches[`${guildid}`] = new NodeCache({
 			stdTTL: this.ttlSeconds,
 			checkperiod: this.ttlSeconds * 0.2,
 			useClones: false
 		});
+		let guild = await db.query('SELECT * FROM guilds WHERE guildid = $1', [BigInt(guildid)]);
+		let members = await db.query(`SELECT userid FROM members WHERE guild = $1`, [BigInt(guildid)])
+		let i: Array<string> = [];
+		members.rows.forEach((row) => i.push(row.userid));
+		this.caches[`${guildid}`].set(`members`, i);
+		this.caches[`${guildid}`].set(`disabled`, guild.rows[0].disabled);
+		this.caches[`${guildid}`].set(`prefix`, guild.rows[0].prefix);
 	}
 	public async get(guild: string, type: cacheType.disabled): Promise<Array<string>>
 	public async get(guild: string, type: cacheType.prefix): Promise<string>
 	public async get(guild: string, type: cacheType.delmsgPublicKey): Promise<string>
 	public async get(guild: string, type: cacheType.members): Promise<Array<string>>
+	public async get(guild: string, type: cacheType): Promise<any> 
 	public async get(guild: string, type: cacheType): Promise<any> {
+		if (this.caches[`${guild}`] === undefined) {
+			await this.new('652383576117084160');
+			this.get(guild, cacheType[type] as any);
+			return await this.get(guild, type);
+		}
 		const value = this.caches[`${guild}`].get(type)
 		if (value) {
 			return Promise.resolve(value);
