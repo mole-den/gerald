@@ -343,7 +343,7 @@ export class repoCommand extends sapphire.Command {
 })
 export class inviteCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
-        message.channel.send(`TODO: add invite`);
+        message.channel.send(`Invite is: https://discord.com/api/oauth2/authorize?client_id=920756165284069398&permissions=8&scope=bot`);
     }
 }
 
