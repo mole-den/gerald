@@ -4,9 +4,6 @@ import cron from 'node-cron';
 import * as sapphire from '@sapphire/framework';
 import NodeCache from "node-cache";
 //import crypto from "crypto";
-process.env.TOKEN = 'OTIwNzU2MTY1Mjg0MDY5Mzk4.Ybo_AA.MNqKBBxhTdCLV2f6AvYAeRZVHLk'
-process.env.DATABASE_URL = 'postgres://zxrxhtbhzfizfv:84fe763132b72143ea0d5647393cf47e0aa1a7a507d268c8dcf14657e5ad9956@ec2-34-233-214-228.compute-1.amazonaws.com:5432/d282ttnf02pikk'
-process.env.OWNERS = '811413512743813181'
 cron;
 process.on('SIGTERM', async () => {
 	console.log('SIGTERM received');
