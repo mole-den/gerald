@@ -122,6 +122,13 @@ class Cache {
 			});
 		})
 	}
+	public async new(guild: string) {
+		this.caches[`${guild}`] = new NodeCache({
+			stdTTL: this.ttlSeconds,
+			checkperiod: this.ttlSeconds * 0.2,
+			useClones: false
+		});
+	}
 	public async get(guild: string, type: cacheType.disabled): Promise<Array<string>>
 	public async get(guild: string, type: cacheType.prefix): Promise<string>
 	public async get(guild: string, type: cacheType.delmsgPublicKey): Promise<string>
@@ -215,6 +222,7 @@ bot.on('guildCreate', async (guild) => {
 		db.query(`INSERT INTO members (guild, userid) VALUES ($1, $2)`,
 			[guild.id, mem.id]);
 	})
+	guildDataCache.new(guild.id);
 	guild.channels.fetch().then(async (channels) => {
 		channels.each(async (ch) => {
 			if (ch.type === 'GUILD_TEXT') {
