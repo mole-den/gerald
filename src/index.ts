@@ -169,7 +169,7 @@ class Cache {
 	public async change(guild: string, type: cacheType.prefix, input: string): Promise<string>
 	public async change(guild: string, type: cacheType.disabled, input: string): Promise<Array<string>>
 	public async change(guild: string, type: cacheType.disabled | cacheType.prefix, input: any): Promise<any> {
-		await db.query(`UPDATE guilds SET ${type} = $1 WHERE guildid = $2`, [input, guild]);
+		await db.query(`UPDATE guilds SET ${type} = ${input} WHERE guildid = $2`, [guild]);
 		let x = await db.query("SELECT * FROM guilds WHERE guildid = $1", [guild]);
 		this.caches[`${guild}`].set(`${type}`, x.rows[0][type]);
 		return Promise.resolve(x.rows[0][type]);

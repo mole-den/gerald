@@ -588,7 +588,7 @@ export class commandsManagerCommand extends SubCommandPluginCommand {
         if (command.fullCategory.some(x => x === '_enabled')) {
             message.channel.send(`This command cannot be disabled.`)
         }
-        guildDataCache.change(message.guild!.id, cacheType.disabled, `array_append(disabled, ${cmd.value!});`);
+        guildDataCache.change(message.guild!.id, cacheType.disabled, `array_append(disabled, ${cmd.value!})`);
         return message.channel.send(`Disabled command **${cmd.value!}**`)
     }
 
