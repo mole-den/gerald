@@ -266,7 +266,7 @@ export class queryCommand extends sapphire.Command {
         let data = await db.query(out);
         let JSONdata = JSON.stringify(data.rows, null, 1);
         if (JSONdata?.length && JSONdata.length < 2000) {
-            message.channel.send(`${data.command} completed - ${data.rowCount} rows, \n${JSONdata}`);
+            message.channel.send(`${data.command} completed - ${data.rowCount} rows, \n${cleanMentions(JSONdata)}`);
             return;
         } else if (JSONdata?.length && JSONdata.length > 2000) {
             const buffer = Buffer.from(JSONdata)
