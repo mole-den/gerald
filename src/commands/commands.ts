@@ -585,6 +585,7 @@ export class commandsManagerCommand extends SubCommandPluginCommand {
         if (!command) return message.channel.send('Command not found');
         if (command.fullCategory.some(x => x === '_enabled')) {
             message.channel.send(`This command cannot be disabled.`)
+            return;
         }
         let i = (await guildDataCache.get(message.guild!.id, cacheType.disabled)).split('');
         i.some(x => x === cmd.value!) ? (() => { 
