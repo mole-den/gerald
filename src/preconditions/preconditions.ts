@@ -65,8 +65,6 @@ export class checkDisabledCondition extends sapphire.Precondition {
     public async run(message: discord.Message, command: sapphire.Command) {
         let disabled = await guildDataCache.get(message.guild!.id, cacheType.disabled)
         let x = disabled.split(' ');
-        console.log(x)
-        console.log(command.name)
         if (x.some(x => x === command.name)) return this.error({
             message: `This command is disabled in this server.`,
             identifier: 'diabled',

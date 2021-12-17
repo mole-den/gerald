@@ -107,7 +107,6 @@ export class DeletedMSGCommand extends sapphire.Command {
     public async messageRun(message: discord.Message, args: sapphire.Args) {
         let amount: number | never;
         let arg = await args.pick('number');
-        console.log(arg);
         if (isNaN(arg)) return message.channel.send('Please specify a valid amount of messages to view.');
         amount = (arg <= 10) ? arg : (() => {
             throw new sapphire.UserError({ identifier: 'amount>10', message: 'Amount must be less than 10.' });
@@ -201,7 +200,6 @@ export class smiteCommand extends SubCommandPluginCommand {
 
     public async remove(message: discord.Message, args: sapphire.Args) {
         let user = await args.pick('user');
-        console.log(user.tag)
         let q = await db.query(`SELECT * FROM punishments WHERE type='blist' AND member = $2 AND guild = $1`, [user.id, message.guild!.id]);
         if (q.rowCount === 0) return;
         message.guild!.members.unban(user).catch(() => { })
