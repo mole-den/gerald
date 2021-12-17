@@ -23,8 +23,11 @@ myIntents.add(discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS,
 
 export const bot = new sapphire.SapphireClient({
 	intents: myIntents,
-	defaultPrefix: 'g',
-	fetchPrefix: async (message: discord.Message): Promise<string> => {
+	partials: ["CHANNEL"],
+	fetchPrefix: async (message: discord.Message): Promise<string | Array<string>> => {
+		if (message.channel.type === 'DM') {
+			return ['', 'g!'];
+		}
 		try {
 			if (!message.guild) return 'g!';
 			let x = await guildDataCache.get(message.guild.id, cacheType.prefix);
@@ -316,20 +319,25 @@ bot.on('messageDeleteBulk', async (array) => {
 		let attachments: Array<{
 			url: string,
 			name: string | null
-		}> | null = [];
+		}>  = [];
 		message.attachments.each((attachment) => {
-			attachments!.push({
+			attachments.push({
 				url: attachment.url,
 				name: attachment.name
 			});
 		});
-		if (attachments = []) attachments = null;
-		await db.query(`
-	INSERT INTO deletedmsgs (author, content, guildid, msgtime, channel, deleted_time, deleted_by, msgid, attachments) 
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-			[BigInt(message.author.id), message.content,
+		console.log([
+			BigInt(message.author.id), message.content,
 			message.guild.id, new Date(message.createdAt.getTime()),
-			message.channel.id, delTime, executor, message.id, attachments]);
+			message.channel.id, delTime, executor, message.id, ((attachments === []) ? null : attachments)
+		])
+		await db.query(`
+		INSERT INTO deletedmsgs (author, content, guildid, msgtime, channel, deleted_time, deleted_by, msgid, attachments)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`, [
+			BigInt(message.author.id), message.content,
+			message.guild.id, new Date(message.createdAt.getTime()),
+			message.channel.id, delTime, executor, message.id, ((attachments === []) ? null : attachments)
+		]);
 
 	});
 });
