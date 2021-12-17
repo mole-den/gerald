@@ -17,25 +17,25 @@ let permissionsPrecondition = (...args: discord.PermissionResolvable[]) => {
     });
     return preconditionArray
 };
-
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'test',
     description: 'short desc',
+    enabled: false,
     detailedDescription: 'desc displayed when help command is called',
 })
 export class testCommand extends sapphire.Command {
     public async messageRun(message: discord.Message, args: sapphire.Args) {
-        return;
-        let x = <discord.VoiceChannel>await message.guild?.channels.fetch(args.next());
+        args
+        let voiceChannel = <discord.VoiceChannel>await message.guild?.channels.fetch('652647177641787442');
         if (message.member?.voice.channel === null) return;
-        let voiceChannel = x;
         const connection = voice.joinVoiceChannel({
             channelId: voiceChannel.id,
             guildId: voiceChannel.guildId,
-            adapterCreator: voiceChannel.guild.voiceAdapterCreator
+            adapterCreator: voiceChannel.guild.voiceAdapterCreator,
+            selfDeaf: false,
         });
         const audioPlayer = voice.createAudioPlayer();
-        audioPlayer.play(voice.createAudioResource(join(__dirname, 'video0.mp3')));
+        audioPlayer.play(voice.createAudioResource(join(__dirname, 'test.mp3')));
         connection.subscribe(audioPlayer);
     };
 }
@@ -446,7 +446,7 @@ But... you can have this https://www.youtube.com/watch?v=k4FF7x8vnZg&t=0s&ab_cha
 
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'help',
-    
+
 }) export class helpCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
         message.channel.send('Hello! I am Gerald. I will enable you to take control of your server by my rules >:)');
@@ -556,14 +556,14 @@ But... you can have this https://www.youtube.com/watch?v=k4FF7x8vnZg&t=0s&ab_cha
     preconditions: ['OwnerOnly']
 }) export class ownerUpdateCommand extends sapphire.Command {
     public async messageRun() {
-                let x = await bot.guilds.fetch();
-                x.each(async (g) => {
-                    let guild = await g.fetch();
-                    (await guild.members.fetch()).each(async (mem) => {
-                        db.query(`INSERT INTO members (guild, userid) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
-                            [guild.id, mem.id]);
-                    })
-                })
+        let x = await bot.guilds.fetch();
+        x.each(async (g) => {
+            let guild = await g.fetch();
+            (await guild.members.fetch()).each(async (mem) => {
+                db.query(`INSERT INTO members (guild, userid) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
+                    [guild.id, mem.id]);
+            })
+        })
 
     };
 };
@@ -588,18 +588,21 @@ export class commandsManagerCommand extends SubCommandPluginCommand {
         if (command.fullCategory.some(x => x === '_enabled')) {
             message.channel.send(`This command cannot be disabled.`)
         }
-        guildDataCache.change(message.guild!.id, cacheType.disabled, `array_append(disabled, ${cmd.value!})`);
+        let i = (await guildDataCache.get(message.guild!.id, cacheType.disabled)).split('');
+        i.some(x => x === cmd.value!) ? (() => { 
+            throw new sapphire.UserError({ identifier: 'invalid', message: 'Command already disabled' }) 
+        }) : i.push(cmd.value!);
+        guildDataCache.change(message.guild!.id, cacheType.disabled, i.join(' '));
         return message.channel.send(`Disabled command **${cmd.value!}**`)
     }
 
     public async enable(message: discord.Message, args: sapphire.Args) {
         let cmd = args.nextMaybe()
-        if (cmd.exists === false) {
-            throw new sapphire.UserError({ identifier: 'invalidsyntax', message: 'Specify a command to enable' });
-        }
+        if (cmd.exists === false) throw new sapphire.UserError({ identifier: 'invalidsyntax', message: 'Specify a command to enable' });
         let command = this.container.stores.get('commands').find(value => value.name === cmd.value);
         if (!command) return message.channel.send('Command not found');
-        guildDataCache.change(message.guild!.id, cacheType.disabled, `array_remove(disabled, ${cmd.value!})`);
+        let i = (await guildDataCache.get(message.guild!.id, cacheType.disabled)).split(' ');
+        guildDataCache.change(message.guild!.id, cacheType.disabled, i.filter(x => x !== cmd.value).join(' '));
         return message.channel.send(`Enabled command **${cmd.value!}**`)
     }
     public async status(message: discord.Message) {

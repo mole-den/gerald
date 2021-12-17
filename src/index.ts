@@ -146,7 +146,7 @@ class Cache {
 		this.caches[`${guildid}`].set(`disabled`, guild.rows[0].disabled);
 		this.caches[`${guildid}`].set(`prefix`, guild.rows[0].prefix);
 	}
-	public async get(guild: string, type: cacheType.disabled): Promise<Array<string>>
+	public async get(guild: string, type: cacheType.disabled): Promise<string>
 	public async get(guild: string, type: cacheType.prefix): Promise<string>
 	public async get(guild: string, type: cacheType.delmsgPublicKey): Promise<string>
 	public async get(guild: string, type: cacheType.members): Promise<Array<string>>
@@ -167,9 +167,9 @@ class Cache {
 		return Promise.resolve(data.rows[0][type]);
 	};
 	public async change(guild: string, type: cacheType.prefix, input: string): Promise<string>
-	public async change(guild: string, type: cacheType.disabled, input: string): Promise<Array<string>>
+	public async change(guild: string, type: cacheType.disabled, input: string): Promise<string>
 	public async change(guild: string, type: cacheType.disabled | cacheType.prefix, input: any): Promise<any> {
-		await db.query(`UPDATE guilds SET ${type} = ${input} WHERE guildid = $1`, [guild]);
+		await db.query(`UPDATE guilds SET ${type} = $2 WHERE guildid = $1`, [guild, input]);
 		let x = await db.query("SELECT * FROM guilds WHERE guildid = $1", [guild]);
 		this.caches[`${guild}`].set(`${type}`, x.rows[0][type]);
 		return Promise.resolve(x.rows[0][type]);
