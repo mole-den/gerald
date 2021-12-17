@@ -257,36 +257,6 @@ bot.on('guildCreate', async (guild) => {
 	})
 });
 
-bot.on('messageCreate', async (message: discord.Message) => {
-	if (getRandomArbitrary(1, 1000) === 1) message.channel.send('Next time eat a salad!');
-	if (/\bez\b/gmi.test(message.content)) {
-		if (message.author.bot) return;
-		message.delete();
-		const number = getRandomArbitrary(0, 7);
-		if (number === 0) {
-			message.channel.send(`${message.author} likes long walks on the beach and talking in Mole Den!`);
-		} else if (number === 1) {
-			message.channel.send(`${message.author} tries to say bad things and this happens. :(`);
-		} else if (number === 2) {
-			message.channel.send(`${message.author} loves watching mole videos on youtube!`);
-		} else if (number === 3) {
-			message.channel.send(`${message.author} wants to know if anyone else really likes Rick Astley.`);
-		} else if (number === 4) {
-			message.channel.send(`This isnt what ${message.author} typed.`);
-		} else if (number === 5) {
-			message.channel.send(`I am truly better than ${message.author}.`);
-		} else if (number === 6) {
-			message.channel.send(`${message.author} sometimes sings soppy love songs in the car.`);
-		} else if (number === 7) {
-			message.channel.send(`My clicks per second are godly, ${message.author}!`);
-		}
-	}
-	if (/\bfamily\b/gmi.test(message.content)) {
-		if (message.author.bot) return
-		message.channel.send(`Nothing is more important than family.`);
-	}
-});
-
 bot.on('messageDelete', async (message) => {
 	console.log('attachments', message.attachments)
 	let delTime = new Date()
