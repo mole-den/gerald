@@ -333,6 +333,7 @@ bot.on('messageDeleteBulk', async (array) => {
 
 	});
 });
-//zac cringe
+//zac very cringe
 //gustavo cringe
 //gerald cringe
+//gerard not cringe
