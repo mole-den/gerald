@@ -305,7 +305,6 @@ export class prefixCommand extends sapphire.Command {
 
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'sirmole',
-    enabled: false,
     description: 'unfunny',
     requiredClientPermissions: [],
     preconditions: []
