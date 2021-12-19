@@ -38,6 +38,9 @@ export const bot = new sapphire.SapphireClient({
 			let x = await guildDataCache.get(message.guild.id, cacheType.prefix);
 			return x
 		}
+	},
+	defaultCooldown: {
+		filteredCommands: process.env.OWNERS!.split(' '),
 	}
 
 });
