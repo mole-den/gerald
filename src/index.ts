@@ -223,7 +223,7 @@ bot.on('commandError', (error, payload) => {
 	if (error instanceof sapphire.UserError) {
 		payload.message.channel.send(error.message)
 	} else {
-		payload.message.channel.send(`Unhandled Exception:\n${(error as any).message}`)
+		payload.message.channel.send(`Unhandled exception:\n${(error as any).message}`)
 	}
 });
 
