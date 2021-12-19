@@ -495,7 +495,7 @@ But... you can have this https://www.youtube.com/watch?v=k4FF7x8vnZg&t=0s&ab_cha
     public async messageRun(message: discord.Message, args: sapphire.Args) {
         let opt = args.nextMaybe()
         if (args.getOption('user')) {
-            return message.channel.send(`Not implemented yet`);/*
+            throw new Error(`Not implemented yet`);/*
             let test = (args.getOption('user') === null) ? <string>args.getOption('user') : '1'
             let num = parseInt(test);
             if (!num || num < 1 || num > 10) return
@@ -513,7 +513,7 @@ But... you can have this https://www.youtube.com/watch?v=k4FF7x8vnZg&t=0s&ab_cha
             }
             return*/
         } else if (opt.exists && opt.value === 'user') {
-            return message.channel.send(`Not implemented yet`);/*
+            throw new Error(`Not implemented yet`);/*
             let y = await message.guild?.roles.fetch('858473576335540224');
             let i = await message.guild?.roles.fetch('877133047210852423');
             if (!y) return;
@@ -604,6 +604,7 @@ export class commandsManagerCommand extends SubCommandPluginCommand {
         return message.channel.send(`Enabled command **${cmd.value!}**`)
     }
     public async status(message: discord.Message) {
-        return message.channel.send(`Not implemented`)
+        message
+        throw new Error(`Not implemented yet`);
     }
 }
