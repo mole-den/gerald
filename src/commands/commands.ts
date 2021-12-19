@@ -443,7 +443,7 @@ But... you can have this https://www.youtube.com/watch?v=k4FF7x8vnZg&t=0s&ab_cha
 
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'help',
-
+    enabled: false,
 }) export class helpCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
         message.channel.send('Hello! I am Gerald. I will enable you to take control of your server by my rules >:)');
