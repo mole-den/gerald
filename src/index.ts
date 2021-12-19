@@ -129,9 +129,6 @@ class Cache {
 				})
 				this.caches[`${row.guildid}`].set(`disabled`, row.disabled);
 				this.caches[`${row.guildid}`].set(`prefix`, row.prefix);
-				discord.Util.delayFor(5000).then(() => {
-					this.get('652383576117084160', cacheType.delmsgPublicKey)
-				})
 			});
 		})
 	}
@@ -217,7 +214,7 @@ void bot.login(token);
 
 bot.on('commandDenied', ({ context, message: content }: sapphire.UserError, { message }: sapphire.CommandDeniedPayload) => {
 	// `context: { silent: true }` should make UserError silent:
-	// Use cases for this are for example permissions error when running the `eval` command.
+	// Use cases for this are for example permissions error when running a hidden command.
 	if (Reflect.get(Object(context), 'silent')) return;
 	message.channel.send({ content, allowedMentions: { users: [message.author.id], roles: [] } });
 });
@@ -226,7 +223,7 @@ bot.on('commandError', (error, payload) => {
 	if (error instanceof sapphire.UserError) {
 		payload.message.channel.send(error.message)
 	} else {
-		payload.message.channel.send(`Error: ${(error as any).message}`)
+		payload.message.channel.send(`Unhandled Exception:\n${(error as any).message}`)
 	}
 });
 
@@ -265,7 +262,7 @@ bot.on('messageDelete', async (message) => {
 	let delTime = new Date()
 	if (!message.guild) return
 	if (message.partial) return;
-	await discord.Util.delayFor(900);
+	await discord.Util.delayFor(100);
 	let logs = await message.guild.fetchAuditLogs({
 		type: 72
 	});
@@ -275,7 +272,7 @@ bot.on('messageDelete', async (message) => {
 		&& Date.now() - a.createdTimestamp < 5000
 	);
 	let entry = auditEntry
-	const executor = (entry && entry.executor) ? entry.executor.tag : 'Deleted by Author or Bot';
+	const executor = (entry && entry.executor) ? entry.executor.tag : 'Unknown (Most likely the author or a bot)';
 	if (message.author?.bot) return
 	if (message.guild === null) return;
 	if (message.partial) return;
