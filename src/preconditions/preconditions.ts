@@ -13,7 +13,7 @@ export class OwnerOnlyCondition extends sapphire.Precondition {
         let owners = process.env.OWNERS!.split(' ');
         let x = owners.includes(message.author.id);
         if (x) return this.ok();
-        return this.error({ message: `This command is owner only.` });
+        return this.error({ message: `This command is owner only.`, context: {silent: true} });
     };
 }
 

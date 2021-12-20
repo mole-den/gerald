@@ -64,7 +64,10 @@ export class ownerEvalCommand extends sapphire.Command {
         let str = message.content;
         let out = str.substring(str.indexOf('```') + 3, str.lastIndexOf('```'));
         try {
-            eval(out);
+            eval(`
+            (async () => {
+                ${out}
+            )()`);
         } catch (error) {
             console.log("error");
             console.log(error);
