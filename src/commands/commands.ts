@@ -5,7 +5,6 @@ import { durationToMS, guildDataCache, db, getRandomArbitrary, cacheType, bot, c
 import { ApplyOptions } from '@sapphire/decorators';
 import * as lux from 'luxon';
 import * as voice from '@discordjs/voice';
-import { join } from 'path'
 import * as crypto from 'crypto';
 ///<reference types="../index"/>
 voice
@@ -17,28 +16,6 @@ let permissionsPrecondition = (...args: discord.PermissionResolvable[]) => {
     });
     return preconditionArray
 };
-@ApplyOptions<sapphire.CommandOptions>({
-    name: 'test',
-    description: 'short desc',
-    enabled: false,
-    detailedDescription: 'desc displayed when help command is called',
-})
-export class testCommand extends sapphire.Command {
-    public async messageRun(message: discord.Message, args: sapphire.Args) {
-        args
-        let voiceChannel = <discord.VoiceChannel>await message.guild?.channels.fetch('652647177641787442');
-        if (message.member?.voice.channel === null) return;
-        const connection = voice.joinVoiceChannel({
-            channelId: voiceChannel.id,
-            guildId: voiceChannel.guildId,
-            adapterCreator: voiceChannel.guild.voiceAdapterCreator,
-            selfDeaf: false,
-        });
-        const audioPlayer = voice.createAudioPlayer();
-        audioPlayer.play(voice.createAudioResource(join(__dirname, 'test.mp3')));
-        connection.subscribe(audioPlayer);
-    };
-}
 
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'dismount',
@@ -412,41 +389,13 @@ export class infoCommand extends sapphire.Command {
     }
 }
 
-@ApplyOptions<sapphire.CommandOptions>({
-    name: 'sex',
-    enabled: false,
-}) export class sexCommand extends sapphire.Command {
-    public async messageRun(message: discord.Message) {
-        if (getRandomArbitrary(1, 50) === 22) {
-            let msg = discord.Util.splitMessage(`
-It was a wonderful monday morning... 
-BigUniverse got out of bed and immediatly grabbed his phone to talk to his wonderful boyfriend, Gustavo. He messaged him, "Squish me daddy!!!"
-Unfortunately, Gustavo had greater plans then going over to BigUniverse's house and railing him. Gustavo wanted a better boyfriend.
-He had been programming an AI that would function as a boyfriend for him, but he did not have a body for it. He messaged BigUniverse,
-"Im sorry but I dont think we can continue this relationship."
-BigUniverse was distraught. He replied, "I will 1v1 you in minecraft bedwars!"
-But nothing could change this. Gustavo would date a robot.
-If u want more, dm me :)
--sirmole
-		`);
-            msg.forEach(x => message.channel.send(x));
-            return
-        }
-
-        let msg = discord.Util.splitMessage(`
-No. You aren't having this.
-But... you can have this https://www.youtube.com/watch?v=k4FF7x8vnZg&t=0s&ab_channel=Hepburn
-		`);
-        msg.forEach(x => message.channel.send(x));
-    }
-};
 
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'help',
-    enabled: false,
 }) export class helpCommand extends sapphire.Command {
-    public async messageRun(message: discord.Message) {
-        message.channel.send('Hello! I am Gerald. I will enable you to take control of your server by my rules >:)');
+    public async messageRun() {
+        throw new Error("Not implemented yet"); 
+        
     }
 }
 
@@ -460,32 +409,6 @@ But... you can have this https://www.youtube.com/watch?v=k4FF7x8vnZg&t=0s&ab_cha
 }
 
 
-@ApplyOptions<sapphire.CommandOptions>({
-    name: 'gay',
-    enabled: false,
-}) export class gayCommand extends sapphire.Command {
-    public async messageRun(message: discord.Message, args: sapphire.Args) {
-        let cmd = args.next()
-        if (cmd === 'add') {
-            let change = (await args.repeat('string')).join(' ')
-            await db.query('UPDATE members SET sexuality=$1 WHERE userid = $2',
-                [change, message.author.id]);
-            message.channel.send(`set ${message.author.username} to ${cleanMentions(change)}`);
-            return;
-        }
-        message.mentions.members?.each(async (eachmem) => {
-            let s = await db.query('SELECT * FROM members WHERE userid = $1', [BigInt(eachmem.id)])
-            message.channel.send(`${(eachmem.nickname !== null) ? eachmem.nickname : eachmem.user.username} is ${cleanMentions(s.rows[0].sexuality)}`);
-        })
-        message.mentions.roles?.each(async (eachrole) => {
-            eachrole.members.each(async (eachmem) => {
-                let s = await db.query('SELECT * FROM members WHERE userid = $1', [BigInt(eachmem.id)])
-                message.channel.send(`${(eachmem.nickname !== null) ? eachmem.nickname : eachmem.user.username} is ${cleanMentions(s.rows[0].sexuality)}`);
-            })
-
-        })
-    }
-}
 
 
 @ApplyOptions<sapphire.CommandOptions>({
