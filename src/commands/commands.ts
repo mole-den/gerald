@@ -85,7 +85,7 @@ export class ownerEvalCommand extends sapphire.Command {
             eval(`
             (async () => {
                 ${out}
-            )()`);
+            })()`);
         } catch (error) {
             console.log("error");
             console.log(error);
