@@ -27,8 +27,7 @@ export class testCmd extends sapphire.Command {
     public async messageRun(message: discord.Message) {
         let x = new response.Response(message);
         await discord.Util.delayFor(4000);
-        x.send({
-            content: 'test',
+        x.send('test', {
             replyTo: true,
             ttl: 5000
         })
@@ -44,12 +43,13 @@ export class testCmd extends sapphire.Command {
 })
 export class ownerDisableCommand extends sapphire.Command {
     public async messageRun(message: discord.Message, args: sapphire.Args) {
+        let res = new response.Response(message);
         let cmd = args.nextMaybe();
         if (!cmd.exists) return
         let command = this.container.stores.get('commands').find(value => value.name === cmd.value);
         if (!command) return message.channel.send('Command not found');
         command.enabled = false;
-        return message.channel.send(`Dismounted *${cmd.value}*`);
+        return res.send(`Dismounted *${cmd.value}*`);
     };
 }
 
@@ -61,12 +61,13 @@ export class ownerDisableCommand extends sapphire.Command {
 })
 export class ownerEnableCommand extends sapphire.Command {
     public async messageRun(message: discord.Message, args: sapphire.Args) {
+        let res = new response.Response(message);
         let cmd = args.next();
         let command = this.container.stores.get('commands').find(value => value.name === cmd);
         if (!command) return message.channel.send('Command not found');
         command.enabled = true;
         command.reload();
-        return message.channel.send(`Mounted *${cmd}*`);
+        return res.send(`Mounted *${cmd}*`);
     };
 };
 
@@ -79,6 +80,7 @@ export class ownerEnableCommand extends sapphire.Command {
 })
 export class ownerEvalCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
+        let res = new response.Response(message);
         let str = message.content;
         let out = str.substring(str.indexOf('```') + 3, str.lastIndexOf('```'));
         try {
@@ -89,7 +91,7 @@ export class ownerEvalCommand extends sapphire.Command {
         } catch (error) {
             console.log("error");
             console.log(error);
-            message.channel.send(`Unhandled exception: \n ${error}`);
+            res.send(`Unhandled exception: \n ${error}`);
         }
     };
 };
@@ -165,6 +167,7 @@ export class DeletedMSGCommand extends sapphire.Command {
 })
 export class smiteCommand extends SubCommandPluginCommand {
     public async add(message: discord.Message, args: sapphire.Args) {
+        let res = new response.Response(message);
         let user = await args.pick('member').catch(() => {
             return args.pick('user')
         })
@@ -178,31 +181,32 @@ export class smiteCommand extends SubCommandPluginCommand {
         let endsDate = (time !== null) ? new Date(Date.now() + time) : null;
         if (user instanceof discord.GuildMember) {
             if (message.member!.roles.highest.comparePositionTo(user.roles.highest) <= 0 && (message.guild!.ownerId !== message.member!.id)) {
-                message.channel.send(`You do not have a high enough role to do this.`);
+                res.send(`You do not have a high enough role to do this.`);
                 return;
             }
             if (!user.bannable) {
-                return message.channel.send("This user is not bannable by the bot.");
+                return res.send("This user is not bannable by the bot.");
             }
             await db.query(`INSERT INTO punishments (member, guild, type, reason, created_time, ends) VALUES ($1, $2, $3, $4, $5, $6) `,
                 [user.id, message.guild!.id, 'blist', strReason, new Date(), endsDate]);
             message.guild!.bans.create(user, { reason: strReason, days: 0 });
-            message.channel.send(`${user.user.username} has been added to the blacklist and banned${(time === null) ? '.' : `for ${content}`}\nProvided reason: ${strReason}`);
+            res.send(`${user.user.username} has been added to the blacklist and banned${(time === null) ? '.' : `for ${content}`}\nProvided reason: ${strReason}`);
         } else {
             await db.query(`INSERT INTO punishments (member, guild, type, reason, created_time, ends) VALUES ($1, $2, $3, $4, $5, $6) `,
                 [user.id, message.guild!.id, 'blist', strReason, new Date(), endsDate]);
-            message.channel.send(`${user.username} has been added to the blacklist and banned${(time === null) ? '.' : `for ${content}`}\nProvided reason: ${strReason}`);
+            res.send(`${user.username} has been added to the blacklist and banned${(time === null) ? '.' : `for ${content}`}\nProvided reason: ${strReason}`);
         };
         return;
     }
 
     public async remove(message: discord.Message, args: sapphire.Args) {
+        let res = new response.Response(message);
         let user = await args.pick('user');
         let q = await db.query(`SELECT * FROM punishments WHERE type='blist' AND member = $2 AND guild = $1`, [user.id, message.guild!.id]);
         if (q.rowCount === 0) return;
         message.guild!.members.unban(user).catch(() => { })
         db.query('UPDATE punishments SET resolved = true WHERE type=\'blist\' AND member = $2 AND guild = $1', [user.id, message.guild!.id]);
-        message.channel.send(`${user.tag} has been removed from the blacklist`);
+        res.send(`${user.tag} has been removed from the blacklist`);
     }
 
     public async list(message: discord.Message) {
@@ -216,11 +220,12 @@ export class smiteCommand extends SubCommandPluginCommand {
         });
     }
     public async reset(message: discord.Message) {
+        let res = new response.Response(message);
         let banned = await db.query(`SELECT * FROM punishments WHERE type='blist' AND guild = $1 AND NOT RESOLVED`, [message.guild!.id]);
         message.channel.send(`Warning: This will unban all blacklisted users. Are you sure you want to do this?`);
         const filter = (m: discord.Message) => m.author.id === message.author.id
         const collector = message.channel.createMessageCollector({ filter, time: 10000 });
-        let response = false
+        let confirm = false
         collector.on('collect', async m => {
             if (m.content === 'yes') {
                 await db.query('UPDATE punishments SET resolved = true WHERE type=\'blist\' AND guild = $1', [message.guild!.id]);
@@ -229,20 +234,20 @@ export class smiteCommand extends SubCommandPluginCommand {
                         console.log(err)
                     })
                 });
-                message.channel.send(`Done`)
-                response = true
+                res.send(`Done`)
+                confirm = true
                 collector.stop();
                 return;
             } else if (message.content === 'no') {
-                message.channel.send(`Command aborted.`);
-                response = true
+                res.send(`Command aborted.`);
+                confirm = true
                 collector.stop()
                 return
             }
         });
         collector.on('end', () => {
-            if (response === true) return
-            message.channel.send(`Command timed out`)
+            if (confirm === true) return
+            res.send(`Command timed out`)
         });
 
     }
@@ -257,6 +262,7 @@ export class smiteCommand extends SubCommandPluginCommand {
 })
 export class queryCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
+        let res = new response.Response(message);
         let str = message.content;
         let out = str.substring(str.indexOf('```') + 3, str.lastIndexOf('```'));
         if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
@@ -266,7 +272,7 @@ export class queryCommand extends sapphire.Command {
         let data = await db.query(out);
         let JSONdata = JSON.stringify(data.rows, null, 1);
         if (JSONdata?.length && JSONdata.length < 2000) {
-            message.channel.send(`${data.command} completed - ${data.rowCount} rows, \n${cleanMentions(JSONdata)}`);
+            res.send(`${data.command} completed - ${data.rowCount} rows, \n${cleanMentions(JSONdata)}`);
             return;
         } else if (JSONdata?.length && JSONdata.length > 2000) {
             const buffer = Buffer.from(JSONdata)
@@ -274,7 +280,7 @@ export class queryCommand extends sapphire.Command {
             message.channel.send(`${data.command} completed - ${data.rowCount} rows,`);
             message.channel.send({ files: [attachment] });
         } else {
-            message.channel.send(`${data.command} completed - ${data.rowCount} rows,`);
+            res.send(`${data.command} completed - ${data.rowCount} rows,`);
         }
 
     };
@@ -290,14 +296,15 @@ export class queryCommand extends sapphire.Command {
 })
 export class prefixCommand extends sapphire.Command {
     public async messageRun(message: discord.Message, args: sapphire.Args) {
+        let res = new response.Response(message);
         let x = args.nextMaybe()
         if (!x.exists) {
             let prefix = await guildDataCache.get(message.guild!.id, cacheType.prefix);
-            message.channel.send(`The prefix for this server is \`${prefix}\``);
+            res.send(`The prefix for this server is \`${prefix}\``);
             return
         }
         guildDataCache.change(message.guild!.id, cacheType.prefix, x.value);
-        message.channel.send(`Changed prefix for ${message.guild!.name} to ${x.value}`);
+        res.send(`Changed prefix for ${message.guild!.name} to ${x.value}`);
     }
 }
 
@@ -309,7 +316,8 @@ export class prefixCommand extends sapphire.Command {
 })
 export class sirmoleCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
-        message.channel.send('sir mole is a very cringe man who gets extremely angy and likes to ban people for no reason')
+        new response.Response(message)
+            .send('sir mole is a very cringe man who gets extremely angy and likes to ban people for no reason')
     }
 }
 
@@ -318,7 +326,8 @@ export class sirmoleCommand extends sapphire.Command {
 })
 export class plutoCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
-        message.channel.send(`<@!453823323135016965>`);
+        new response.Response(message)
+            .send(`<@!453823323135016965>`);
     }
 }
 @ApplyOptions<sapphire.CommandOptions>({
@@ -326,7 +335,8 @@ export class plutoCommand extends sapphire.Command {
 })
 export class sammyCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
-        message.channel.send(`<@!696926289726144562>`);
+        new response.Response(message)
+            .send(`<@!696926289726144562>`);
     }
 }
 
@@ -335,7 +345,8 @@ export class sammyCommand extends sapphire.Command {
 })
 export class repoCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
-        message.channel.send(`https://github.com/ofoxsmith/gerard-scelzi`);
+        new response.Response(message)
+            .send(`https://github.com/ofoxsmith/gerard-scelzi`);
     }
 }
 
@@ -344,7 +355,8 @@ export class repoCommand extends sapphire.Command {
 })
 export class inviteCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
-        message.channel.send(`Invite is: https://discord.com/api/oauth2/authorize?client_id=920756165284069398&permissions=8&scope=bot`);
+        new response.Response(message)
+            .send(`Invite is: https://discord.com/api/oauth2/authorize?client_id=920756165284069398&permissions=8&scope=bot`);
     }
 }
 
@@ -353,6 +365,8 @@ export class inviteCommand extends sapphire.Command {
 })
 export class infoCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
+        let res = new response.Response(message);
+
         let uptime = process.uptime();
         let uptimeString = "";
         if (uptime >= 86400) {
@@ -371,32 +385,14 @@ export class infoCommand extends sapphire.Command {
         let start = Date.now()
         await db.query('select 1;')
         let elapsed = Date.now() - start;
-        message.channel.send(`**Uptime:** ${uptimeString}\n**Websocket heartbeat:** ${bot.ws.ping}ms\n**Database heartbeat:** ${elapsed}ms`);
+        res.send(`**Uptime:** ${uptimeString}\n**Websocket heartbeat:** ${bot.ws.ping}ms\n**Database heartbeat:** ${elapsed}ms`);
     }
 }
 
-@ApplyOptions<sapphire.CommandOptions>({
-    name: 'setstatus',
-    preconditions: ['OwnerOnly'],
-}) export class setstatusCommand extends sapphire.Command {
-    public async messageRun(message: discord.Message, args: sapphire.Args) {
-        message
-        let stat = args.next();
-        if (stat === 'online' || stat === 'idle' || stat === 'dnd' || stat === 'invisible') {
-            bot.user!.setStatus(stat);
-        };
-        const activity = args.next()
-        if (activity === 'playing' || activity === 'streaming' || activity === 'watching' || activity === 'listening' || activity === 'none') {
-            let stat = (activity === 'none') ? undefined : <discord.ActivityType>activity.toUpperCase();
-            let name = (await args.repeat('string')).join(' ');
-            bot.user!.setActivity(name, { type: (stat as any) });
-            return;
-        };
-    }
-}
 
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'setup',
+    enabled: false
 }) export class setupCommand extends sapphire.Command {
     public async messageRun(message: discord.Message, args: sapphire.Args) {
         let i = args.next();
@@ -414,9 +410,9 @@ export class infoCommand extends sapphire.Command {
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'help',
 }) export class helpCommand extends sapphire.Command {
-    public async messageRun() {
-        throw new Error("Not implemented yet"); 
-        
+    public async messageRun(message: discord.Message) {
+        new response.Response(message)
+            .send("Not implemented yet"); 
     }
 }
 
@@ -437,9 +433,10 @@ export class infoCommand extends sapphire.Command {
     options: ['user']
 }) export class askCommand extends sapphire.Command {
     public async messageRun(message: discord.Message, args: sapphire.Args) {
+        let res = new response.Response(message);
         let opt = args.nextMaybe()
         if (args.getOption('user')) {
-            throw new Error(`Not implemented yet`);/*
+            res.send(`Not implemented yet`);/*
             let test = (args.getOption('user') === null) ? <string>args.getOption('user') : '1'
             let num = parseInt(test);
             if (!num || num < 1 || num > 10) return
@@ -457,7 +454,7 @@ export class infoCommand extends sapphire.Command {
             }
             return*/
         } else if (opt.exists && opt.value === 'user') {
-            throw new Error(`Not implemented yet`);/*
+            res.send(`Not implemented yet`);/*
             let y = await message.guild?.roles.fetch('858473576335540224');
             let i = await message.guild?.roles.fetch('877133047210852423');
             if (!y) return;
@@ -476,13 +473,13 @@ export class infoCommand extends sapphire.Command {
             return;*/
         }
         else if (opt.exists && opt.value === 'percent') {
-            message.channel.send(`${getRandomArbitrary(0, 100)}%`);
+            res.send(`${getRandomArbitrary(0, 100)}%`);
             return;
         }
         if (getRandomArbitrary(0, 20) > 9) {
-            return message.channel.send('yes');
+            return res.send('yes');
         } else {
-            return message.channel.send('no');
+            return res.send('no');
         }
 
     }
@@ -520,6 +517,7 @@ export class infoCommand extends sapphire.Command {
 })
 export class commandsManagerCommand extends SubCommandPluginCommand {
     public async disable(message: discord.Message, args: sapphire.Args) {
+        let res = new response.Response(message);
         let cmd = args.nextMaybe()
         if (cmd.exists === false) {
             throw new sapphire.UserError({ identifier: 'invalidsyntax', message: 'Specify a command to disable' });
@@ -527,7 +525,7 @@ export class commandsManagerCommand extends SubCommandPluginCommand {
         let command = this.container.stores.get('commands').find(value => value.name === cmd.value);
         if (!command) return message.channel.send('Command not found');
         if (command.fullCategory.some(x => x === '_enabled')) {
-            message.channel.send(`This command cannot be disabled.`)
+            res.send(`This command cannot be disabled.`)
             return;
         }
         let i = (await guildDataCache.get(message.guild!.id, cacheType.disabled)).split('');
@@ -535,20 +533,21 @@ export class commandsManagerCommand extends SubCommandPluginCommand {
             throw new sapphire.UserError({ identifier: 'invalid', message: 'Command already disabled' }) 
         }) : i.push(cmd.value!);
         guildDataCache.change(message.guild!.id, cacheType.disabled, i.join(' '));
-        return message.channel.send(`Disabled command **${cmd.value!}**`)
+        return res.send(`Disabled command **${cmd.value!}**`)
     }
 
     public async enable(message: discord.Message, args: sapphire.Args) {
+        let res = new response.Response(message);
         let cmd = args.nextMaybe()
         if (cmd.exists === false) throw new sapphire.UserError({ identifier: 'invalidsyntax', message: 'Specify a command to enable' });
         let command = this.container.stores.get('commands').find(value => value.name === cmd.value);
         if (!command) return message.channel.send('Command not found');
         let i = (await guildDataCache.get(message.guild!.id, cacheType.disabled)).split(' ');
         guildDataCache.change(message.guild!.id, cacheType.disabled, i.filter(x => x !== cmd.value).join(' '));
-        return message.channel.send(`Enabled command **${cmd.value!}**`)
+        return res.send(`Enabled command **${cmd.value!}**`)
     }
     public async status(message: discord.Message) {
-        message
-        throw new Error(`Not implemented yet`);
+        new response.Response(message)
+            .send(`Not implemented yet`);
     }
 }

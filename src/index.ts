@@ -345,12 +345,12 @@ bot.on('messageDeleteBulk', async (array) => {
 export namespace response {
 	interface baseResponseOptions {
 		ttl?: number,
-		content: string,
+		content?: string
 		replyTo?: boolean,
 	};
 
 	interface responseOptions extends baseResponseOptions, Omit<Omit<discord.MessageOptions, 'embeds'
-	|'components' | 'reply'>, keyof baseResponseOptions> { };
+	|'components' | 'reply' >, keyof baseResponseOptions> { };
 
 	export class Response {
 		private message: discord.Message;
@@ -361,7 +361,9 @@ export namespace response {
 			this.channel = message.channel
 			if (startTyping) message.channel.sendTyping()
 		}
-		public async send(options: responseOptions): Promise<discord.Message> {
+		public async send(content: string, options?: responseOptions): Promise<discord.Message> {
+			if (options === undefined) return this.message.channel.send(content)
+			options!.content = content
 			if (options.replyTo) {
 				this.response = await this.message.reply(options);
 			} else {
