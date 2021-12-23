@@ -7,6 +7,9 @@
     "sourceMap": true,
     "allowJs": true,
     "outDir": "build",
+    "lib": [
+    "ESNext"
+    ],
     "removeComments": true,
     "noEmitOnError": true,
     "strict": true,

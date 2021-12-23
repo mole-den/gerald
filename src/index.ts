@@ -355,11 +355,13 @@ export namespace response {
 	export class Response {
 		private message: discord.Message;
 		private response?: discord.Message;
+		private channel: discord.TextBasedChannels
 		constructor(message: discord.Message, startTyping: boolean = true) {
 			this.message = message;
+			this.channel = message.channel
 			if (startTyping) message.channel.sendTyping()
 		}
-		public async send(options: responseOptions) {
+		public async send(options: responseOptions): Promise<discord.Message> {
 			if (options.replyTo) {
 				this.response = await this.message.reply(options);
 			} else {
@@ -368,14 +370,14 @@ export namespace response {
 			if (options.ttl) setTimeout(() => {
 				this.response!.delete();
 			}, options.ttl);
+			return this.response!;
+		}
+		public async next(): Promise<void> {
+			this.channel.createMessageCollector()
+			 
 		}
 	}
 
-	export class EmbedResponse {
-		constructor(public embed: discord.MessageEmbed) {
-			
-		}
-	}
 }
 //zac very cringe
 //gustavo cringe
