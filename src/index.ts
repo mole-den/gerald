@@ -354,18 +354,19 @@ export namespace response {
 
 	export class Response {
 		private message: discord.Message;
+		private response?: discord.Message;
 		constructor(message: discord.Message, startTyping: boolean = true) {
 			this.message = message;
 			if (startTyping) message.channel.sendTyping()
 		}
 		public async send(options: responseOptions) {
 			if (options.replyTo) {
-				await this.message.reply(options);
+				this.response = await this.message.reply(options);
 			} else {
-				await this.message.channel.send(options)
+				this.response = await this.message.channel.send(options)
 			}
 			if (options.ttl) setTimeout(() => {
-				this.message.delete();
+				this.response!.delete();
 			}, options.ttl);
 		}
 	}
