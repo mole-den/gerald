@@ -153,7 +153,7 @@ class Cache {
 	public async get(guild: string, type: cacheType.prefix): Promise<string>
 	public async get(guild: string, type: cacheType.delmsgPublicKey): Promise<string>
 	public async get(guild: string, type: cacheType.members): Promise<Array<string>>
-	public async get(guild: string, type: cacheType): Promise<any> 
+	public async get(guild: string, type: cacheType): Promise<any>
 	public async get(guild: string, type: cacheType): Promise<any> {
 		if (this.caches[`${guild}`] === undefined) {
 			await this.new('652383576117084160');
@@ -319,7 +319,7 @@ bot.on('messageDeleteBulk', async (array) => {
 		let attachments: Array<{
 			url: string,
 			name: string | null
-		}>  = [];
+		}> = [];
 		message.attachments.each((attachment) => {
 			attachments.push({
 				url: attachment.url,
@@ -341,7 +341,43 @@ bot.on('messageDeleteBulk', async (array) => {
 
 	});
 });
+
+export namespace response {
+	interface baseResponseOptions {
+		ttl?: number,
+		content: string,
+		replyTo?: boolean,
+	};
+
+	interface responseOptions extends baseResponseOptions, Omit<Omit<discord.MessageOptions, 'embeds'
+	|'components' | 'reply'>, keyof baseResponseOptions> { };
+
+	export class Response {
+		private message: discord.Message;
+		constructor(message: discord.Message, startTyping: boolean = true) {
+			this.message = message;
+			if (startTyping) message.channel.sendTyping()
+		}
+		public async send(options: responseOptions) {
+			if (options.replyTo) {
+				await this.message.reply(options);
+			} else {
+				await this.message.channel.send(options)
+			}
+			if (options.ttl) setTimeout(() => {
+				this.message.delete();
+			}, options.ttl);
+		}
+	}
+
+	export class EmbedResponse {
+		constructor(public embed: discord.MessageEmbed) {
+			
+		}
+	}
+}
 //zac very cringe
 //gustavo cringe
 //gerald cringe
 //gerard not cringe
+
