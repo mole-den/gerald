@@ -350,15 +350,13 @@ export namespace response {
 	};
 
 	interface responseOptions extends baseResponseOptions, Omit<Omit<discord.MessageOptions, 'embeds'
-	|'components' | 'reply' >, keyof baseResponseOptions> { };
+		| 'components' | 'reply'>, keyof baseResponseOptions> { };
 
 	export class Response {
 		private message: discord.Message;
 		private response?: discord.Message;
-		private channel: discord.TextBasedChannels
 		constructor(message: discord.Message, startTyping: boolean = true) {
 			this.message = message;
-			this.channel = message.channel
 			if (startTyping) message.channel.sendTyping()
 		}
 		public async send(content: string, options?: responseOptions): Promise<discord.Message> {
@@ -372,15 +370,22 @@ export namespace response {
 			if (options.ttl) setTimeout(() => {
 				this.response!.delete();
 			}, options.ttl);
+
 			return this.response!;
 		}
-		public async next(): Promise<void> {
-			this.channel.createMessageCollector()
-			 
+		public async awaitNext(authorOnly: boolean = true): Promise<discord.Message | null> {
+			let filter = ((authorOnly === true) ? (m: discord.Message) => m.author.id === this.message.author.id : () => true)
+			let x = (await this.message.channel.awaitMessages({
+				filter: filter,
+				max: 1,
+				time: 15000
+			})).first();
+			return x ? x : null
 		}
+		}
+
 	}
 
-}
 //zac very cringe
 //gustavo cringe
 //gerald cringe
