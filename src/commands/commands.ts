@@ -1,7 +1,7 @@
 import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
 import { SubCommandPluginCommand, SubCommandPluginCommandOptions } from '@sapphire/plugin-subcommands';
-import { durationToMS, guildDataCache, db, getRandomArbitrary, cacheType, bot, cleanMentions, response } from '../index';
+import { durationToMS, guildDataCache, db, getRandomArbitrary, cacheType, bot, cleanMentions, response, sleep } from '../index';
 import { ApplyOptions } from '@sapphire/decorators';
 import * as lux from 'luxon';
 import * as voice from '@discordjs/voice';
@@ -26,7 +26,7 @@ let permissionsPrecondition = (...args: discord.PermissionResolvable[]) => {
 export class testCmd extends sapphire.Command {
     public async messageRun(message: discord.Message) {
         let x = new response.Response(message);
-        await discord.Util.delayFor(4000);
+        await sleep(4000);
         x.send('test', {
             replyTo: true,
             ttl: 5000

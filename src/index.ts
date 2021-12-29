@@ -1,4 +1,4 @@
-import * as discord from "discord.js";
+import * as discord from 'discord.js';
 import * as pg from 'pg';
 import cron from 'node-cron';
 import * as sapphire from '@sapphire/framework';
@@ -10,7 +10,7 @@ process.on('SIGTERM', async () => {
 	bot.fetchPrefix = async () => {
 		return "EsRtvLIlJ3O5HuNV1Bo824FOzjelsmHmtYFTcBk57";
 	};
-	await discord.Util.delayFor(3000)
+	await sleep(3000)
 	void bot.destroy();
 	void db.end();
 	process.exit(1);
@@ -105,6 +105,12 @@ export enum cacheType {
 	prefix = 'prefix',
 	delmsgPublicKey = 'delmsgPublicKey',
 	members = 'members',
+}
+
+export function sleep(ms: number): Promise<void> {
+	return new Promise((resolve) => {
+		setTimeout(resolve, ms);
+	});
 }
 
 export function cleanMentions(str: string): string {
@@ -265,13 +271,13 @@ bot.on('messageDelete', async (message) => {
 	let delTime = new Date()
 	if (!message.guild) return
 	if (message.partial) return;
-	await discord.Util.delayFor(100);
+	await sleep(100)
 	let logs = await message.guild.fetchAuditLogs({
 		type: 72
 	});
 	const auditEntry = logs.entries.find(a =>
-		(a.target as discord.GuildMember).id === message.author.id
-		&& (a.extra as any).channel.id === message.channel.id
+		a.target.id === message.author.id
+		&& a.extra.channel.id === message.channel.id
 		&& Date.now() - a.createdTimestamp < 5000
 	);
 	let entry = auditEntry
@@ -299,7 +305,7 @@ bot.on('messageDelete', async (message) => {
 });
 bot.on('messageDeleteBulk', async (array) => {
 	let delTime = new Date();
-	await discord.Util.delayFor(1000);
+	await sleep(100)
 	array.each(async (message) => {
 		if (!message.guild) return
 		if (message.partial) return;
@@ -307,8 +313,8 @@ bot.on('messageDeleteBulk', async (array) => {
 			type: 72
 		});
 		const auditEntry = logs.entries.find(a =>
-			(a.target as discord.GuildMember).id === message.author.id
-			&& (a.extra as any).channel.id === message.channel.id
+			a.target.id === message.author.id
+			&& a.extra.channel.id === message.channel.id
 			&& Date.now() - a.createdTimestamp < 5000
 		);
 		let entry = auditEntry
