@@ -326,18 +326,15 @@ bot.on('messageDeleteBulk', async (array) => {
 				name: attachment.name
 			});
 		});
-		console.log([
+		let params = [
 			BigInt(message.author.id), message.content,
 			message.guild.id, new Date(message.createdAt.getTime()),
-			message.channel.id, delTime, executor, message.id, ((attachments === []) ? null : attachments)
-		])
+			message.channel.id, delTime, executor, message.id, ((attachments === []) ? null : JSON.stringify(attachments))
+		]
+		console.log(params)
 		await db.query(`
 		INSERT INTO deletedmsgs (author, content, guildid, msgtime, channel, deleted_time, deleted_by, msgid, attachments)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`, [
-			BigInt(message.author.id), message.content,
-			message.guild.id, new Date(message.createdAt.getTime()),
-			message.channel.id, delTime, executor, message.id, ((attachments === []) ? null : attachments)
-		]);
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`, params);
 
 	});
 });
@@ -348,7 +345,7 @@ export namespace response {
 		content?: string
 		replyTo?: boolean,
 	};
-
+	//type messageGroup = Array<string | responseOptions>
 	interface responseOptions extends baseResponseOptions, Omit<Omit<discord.MessageOptions, 'embeds'
 		| 'components' | 'reply'>, keyof baseResponseOptions> { };
 
@@ -382,9 +379,10 @@ export namespace response {
 			})).first();
 			return x ? x : null
 		}
-		}
-
+		//public async sendGroup(group: messageGroup): Promise<discord.Message[]> {}
 	}
+
+}
 
 //zac very cringe
 //gustavo cringe
