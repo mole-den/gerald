@@ -192,22 +192,28 @@ class membersCache {
 			})
 		})
 	}
-	validate(guild: string, users: string | Array<string>): boolean {
+	validate(guild: string, users: string | Array<string>, checkOnly: boolean = false): boolean | Array<boolean> {
 		let x = <Array<string>>this.cache.get(guild);
-		if ((typeof users === 'string') && users in x) return true;
+		console.log(x)
+		if ((typeof users === 'string') && x.includes(users)) return true;
 		else if (typeof users === 'string') {
-			db.query(`INSERT INTO members (guild, userid) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`,
+			if (checkOnly) return false
+			db.query(`INSERT INTO members (guild, userid) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
 				[BigInt(guild), BigInt(users)]);
 			return true;
 		}
 		else {
-			users.forEach(async (user) => {
-				if (!(user in x)) {
-					db.query(`INSERT INTO members (guild, userid) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`,
-						[BigInt(guild), BigInt(user)]);
+			let res: Array<boolean> = [];
+			users.forEach((user) => {
+				if (!x.includes(user)) {
+					if (checkOnly) res.push(false);
+					else {db.query(`INSERT INTO members (guild, userid) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
+						[BigInt(guild), BigInt(user)])};
+				} else {
+					if (checkOnly) res.push(true);
 				}
 			})
-			return true
+			return res
 		}
 	}
 
@@ -217,10 +223,9 @@ class membersCache {
 	}
 }
 export let guildDataCache: Cache
+export let memberCache: membersCache
 
 bot.on('ready', () => {
-	console.log('Started')
-	guildDataCache = new Cache(1800)
 	bot.guilds.fetch().then(async (g) => {
 		g.each(async (guild) => {
 			let x = await guild.fetch();
@@ -247,10 +252,6 @@ export function getRandomArbitrary(min: number, max: number) {
 cron.schedule('0 0 * * * * *', () => {
 	db.query('SELECT ')
 });
-
-void db.connect();
-void bot.login(<string>process.env.TOKEN);
-export const memberCache = new membersCache(180000)
 
 bot.on('commandDenied', ({ context, message: content }: sapphire.UserError, { message }: sapphire.CommandDeniedPayload) => {
 	// `context: { silent: true }` should make UserError silent:
@@ -285,6 +286,7 @@ bot.on('guildCreate', async (guild) => {
 			[guild.id, mem.id]);
 	})
 	guildDataCache.new(guild.id);
+	memberCache.add(guild.id)
 	guild.channels.fetch().then(async (channels) => {
 		channels.each(async (ch) => {
 			if (ch.type === 'GUILD_TEXT') {
@@ -373,6 +375,19 @@ bot.on('messageDeleteBulk', async (array) => {
 
 	});
 });
+
+// startup sequence
+(async () => {
+	console.log('Starting')
+	await db.connect()
+	console.log('Connected to database')
+	guildDataCache = new Cache(1800)
+	memberCache = new membersCache(180000);
+	console.log('Loaded caches');
+	await sleep(5000)
+	await bot.login(process.env.TOKEN);
+	console.log('Ready')
+})();
 
 export namespace response {
 	interface baseResponseOptions {
