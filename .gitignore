@@ -1,7 +1,5 @@
 node_modules/
 build/
-.vscode/launch.json
-local.ts
-politics.mp3
+.vscode/
 .env
-process.env
+
