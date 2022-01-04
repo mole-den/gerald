@@ -192,13 +192,13 @@ class membersCache {
 			})
 		})
 	}
-	validate(guild: string, users: string | Array<string>, checkOnly: boolean = false): boolean | Array<boolean> {
+	async validate(guild: string, users: string | Array<string>, checkOnly: boolean = false): Promise<boolean | Array<boolean>> {
 		let x = <Array<string>>this.cache.get(guild);
 		console.log(x)
 		if ((typeof users === 'string') && x.includes(users)) return true;
 		else if (typeof users === 'string') {
 			if (checkOnly) return false
-			db.query(`INSERT INTO members (guild, userid) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
+			await db.query(`INSERT INTO members (guild, userid) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
 				[BigInt(guild), BigInt(users)]);
 			return true;
 		}
@@ -207,7 +207,7 @@ class membersCache {
 			users.forEach((user) => {
 				if (!x.includes(user)) {
 					if (checkOnly) res.push(false);
-					else {db.query(`INSERT INTO members (guild, userid) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
+					else { db.query(`INSERT INTO members (guild, userid) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
 						[BigInt(guild), BigInt(user)])};
 				} else {
 					if (checkOnly) res.push(true);
@@ -306,6 +306,7 @@ bot.on('messageDelete', async (message) => {
 	let logs = await message.guild.fetchAuditLogs({
 		type: 72
 	});
+	await memberCache.validate(message.guild.id, message.author.id)
 	const auditEntry = logs.entries.find(a =>
 		a.target.id === message.author.id
 		&& a.extra.channel.id === message.channel.id
@@ -343,6 +344,7 @@ bot.on('messageDeleteBulk', async (array) => {
 		let logs = await message.guild.fetchAuditLogs({
 			type: 72
 		});
+		await memberCache.validate(message.guild.id, message.author.id)
 		const auditEntry = logs.entries.find(a =>
 			a.target.id === message.author.id
 			&& a.extra.channel.id === message.channel.id
