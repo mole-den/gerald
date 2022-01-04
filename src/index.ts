@@ -4,7 +4,7 @@ import cron from 'node-cron';
 import * as sapphire from '@sapphire/framework';
 import NodeCache from "node-cache";
 //import crypto from "crypto";
-cron;
+
 process.on('SIGTERM', async () => {
 	console.log('SIGTERM received');
 	bot.fetchPrefix = async () => {
@@ -104,7 +104,6 @@ export enum cacheType {
 	disabled = 'disabled',
 	prefix = 'prefix',
 	delmsgPublicKey = 'delmsgPublicKey',
-	members = 'members',
 }
 
 export function sleep(ms: number): Promise<void> {
@@ -131,11 +130,6 @@ class Cache {
 					checkperiod: this.ttlSeconds * 0.2,
 					useClones: false
 				});
-				db.query(`SELECT userid FROM members WHERE guild = $1`, [BigInt(row.guildid)]).then((data) => {
-					let i: Array<string> = [];
-					data.rows.forEach((row) => i.push(row.userid));
-					this.caches[`${row.guildid}`].set(`members`, i);
-				})
 				this.caches[`${row.guildid}`].set(`disabled`, row.disabled);
 				this.caches[`${row.guildid}`].set(`prefix`, row.prefix);
 			});
@@ -148,17 +142,12 @@ class Cache {
 			useClones: false
 		});
 		let guild = await db.query('SELECT * FROM guilds WHERE guildid = $1', [BigInt(guildid)]);
-		let members = await db.query(`SELECT userid FROM members WHERE guild = $1`, [BigInt(guildid)])
-		let i: Array<string> = [];
-		members.rows.forEach((row) => i.push(row.userid));
-		this.caches[`${guildid}`].set(`members`, i);
 		this.caches[`${guildid}`].set(`disabled`, guild.rows[0].disabled);
 		this.caches[`${guildid}`].set(`prefix`, guild.rows[0].prefix);
 	}
 	public async get(guild: string, type: cacheType.disabled): Promise<string>
 	public async get(guild: string, type: cacheType.prefix): Promise<string>
 	public async get(guild: string, type: cacheType.delmsgPublicKey): Promise<string>
-	public async get(guild: string, type: cacheType.members): Promise<Array<string>>
 	public async get(guild: string, type: cacheType): Promise<any>
 	public async get(guild: string, type: cacheType): Promise<any> {
 		if (this.caches[`${guild}`] === undefined) {
@@ -177,20 +166,60 @@ class Cache {
 	};
 	public async change(guild: string, type: cacheType.prefix, input: string): Promise<string>
 	public async change(guild: string, type: cacheType.disabled, input: string): Promise<string>
-	public async change(guild: string, type: cacheType.disabled | cacheType.prefix, input: any): Promise<any> {
+	public async change(guild: string, type: cacheType, input: any): Promise<any> {
 		await db.query(`UPDATE guilds SET ${type} = $2 WHERE guildid = $1`, [guild, input]);
 		let x = await db.query("SELECT * FROM guilds WHERE guildid = $1", [guild]);
 		this.caches[`${guild}`].set(`${type}`, x.rows[0][type]);
 		return Promise.resolve(x.rows[0][type]);
 	};
+
+}
+
+class membersCache {
+	private readonly ttlSeconds: number
+	cache: NodeCache
+	constructor(ttlSeconds: number) {
+		this.ttlSeconds = ttlSeconds;
+		this.cache = new NodeCache({
+			stdTTL: this.ttlSeconds,
+			checkperiod: this.ttlSeconds * 0.2,
+			useClones: false
+		});
+		db.query('SELECT * FROM guilds').then((output) => {
+			output.rows.forEach(async (row) => {
+				let x = await db.query(`SELECT userid FROM members WHERE guild = $1`, [row.guildid])
+				this.cache.set(`${row.guildid}`, x.rows.map(x => x.userid));
+			})
+		})
+	}
+	validate(guild: string, users: string | Array<string>): boolean {
+		let x = <Array<string>>this.cache.get(guild);
+		if ((typeof users === 'string') && users in x) return true;
+		else if (typeof users === 'string') {
+			db.query(`INSERT INTO members (guild, userid) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`,
+				[BigInt(guild), BigInt(users)]);
+			return true;
+		}
+		else {
+			users.forEach(async (user) => {
+				if (!(user in x)) {
+					db.query(`INSERT INTO members (guild, userid) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`,
+						[BigInt(guild), BigInt(user)]);
+				}
+			})
+			return true
+		}
+	}
+
+	async add(guild: string) {
+		let x = await db.query(`SELECT userid FROM members WHERE guild = $1`, [guild])
+		this.cache.set(`${guild}`, x.rows.map(x => x.userid));
+	}
 }
 export let guildDataCache: Cache
-const token = <string>process.env.TOKEN
-const dbToken = <string>process.env.DATABASE_URL;
+
 bot.on('ready', () => {
-	console.log('Preparing to take over the world...');
-	console.log('World domination complete.');
-	console.log('ONLINE');
+	console.log('Started')
 	guildDataCache = new Cache(1800)
 	bot.guilds.fetch().then(async (g) => {
 		g.each(async (guild) => {
@@ -203,12 +232,14 @@ bot.on('ready', () => {
 		})
 	})
 });
+
 export const db = new pg.Pool({
-	connectionString: dbToken,
+	connectionString: <string>process.env.DATABASE_URL,
 	ssl: {
 		rejectUnauthorized: false
 	}
 });
+
 export function getRandomArbitrary(min: number, max: number) {
 	return Math.round(Math.random() * (max - min) + min);
 };
@@ -218,8 +249,8 @@ cron.schedule('0 0 * * * * *', () => {
 });
 
 void db.connect();
-void bot.login(token);
-//egg
+void bot.login(<string>process.env.TOKEN);
+export const memberCache = new membersCache(180000)
 
 bot.on('commandDenied', ({ context, message: content }: sapphire.UserError, { message }: sapphire.CommandDeniedPayload) => {
 	// `context: { silent: true }` should make UserError silent:
@@ -237,8 +268,6 @@ bot.on('commandError', (error, payload) => {
 });
 
 bot.on('guildMemberAdd', async (member) => {
-	db.query(`INSERT INTO members (guild, userid) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`,
-		[BigInt(member.guild.id), BigInt(member.id)]);
 	let x = await db.query(`SELECT * FROM punishments WHERE guild = $1 AND member = $2 AND type = 'blist'`, [BigInt(member.guild.id), BigInt(member.id)]);
 	if (x.rows.length > 0) {
 		member.ban({ reason: `Blacklisted with reason: ${x.rows[0].reason}` });
