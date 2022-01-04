@@ -1,7 +1,7 @@
 import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
 import { SubCommandPluginCommand, SubCommandPluginCommandOptions } from '@sapphire/plugin-subcommands';
-import { durationToMS, guildDataCache, db, getRandomArbitrary, cacheType, bot, cleanMentions, response, sleep } from '../index';
+import { durationToMS, guildDataCache, db, getRandomArbitrary, cacheType, bot, cleanMentions, response, sleep, memberCache } from '../index';
 import { ApplyOptions } from '@sapphire/decorators';
 import * as lux from 'luxon';
 import * as voice from '@discordjs/voice';
@@ -171,6 +171,7 @@ export class smiteCommand extends SubCommandPluginCommand {
         let user = await args.pick('member').catch(() => {
             return args.pick('user')
         })
+        await memberCache.validate(message.guild!.id, user.id)
         let content = await args.pick('string').catch(() => null);
         let reason = await args.repeat('string').catch(() => null);
         let time = content !== null ? durationToMS(content) : null;
@@ -202,6 +203,7 @@ export class smiteCommand extends SubCommandPluginCommand {
     public async remove(message: discord.Message, args: sapphire.Args) {
         let res = new response.Response(message);
         let user = await args.pick('user');
+        await memberCache.validate(message.guild!.id, user.id)
         let q = await db.query(`SELECT * FROM punishments WHERE type='blist' AND member = $2 AND guild = $1`, [user.id, message.guild!.id]);
         if (q.rowCount === 0) return;
         message.guild!.members.unban(user).catch(() => { })
@@ -485,26 +487,6 @@ export class infoCommand extends sapphire.Command {
     }
 }
 
-
-@ApplyOptions<sapphire.CommandOptions>({
-    name: 'update-database',
-    fullCategory: ['_enabled', '_owner'],
-    description: 'rebuild database',
-    requiredClientPermissions: [],
-    preconditions: ['OwnerOnly']
-}) export class ownerUpdateCommand extends sapphire.Command {
-    public async messageRun() {
-        let x = await bot.guilds.fetch();
-        x.each(async (g) => {
-            let guild = await g.fetch();
-            (await guild.members.fetch()).each(async (mem) => {
-                db.query(`INSERT INTO members (guild, userid) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
-                    [guild.id, mem.id]);
-            })
-        })
-
-    };
-};
 
 @ApplyOptions<SubCommandPluginCommandOptions>({
     name: 'commands',
