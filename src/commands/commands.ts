@@ -438,7 +438,8 @@ export class infoCommand extends sapphire.Command {
         let res = new response.Response(message);
         let opt = args.nextMaybe()
         if (args.getOption('user')) {
-            res.send(`Not implemented yet`);/*
+            res.send(`Not implemented yet`);
+            return/*
             let test = (args.getOption('user') === null) ? <string>args.getOption('user') : '1'
             let num = parseInt(test);
             if (!num || num < 1 || num > 10) return
@@ -456,7 +457,8 @@ export class infoCommand extends sapphire.Command {
             }
             return*/
         } else if (opt.exists && opt.value === 'user') {
-            res.send(`Not implemented yet`);/*
+            res.send(`Not implemented yet`);
+            return/*
             let y = await message.guild?.roles.fetch('858473576335540224');
             let i = await message.guild?.roles.fetch('877133047210852423');
             if (!y) return;
