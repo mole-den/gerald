@@ -183,12 +183,14 @@ export class smiteCommand extends SubCommandPluginCommand {
             await db.query(`INSERT INTO punishments (member, guild, type, reason, created_time, ends) VALUES ($1, $2, $3, $4, $5, $6) `,
                 [user.id, message.guild!.id, 'blist', strReason, new Date(), endsDate]);
             message.guild!.bans.create(user, { reason: strReason, days: 0 });
-            res.send(`${user.user.username} has been added to the blacklist and banned${(time === null) ? '.' : `for ${content}`}\nProvided reason: ${strReason}`);
+            let remaining = endsDate ?  lux.DateTime.now().diff(lux.DateTime.fromJSDate(endsDate), ["years", "months", "days", "hours"]) : 'forever';
+            res.send(`${user.user.username} has been added to the blacklist and banned${(time === null) ? '.' : `for ${remaining}`}\nProvided reason: ${strReason}`);
         } else {
             await db.query(`INSERT INTO punishments (member, guild, type, reason, created_time, ends) VALUES ($1, $2, $3, $4, $5, $6) `,
                 [user.id, message.guild!.id, 'blist', strReason, new Date(), endsDate]);
-            res.send(`${user.username} has been added to the blacklist and banned${(time === null) ? '.' : `for ${content}`}\nProvided reason: ${strReason}`);
-        };
+                let remaining = endsDate ?  lux.DateTime.now().diff(lux.DateTime.fromJSDate(endsDate), ["years", "months", "days", "hours"]) : 'forever';
+                res.send(`${user.username} has been added to the blacklist and banned${(time === null) ? '.' : `for ${remaining}`}\nProvided reason: ${strReason}`);
+            };
         return;
     }
 
@@ -321,7 +323,7 @@ export class sirmoleCommand extends sapphire.Command {
 export class plutoCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
         new response.Response(message)
-            .send(`<@!453823323135016965>`);
+            .send(`<@!766922877920083968>`);
     }
 }
 @ApplyOptions<sapphire.CommandOptions>({
