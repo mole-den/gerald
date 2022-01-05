@@ -183,12 +183,12 @@ export class smiteCommand extends SubCommandPluginCommand {
             await db.query(`INSERT INTO punishments (member, guild, type, reason, created_time, ends) VALUES ($1, $2, $3, $4, $5, $6) `,
                 [user.id, message.guild!.id, 'blist', strReason, new Date(), endsDate]);
             message.guild!.bans.create(user, { reason: strReason, days: 0 });
-            let remaining = endsDate ?  lux.DateTime.now().diff(lux.DateTime.fromJSDate(endsDate), ["years", "months", "days", "hours"]) : 'forever';
+            let remaining = endsDate ?  lux.DateTime.now().diff(lux.DateTime.fromJSDate(endsDate), ["years", "months", "days", "hours", "minutes"]) : 'forever';
             res.send(`${user.user.username} has been added to the blacklist and banned${(time === null) ? '.' : `for ${remaining}`}\nProvided reason: ${strReason}`);
         } else {
             await db.query(`INSERT INTO punishments (member, guild, type, reason, created_time, ends) VALUES ($1, $2, $3, $4, $5, $6) `,
                 [user.id, message.guild!.id, 'blist', strReason, new Date(), endsDate]);
-                let remaining = endsDate ?  lux.DateTime.now().diff(lux.DateTime.fromJSDate(endsDate), ["years", "months", "days", "hours"]) : 'forever';
+                let remaining = endsDate ?  lux.DateTime.now().diff(lux.DateTime.fromJSDate(endsDate), ["years", "months", "days", "hours", "minutes"]) : 'forever';
                 res.send(`${user.username} has been added to the blacklist and banned${(time === null) ? '.' : `for ${remaining}`}\nProvided reason: ${strReason}`);
             };
         return;
