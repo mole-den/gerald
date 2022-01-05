@@ -114,20 +114,9 @@ export class DeletedMSGCommand extends sapphire.Command {
         amount = (arg >= 0) ? arg : (() => {
             throw new sapphire.UserError({ identifier: 'amount<=0', message: 'Amount must be greater than 0.' });
         })();
-        /*let idget = async () => {
-            let i = args.getOption('id');
-            if (i === null) throw new sapphire.UserError({
-                identifier: 'invalidsyntax',
-                message: 'Invalid command syntax'
-            });
-            return await db.query('SELECT * FROM deletedmsgs WHERE guildid=$1 AND id = $2 ORDER BY msgtime DESC LIMIT 1;',
-                [message.guildId, id]);
-        }*/
-        let get = async () => {
-            return await db.query('SELECT * FROM deletedmsgs WHERE guildid=$2 ORDER BY msgtime DESC LIMIT $1;',
-                [amount, message.guildId]);
-        }
-        let del = await get();
+        let del = await db.query('SELECT * FROM deletedmsgs WHERE guildid=$2 ORDER BY msgtime DESC LIMIT $1;',
+            [amount, message.guildId]);
+        let embeds: Array<discord.MessageEmbed> = [];
         del.rows.forEach(async (msg) => {
             if (msg.content.length > 1028) {
                 var content: string = msg.content.substring(0, 1025) + '...';
@@ -140,8 +129,10 @@ export class DeletedMSGCommand extends sapphire.Command {
                 .addField("Author", `<@${msg.author}>`, true)
                 .addField("Deleted By", msg.deleted_by, true)
                 .addField("Channel", `<#${msg.channel}>`, true)
-                .addField("Message", content || "None")
-                .setFooter(`ID: ${msg.id} | Message ID: ${msg.msgid}\nAuthor ID: ${msg.author}`);
+                .addField("Message", content || "None");
+            DeleteEmbed.footer = {
+                text: `ID: ${msg.id} | Message ID: ${msg.msgid}\nAuthor ID: ${msg.author}`
+            };
             if (msg.attachments) {
                 let attachArray: string[] = [];
                 msg.attachments.forEach((attach: any) => {
@@ -149,9 +140,10 @@ export class DeletedMSGCommand extends sapphire.Command {
                 });
                 DeleteEmbed.addField('Attachments', attachArray.join('\n'));
             }
-            message.channel.send({
-                embeds: [DeleteEmbed]
-            })
+            embeds.push(DeleteEmbed)
+        });
+        message.channel.send({
+            embeds: embeds
         });
         return;
     };
@@ -414,7 +406,7 @@ export class infoCommand extends sapphire.Command {
 }) export class helpCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
         new response.Response(message)
-            .send("Not implemented yet"); 
+            .send("Not implemented yet");
     }
 }
 
@@ -513,8 +505,8 @@ export class commandsManagerCommand extends SubCommandPluginCommand {
             return;
         }
         let i = (await guildDataCache.get(message.guild!.id, cacheType.disabled)).split('');
-        i.some(x => x === cmd.value!) ? (() => { 
-            throw new sapphire.UserError({ identifier: 'invalid', message: 'Command already disabled' }) 
+        i.some(x => x === cmd.value!) ? (() => {
+            throw new sapphire.UserError({ identifier: 'invalid', message: 'Command already disabled' })
         }) : i.push(cmd.value!);
         guildDataCache.change(message.guild!.id, cacheType.disabled, i.join(' '));
         return res.send(`Disabled command **${cmd.value!}**`)
