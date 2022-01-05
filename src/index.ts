@@ -415,9 +415,8 @@ export namespace response {
 	export class Response {
 		private message: discord.Message;
 		private response?: discord.Message;
-		constructor(message: discord.Message, startTyping: boolean = true) {
+		constructor(message: discord.Message) {
 			this.message = message;
-			if (startTyping) message.channel.sendTyping()
 		}
 		public async send(content: string, options?: responseOptions): Promise<discord.Message> {
 			if (options === undefined) return this.message.channel.send(content)

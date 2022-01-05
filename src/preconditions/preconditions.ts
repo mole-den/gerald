@@ -85,9 +85,10 @@ declare module '@sapphire/framework' {
 
 export class dismountPrecondition extends sapphire.CorePreconditions.Enabled {
     public run(_: discord.Message, command: sapphire.Command, context: sapphire.Precondition.Context): sapphire.Precondition.Result {
+        command.enabled ? _.channel.sendTyping() : null;
         return command.enabled ? this.ok() : this.error({ 
             identifier: sapphire.Identifiers.CommandDisabled, 
             message: '', 
             context: { ...context, silent: true } 
-        });
+        }); 
 }}
