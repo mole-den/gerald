@@ -207,7 +207,6 @@ class membersCache {
 	}
 	async validate(guild: string, users: string | Array<string>, checkOnly: boolean = false): Promise<boolean | Array<boolean>> {
 		let x = <Array<string>>this.cache.get(guild);
-		console.log(x)
 		if ((typeof users === 'string') && x.includes(users)) return true;
 		else if (typeof users === 'string') {
 			if (checkOnly) return false
@@ -383,7 +382,6 @@ bot.on('messageDeleteBulk', async (array) => {
 			message.guild.id, new Date(message.createdAt.getTime()),
 			message.channel.id, delTime, executor, message.id, ((attachments === []) ? null : JSON.stringify(attachments))
 		]
-		console.log(params)
 		await db.query(`
 		INSERT INTO deletedmsgs (author, content, guildid, msgtime, channel, deleted_time, deleted_by, msgid, attachments)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`, params);
@@ -393,7 +391,7 @@ bot.on('messageDeleteBulk', async (array) => {
 
 // startup sequence
 (async () => {
-	console.log('Starting')
+	console.log('Starting...')
 	await db.connect()
 	console.log('Connected to database')
 	guildDataCache = new Cache(1800)
