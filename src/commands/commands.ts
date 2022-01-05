@@ -211,7 +211,7 @@ export class smiteCommand extends SubCommandPluginCommand {
         smite.rows.forEach(async (i) => {
             let x = await bot.users.fetch(i.member);
             let date = i.ends ? (+new Date(i.ends) - Date.now()) : null;
-            let duration = date === null ? 'permanently' : `for ${lux.Duration.fromMillis(date!)}`;
+            let duration = date === null ? 'permanently' :  lux.DateTime.now().diff(lux.DateTime.fromMillis(date), ["years", "months", "days", "hours", "minutes"])
             message.channel.send(`**${x.username}#${x.discriminator}** is blacklisted until *${duration}*. Case ID: ${i.id}`);
         });
     }
