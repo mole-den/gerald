@@ -1,10 +1,22 @@
 import * as discord from 'discord.js';
+import Bugsnag from '@bugsnag/js'
 import * as pg from 'pg';
 import cron from 'node-cron';
 import * as sapphire from '@sapphire/framework';
 import NodeCache from "node-cache";
 //import crypto from "crypto";
-
+Bugsnag.start({
+	apiKey: <string>process.env.BUGSNAG_API_KEY,
+	appType: 'worker',
+	releaseStage: 'production',
+	onError: (event) => {
+		console.log(JSON.stringify(event));
+		void bot.destroy();
+		void db.end();
+		process.exit(1);	
+	}
+  })
+  
 process.on('SIGTERM', async () => {
 	console.log('SIGTERM received');
 	bot.fetchPrefix = async () => {
@@ -33,6 +45,7 @@ export const bot = new sapphire.SapphireClient({
 			let x = await guildDataCache.get(message.guild.id, cacheType.prefix);
 			return x
 		} catch (error) {
+			Bugsnag.notify(error as any);
 			if (!message.guild) return 'g!';
 			await guildDataCache.new(message.guild.id);
 			let x = await guildDataCache.get(message.guild.id, cacheType.prefix);
