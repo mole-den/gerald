@@ -1,7 +1,7 @@
 import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
 import { SubCommandPluginCommand, SubCommandPluginCommandOptions } from '@sapphire/plugin-subcommands';
-import { durationToMS, guildDataCache, db, getRandomArbitrary, cacheType, bot, cleanMentions, response, sleep, memberCache } from '../index';
+import { durationToMS, guildDataCache, db, getRandomArbitrary, cacheType, bot, cleanMentions, response, sleep, memberCache, durationStringCreator } from '../index';
 import { ApplyOptions } from '@sapphire/decorators';
 import * as lux from 'luxon';
 import * as voice from '@discordjs/voice';
@@ -180,16 +180,15 @@ export class smiteCommand extends SubCommandPluginCommand {
             if (!user.bannable) {
                 return res.send("This user is not bannable by the bot.");
             }
+            ;
             await db.query(`INSERT INTO punishments (member, guild, type, reason, created_time, ends) VALUES ($1, $2, $3, $4, $5, $6) `,
                 [user.id, message.guild!.id, 'blist', strReason, new Date(), endsDate]);
             message.guild!.bans.create(user, { reason: strReason, days: 0 });
-            let remaining = endsDate ?  lux.DateTime.now().diff(lux.DateTime.fromJSDate(endsDate), ["years", "months", "days", "hours", "minutes"]) : null
-            res.send(`${user.user.username} has been added to the blacklist and banned ${(time === null) ? '.' : `for ${remaining!.years}, ${remaining!.months}, ${remaining!.days}, ${remaining!.hours}, ${remaining!.minutes}`}\nProvided reason: ${strReason}`);
+            res.send(`${user.user.username} has been added to the blacklist and banned ${(time === null) ? '' : durationStringCreator(lux.DateTime.now(), lux.DateTime.fromJSDate(endsDate!))}\nProvided reason: ${strReason}`);
         } else {
             await db.query(`INSERT INTO punishments (member, guild, type, reason, created_time, ends) VALUES ($1, $2, $3, $4, $5, $6) `,
                 [user.id, message.guild!.id, 'blist', strReason, new Date(), endsDate]);
-                let remaining = endsDate ?  lux.DateTime.now().diff(lux.DateTime.fromJSDate(endsDate), ["years", "months", "days", "hours", "minutes"]) : null;
-                res.send(`${user.username} has been added to the blacklist and banned ${(time === null) ? '.' : `for ${remaining!.years}, ${remaining!.months}, ${remaining!.days}, ${remaining!.hours}, ${remaining!.minutes}`}\nProvided reason: ${strReason}`);
+                res.send(`${user.username} has been added to the blacklist and banned ${(time === null) ? '' : durationStringCreator(lux.DateTime.now(), lux.DateTime.fromJSDate(endsDate!))}\nProvided reason: ${strReason}`);
             };
         return;
     }
@@ -211,7 +210,7 @@ export class smiteCommand extends SubCommandPluginCommand {
         smite.rows.forEach(async (i) => {
             let x = await bot.users.fetch(i.member);
             let date = i.ends ? (+new Date(i.ends) - Date.now()) : null;
-            let duration = date === null ? 'permanently' :  lux.DateTime.now().diff(lux.DateTime.fromMillis(date), ["years", "months", "days", "hours", "minutes"])
+            let duration = date === null ? 'permanently' :  durationStringCreator(lux.DateTime.now(), lux.DateTime.fromJSDate(new Date(i.ends)));
             message.channel.send(`**${x.username}#${x.discriminator}** is blacklisted until *${duration}*. Case ID: ${i.id}`);
         });
     }

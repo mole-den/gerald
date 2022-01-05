@@ -4,6 +4,7 @@ import * as pg from 'pg';
 import cron from 'node-cron';
 import * as sapphire from '@sapphire/framework';
 import NodeCache from "node-cache";
+import * as lux from 'luxon'
 //import crypto from "crypto";
 Bugsnag.start({
 	apiKey: <string>process.env.BUGSNAG_API_KEY,
@@ -112,13 +113,24 @@ export function durationToMS(duration: string): number | null {
 	})
 	return durationMS;
 };
-
+export function durationStringCreator(date1: Date | lux.DateTime , date2: Date | lux.DateTime ): string {
+	let startDate = date1 instanceof lux.DateTime ? date1 : lux.DateTime.fromJSDate(date1)
+	let endDate = date2 instanceof lux.DateTime ? date2 : lux.DateTime.fromJSDate(date2)
+	let duration = startDate.diff(endDate, ["years", "months", "days", "hours", "minutes"])
+	let durationStr = '';
+	if (duration.years) durationStr += `${duration.years}y`;
+	if (duration.months) durationStr += `, ${duration.months}mths`;
+	if (duration.days) durationStr += `, ${duration.days}d`;
+	if (duration.hours) durationStr += `, ${duration.hours}h`;
+	if (duration.minutes) durationStr += `, ${duration.minutes}m`;
+  	console.log(durationStr)
+	return durationStr.trim();
+}
 export enum cacheType {
 	disabled = 'disabled',
 	prefix = 'prefix',
 	delmsgPublicKey = 'delmsgPublicKey',
 }
-
 export function sleep(ms: number): Promise<void> {
 	return new Promise((resolve) => {
 		setTimeout(resolve, ms);
