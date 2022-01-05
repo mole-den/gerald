@@ -118,11 +118,12 @@ export function durationStringCreator(date1: Date | lux.DateTime , date2: Date |
 	let endDate = date2 instanceof lux.DateTime ? date2 : lux.DateTime.fromJSDate(date2)
 	let duration = startDate.diff(endDate, ["years", "months", "days", "hours", "minutes"])
 	let durationStr = '';
-	if (duration.years) durationStr += `${duration.years}y`;
-	if (duration.months) durationStr += `, ${duration.months}mths`;
-	if (duration.days) durationStr += `, ${duration.days}d`;
-	if (duration.hours) durationStr += `, ${duration.hours}h`;
-	if (duration.minutes) durationStr += `, ${duration.minutes}m`;
+	if (duration.years) durationStr += `${duration.years.toFixed(0)}y`;
+	if (duration.months) durationStr += `${duration.months.toFixed(0)}mths`;
+	if (duration.days) durationStr += `${duration.days.toFixed(0)}d`;
+	if (duration.hours) durationStr += `${duration.hours.toFixed(0)}h`;
+	if (duration.minutes) durationStr += `${duration.minutes.toFixed(0)}m`;
+	durationStr = durationStr.split(' ').join(', ')
   	console.log(durationStr)
 	return durationStr.trim();
 }
