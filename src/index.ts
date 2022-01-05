@@ -288,6 +288,7 @@ bot.on('commandError', (error, payload) => {
 	if (error instanceof sapphire.UserError) {
 		payload.message.channel.send(error.message)
 	} else {
+		Bugsnag.notify(error as any);
 		payload.message.channel.send(`Unhandled exception:\n${(error as any).message}`)
 	}
 });
