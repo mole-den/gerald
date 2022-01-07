@@ -1,0 +1,3 @@
+- name: Typescript validator
+  uses: iCrawl/action-tsc@v1
+
