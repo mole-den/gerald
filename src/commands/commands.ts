@@ -431,22 +431,16 @@ export class infoCommand extends sapphire.Command {
         let res = new response.Response(message);
         let opt = args.nextMaybe()
         if (args.getOption('user')) {
-            res.send(`Not implemented yet`);
-            return/*
-            let test = (args.getOption('user') === null) ? <string>args.getOption('user') : '1'
-            let num = parseInt(test);
-            if (!num || num < 1 || num > 10) return
-            let y = await message.guild?.roles.fetch('858473576335540224');
-            let i = await message.guild?.roles.fetch('877133047210852423');
-            if (!y) return;
-            if (!i) return;
-            let member: Array<discord.GuildMember> = []
-            y.members.each((mem) => member.push(mem));
-            i.members.each((mem) => member.push(mem));
-            let uniq = [...new Set(member)];
-            for (let i = 0; i < num; i++) {
+                let x = await message.guild.roles.fetch("922404443469795379")
+                let y = await message.guild.roles.fetch("920849686909321226");
+                if (!x || !y) return;
+                let member: Array<string> = []
+                y.members.each((mem) => member.push(mem.user.username));
+                i.members.each((mem) => member.push(mem.user.username));
+                member.push('nobody');
+                let uniq = [...new Set(member)];
                 let ask = uniq[getRandomArbitrary(0, member.length - 1)]
-                await message.channel.send(`${(ask.nickname !== null) ? ask.nickname : ask.user.username}`);
+                await message.channel.send(`${ask}`);
             }
             return*/
         } else if (opt.exists && opt.value === 'user') {
