@@ -4,7 +4,7 @@ import * as pg from 'pg';
 import cron from 'node-cron';
 import * as sapphire from '@sapphire/framework';
 import NodeCache from "node-cache";
-import * as lux from 'luxon'
+import * as lux from 'luxon';
 //import crypto from "crypto";
 Bugsnag.start({
 	apiKey: <string>process.env.BUGSNAG_API_KEY,
