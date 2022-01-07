@@ -442,7 +442,7 @@ export class infoCommand extends sapphire.Command {
                 let ask = uniq[getRandomArbitrary(0, member.length - 1)]
                 await message.channel.send(`${ask}`);
             }
-            return*/
+            return
         } else if (opt.exists && opt.value === 'user') {
             res.send(`Not implemented yet`);
             return/*
@@ -461,7 +461,7 @@ export class infoCommand extends sapphire.Command {
                 return
             }
             await message.channel.send(`${(ask.nickname !== null) ? ask.nickname : ask.user.username}`);
-            return;
+            return;*/
         }
         else if (opt.exists && opt.value === 'percent') {
             res.send(`${getRandomArbitrary(0, 100)}%`);
