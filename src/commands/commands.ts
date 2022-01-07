@@ -430,7 +430,7 @@ export class infoCommand extends sapphire.Command {
     public async messageRun(message: discord.Message, args: sapphire.Args) {
         let res = new response.Response(message);
         let opt = args.nextMaybe()
-        if (args.getOption('user')) {
+        if (opt.exists && opt.value === 'user') {
                 let x = await message.guild.roles.fetch("922404443469795379")
                 let y = await message.guild.roles.fetch("920849686909321226");
                 if (!x || !y) return;
@@ -440,28 +440,7 @@ export class infoCommand extends sapphire.Command {
                 member.push('nobody');
                 let uniq = [...new Set(member)];
                 let ask = uniq[getRandomArbitrary(0, member.length - 1)]
-                await message.channel.send(`${ask}`);
-            }
-            return
-        } else if (opt.exists && opt.value === 'user') {
-            res.send(`Not implemented yet`);
-            return/*
-            let y = await message.guild?.roles.fetch('858473576335540224');
-            let i = await message.guild?.roles.fetch('877133047210852423');
-            if (!y) return;
-            if (!i) return;
-            let member: Array<discord.GuildMember | string> = []
-            y.members.each((mem) => member.push(mem));
-            i.members.each((mem) => member.push(mem));
-            member.push('nobody');
-            let uniq = [...new Set(member)];
-            let ask = uniq[getRandomArbitrary(0, member.length - 1)]
-            if (typeof ask === 'string') {
-                message.channel.send(`${ask}`);
-                return
-            }
-            await message.channel.send(`${(ask.nickname !== null) ? ask.nickname : ask.user.username}`);
-            return;*/
+                return await message.channel.send(`${ask}`);
         }
         else if (opt.exists && opt.value === 'percent') {
             res.send(`${getRandomArbitrary(0, 100)}%`);
