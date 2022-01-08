@@ -431,7 +431,9 @@ export class infoCommand extends sapphire.Command {
         let res = new response.Response(message);
         let opt = args.nextMaybe()
         if (opt.exists && opt.value === 'user') {
+//@ts-ignore
                 let x = await message.guild.roles.fetch("922404443469795379")
+//@ts-ignore
                 let y = await message.guild.roles.fetch("920849686909321226");
                 if (!x || !y) return;
                 let member: Array<string> = []
