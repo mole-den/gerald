@@ -1,3 +1,4 @@
+//@ts-nocheck
 import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
 import { SubCommandPluginCommand, SubCommandPluginCommandOptions } from '@sapphire/plugin-subcommands';
