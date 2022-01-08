@@ -435,10 +435,13 @@ export class infoCommand extends sapphire.Command {
                 let x = await message.guild.roles.fetch("922404443469795379")
 //@ts-ignore
                 let y = await message.guild.roles.fetch("920849686909321226");
+//@ts-ignore
+                let i = await message.guild.roles.fetch("915746575689588827")
                 if (!x || !y) return;
                 let member: Array<string> = []
                 y.members.each((mem) => member.push(mem.user.username));
                 x.members.each((mem) => member.push(mem.user.username));
+                i.members.each((mem) => member.push(mem.user.username));
                 member.push('nobody');
                 let uniq = [...new Set(member)];
                 let ask = uniq[getRandomArbitrary(0, member.length - 1)]
