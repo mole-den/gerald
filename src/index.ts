@@ -1,5 +1,5 @@
 import * as discord from 'discord.js';
-import Bugsnag from '@bugsnag/js'
+import Bugsnag from '@bugsnag/js';
 import * as pg from 'pg';
 import cron from 'node-cron';
 import * as sapphire from '@sapphire/framework';
