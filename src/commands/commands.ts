@@ -436,7 +436,7 @@ export class infoCommand extends sapphire.Command {
                 if (!x || !y) return;
                 let member: Array<string> = []
                 y.members.each((mem) => member.push(mem.user.username));
-                i.members.each((mem) => member.push(mem.user.username));
+                x.members.each((mem) => member.push(mem.user.username));
                 member.push('nobody');
                 let uniq = [...new Set(member)];
                 let ask = uniq[getRandomArbitrary(0, member.length - 1)]
