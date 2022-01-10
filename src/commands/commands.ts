@@ -1,4 +1,3 @@
-//@ts-nocheck
 import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
 import { SubCommandPluginCommand, SubCommandPluginCommandOptions } from '@sapphire/plugin-subcommands';
@@ -432,13 +431,10 @@ export class infoCommand extends sapphire.Command {
         let res = new response.Response(message);
         let opt = args.nextMaybe()
         if (opt.exists && opt.value === 'user') {
-//@ts-ignore
-                let x = await message.guild.roles.fetch("922404443469795379")
-//@ts-ignore
-                let y = await message.guild.roles.fetch("920849686909321226");
-//@ts-ignore
-                let i = await message.guild.roles.fetch("915746575689588827")
-                if (!x || !y) return;
+                let x = await message.guild!.roles.fetch("922404443469795379")
+                let y = await message.guild!.roles.fetch("920849686909321226");
+                let i = await message.guild!.roles.fetch("915746575689588827")
+                if (!x || !y || !i ) return;
                 let member: Array<string> = []
                 y.members.each((mem) => member.push(mem.user.username));
                 x.members.each((mem) => member.push(mem.user.username));
