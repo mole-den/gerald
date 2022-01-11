@@ -10,7 +10,8 @@ Bugsnag.start({
 	apiKey: <string>process.env.BUGSNAG_API_KEY,
 	appType: 'worker',
 	releaseStage: 'production',
-  })
+	appVersion: (require('../package.json') as any).version,
+})
   
 process.on('SIGTERM', async () => {
 	console.log('SIGTERM received');
