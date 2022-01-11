@@ -10,12 +10,6 @@ Bugsnag.start({
 	apiKey: <string>process.env.BUGSNAG_API_KEY,
 	appType: 'worker',
 	releaseStage: 'production',
-	onError: (event) => {
-		console.log(JSON.stringify(event));
-		void bot.destroy();
-		void db.end();
-		process.exit(1);	
-	}
   })
   
 process.on('SIGTERM', async () => {
