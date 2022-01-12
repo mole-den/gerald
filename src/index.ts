@@ -5,6 +5,7 @@ import cron from 'node-cron';
 import * as sapphire from '@sapphire/framework';
 import NodeCache from "node-cache";
 import * as lux from 'luxon';
+import { EventEmitter } from 'events';
 //import crypto from "crypto";
 Bugsnag.start({
 	apiKey: <string>process.env.BUGSNAG_API_KEY,
@@ -136,6 +137,29 @@ export function sleep(ms: number): Promise<void> {
 export function cleanMentions(str: string): string {
 	return str.replace(/@everyone/g, '@\u200beveryone').replace(/@here/g, '@\u200bhere');
 };
+
+class ScheduledTask {
+	identifier: string
+	when: Date
+	context: unknown
+	constructor(x: Omit<ScheduledTask, 'cancel' | 'execute'>) {
+		this.context = x.context
+		this.identifier = x.identifier
+		this.when = x.when
+	}
+	cancel(): void {}
+	execute(): void {}
+}
+class scheduledTaskManager extends EventEmitter {
+	constructor() {
+		super()
+	}
+	
+	public new(task: Omit<ScheduledTask, 'cancel' | 'execute'>): ScheduledTask {
+		let x = new ScheduledTask(task);
+		return x
+	}
+}
 
 class Cache {
 	private readonly ttlSeconds: number
