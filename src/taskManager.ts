@@ -93,7 +93,9 @@ class scheduledTaskManager extends EventEmitter {
 				x.rows = x.rows.filter(y => y.context[key] == params.context![key])
 			}) 
 		}
-
+		if (x.rows.length == 0) {
+			return null
+		}
 		if (x.rows.length == 1) {
 			return new ScheduledTask({ task: x.rows[0].task, when: x.rows[0].time, context: x.rows[0].context }, this, x.rows[0].id)
 		}
