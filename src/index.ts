@@ -319,7 +319,6 @@ bot.on('guildCreate', async (guild) => {
 });
 
 bot.on('messageDelete', async (message) => {
-	console.log('attachments', message.attachments)
 	let delTime = new Date()
 	if (!message.guild) return
 	if (message.partial) return;
@@ -405,7 +404,6 @@ bot.on('messageDeleteBulk', async (array) => {
 	console.log('Connected to database')
 	guildDataCache = new Cache(1800)
 	memberCache = new membersCache(180000);
-	console.log('Loaded caches');
 	await sleep(5000)
 	await bot.login(process.env.TOKEN);
 	console.log('Ready')
