@@ -36,8 +36,11 @@ class ScheduledTask {
 	}
 
 	async alter(x: { when?: Date, context?: { [key: string]: validJSON } }): Promise<void> {
-		this.when = x.when ?? this.when;
-		this.context = x.context ?? this.context;
+		x.when ??= this.when 
+		x.context ??= this.context as { [key: string]: validJSON }
+		this.when = x.when;
+		this.context = x.context;
+		db.query('UPDATE scheduled_tasks SET time = $1, context = $2', [x.when, x.context])
 	}
 
 	execute(): void {
