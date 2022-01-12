@@ -22,14 +22,14 @@ class ScheduledTask {
 	context: unknown
 	overdue: boolean
 	readonly id: number
-	constructor(x: { task: string, when: Date, context: { [key: string]: validJSON } }, manager: scheduledTaskManager, id: number) {
+	constructor(x: { task: string, when: Date, context: { [key: string]: validJSON } }, manager: scheduledTaskManager, id: number, init = false) {
 		this.context = x.context
 		this.task = x.task
 		this.when = x.when
 		this.overdue = false
 		this.manager = manager
 		this.id = id
-		db.query('INSERT INTO scheduled_tasks (task, time, context) VALUES ($1, $2, $3)', [this.task, this.when, this.context])
+		if (init) db.query('INSERT INTO scheduled_tasks (task, time, context) VALUES ($1, $2, $3)', [this.task, this.when, this.context])
 	}
 	async cancel(): Promise<void> {
 		await db.query('DELETE FROM scheduled_tasks WHERE id = $1', [this.id])
@@ -64,7 +64,7 @@ class scheduledTaskManager extends EventEmitter {
 	}
 
 	public newTask(task: { task: string, when: Date, context: { [key: string]: validJSON } }): ScheduledTask {
-		return new ScheduledTask(task, this, this.id)
+		return new ScheduledTask(task, this, this.id, true)
 	}
 
 	public async getTasks(params?: getParams): Promise<null | ScheduledTask | ScheduledTask[]> {
