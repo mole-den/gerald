@@ -16,23 +16,23 @@ interface getParams {
 	context?: { [key: string]: validJSON }
 }
 class ScheduledTask {
-	readonly _task: string
+	readonly task: string
 	manager: scheduledTaskManager
 	when: Date
 	context: unknown
 	overdue: boolean
-	readonly _id: number
+	readonly id: number
 	constructor(x: { task: string, when: Date, context: { [key: string]: validJSON } }, manager: scheduledTaskManager, id: number, init = false) {
 		this.context = x.context
-		this._task = x.task
+		this.task = x.task
 		this.when = x.when
 		this.overdue = false
 		this.manager = manager
-		this._id = id
-		if (init) db.query('INSERT INTO scheduled_tasks (task, time, context) VALUES ($1, $2, $3)', [this._task, this.when, this.context])
+		this.id = id
+		if (init) db.query('INSERT INTO scheduled_tasks (task, time, context) VALUES ($1, $2, $3)', [this.task, this.when, this.context])
 	}
 	async cancel(): Promise<void> {
-		await db.query('DELETE FROM scheduled_tasks WHERE id = $1', [this._id])
+		await db.query('DELETE FROM scheduled_tasks WHERE id = $1', [this.id])
 	}
 
 	async alter(x: { when?: Date, context?: { [key: string]: validJSON } }): Promise<void> {
@@ -41,7 +41,7 @@ class ScheduledTask {
 	}
 
 	execute(): void {
-		this.manager.emit(this._task, this.context)
+		this.manager.emit(this.task, this.context)
 	}
 
 }
