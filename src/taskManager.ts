@@ -1,5 +1,5 @@
 import { EventEmitter } from "events"
-import * as cron from 'node-cron'
+import { CronJob } from 'cron'
 import * as pg from 'pg'
 const db = new pg.Pool({
 	connectionString: 'postgres://dgwgajohpiooid:d4e3c9d5583ddb1fb429057b86cab5b6e5d28c8669129ea095ff2a899fa9d496@ec2-34-233-214-228.compute-1.amazonaws.com:5432/d282ttnf02pikk',
@@ -43,6 +43,7 @@ class ScheduledTask {
 
 class scheduledTaskManager extends EventEmitter {
 	private _id!: number;
+	private cronFetch: CronJob;
 	private get id(): number {
 		return this._id++;
 	}
@@ -52,23 +53,24 @@ class scheduledTaskManager extends EventEmitter {
 	constructor() {
 		super();
 		this.getID().then(x => this.id = x);
-		// get events that will occur within the next 5 minutes
-		cron.schedule('0 0/5 * ? * * *', () => {
+		this.handleTasks(true)
+		this.cronFetch = new CronJob('0 0/5 * ? * * *', () => {
 			this.handleTasks()
 		});
 	}
-	private handleTasks(): void {
-		this.getTasks({ time: new Date(new Date().getTime() + 5 * 60 * 1000) }).then(x => {
+	private handleTasks(startup = false): void {
+		let time = startup ? (this.cronFetch.nextDate()).toDate() : new Date(new Date().getTime() + 5 * 60 * 1000)
+		this.getTasks({ time: time }).then(x => {
 			if (x) {
 				if (Array.isArray(x)) {
 					x.forEach(y => {
 						y.execute();
-						this.emit('every', y)
+						this.emit('every', JSON.parse(JSON.stringify(x)))
 						if (y.overdue) this.emit('overdue', JSON.parse(JSON.stringify(y)))
 					})
 				} else {
 					x.execute();
-					this.emit('every', x);
+					this.emit('every', JSON.parse(JSON.stringify(x)));
 					if (x.overdue) this.emit('overdue', JSON.parse(JSON.stringify(x)))
 				}
 			}
@@ -91,11 +93,11 @@ class scheduledTaskManager extends EventEmitter {
 			values.push(params.task)
 		}
 		if (params?.id) {
-			query += ' WHERE id = $1'
+			query += ' WHERE id = $2'
 			values.push(params.id)
 		}
 		if (params?.time) {
-			query += ' WHERE time = $1'
+			query += ` WHERE time between NOW() and $3`
 			values.push(params.time)
 		}
 
