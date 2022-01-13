@@ -1,7 +1,7 @@
 {
   "name": "gerard-scelzi",
   "description": "no",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "scripts": {
     "start": "cd build && node index.js",
     "inspect-start": "cd build && node --inspect index.js",

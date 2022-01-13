@@ -10,9 +10,8 @@ const db = new pg.Pool({
 db.connect()
 type validJSON = string | number | boolean | null | { [key: string]: validJSON } | Array<validJSON>
 interface getParams {
-	task?: string,
-	id?: number,
-	time?: Date,
+	query?: string,
+	values?: Array<any>
 	context?: { [key: string]: validJSON }
 }
 class ScheduledTask {
@@ -43,7 +42,7 @@ class ScheduledTask {
 
 class scheduledTaskManager extends EventEmitter {
 	private _id!: number;
-	private cronFetch: CronJob;
+	private cronJob: CronJob;
 	private get id(): number {
 		return this._id++;
 	}
@@ -54,13 +53,11 @@ class scheduledTaskManager extends EventEmitter {
 		super();
 		this.getID().then(x => this.id = x);
 		this.handleTasks(true)
-		this.cronFetch = new CronJob('0 0/5 * ? * * *', () => {
-			this.handleTasks()
-		});
+		this.cronJob = new CronJob('0 0/5 * ? * * *', () => this.handleTasks());
 	}
 	private handleTasks(startup = false): void {
-		let time = startup ? (this.cronFetch.nextDate()).toDate() : new Date(new Date().getTime() + 5 * 60 * 1000)
-		this.getTasks({ time: time }).then(x => {
+		let time = startup ? (this.cronJob.nextDate()).toDate() : new Date(new Date().getTime() + 5 * 60 * 1000)
+		this.getTasks({ query: 'WHERE time BETWEEN NOW() AND $1', values: [time] }).then(x => {
 			if (x) {
 				if (Array.isArray(x)) {
 					x.forEach(y => {
@@ -86,21 +83,8 @@ class scheduledTaskManager extends EventEmitter {
 	}
 
 	public async getTasks(params?: getParams): Promise<null | ScheduledTask | ScheduledTask[]> {
-		let query = 'SELECT * FROM scheduled_tasks'
-		let values: any[] = []
-		if (params?.task) {
-			query += ' WHERE task = $1'
-			values.push(params.task)
-		}
-		if (params?.id) {
-			query += ' WHERE id = $2'
-			values.push(params.id)
-		}
-		if (params?.time) {
-			query += ` WHERE time between NOW() and $3`
-			values.push(params.time)
-		}
-
+		let query = params ? `SELECT * FROM scheduled_tasks ${params.query ?? ''}` : 'SELECT * FROM scheduled_tasks';
+		let values = params ? params.values ?? [] : [];
 		let x = await db.query(query, values);
 		if (x.rows.length == 0) {
 			return null
@@ -109,7 +93,7 @@ class scheduledTaskManager extends EventEmitter {
 			let keys = Object.keys(params.context)
 			keys.forEach(key => {
 				x.rows = x.rows.filter(y => y.context[key] == params.context![key])
-			}) 
+			})
 		}
 		if (x.rows.length == 0) {
 			return null
@@ -120,5 +104,5 @@ class scheduledTaskManager extends EventEmitter {
 		return x.rows.map(x => new ScheduledTask({ task: x.task, when: x.time, context: x.context }, this, x.id))
 	}
 }
- 
+
 export default scheduledTaskManager
