@@ -1,5 +1,5 @@
 import { EventEmitter } from "events"
-//import * as cron from 'node-cron'
+import * as cron from 'node-cron'
 import * as pg from 'pg'
 const db = new pg.Pool({
 	connectionString: 'postgres://dgwgajohpiooid:d4e3c9d5583ddb1fb429057b86cab5b6e5d28c8669129ea095ff2a899fa9d496@ec2-34-233-214-228.compute-1.amazonaws.com:5432/d282ttnf02pikk',
@@ -36,7 +36,7 @@ class ScheduledTask {
 	}
 
 	execute(): void {
-		this.manager.emit(this.task, this.context)
+		this.manager.emit(this.task, JSON.parse(JSON.stringify(this)));
 	}
 
 }
@@ -51,7 +51,28 @@ class scheduledTaskManager extends EventEmitter {
 	}
 	constructor() {
 		super();
-		this.getID().then(x => this.id = x)
+		this.getID().then(x => this.id = x);
+		// get events that will occur within the next 5 minutes
+		cron.schedule('0 0/5 * ? * * *', () => {
+			this.handleTasks()
+		});
+	}
+	private handleTasks(): void {
+		this.getTasks({ time: new Date(new Date().getTime() + 5 * 60 * 1000) }).then(x => {
+			if (x) {
+				if (Array.isArray(x)) {
+					x.forEach(y => {
+						y.execute();
+						this.emit('every', y)
+						if (y.overdue) this.emit('overdue', JSON.parse(JSON.stringify(y)))
+					})
+				} else {
+					x.execute();
+					this.emit('every', x);
+					if (x.overdue) this.emit('overdue', JSON.parse(JSON.stringify(x)))
+				}
+			}
+		})
 	}
 	private async getID(): Promise<number> {
 		let x = await db.query('SELECT MAX(id) FROM scheduled_tasks')
@@ -97,5 +118,5 @@ class scheduledTaskManager extends EventEmitter {
 		return x.rows.map(x => new ScheduledTask({ task: x.task, when: x.time, context: x.context }, this, x.id))
 	}
 }
-
+ 
 export default scheduledTaskManager
