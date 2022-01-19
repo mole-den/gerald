@@ -56,8 +56,8 @@ class scheduledTaskManager extends EventEmitter {
 		this.cronJob = new CronJob('0 0/5 * ? * * *', () => this.handleTasks());
 	}
 	private handleTasks(startup = false): void {
-		let time = startup ? (this.cronJob.nextDate()).toDate() : new Date(new Date().getTime() + 5 * 60 * 1000)
-		this.getTasks({ query: 'WHERE time BETWEEN NOW() AND $1', values: [time] }).then(x => {
+		let time = startup ? `WHERE time < ${(this.cronJob.nextDate()).toISOString()}` : `WHERE time > now() + interval '5 minutes';`
+		this.getTasks({ query: time}).then(x => {
 			if (x) {
 				if (Array.isArray(x)) {
 					x.forEach(y => {
