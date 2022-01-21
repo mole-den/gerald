@@ -1,17 +1,11 @@
 import * as discord from 'discord.js';
-import Bugsnag from '@bugsnag/js';
 import * as pg from 'pg';
 import * as sapphire from '@sapphire/framework';
 import * as lux from 'luxon';
 import { Cache, membersCache, cacheType } from './caches';
 import { scheduledTaskManager } from './taskManager'
 //import crypto from "crypto";
-Bugsnag.start({
-	apiKey: <string>process.env.BUGSNAG_API_KEY,
-	appType: 'worker',
-	releaseStage: 'production',
-	appVersion: (require('../package.json') as any).version,
-})
+
   
 process.on('SIGTERM', async () => {
 	console.log('SIGTERM received');
@@ -38,7 +32,6 @@ export const bot = new sapphire.SapphireClient({
 			let x = await guildDataCache.get(message.guild.id, cacheType.prefix);
 			return x
 		} catch (error) {
-			Bugsnag.notify(error as any);
 			if (!message.guild) return 'g!';
 			await guildDataCache.new(message.guild.id);
 			let x = await guildDataCache.get(message.guild.id, cacheType.prefix);
@@ -172,7 +165,6 @@ bot.on('commandError', (error, payload) => {
 	if (error instanceof sapphire.UserError) {
 		payload.message.channel.send(error.message)
 	} else {
-		Bugsnag.notify(error as any);
 		payload.message.channel.send(`Unhandled exception:\n${(error as any).message}`)
 	}
 });
