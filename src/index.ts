@@ -300,52 +300,7 @@ bot.on('messageDeleteBulk', async (array) => {
 	console.log('Ready')
 })();
 
-export namespace response {
-	interface baseResponseOptions {
-		ttl?: number,
-		content?: string
-		replyTo?: boolean,
-	};
-	//type messageGroup = Array<string | responseOptions>
-	interface responseOptions extends baseResponseOptions, Omit<Omit<discord.MessageOptions, 'embeds'
-		| 'components' | 'reply'>, keyof baseResponseOptions> { };
-
-	export class Response {
-		private message: discord.Message;
-		private response?: discord.Message;
-		constructor(message: discord.Message) {
-			this.message = message;
-		}
-		public async send(content: string, options?: responseOptions): Promise<discord.Message> {
-			if (options === undefined) return this.message.channel.send(content)
-			options!.content = content
-			if (options.replyTo) {
-				this.response = await this.message.reply(options);
-			} else {
-				this.response = await this.message.channel.send(options)
-			}
-			if (options.ttl) setTimeout(() => {
-				this.response!.delete();
-			}, options.ttl);
-
-			return this.response!;
-		}
-		public async awaitNext(authorOnly: boolean = true): Promise<discord.Message | null> {
-			let filter = ((authorOnly === true) ? (m: discord.Message) => m.author.id === this.message.author.id : () => true)
-			let x = (await this.message.channel.awaitMessages({
-				filter: filter,
-				max: 1,
-				time: 15000
-			})).first();
-			return x ? x : null
-		}
-		//public async sendGroup(group: messageGroup): Promise<discord.Message[]> {}
-	}
-
-}
-
 //zac very cringe
 //gustavo cringe
 //gerald cringe
 //gerard not cringe
-
