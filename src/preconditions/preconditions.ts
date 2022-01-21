@@ -1,6 +1,7 @@
 import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
-import { cacheType, db, guildDataCache } from '../index';
+import { db, guildDataCache } from '../index';
+import { cacheType } from '../caches';
 import { ApplyOptions } from '@sapphire/decorators';
 db;
 ///<reference types="../index"/>

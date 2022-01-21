@@ -1,7 +1,8 @@
 import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
 import { SubCommandPluginCommand, SubCommandPluginCommandOptions } from '@sapphire/plugin-subcommands';
-import { durationToMS, guildDataCache, db, getRandomArbitrary, cacheType, bot, cleanMentions, response, sleep, memberCache, durationStringCreator } from '../index';
+import { durationToMS, guildDataCache, db, getRandomArbitrary, bot, cleanMentions, response, sleep, memberCache, durationStringCreator } from '../index';
+import { cacheType } from '../caches';
 import { ApplyOptions } from '@sapphire/decorators';
 import * as lux from 'luxon';
 import * as voice from '@discordjs/voice';
@@ -260,10 +261,6 @@ export class queryCommand extends sapphire.Command {
         let res = new response.Response(message);
         let str = message.content;
         let out = str.substring(str.indexOf('```') + 3, str.lastIndexOf('```'));
-        if (message.author.id !== "471907923056918528" && message.author.id !== "811413512743813181") {
-            message.channel.send('You do not have permission to do this');
-            return;
-        }
         let data = await db.query(out);
         let JSONdata = JSON.stringify(data.rows, null, 1);
         if (JSONdata?.length && JSONdata.length < 2000) {
