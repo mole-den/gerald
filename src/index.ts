@@ -5,8 +5,6 @@ import * as lux from 'luxon';
 import { Cache, membersCache, cacheType } from './caches';
 import { scheduledTaskManager } from './taskManager'
 //import crypto from "crypto";
-
-  
 process.on('SIGTERM', async () => {
 	console.log('SIGTERM received');
 	bot.fetchPrefix = async () => {
@@ -32,6 +30,7 @@ export const bot = new sapphire.SapphireClient({
 			let x = await guildDataCache.get(message.guild.id, cacheType.prefix);
 			return x
 		} catch (error) {
+			console.error(error)
 			if (!message.guild) return 'g!';
 			await guildDataCache.new(message.guild.id);
 			let x = await guildDataCache.get(message.guild.id, cacheType.prefix);
@@ -165,6 +164,7 @@ bot.on('commandError', (error, payload) => {
 	if (error instanceof sapphire.UserError) {
 		payload.message.channel.send(error.message)
 	} else {
+		console.error(error);
 		payload.message.channel.send(`Unhandled exception:\n${(error as any).message}`)
 	}
 });
