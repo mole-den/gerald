@@ -2,11 +2,15 @@ import * as discord from 'discord.js';
 import * as pg from 'pg';
 import * as sapphire from '@sapphire/framework';
 import * as lux from 'luxon';
+import Rollbar from 'rollbar';
 import { Cache, membersCache, cacheType } from './caches';
 import { scheduledTaskManager } from './taskManager'
 //import crypto from "crypto";
-
-  
+const rollbar = new Rollbar({
+	accessToken: process.env.ROLLBAR_TOKEN!,
+	captureUncaught: true,
+	captureUnhandledRejections: true,
+})
 process.on('SIGTERM', async () => {
 	console.log('SIGTERM received');
 	bot.fetchPrefix = async () => {
@@ -32,6 +36,7 @@ export const bot = new sapphire.SapphireClient({
 			let x = await guildDataCache.get(message.guild.id, cacheType.prefix);
 			return x
 		} catch (error) {
+			rollbar.error(error as any)
 			if (!message.guild) return 'g!';
 			await guildDataCache.new(message.guild.id);
 			let x = await guildDataCache.get(message.guild.id, cacheType.prefix);
@@ -165,6 +170,7 @@ bot.on('commandError', (error, payload) => {
 	if (error instanceof sapphire.UserError) {
 		payload.message.channel.send(error.message)
 	} else {
+		rollbar.error(error as any)
 		payload.message.channel.send(`Unhandled exception:\n${(error as any).message}`)
 	}
 });
