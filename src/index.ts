@@ -264,7 +264,10 @@ export const db = new pg.Pool({
 		rejectUnauthorized: false
 	}
 });
-
+pg.types.setTypeParser(pg.types.builtins.TIMESTAMP, (val) => {
+	val = val + ' GMT'
+	return lux.DateTime.fromSQL(val)
+})
 export function getRandomArbitrary(min: number, max: number) {
 	return Math.round(Math.random() * (max - min) + min);
 };
