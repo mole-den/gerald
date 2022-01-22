@@ -125,18 +125,6 @@ export function cleanMentions(str: string): string {
 export let guildDataCache: Cache
 export let memberCache: membersCache
 export let taskScheduler: scheduledTaskManager
-bot.on('ready', () => {
-	bot.guilds.fetch().then(async (g) => {
-		g.each(async (guild) => {
-			let x = await guild.fetch();
-			let channels = (await x.channels.fetch()).filter(c => c.type === 'GUILD_TEXT');
-			channels.each(async (ch) => {
-				let c = (await ch.fetch() as discord.TextChannel);
-				c.messages.fetch({ limit: 100 })
-			})
-		})
-	})
-});
 
 export const db = new pg.Pool({
 	connectionString: <string>process.env.DATABASE_URL,
