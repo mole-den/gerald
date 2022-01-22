@@ -287,8 +287,8 @@ bot.on('messageDeleteBulk', async (array) => {
 	memberCache = new membersCache(180000);
 	console.log('Loaded caches');
 	await sleep(5000);
-	taskScheduler = new scheduledTaskManager()
 	await bot.login(process.env.TOKEN);
+	taskScheduler = new scheduledTaskManager()
 	console.log('Ready')
 })();
 
