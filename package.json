@@ -5,7 +5,7 @@
   "scripts": {
     "start": "cd build && node index.js",
     "inspect-start": "cd build && node --inspect index.js",
-    "postinstall": "tsc && npx bugsnag-source-maps upload-node --api-key $BUGSNAG_API_KEY --detect-app-version --overwrite --directory build"
+    "postinstall": "tsc"
   },
   "dependencies": {
     "@bugsnag/js": "^7.14.1",
