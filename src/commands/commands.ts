@@ -346,8 +346,8 @@ export class infoCommand extends sapphire.Command {
             let embed = new discord.MessageEmbed()
                 .setColor('#0099ff')
                 .setTitle('Help')
-                .setDescription('')
-                .setFooter({text: 'Use `help <command>` to get more information on a command'});
+                .addField('Commands:' , bot.stores.get('commands').map(c => c.name).join('`, `'), true)
+                .setFooter({ text: 'Use `help <command>` to get more information on a command' });
             return message.channel.send({
                 embeds: [embed]
             });
@@ -363,9 +363,9 @@ export class infoCommand extends sapphire.Command {
             .addField('Command aliases', aliases, true)
             .addField('Description', (cmd.description === "") ? 'null ' : cmd.description, true)
             .addField('Usage', (cmd.detailedDescription === "") ? 'null ' : cmd.detailedDescription, true);
-            return message.channel.send({
-                embeds: [embed]
-            })
+        return message.channel.send({
+            embeds: [embed]
+        })
     }
 }
 
