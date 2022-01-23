@@ -17,6 +17,7 @@ process.on('SIGTERM', async () => {
 });
 
 export const bot = new sapphire.SapphireClient({
+	typing: true,
 	intents: new discord.Intents([discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS, discord.Intents.FLAGS.GUILD_MESSAGES,
 		discord.Intents.FLAGS.DIRECT_MESSAGES, discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
 		discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS]),
