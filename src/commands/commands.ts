@@ -359,8 +359,8 @@ export class infoCommand extends sapphire.Command {
             .setColor('#0099ff')
             .setTitle(`Help for ${cmd.name}`)
             .addField('Command aliases', cmd.aliases.join(', '), true)
-            .addField('Description', cmd.description, true)
-            .addField('Usage', cmd.detailedDescription, true);
+            .addField('Description', (cmd.description == '') ? 'null ' : cmd.description, true)
+            .addField('Usage', (cmd.detailedDescription == '') ? 'null ' : cmd.detailedDescription, true);
             return message.channel.send({
                 embeds: [embed]
             })
