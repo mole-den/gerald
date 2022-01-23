@@ -138,8 +138,13 @@ export function getRandomArbitrary(min: number, max: number) {
 
 bot.on('ready', () => {
 	console.log(`Logged in as ${bot.user?.tag}`);
-	bot.user?.setActivity('ghelp', { type: 'LISTENING' });
-	bot.user?.setStatus('dnd');
+	bot.user?.setPresence({
+		activities: [{
+			name: 'ghelp',
+			type: 'LISTENING'
+		}],
+		status: 'dnd',
+	})
 });
 
 bot.on('commandDenied', ({ context, message: content }: sapphire.UserError, { message }: sapphire.CommandDeniedPayload) => {
