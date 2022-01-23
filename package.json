@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "cd build && node index.js",
-    "inspect-start": "cd build && node --inspect index.js",
+    "inspect-start": "cd build && node --inspect=$PORT index.js",
     "postinstall": "tsc"
   },
   "dependencies": {
