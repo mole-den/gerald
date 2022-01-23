@@ -5,7 +5,6 @@ import { durationToMS, db, getRandomArbitrary, bot, cleanMentions, memberCache, 
 import { ApplyOptions } from '@sapphire/decorators';
 import * as lux from 'luxon';
 import * as voice from '@discordjs/voice';
-import * as crypto from 'crypto';
 ///<reference types="../index"/>
 voice;
 
@@ -334,23 +333,6 @@ export class infoCommand extends sapphire.Command {
         await db.query('select 1;')
         let elapsed = Date.now() - start;
         message.channel.send(`**Uptime:** ${uptimeString}\n**Websocket heartbeat:** ${bot.ws.ping}ms\n**Database heartbeat:** ${elapsed}ms`);
-    }
-}
-
-
-@ApplyOptions<sapphire.CommandOptions>({
-    name: 'setup',
-    enabled: false
-}) export class setupCommand extends sapphire.Command {
-    public async messageRun(message: discord.Message, args: sapphire.Args) {
-        let i = args.next();
-        if (i === 'delmsgkey') {
-            message.channel.send(`Regenerating keys`);
-            message.channel.send(`All stored messages will become inaccessible after new keys are generated`)
-            let x = crypto.createDiffieHellman(120);
-            x.generateKeys('base64');
-            db.query(`UPDATE guilds SET delmsg_public_key = $1 WHERE guildid = $2`, [x.getPublicKey('base64'), message.guild!.id]);
-        }
     }
 }
 
