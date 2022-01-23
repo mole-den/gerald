@@ -296,7 +296,7 @@ export class sammyCommand extends sapphire.Command {
 })
 export class repoCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
-        message.channel.send(`https://github.com/ofoxsmith/gerard-scelzi`);
+        message.channel.send(`https://github.com/mole-den/Gerald`);
     }
 }
 
@@ -340,8 +340,30 @@ export class infoCommand extends sapphire.Command {
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'help',
 }) export class helpCommand extends sapphire.Command {
-    public async messageRun(message: discord.Message) {
-        message.channel.send("Not implemented yet");
+    public async messageRun(message: discord.Message, args: sapphire.Args) {
+        let maybe = args.nextMaybe();
+        if (!maybe.exists) {
+            let embed = new discord.MessageEmbed()
+                .setColor('#0099ff')
+                .setTitle('Help')
+                .setDescription('')
+                .setFooter({text: 'Use `help <command>` to get more information on a command'});
+            return message.channel.send({
+                embeds: [embed]
+            });
+        }
+        let command = maybe.value;
+        let cmd = bot.stores.get('commands').find(cmd => cmd.name === command || cmd.aliases.includes(command));
+        if (!cmd) return message.channel.send(`Command \`${command}\` not found`);
+        let embed = new discord.MessageEmbed()
+            .setColor('#0099ff')
+            .setTitle(`Help for ${cmd.name}`)
+            .addField('Command aliases', cmd.aliases.join(', '), true)
+            .addField('Description', cmd.description, true)
+            .addField('Usage', cmd.detailedDescription, true);
+            return message.channel.send({
+                embeds: [embed]
+            })
     }
 }
 
