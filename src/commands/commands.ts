@@ -346,7 +346,7 @@ export class infoCommand extends sapphire.Command {
             let embed = new discord.MessageEmbed()
                 .setColor('#0099ff')
                 .setTitle('Help')
-                .addField('Commands:' , bot.stores.get('commands').filter(c => !c.fullCategory.includes("_hidden")).map(c => c.name).join(','), true)
+                .addField('Commands:' , bot.stores.get('commands').filter(c => !c.fullCategory.includes("_hidden")).map(c => `*${c.name}*`).join(', '), true)
                 .setFooter({ text: 'Use `help <command>` to get more information on a command' });
             return message.channel.send({
                 embeds: [embed]
