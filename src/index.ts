@@ -136,6 +136,11 @@ export function getRandomArbitrary(min: number, max: number) {
 	return Math.round(Math.random() * (max - min) + min);
 };
 
+bot.on('ready', () => {
+	console.log(`Logged in as ${bot.user?.tag}`);
+	bot.user?.setActivity('ghelp', { type: 'LISTENING' });
+	bot.user?.setStatus('dnd');
+});
 
 bot.on('commandDenied', ({ context, message: content }: sapphire.UserError, { message }: sapphire.CommandDeniedPayload) => {
 	// `context: { silent: true }` should make UserError silent:
