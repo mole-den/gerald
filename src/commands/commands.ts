@@ -356,13 +356,13 @@ export class infoCommand extends sapphire.Command {
         let cmd = bot.stores.get('commands').find(cmd => cmd.name === command || cmd.aliases.includes(command));
         if (!cmd) return message.channel.send(`Command \`${command}\` not found`);
         message.channel.send(JSON.stringify(cmd))
-        let aliases = cmd.aliases ? cmd.aliases.join(', ') : 'None';
+        let aliases = cmd.aliases !== [] ? cmd.aliases.join(', ') : 'None';
         let embed = new discord.MessageEmbed()
             .setColor('#0099ff')
             .setTitle(`Help for ${cmd.name}`)
             .addField('Command aliases', aliases, true)
-            .addField('Description', (cmd.description) ? 'null ' : cmd.description, true)
-            .addField('Usage', (cmd.detailedDescription) ? 'null ' : cmd.detailedDescription, true);
+            .addField('Description', (cmd.description === "") ? 'null ' : cmd.description, true)
+            .addField('Usage', (cmd.detailedDescription === "") ? 'null ' : cmd.detailedDescription, true);
             return message.channel.send({
                 embeds: [embed]
             })
