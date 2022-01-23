@@ -2,8 +2,8 @@ import * as discord from 'discord.js';
 import * as pg from 'pg';
 import * as sapphire from '@sapphire/framework';
 import * as lux from 'luxon';
-import { Cache, membersCache, cacheType } from './caches';
 import { scheduledTaskManager } from './taskManager'
+import { membersCache } from './caches';
 //import crypto from "crypto";
 process.on('SIGTERM', async () => {
 	console.log('SIGTERM received');
@@ -26,15 +26,11 @@ export const bot = new sapphire.SapphireClient({
 			return ['', 'g!'];
 		}
 		try {
-			if (!message.guild) return 'g!';
-			let x = await guildDataCache.get(message.guild.id, cacheType.prefix);
-			return x
+			let x = await db.query('SELECT prefix FROM guilds WHERE guildid = $1', [message.guild!.id]);
+			return x.rows[0].prefix;
 		} catch (error) {
 			console.error(error)
-			if (!message.guild) return 'g!';
-			await guildDataCache.new(message.guild.id);
-			let x = await guildDataCache.get(message.guild.id, cacheType.prefix);
-			return x
+			return 'g';
 		}
 	},
 	defaultCooldown: {
@@ -122,7 +118,6 @@ export function cleanMentions(str: string): string {
 };
 
 
-export let guildDataCache: Cache
 export let memberCache: membersCache
 export let taskScheduler: scheduledTaskManager
 
@@ -174,7 +169,6 @@ bot.on('guildCreate', async (guild) => {
 		db.query(`INSERT INTO members (guild, userid) VALUES ($1, $2)`,
 			[guild.id, mem.id]);
 	})
-	guildDataCache.new(guild.id);
 	memberCache.add(guild.id)
 	guild.channels.fetch().then(async (channels) => {
 		channels.each(async (ch) => {
@@ -271,9 +265,7 @@ bot.on('messageDeleteBulk', async (array) => {
 	console.log('Starting...')
 	await db.connect()
 	console.log('Connected to database')
-	guildDataCache = new Cache(1800);
-	memberCache = new membersCache(180000);
-	console.log('Loaded caches');
+	memberCache = new membersCache(18000)
 	await sleep(5000);
 	await bot.login(process.env.TOKEN);
 	taskScheduler = new scheduledTaskManager()

@@ -1,7 +1,6 @@
 import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
-import { db, guildDataCache } from '../index';
-import { cacheType } from '../caches';
+import { db } from '../index';
 import { ApplyOptions } from '@sapphire/decorators';
 db;
 ///<reference types="../index"/>
@@ -65,7 +64,7 @@ declare module '@sapphire/framework' {
 export class checkDisabledCondition extends sapphire.Precondition {
     public async run(message: discord.Message, command: sapphire.Command) {
         if (message.channel.type === 'DM') return this.ok()
-        let disabled = await guildDataCache.get(message.guild!.id, cacheType.disabled)
+        let disabled = <string>(await db.query('SELECT disabled FROM guilds WHERE guildid = $1', [message.guild!.id])).rows[0].disabled;
         let x = disabled.split(' ');
         if (x.some(x => x === command.name)) return this.error({
             message: `This command is disabled in this server.`,

@@ -1,8 +1,7 @@
 import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
 import { SubCommandPluginCommand, SubCommandPluginCommandOptions } from '@sapphire/plugin-subcommands';
-import { durationToMS, guildDataCache, db, getRandomArbitrary, bot, cleanMentions, memberCache, durationStringCreator } from '../index';
-import { cacheType } from '../caches';
+import { durationToMS, db, getRandomArbitrary, bot, cleanMentions, memberCache, durationStringCreator } from '../index';
 import { ApplyOptions } from '@sapphire/decorators';
 import * as lux from 'luxon';
 import * as voice from '@discordjs/voice';
@@ -266,11 +265,11 @@ export class prefixCommand extends sapphire.Command {
     public async messageRun(message: discord.Message, args: sapphire.Args) {
         let x = args.nextMaybe()
         if (!x.exists) {
-            let prefix = await guildDataCache.get(message.guild!.id, cacheType.prefix);
-            message.channel.send(`The prefix for this server is \`${prefix}\``);
+            let prefix = await db.query('SELECT prefix FROM guilds WHERE guildid = $1', [message.guild!.id])
+            message.channel.send(`The prefix for this server is \`${prefix.rows[0].prefix}\``);
             return
         }
-        guildDataCache.change(message.guild!.id, cacheType.prefix, x.value);
+        db.query('UPDATE guilds SET prefix = $2 WHERE guildid = $1', [message.guild!.id, x.value])
         message.channel.send(`Changed prefix for ${message.guild!.name} to ${x.value}`);
     }
 }
@@ -431,11 +430,11 @@ export class commandsManagerCommand extends SubCommandPluginCommand {
             message.channel.send(`This command cannot be disabled.`)
             return;
         }
-        let i = (await guildDataCache.get(message.guild!.id, cacheType.disabled)).split('');
+        let i = (<string>(await db.query('SELECT disabled FROM guilds WHERE guildid = $1', [message.guild!.id])).rows[0].disabled).split('');
         i.some(x => x === cmd.value!) ? (() => {
             throw new sapphire.UserError({ identifier: 'invalid', message: 'Command already disabled' })
         }) : i.push(cmd.value!);
-        guildDataCache.change(message.guild!.id, cacheType.disabled, i.join(' '));
+        db.query('UPDATE guilds SET disabled = $1 WHERE guildid = $2', [i.join(''), message.guild!.id]);
         return message.channel.send(`Disabled command **${cmd.value!}**`)
     }
 
@@ -444,8 +443,8 @@ export class commandsManagerCommand extends SubCommandPluginCommand {
         if (cmd.exists === false) throw new sapphire.UserError({ identifier: 'invalidsyntax', message: 'Specify a command to enable' });
         let command = this.container.stores.get('commands').find(value => value.name === cmd.value);
         if (!command) return message.channel.send('Command not found');
-        let i = (await guildDataCache.get(message.guild!.id, cacheType.disabled)).split(' ');
-        guildDataCache.change(message.guild!.id, cacheType.disabled, i.filter(x => x !== cmd.value).join(' '));
+        let i = (<string>(await db.query('SELECT disabled FROM guilds WHERE guildid = $1', [message.guild!.id])).rows[0].disabled).split(' ');
+        db.query('UPDATE guilds SET disabled = $1 WHERE guildid = $2', [i.filter(x => x !== cmd.value).join(' '), message.guild!.id]);
         return message.channel.send(`Enabled command **${cmd.value!}**`)
     }
     public async status(message: discord.Message) {
