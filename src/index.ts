@@ -24,7 +24,7 @@ export const bot = new sapphire.SapphireClient({
 	partials: ["CHANNEL"],
 	fetchPrefix: async (message: discord.Message): Promise<string | Array<string>> => {
 		if (message.channel.type === 'DM') {
-			return ['', 'g!'];
+			return ['', 'g'];
 		}
 		try {
 			let x = await db.query('SELECT prefix FROM guilds WHERE guildid = $1', [message.guild!.id]);
