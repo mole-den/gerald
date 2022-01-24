@@ -5,7 +5,7 @@ import { durationToMS, db, getRandomArbitrary, bot, cleanMentions, memberCache, 
 import { ApplyOptions } from '@sapphire/decorators';
 import * as lux from 'luxon';
 import * as voice from '@discordjs/voice';
-import * as time from '@sapphire/time-utilities'
+import * as time from '@sapphire/time-utilities';
 ///<reference types="../index"/>
 voice;
 time;
@@ -17,7 +17,6 @@ let permissionsPrecondition = (...args: discord.PermissionResolvable[]) => {
     });
     return preconditionArray
 };
-
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'dismount',
     fullCategory: ['_enabled', '_owner'],
@@ -359,13 +358,13 @@ export class infoCommand extends sapphire.Command {
         let cmd = bot.stores.get('commands').find(cmd => cmd.name === command || cmd.aliases.includes(command));
         if (!cmd) return message.channel.send(`Command \`${command}\` not found`);
         message.channel.send(JSON.stringify(cmd))
-        let aliases = cmd.aliases !== [] ? cmd.aliases.join(', ') : 'None';
+        let aliases = (cmd.aliases !== []) ? cmd.aliases.join(', ') : 'None';
         let embed = new discord.MessageEmbed()
             .setColor('#0099ff')
             .setTitle(`Help for ${cmd.name}`)
             .addField('Command aliases', aliases, true)
-            .addField('Description', (cmd.description === "") ? 'null ' : cmd.description, true)
-            .addField('Usage', (cmd.detailedDescription === "") ? 'null ' : cmd.detailedDescription, true);
+            .addField('Description', ((cmd.description === "") ? 'null ' : cmd.description), true)
+            .addField('Usage', ((cmd.detailedDescription === "") ? 'null ' : cmd.detailedDescription), true);
         return message.channel.send({
             embeds: [embed]
         })
