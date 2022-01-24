@@ -1,13 +1,14 @@
 import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
 import { SubCommandPluginCommand, SubCommandPluginCommandOptions } from '@sapphire/plugin-subcommands';
-import { durationToMS, db, getRandomArbitrary, bot, cleanMentions, memberCache, durationStringCreator } from '../index';
+import { durationToMS, db, getRandomArbitrary, bot, cleanMentions, memberCache, durationStringCreator, taskScheduler } from '../index';
 import { ApplyOptions } from '@sapphire/decorators';
 import * as lux from 'luxon';
 import * as voice from '@discordjs/voice';
+import * as time from '@sapphire/time-utilities'
 ///<reference types="../index"/>
 voice;
-
+time;
 let permissionsPrecondition = (...args: discord.PermissionResolvable[]) => {
     let preconditionArray: Array<sapphire.PreconditionEntryResolvable> = [];
     preconditionArray.push('override')
@@ -162,10 +163,12 @@ export class smiteCommand extends SubCommandPluginCommand {
             await db.query(`INSERT INTO punishments (member, guild, type, reason, created_time, ends) VALUES ($1, $2, $3, $4, $5, $6) `,
                 [user.id, message.guild!.id, 'blist', strReason, new Date(), endsDate]);
             message.guild!.bans.create(user, { reason: strReason, days: 0 });
+            if (endsDate) taskScheduler.newTask({'task': 'unban', when: lux.DateTime.fromJSDate(endsDate), context: {'guild': message.guild!.id, 'user': user.id}});
             message.channel.send(`${user.user.username} has been added to the blacklist and banned ${(time === null) ? '' : durationStringCreator(lux.DateTime.now(), lux.DateTime.fromJSDate(endsDate!))}\nProvided reason: ${strReason}`);
         } else {
             await db.query(`INSERT INTO punishments (member, guild, type, reason, created_time, ends) VALUES ($1, $2, $3, $4, $5, $6) `,
                 [user.id, message.guild!.id, 'blist', strReason, new Date(), endsDate]);
+                if (endsDate) taskScheduler.newTask({'task': 'unban', when: lux.DateTime.fromJSDate(endsDate), context: {'guild': message.guild!.id, 'user': user.id}});
             message.channel.send(`${user.username} has been added to the blacklist and banned ${(time === null) ? '' : durationStringCreator(lux.DateTime.now(), lux.DateTime.fromJSDate(endsDate!))}\nProvided reason: ${strReason}`);
         };
         return;
@@ -226,7 +229,7 @@ export class smiteCommand extends SubCommandPluginCommand {
 
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'query',
-    fullCategory: ['_enabled', '_owner'],
+    fullCategory: ['_enabled', '_owner', '_hidden'],
     description: 'Runs SQL input against database',
     requiredClientPermissions: [],
     preconditions: ['OwnerOnly']
