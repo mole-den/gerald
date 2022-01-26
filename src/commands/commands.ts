@@ -363,7 +363,7 @@ export class infoCommand extends sapphire.Command {
     name: 'commands',
     aliases: ['cmds', 'command'],
     fullCategory: ['_enabled'],
-    description: '',
+    description: 'Allows management of commands and other bot features',
     requiredUserPermissions: 'ADMINISTRATOR',
     preconditions: ['GuildOnly'],
     subCommands: ['disable', 'enable', 'status'],
@@ -375,9 +375,9 @@ export class commandsManagerCommand extends SubCommandPluginCommand {
         if (cmd.exists === false) {
             throw new sapphire.UserError({ identifier: 'invalidsyntax', message: 'Specify a command to disable' });
         }
-        let command = this.container.stores.get('commands').find(value => value.name === cmd.value);
-        if (!command) return message.channel.send('Command not found');
-        if (command.fullCategory.some(x => x === '_enabled')) {
+        let command = this.container.stores.get('commands').find(value => value.name === cmd.value)
+        if (!command || command.fullCategory.includes('_hidden')) return message.channel.send('Command not found');
+        if (command.fullCategory.some(x => x === '_enabled' )) {
             message.channel.send(`This command cannot be disabled.`)
             return;
         }
