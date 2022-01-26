@@ -296,7 +296,7 @@ export class infoCommand extends sapphire.Command {
     public async messageRun(message: discord.Message, args: sapphire.Args) {
         let maybe = args.nextMaybe();
         if (!maybe.exists) {
-            let items: Array<discord.EmbedFieldData> = bot.stores.get('commands').map((x) => {
+            let items: Array<discord.EmbedFieldData> = bot.stores.get('commands').filter(cmd => cmd.fullCategory.includes('_hidden') === false).map((x) => {
                 return {
                     name: x.name,
                     value: x.description,
