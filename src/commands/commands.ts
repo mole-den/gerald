@@ -162,12 +162,12 @@ export class smiteCommand extends SubCommandPluginCommand {
             await db.query(`INSERT INTO punishments (member, guild, type, reason, created_time, ends) VALUES ($1, $2, $3, $4, $5, $6) `,
                 [user.id, message.guild!.id, 'blist', strReason, new Date(), endsDate]);
             message.guild!.bans.create(user, { reason: strReason, days: 0 });
-            if (endsDate) taskScheduler.newTask({'task': 'unban', when: lux.DateTime.fromJSDate(endsDate), context: {'guild': message.guild!.id, 'user': user.id}});
+            if (endsDate) taskScheduler.newTask({ 'task': 'unban', when: lux.DateTime.fromJSDate(endsDate), context: { 'guild': message.guild!.id, 'user': user.id } });
             message.channel.send(`${user.user.username} has been added to the blacklist and banned ${(time === null) ? '' : durationStringCreator(lux.DateTime.now(), lux.DateTime.fromJSDate(endsDate!))}\nProvided reason: ${strReason}`);
         } else {
             await db.query(`INSERT INTO punishments (member, guild, type, reason, created_time, ends) VALUES ($1, $2, $3, $4, $5, $6) `,
                 [user.id, message.guild!.id, 'blist', strReason, new Date(), endsDate]);
-                if (endsDate) taskScheduler.newTask({'task': 'unban', when: lux.DateTime.fromJSDate(endsDate), context: {'guild': message.guild!.id, 'user': user.id}});
+            if (endsDate) taskScheduler.newTask({ 'task': 'unban', when: lux.DateTime.fromJSDate(endsDate), context: { 'guild': message.guild!.id, 'user': user.id } });
             message.channel.send(`${user.username} has been added to the blacklist and banned ${(time === null) ? '' : durationStringCreator(lux.DateTime.now(), lux.DateTime.fromJSDate(endsDate!))}\nProvided reason: ${strReason}`);
         };
         return;
@@ -348,23 +348,24 @@ export class infoCommand extends sapphire.Command {
             let embed = new discord.MessageEmbed()
                 .setColor('#0099ff')
                 .setTitle('Help')
-                .addField('Commands:' , bot.stores.get('commands').filter(c => !c.fullCategory.includes("_hidden")).map(c => `*${c.name}*`).join(', '), true)
+                .addField('Commands:', bot.stores.get('commands').filter(c => !c.fullCategory.includes("_hidden")).map(c => `*${c.name}*`).join(', '), true)
                 .setFooter({ text: 'Use `help <command>` to get more information on a command' });
             return message.channel.send({
                 embeds: [embed]
             });
         }
         let command = maybe.value;
-        let cmd = bot.stores.get('commands').find(cmd => cmd.name === command || cmd.aliases.includes(command));
+        let cmd = bot.stores.get('commands').find(cmd => (cmd.name === command || cmd.aliases.includes(command)) && !cmd.fullCategory.includes("_hidden"));
         if (!cmd) return message.channel.send(`Command \`${command}\` not found`);
-        message.channel.send(JSON.stringify(cmd))
-        let aliases = (cmd.aliases !== []) ? cmd.aliases.join(', ') : 'None';
         let embed = new discord.MessageEmbed()
             .setColor('#0099ff')
-            .setTitle(`Help for ${cmd.name}`)
-            .addField('Command aliases', aliases, true)
-            .addField('Description', ((cmd.description === "") ? 'null ' : cmd.description), true)
-            .addField('Usage', ((cmd.detailedDescription === "") ? 'null ' : cmd.detailedDescription), true);
+            .setTitle(`Help for **${cmd.name}**`);
+        if (cmd.aliases) embed.addField('Command aliases', cmd.aliases.join(', '), true);
+        else embed.addField('Command aliases', 'None', true);
+        if (cmd.description) embed.addField('Description', cmd.description, true);
+        else embed.addField('Description', 'null', true);
+        if (cmd.detailedDescription) embed.addField('Usage', (cmd.detailedDescription), true);
+        else embed.addField('Usage', 'null', true);
         return message.channel.send({
             embeds: [embed]
         })
@@ -391,13 +392,9 @@ export class infoCommand extends sapphire.Command {
     public async messageRun(message: discord.Message, args: sapphire.Args) {
         let opt = args.nextMaybe()
         if (opt.exists && opt.value === 'user') {
-            let x = await message.guild!.roles.fetch("922404443469795379")
-            let y = await message.guild!.roles.fetch("920849686909321226");
             let i = await message.guild!.roles.fetch("915746575689588827")
-            if (!x || !y || !i) return;
+            if (!i) return;
             let member: Array<string> = []
-            y.members.each((mem) => member.push(mem.user.username));
-            x.members.each((mem) => member.push(mem.user.username));
             i.members.each((mem) => member.push(mem.user.username));
             member.push('nobody');
             let uniq = [...new Set(member)];
