@@ -1,5 +1,5 @@
 {
-  "name": "gerard-scelzi",
+  "name": "gerald",
   "description": "no",
   "version": "1.0.0",
   "scripts": {
@@ -27,9 +27,6 @@
     "@types/luxon": "^2.0.5",
     "@types/node-cron": "^3.0.0",
     "@types/pg": "^8.6.4",
-    "typescript": "^4.4.3"
-  },
-  "engines": {
-    "node": "16.10.0"
+    "typescript": "^4.5.5"
   }
 }
