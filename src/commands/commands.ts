@@ -92,7 +92,7 @@ export class DeletedMSGCommand extends sapphire.Command {
 
 @ApplyOptions<SubCommandPluginCommandOptions>({
     name: 'smite',
-    description: '',
+    description: 'Allows management and creation of bans',
     requiredClientPermissions: ['BAN_MEMBERS'],
     requiredUserPermissions: ['BAN_MEMBERS'],
     preconditions: ['GuildOnly'],
@@ -242,6 +242,7 @@ export class prefixCommand extends sapphire.Command {
 
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'repo',
+    description: 'Shows the bot\'s source code',
 })
 export class repoCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
@@ -251,6 +252,7 @@ export class repoCommand extends sapphire.Command {
 
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'invite',
+    description: 'Shows the bot\'s invite link',
 })
 export class inviteCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
@@ -260,6 +262,7 @@ export class inviteCommand extends sapphire.Command {
 
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'info',
+    description: 'Shows general information about the bot',
 })
 export class infoCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
@@ -327,6 +330,7 @@ export class infoCommand extends sapphire.Command {
 
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'ask',
+    description: 'Ask a question and get a response',
     options: ['user']
 }) export class askCommand extends sapphire.Command {
     public async messageRun(message: discord.Message, args: sapphire.Args) {
