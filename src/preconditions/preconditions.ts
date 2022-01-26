@@ -2,7 +2,6 @@ import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
 import { db } from '../index';
 import { ApplyOptions } from '@sapphire/decorators';
-db;
 ///<reference types="../index"/>
 
 @ApplyOptions<sapphire.PreconditionOptions>({

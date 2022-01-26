@@ -1,6 +1,7 @@
 import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
 import { SubCommandPluginCommand, SubCommandPluginCommandOptions } from '@sapphire/plugin-subcommands';
+import { PaginatedMessageEmbedFields } from '@sapphire/discord.js-utilities';
 import { durationToMS, db, getRandomArbitrary, bot, cleanMentions, memberCache, durationStringCreator, taskScheduler } from '../index';
 import { ApplyOptions } from '@sapphire/decorators';
 import * as lux from 'luxon';
@@ -345,16 +346,21 @@ export class infoCommand extends sapphire.Command {
     public async messageRun(message: discord.Message, args: sapphire.Args) {
         let maybe = args.nextMaybe();
         if (!maybe.exists) {
-            let embed = new discord.MessageEmbed()
-                .setColor('#0099ff')
-                .setTitle('Help')
-                .addField('Commands:', bot.stores.get('commands').filter(c => !c.fullCategory.includes("_hidden")).map(c => `*${c.name}*`).join(', '), true)
-                .setFooter({ text: 'Use `help <command>` to get more information on a command' });
-            return message.channel.send({
-                embeds: [embed]
-            });
+            let items: Array<discord.EmbedFieldData> = bot.stores.get('commands').map((x) => {
+                return {
+                    name: x.name,
+                    value: x.description,
+                    inline: true
+                }
+            })
+            let response = new PaginatedMessageEmbedFields()
+            response.setTemplate({ title: 'Help', color: '#0099ff', footer: { text: "Use `help <command>` to get more information on a command" } })
+            .setItems(items)
+            .setItemsPerPage(5)
+            .make()
+            .run(message)
         }
-        let command = maybe.value;
+        let command = maybe.value!;
         let cmd = bot.stores.get('commands').find(cmd => (cmd.name === command || cmd.aliases.includes(command)) && !cmd.fullCategory.includes("_hidden"));
         if (!cmd) return message.channel.send(`Command \`${command}\` not found`);
         let embed = new discord.MessageEmbed()
