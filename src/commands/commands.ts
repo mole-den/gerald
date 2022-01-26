@@ -5,57 +5,13 @@ import { PaginatedMessageEmbedFields } from '@sapphire/discord.js-utilities';
 import { durationToMS, db, getRandomArbitrary, bot, cleanMentions, memberCache, durationStringCreator, taskScheduler } from '../index';
 import { ApplyOptions } from '@sapphire/decorators';
 import * as lux from 'luxon';
-import * as voice from '@discordjs/voice';
 import * as time from '@sapphire/time-utilities';
 ///<reference types="../index"/>
-voice;
 time;
-let permissionsPrecondition = (...args: discord.PermissionResolvable[]) => {
-    let preconditionArray: Array<sapphire.PreconditionEntryResolvable> = [];
-    preconditionArray.push('override')
-    args.forEach((item) => {
-        preconditionArray.push(new sapphire.UserPermissionsPrecondition(item))
-    });
-    return preconditionArray
-};
-@ApplyOptions<sapphire.CommandOptions>({
-    name: 'dismount',
-    fullCategory: ['_enabled', '_owner'],
-    description: 'Disables a command globally',
-    requiredClientPermissions: [],
-    preconditions: ['OwnerOnly']
-})
-export class ownerDisableCommand extends sapphire.Command {
-    public async messageRun(message: discord.Message, args: sapphire.Args) {
-        let cmd = args.nextMaybe();
-        if (!cmd.exists) return
-        let command = this.container.stores.get('commands').find(value => value.name === cmd.value);
-        if (!command) return message.channel.send('Command not found');
-        command.enabled = false;
-        return message.channel.send(`Dismounted *${cmd.value}*`);
-    };
-}
-
-@ApplyOptions<sapphire.CommandOptions>({
-    name: 'mount',
-    fullCategory: ['_enabled', '_owner'],
-    description: 'Enables a command globally',
-    preconditions: ['OwnerOnly']
-})
-export class ownerEnableCommand extends sapphire.Command {
-    public async messageRun(message: discord.Message, args: sapphire.Args) {
-        let cmd = args.next();
-        let command = this.container.stores.get('commands').find(value => value.name === cmd);
-        if (!command) return message.channel.send('Command not found');
-        command.enabled = true;
-        command.reload();
-        return message.channel.send(`Mounted *${cmd}*`);
-    };
-};
 
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'eval',
-    fullCategory: ['_enabled', '_owner'],
+    fullCategory: ['_enabled', '_owner', '_hidden'],
     description: 'Evaluates JS input',
     requiredClientPermissions: [],
     preconditions: ['OwnerOnly']
@@ -64,7 +20,9 @@ export class ownerEvalCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
         let str = message.content;
         let out = str.substring(str.indexOf('```') + 3, str.lastIndexOf('```'));
+        let container = this.container
         try {
+            container;
             eval(`
             (async () => {
                 ${out}
@@ -79,9 +37,10 @@ export class ownerEvalCommand extends sapphire.Command {
 
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'deleted',
-    description: '',
+    description: 'Shows infomation about the last deleted messages',
     requiredClientPermissions: [],
-    preconditions: [permissionsPrecondition('MANAGE_MESSAGES'), 'GuildOnly'],
+    requiredUserPermissions: 'MANAGE_MESSAGES',
+    preconditions: ['GuildOnly'],
     options: ['id']
 })
 export class DeletedMSGCommand extends sapphire.Command {
@@ -135,7 +94,8 @@ export class DeletedMSGCommand extends sapphire.Command {
     name: 'smite',
     description: '',
     requiredClientPermissions: ['BAN_MEMBERS'],
-    preconditions: [permissionsPrecondition('BAN_MEMBERS'), 'GuildOnly'],
+    requiredUserPermissions: ['BAN_MEMBERS'],
+    preconditions: ['GuildOnly'],
     subCommands: ['add', 'remove', 'list', 'reset', { input: 'add', default: true }]
 })
 export class smiteCommand extends SubCommandPluginCommand {
@@ -259,9 +219,10 @@ export class queryCommand extends sapphire.Command {
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'prefix',
     fullCategory: ['_enabled'],
-    description: 'Shows prefix',
+    description: 'Shows and allows configuration of the bot prefix',
     requiredClientPermissions: [],
-    preconditions: ['GuildOnly', permissionsPrecondition('ADMINISTRATOR')]
+    requiredUserPermissions: [],
+    preconditions: ['GuildOnly']
 })
 export class prefixCommand extends sapphire.Command {
     public async messageRun(message: discord.Message, args: sapphire.Args) {
@@ -271,26 +232,11 @@ export class prefixCommand extends sapphire.Command {
             message.channel.send(`The prefix for this server is \`${prefix.rows[0].prefix}\``);
             return
         }
+        if (message.member?.permissions.has('ADMINISTRATOR') === false) {
+            return message.channel.send(`You are missing the following permissions to run this command: Administrator`);
+        }
         db.query('UPDATE guilds SET prefix = $2 WHERE guildid = $1', [message.guild!.id, x.value])
-        message.channel.send(`Changed prefix for ${message.guild!.name} to ${x.value}`);
-    }
-}
-
-
-@ApplyOptions<sapphire.CommandOptions>({
-    name: 'pluto',
-})
-export class plutoCommand extends sapphire.Command {
-    public async messageRun(message: discord.Message) {
-        message.channel.send(`<@!766922877920083968>`);
-    }
-}
-@ApplyOptions<sapphire.CommandOptions>({
-    name: 'sammy',
-})
-export class sammyCommand extends sapphire.Command {
-    public async messageRun(message: discord.Message) {
-        message.channel.send(`<@!696926289726144562>`);
+        return message.channel.send(`Changed prefix for ${message.guild!.name} to ${x.value}`);
     }
 }
 
@@ -342,6 +288,7 @@ export class infoCommand extends sapphire.Command {
 
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'help',
+    description: 'Shows infomation about commands'
 }) export class helpCommand extends sapphire.Command {
     public async messageRun(message: discord.Message, args: sapphire.Args) {
         let maybe = args.nextMaybe();
@@ -355,10 +302,10 @@ export class infoCommand extends sapphire.Command {
             })
             let response = new PaginatedMessageEmbedFields()
             response.setTemplate({ title: 'Help', color: '#0099ff', footer: { text: "Use `help <command>` to get more information on a command" } })
-            .setItems(items)
-            .setItemsPerPage(5)
-            .make()
-            .run(message)
+                .setItems(items)
+                .setItemsPerPage(5)
+                .make()
+                .run(message)
         }
         let command = maybe.value!;
         let cmd = bot.stores.get('commands').find(cmd => (cmd.name === command || cmd.aliases.includes(command)) && !cmd.fullCategory.includes("_hidden"));
@@ -377,19 +324,6 @@ export class infoCommand extends sapphire.Command {
         })
     }
 }
-
-@ApplyOptions<sapphire.CommandOptions>({
-    name: 'listguilds',
-    fullCategory: ['_hidden'],
-}) export class guildsCommand extends sapphire.Command {
-    public async messageRun() {
-        let x = await bot.guilds.fetch();
-        x.each((a) => { console.log(`In guild '${a.name}'', (${a.id})'\n Owner is ${a.owner}`) });
-    }
-}
-
-
-
 
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'ask',
@@ -426,7 +360,8 @@ export class infoCommand extends sapphire.Command {
     aliases: ['cmds', 'command'],
     fullCategory: ['_enabled'],
     description: '',
-    preconditions: [permissionsPrecondition('ADMINISTRATOR'), 'GuildOnly'],
+    requiredUserPermissions: 'ADMINISTRATOR',
+    preconditions: ['GuildOnly'],
     subCommands: ['disable', 'enable', 'status'],
 
 })
