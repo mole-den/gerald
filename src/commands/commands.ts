@@ -304,7 +304,7 @@ export class infoCommand extends sapphire.Command {
                 }
             })
             let response = new PaginatedMessageEmbedFields()
-            response.setTemplate({ title: 'Help', color: '#0099ff', footer: { text: "Use `help <command>` to get more information on a command" } })
+            response.setTemplate({ title: 'Help', color: '#0099ff', footer: { text: `Use \`help <command>\` to get more information on a command\nGerald v${require('../../package.json').version!}` } })
                 .setItems(items)
                 .setItemsPerPage(5)
                 .make()

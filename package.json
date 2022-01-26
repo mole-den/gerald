@@ -1,7 +1,7 @@
 {
   "name": "gerald",
   "description": "no",
-  "version": "1.0.0",
+  "version": "0.9.5",
   "scripts": {
     "start": "cd build && node index.js",
     "inspect-start": "cd build && node --inspect=$PORT index.js",
