@@ -300,7 +300,7 @@ export class infoCommand extends sapphire.Command {
                 return {
                     name: x.name,
                     value: x.description,
-                    inline: true
+                    inline: false
                 }
             })
             let response = new PaginatedMessageEmbedFields()
@@ -309,6 +309,7 @@ export class infoCommand extends sapphire.Command {
                 .setItemsPerPage(5)
                 .make()
                 .run(message)
+            return
         }
         let command = maybe.value!;
         let cmd = bot.stores.get('commands').find(cmd => (cmd.name === command || cmd.aliases.includes(command)) && !cmd.fullCategory.includes("_hidden"));
