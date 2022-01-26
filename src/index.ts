@@ -281,6 +281,14 @@ bot.on('messageDeleteBulk', async (array) => {
 	await bot.login(process.env.TOKEN);
 	taskScheduler = new scheduledTaskManager()
 	console.log('Ready')
+	let x = <number>(await db.query('SELECT COUNT(*) FROM guilds', [])).rows[0].count;
+	let guilds = await bot.guilds.fetch()
+	if (guilds.size > x) {
+		console.log('Guilds:', guilds.size, 'Database:', x)
+		guilds.each(async (guild) => {
+			db.query('INSERT INTO guilds (guildid, joined_at) VALUES ($1, $2) ON CONFLICT DO NOTHING', [guild.id, new Date()]);
+		})
+	}
 })();
 
 //zac very cringe
