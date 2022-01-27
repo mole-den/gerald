@@ -1,9 +1,9 @@
 import * as discord from 'discord.js';
-import * as pg from 'pg';
 import * as sapphire from '@sapphire/framework';
 import * as lux from 'luxon';
 import { scheduledTaskManager } from './taskManager'
 import { membersCache } from './caches';
+import { PrismaClient } from '@prisma/client';
 //import crypto from "crypto";
 process.on('SIGTERM', async () => {
 	console.log('SIGTERM received');
@@ -12,23 +12,30 @@ process.on('SIGTERM', async () => {
 	};
 	await sleep(3000)
 	void bot.destroy();
-	void db.end();
-	process.exit(1);
+	void prisma.$disconnect();
+	process.exit(0);
 });
 
 export const bot = new sapphire.SapphireClient({
 	typing: true,
 	intents: new discord.Intents([discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS, discord.Intents.FLAGS.GUILD_MESSAGES,
-		discord.Intents.FLAGS.DIRECT_MESSAGES, discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
-		discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS]),
+	discord.Intents.FLAGS.DIRECT_MESSAGES, discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
+	discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS]),
 	partials: ["CHANNEL"],
 	fetchPrefix: async (message: discord.Message): Promise<string | Array<string>> => {
 		if (message.channel.type === 'DM') {
 			return ['', 'g'];
 		}
 		try {
-			let x = await db.query('SELECT prefix FROM guilds WHERE guildid = $1', [message.guild!.id]);
-			return x.rows[0].prefix;
+			let x = await prisma.guild.findUnique({
+				where: {
+					guildId: BigInt(message.member!.id)
+				},
+				select: {
+					prefix: true
+				}
+			})
+			return x?.prefix ?? 'g';
 		} catch (error) {
 			console.error(error)
 			return 'g';
@@ -94,7 +101,7 @@ export function durationToMS(duration: string): number | null {
 	})
 	return durationMS;
 };
-export function durationStringCreator(date1: Date | lux.DateTime , date2: Date | lux.DateTime ): string {
+export function durationStringCreator(date1: Date | lux.DateTime, date2: Date | lux.DateTime): string {
 	let startDate = date1 instanceof lux.DateTime ? date1 : lux.DateTime.fromJSDate(date1)
 	let endDate = date2 instanceof lux.DateTime ? date2 : lux.DateTime.fromJSDate(date2)
 	let duration = startDate.diff(endDate, ["years", "months", "days", "hours", "minutes"], {
@@ -107,7 +114,7 @@ export function durationStringCreator(date1: Date | lux.DateTime , date2: Date |
 	if (duration.hours) durationStr.push(`${duration.hours.toFixed(0)}h`);
 	if (duration.minutes) durationStr.push(`${duration.minutes.toFixed(0)}m`);
 	return durationStr.join(', ');
-} 
+}
 export function sleep(ms: number): Promise<void> {
 	return new Promise((resolve) => {
 		setTimeout(resolve, ms);
@@ -121,17 +128,7 @@ export function cleanMentions(str: string): string {
 
 export let memberCache: membersCache
 export let taskScheduler: scheduledTaskManager
-
-export const db = new pg.Pool({
-	connectionString: <string>process.env.DATABASE_URL,
-	ssl: {
-		rejectUnauthorized: false
-	}
-});
-pg.types.setTypeParser(pg.types.builtins.TIMESTAMP, (val) => {
-	val = val + ' GMT'
-	return lux.DateTime.fromSQL(val)
-})
+export const prisma = new PrismaClient();
 export function getRandomArbitrary(min: number, max: number) {
 	return Math.round(Math.random() * (max - min) + min);
 };
@@ -164,9 +161,15 @@ bot.on('commandError', (error, payload) => {
 });
 
 bot.on('guildMemberAdd', async (member) => {
-	let x = await db.query(`SELECT * FROM punishments WHERE guild = $1 AND member = $2 AND type = 'blist'`, [BigInt(member.guild.id), BigInt(member.id)]);
-	if (x.rows.length > 0) {
-		member.ban({ reason: `Blacklisted with reason: ${x.rows[0].reason}` });
+	let x = await prisma.punishment.findMany({
+		where: {
+			id: 1,
+			guild: BigInt(member.guild.id),
+			type: 'blist'
+		}
+	})
+	if (x.length > 0) {
+		member.ban({ reason: `Blacklisted with reason: ${x[0].reason}` });
 	}
 })
 
@@ -175,11 +178,12 @@ bot.on('guildCreate', async (guild) => {
 	if (user.permissions.has(discord.Permissions.FLAGS.ADMINISTRATOR) === false) {
 		guild.leave();
 	}
-	db.query('INSERT INTO guilds (guildid, joined_at) VALUES ($1, $2) ON CONFLICT DO NOTHING', [guild.id, new Date()]);
-	(await guild.members.fetch()).each(async (mem) => {
-		db.query(`INSERT INTO members (guild, userid) VALUES ($1, $2)`,
-			[guild.id, mem.id]);
-	})
+	prisma.guild.create({
+		data: {
+			guildId: BigInt(guild.id),
+			joinedTime: new Date(),
+		},
+	});
 	memberCache.add(guild.id)
 	guild.channels.fetch().then(async (channels) => {
 		channels.each(async (ch) => {
@@ -221,13 +225,19 @@ bot.on('messageDelete', async (message) => {
 			name: attachment.name
 		});
 	});
-	if (attachments = []) attachments = null;
-	await db.query(`
-	INSERT INTO deletedmsgs (author, content, guildid, msgtime, channel, deleted_time, deleted_by, msgid, attachments) 
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-		[BigInt(message.author.id), message.content,
-		message.guild.id, new Date(message.createdAt.getTime()),
-		message.channel.id, delTime, executor, message.id, attachments]);
+	prisma.deleted_msg.create({
+		data: {
+			author: BigInt(message.author.id),
+			content: message.content,
+			guildId: BigInt(message.guildId!),
+			msgTime: new Date(message.createdAt.getTime()),
+			channel: BigInt(message.channel.id),
+			deletedTime: delTime,
+			deletedBy: executor,
+			msgId: BigInt(message.id),
+			attachments: attachments
+		}
+	})
 });
 bot.on('messageDeleteBulk', async (array) => {
 	let delTime = new Date();
@@ -259,14 +269,19 @@ bot.on('messageDeleteBulk', async (array) => {
 				name: attachment.name
 			});
 		});
-		let params = [
-			BigInt(message.author.id), message.content,
-			message.guild.id, new Date(message.createdAt.getTime()),
-			message.channel.id, delTime, executor, message.id, ((attachments === []) ? null : JSON.stringify(attachments))
-		]
-		await db.query(`
-		INSERT INTO deletedmsgs (author, content, guildid, msgtime, channel, deleted_time, deleted_by, msgid, attachments)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`, params);
+		prisma.deleted_msg.create({
+			data: {
+				author: BigInt(message.author.id),
+				content: message.content,
+				guildId: BigInt(message.guildId!),
+				msgTime: new Date(message.createdAt.getTime()),
+				channel: BigInt(message.channel.id),
+				deletedTime: delTime,
+				deletedBy: executor,
+				msgId: BigInt(message.id),
+				attachments: attachments
+			}
+		})
 
 	});
 });
@@ -274,19 +289,24 @@ bot.on('messageDeleteBulk', async (array) => {
 // startup sequence
 (async () => {
 	console.log('Starting...')
-	await db.connect()
+	await prisma.$connect()
 	console.log('Connected to database')
 	memberCache = new membersCache(18000)
 	await sleep(5000);
 	await bot.login(process.env.TOKEN);
 	taskScheduler = new scheduledTaskManager()
 	console.log('Ready')
-	let x = <number>(await db.query('SELECT COUNT(*) FROM guilds', [])).rows[0].count;
+	let x = await prisma.guild.count();
 	let guilds = await bot.guilds.fetch()
 	if (guilds.size > x) {
 		console.log('Guilds:', guilds.size, 'Database:', x)
 		guilds.each(async (guild) => {
-			db.query('INSERT INTO guilds (guildid, joined_at) VALUES ($1, $2) ON CONFLICT DO NOTHING', [guild.id, new Date()]);
+			prisma.guild.create({
+				data: {
+					guildId: BigInt(guild.id),
+					joinedTime: new Date()
+				}
+			})
 		})
 	}
 })();
