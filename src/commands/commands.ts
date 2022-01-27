@@ -45,7 +45,7 @@ export class ownerEvalCommand extends sapphire.Command {
 })
 export class DeletedMSGCommand extends sapphire.Command {
     public async messageRun(message: discord.Message, args: sapphire.Args) {
-        let amount: number | never;
+        let amount: number;
         let arg = await args.pick('number');
         if (isNaN(arg)) return message.channel.send('Please specify a valid amount of messages to view.');
         amount = (arg <= 10) ? arg : (() => {
@@ -298,8 +298,9 @@ export class infoCommand extends sapphire.Command {
         let maybe = args.nextMaybe();
         if (!maybe.exists) {
             let items: Array<discord.EmbedFieldData> = bot.stores.get('commands').filter(cmd => cmd.fullCategory.includes('_hidden') === false).map((x) => {
+                let aliases = x.aliases.length > 0 ? `\(aliases: ${x.aliases.join(', ')})` : '';
                 return {
-                    name: x.name,
+                    name: `${x.name} ${aliases})`,
                     value: x.description,
                     inline: false
                 }
@@ -318,7 +319,7 @@ export class infoCommand extends sapphire.Command {
         let embed = new discord.MessageEmbed()
             .setColor('#0099ff')
             .setTitle(`Help for **${cmd.name}**`);
-        if (cmd.aliases) embed.addField('Command aliases', cmd.aliases.join(', '), true);
+        if (cmd.aliases.length > 0) embed.addField('Command aliases', cmd.aliases.join(', '), true);
         else embed.addField('Command aliases', 'None', true);
         if (cmd.description) embed.addField('Description', cmd.description, true);
         else embed.addField('Description', 'null', true);
@@ -364,7 +365,7 @@ export class infoCommand extends sapphire.Command {
 
 @ApplyOptions<SubCommandPluginCommandOptions>({
     name: 'commands',
-    aliases: ['cmds', 'command'],
+    aliases: ['cmds'],
     fullCategory: ['_enabled'],
     description: 'Allows management of commands and other bot features',
     requiredUserPermissions: 'ADMINISTRATOR',
