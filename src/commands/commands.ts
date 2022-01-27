@@ -319,12 +319,12 @@ export class infoCommand extends sapphire.Command {
         let embed = new discord.MessageEmbed()
             .setColor('#0099ff')
             .setTitle(`Help for **${cmd.name}**`);
-        if (cmd.aliases.length > 0) embed.addField('Command aliases', cmd.aliases.join(', '), false);
-        else embed.addField('Command aliases', 'None', false);
-        if (cmd.description) embed.addField('Description', cmd.description, false);
-        else embed.addField('Description', 'null', false);
-        if (cmd.detailedDescription) embed.addField('Usage', (cmd.detailedDescription), false);
-        else embed.addField('Usage', 'null', false);
+        if (cmd.aliases.length > 0) embed.addField('Command aliases:', cmd.aliases.join(', '), false);
+        else embed.addField('Command aliases:', 'None', false);
+        if (cmd.description) embed.addField('Description:', cmd.description, false);
+        else embed.addField('Description:', 'null', false);
+        if (cmd.detailedDescription) embed.addField('Usage:', (cmd.detailedDescription), false);
+        else embed.addField('Usage:', 'null', false);
         return message.channel.send({
             embeds: [embed]
         })
