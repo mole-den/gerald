@@ -25,7 +25,7 @@ model guild {
   id         Int      @id(map: "guilds_pkey") @default(autoincrement())
   guildId    BigInt   @unique(map: "guilds_guildid_key")
   joinedTime DateTime @db.Timestamp(6)
-  prefix     String?  @default("g")
+  prefix     String   @default("g")
   disabled   String?
   member     member[]
 }
