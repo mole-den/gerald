@@ -196,7 +196,6 @@ bot.on('guildCreate', async (guild) => {
 });
 
 bot.on('messageDelete', async (message) => {
-	console.log('attachments', message.attachments)
 	let delTime = new Date()
 	if (!message.guild) return
 	if (message.partial) return;

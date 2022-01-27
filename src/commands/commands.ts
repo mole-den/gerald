@@ -2,7 +2,7 @@ import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
 import { SubCommandPluginCommand, SubCommandPluginCommandOptions } from '@sapphire/plugin-subcommands';
 import { PaginatedMessageEmbedFields } from '@sapphire/discord.js-utilities';
-import { durationToMS, db, getRandomArbitrary, bot, cleanMentions, memberCache, durationStringCreator, taskScheduler } from '../index';
+import { durationToMS, prisma, getRandomArbitrary, bot, cleanMentions, memberCache, durationStringCreator, taskScheduler } from '../index';
 import { ApplyOptions } from '@sapphire/decorators';
 import * as lux from 'luxon';
 import * as time from '@sapphire/time-utilities';
@@ -54,10 +54,17 @@ export class DeletedMSGCommand extends sapphire.Command {
         amount = (arg >= 0) ? arg : (() => {
             throw new sapphire.UserError({ identifier: 'amount<=0', message: 'Amount must be greater than 0.' });
         })();
-        let del = await db.query('SELECT * FROM deletedmsgs WHERE guildid=$2 ORDER BY msgtime DESC LIMIT $1;',
-            [amount, message.guildId]);
+        let del = await prisma.deleted_msg.findMany({
+            where: {
+                guildId: BigInt(message.guildId!)
+            },
+            orderBy: {
+                msgTime: 'desc'
+            },
+            take: amount
+        })
         let embeds: Array<discord.MessageEmbed> = [];
-        del.rows.forEach(async (msg) => {
+        del.forEach(async (msg) => {
             if (msg.content.length > 1028) {
                 var content: string = msg.content.substring(0, 1025) + '...';
             } else {
@@ -67,16 +74,19 @@ export class DeletedMSGCommand extends sapphire.Command {
                 .setTitle("Deleted Message")
                 .setColor("#fc3c3c")
                 .addField("Author", `<@${msg.author}>`, true)
-                .addField("Deleted By", msg.deleted_by, true)
+                .addField("Deleted By", msg.deletedBy, true)
                 .addField("Channel", `<#${msg.channel}>`, true)
                 .addField("Message", content || "None");
             DeleteEmbed.footer = {
-                text: `ID: ${msg.id} | Message ID: ${msg.msgid}\nAuthor ID: ${msg.author}`
+                text: `ID: ${msg.id} | Message ID: ${msg.msgId}\nAuthor ID: ${msg.author}`
             };
-            if (msg.attachments) {
+            if (msg.attachments && msg.attachments !== []) {
                 let attachArray: string[] = [];
-                msg.attachments.forEach((attach: any) => {
-                    attachArray.push(`[${attach.name}](${attach.url})`);
+                (<Array<{
+                    url: string,
+                    name: string | null
+                }>>msg.attachments).forEach((attach) => {
+                    attachArray.push(attach.name ? `[${attach.name}](${attach.url})` : `${attach.url}`);
                 });
                 DeleteEmbed.addField('Attachments', attachArray.join('\n'));
             }
@@ -120,14 +130,30 @@ export class smiteCommand extends SubCommandPluginCommand {
             if (!user.bannable) {
                 return message.channel.send("This user is not bannable by the bot.");
             };
-            await db.query(`INSERT INTO punishments (member, guild, type, reason, created_time, ends) VALUES ($1, $2, $3, $4, $5, $6) `,
-                [user.id, message.guild!.id, 'blist', strReason, new Date(), endsDate]);
+            prisma.punishment.create({
+                data: {
+                    member: BigInt(user.id),
+                    guild: BigInt(message.guildId!),
+                    type: 'blist',
+                    reason: strReason,
+                    createdTime: new Date(),
+                    endsAt: endsDate
+                }
+            })
             message.guild!.bans.create(user, { reason: strReason, days: 0 });
             if (endsDate) taskScheduler.newTask({ 'task': 'unban', when: lux.DateTime.fromJSDate(endsDate), context: { 'guild': message.guild!.id, 'user': user.id } });
             message.channel.send(`${user.user.username} has been added to the blacklist and banned ${(time === null) ? '' : durationStringCreator(lux.DateTime.now(), lux.DateTime.fromJSDate(endsDate!))}\nProvided reason: ${strReason}`);
         } else {
-            await db.query(`INSERT INTO punishments (member, guild, type, reason, created_time, ends) VALUES ($1, $2, $3, $4, $5, $6) `,
-                [user.id, message.guild!.id, 'blist', strReason, new Date(), endsDate]);
+            prisma.punishment.create({
+                data: {
+                    member: BigInt(user.id),
+                    guild: BigInt(message.guildId!),
+                    type: 'blist',
+                    reason: strReason,
+                    createdTime: new Date(),
+                    endsAt: endsDate
+                }
+            })
             if (endsDate) taskScheduler.newTask({ 'task': 'unban', when: lux.DateTime.fromJSDate(endsDate), context: { 'guild': message.guild!.id, 'user': user.id } });
             message.channel.send(`${user.username} has been added to the blacklist and banned ${(time === null) ? '' : durationStringCreator(lux.DateTime.now(), lux.DateTime.fromJSDate(endsDate!))}\nProvided reason: ${strReason}`);
         };
@@ -137,34 +163,63 @@ export class smiteCommand extends SubCommandPluginCommand {
     public async remove(message: discord.Message, args: sapphire.Args) {
         let user = await args.pick('user');
         await memberCache.validate(message.guild!.id, user.id)
-        let q = await db.query(`SELECT * FROM punishments WHERE type='blist' AND member = $2 AND guild = $1`, [user.id, message.guild!.id]);
-        if (q.rowCount === 0) return;
+        let q = await prisma.punishment.findMany({
+            where: {
+                type: 'blist',
+                member: BigInt(user.id),
+                guild: BigInt(message.guildId!)
+            }
+        })
+        if ((q).length === 0) return;
         message.guild!.members.unban(user).catch(() => { })
-        db.query('UPDATE punishments SET resolved = true WHERE type=\'blist\' AND member = $2 AND guild = $1', [user.id, message.guild!.id]);
+        prisma.punishment.updateMany({
+            where: {
+                type: 'blist',
+                member: BigInt(user.id),
+                guild: BigInt(message.guildId!)
+            },
+            data: {
+                resolved: true
+            }
+        })
         message.channel.send(`${user.tag} has been removed from the blacklist`);
     }
 
     public async list(message: discord.Message) {
-        let smite = await db.query(`SELECT * FROM punishments WHERE type='blist' AND guild = $1 AND NOT RESOLVED`, [message.guild!.id]);
-        if (smite.rowCount === 0) message.channel.send(`No users are blacklisted`);
-        smite.rows.forEach(async (i) => {
-            let x = await bot.users.fetch(i.member);
-            let date = i.ends ? (+new Date(i.ends) - Date.now()) : null;
-            let duration = date === null ? 'permanently' : durationStringCreator(lux.DateTime.now(), lux.DateTime.fromJSDate(new Date(i.ends)));
+        let smite = await prisma.punishment.findMany({
+            where: {
+                type: 'blist',
+                guild: BigInt(message.guildId!),
+                resolved: false,
+            }
+        })
+        if ((smite).length === 0) message.channel.send(`No users are blacklisted`);
+        smite.forEach(async (i) => {
+            let x = await bot.users.fetch(i.member.toString());
+            let date = i.endsAt ? (+new Date(i.endsAt) - Date.now()) : null;
+            let duration = date === null ? 'permanently' : durationStringCreator(lux.DateTime.now(), lux.DateTime.fromJSDate(new Date(i.endsAt!)));
             message.channel.send(`**${x.username}#${x.discriminator}** is blacklisted until *${duration}*. Case ID: ${i.id}`);
         });
     }
     public async reset(message: discord.Message) {
-        let banned = await db.query(`SELECT * FROM punishments WHERE type='blist' AND guild = $1 AND NOT RESOLVED`, [message.guild!.id]);
+        let banned = await prisma.punishment.findMany({
+            where: {
+                type: 'blist',
+                guild: BigInt(message.guildId!),
+                resolved: false,
+            }
+        })
         message.channel.send(`Warning: This will unban all blacklisted users. Are you sure you want to do this?`);
         const filter = (m: discord.Message) => m.author.id === message.author.id
         const collector = message.channel.createMessageCollector({ filter, time: 10000 });
         let confirm = false
         collector.on('collect', async m => {
             if (m.content === 'yes') {
-                await db.query('UPDATE punishments SET resolved = true WHERE type=\'blist\' AND guild = $1', [message.guild!.id]);
-                banned.rows.forEach((i) => {
-                    message.guild!.members.unban(i.userid).catch((err) => {
+                prisma.punishment.updateMany({
+                    data: { resolved: true }
+                })
+                banned.forEach((i) => {
+                    message.guild!.members.unban(i.member.toString()).catch((err) => {
                         console.log(err)
                     })
                 });
@@ -198,20 +253,16 @@ export class queryCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
         let str = message.content;
         let out = str.substring(str.indexOf('```') + 3, str.lastIndexOf('```'));
-        let data = await db.query(out);
-        let JSONdata = JSON.stringify(data.rows, null, 1);
+        let data = await prisma.$queryRawUnsafe(out);
+        let JSONdata = JSON.stringify(data, null, 1);
         if (JSONdata?.length && JSONdata.length < 2000) {
-            message.channel.send(`${data.command} completed - ${data.rowCount} rows, \n${cleanMentions(JSONdata)}`);
+            message.channel.send(`${cleanMentions(JSONdata)}`);
             return;
         } else if (JSONdata?.length && JSONdata.length > 2000) {
             const buffer = Buffer.from(JSONdata)
             const attachment = new discord.MessageAttachment(buffer, 'file.json');
-            message.channel.send(`${data.command} completed - ${data.rowCount} rows,`);
             message.channel.send({ files: [attachment] });
-        } else {
-            message.channel.send(`${data.command} completed - ${data.rowCount} rows,`);
         }
-
     };
 
 };
@@ -228,14 +279,26 @@ export class prefixCommand extends sapphire.Command {
     public async messageRun(message: discord.Message, args: sapphire.Args) {
         let x = args.nextMaybe()
         if (!x.exists) {
-            let prefix = await db.query('SELECT prefix FROM guilds WHERE guildid = $1', [message.guild!.id])
-            message.channel.send(`The prefix for this server is \`${prefix.rows[0].prefix}\``);
+            let prefix = await prisma.guild.findUnique({
+                where: {
+                    guildId: BigInt(message.guild!.id)
+                },
+                select: { prefix: true }
+            })
+            message.channel.send(`The prefix for this server is \`${prefix!.prefix}\``);
             return
         }
         if (message.member?.permissions.has('ADMINISTRATOR') === false) {
             return message.channel.send(`You are missing the following permissions to run this command: Administrator`);
         }
-        db.query('UPDATE guilds SET prefix = $2 WHERE guildid = $1', [message.guild!.id, x.value])
+        prisma.guild.update({
+            where: {
+                guildId: BigInt(message.guildId!)
+            },
+            data: {
+                prefix: x.value!
+            }
+        })
         return message.channel.send(`Changed prefix for ${message.guild!.name} to ${x.value}`);
     }
 }
@@ -282,7 +345,7 @@ export class infoCommand extends sapphire.Command {
         }
         uptimeString += Math.floor(uptime) + " seconds";
         let start = Date.now()
-        await db.query('select 1;')
+        await prisma.$queryRawUnsafe('SELECT 1;')
         let elapsed = Date.now() - start;
         message.channel.send(`**Uptime:** ${uptimeString}\n**Websocket heartbeat:** ${bot.ws.ping}ms\n**Database heartbeat:** ${elapsed}ms`);
     }
@@ -291,7 +354,7 @@ export class infoCommand extends sapphire.Command {
 
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'help',
-    
+
     description: 'Shows infomation about commands'
 }) export class helpCommand extends sapphire.Command {
     public async messageRun(message: discord.Message, args: sapphire.Args) {
@@ -381,15 +444,18 @@ export class commandsManagerCommand extends SubCommandPluginCommand {
         }
         let command = this.container.stores.get('commands').find(value => value.name === cmd.value)
         if (!command || command.fullCategory.includes('_hidden')) return message.channel.send('Command not found');
-        if (command.fullCategory.some(x => x === '_enabled' )) {
+        if (command.fullCategory.some(x => x === '_enabled')) {
             message.channel.send(`This command cannot be disabled.`)
             return;
         }
-        let i = (<string>(await db.query('SELECT disabled FROM guilds WHERE guildid = $1', [message.guild!.id])).rows[0].disabled).split('');
+        let i = ((await prisma.guild.findUnique({ where: { guildId: BigInt(message.guildId!) } }))!.disabled!).split(' ');
         i.some(x => x === cmd.value!) ? (() => {
             throw new sapphire.UserError({ identifier: 'invalid', message: 'Command already disabled' })
         }) : i.push(cmd.value!);
-        db.query('UPDATE guilds SET disabled = $1 WHERE guildid = $2', [i.join(''), message.guild!.id]);
+        prisma.guild.update({
+            where: {guildId: BigInt(message.guildId!)},
+            data: {disabled: i.join(' ')}
+        })
         return message.channel.send(`Disabled command **${cmd.value!}**`)
     }
 
@@ -398,8 +464,11 @@ export class commandsManagerCommand extends SubCommandPluginCommand {
         if (cmd.exists === false) throw new sapphire.UserError({ identifier: 'invalidsyntax', message: 'Specify a command to enable' });
         let command = this.container.stores.get('commands').find(value => value.name === cmd.value);
         if (!command) return message.channel.send('Command not found');
-        let i = (<string>(await db.query('SELECT disabled FROM guilds WHERE guildid = $1', [message.guild!.id])).rows[0].disabled).split(' ');
-        db.query('UPDATE guilds SET disabled = $1 WHERE guildid = $2', [i.filter(x => x !== cmd.value).join(' '), message.guild!.id]);
+        let i = (await prisma.guild.findUnique({ where: { guildId: BigInt(message.guildId!) } }))!.disabled!.split(' ');
+        prisma.guild.update({
+            where: {guildId: BigInt(message.guildId!)},
+            data: { disabled: i.filter(x => x !== cmd.value).join(' ')}
+        })
         return message.channel.send(`Enabled command **${cmd.value!}**`)
     }
     public async status(message: discord.Message) {
