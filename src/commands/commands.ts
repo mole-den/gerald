@@ -298,9 +298,9 @@ export class infoCommand extends sapphire.Command {
         let maybe = args.nextMaybe();
         if (!maybe.exists) {
             let items: Array<discord.EmbedFieldData> = bot.stores.get('commands').filter(cmd => cmd.fullCategory.includes('_hidden') === false).map((x) => {
-                let aliases = x.aliases.length > 0 ? `\(aliases: ${x.aliases.join(', ')})` : '';
+                let aliases = x.aliases.length > 0 ? `(aliases: ${x.aliases.join(', ')})` : '';
                 return {
-                    name: `${x.name} ${aliases})`,
+                    name: `${x.name} ${aliases}`,
                     value: x.description,
                     inline: false
                 }
@@ -319,12 +319,12 @@ export class infoCommand extends sapphire.Command {
         let embed = new discord.MessageEmbed()
             .setColor('#0099ff')
             .setTitle(`Help for **${cmd.name}**`);
-        if (cmd.aliases.length > 0) embed.addField('Command aliases', cmd.aliases.join(', '), true);
-        else embed.addField('Command aliases', 'None', true);
-        if (cmd.description) embed.addField('Description', cmd.description, true);
-        else embed.addField('Description', 'null', true);
-        if (cmd.detailedDescription) embed.addField('Usage', (cmd.detailedDescription), true);
-        else embed.addField('Usage', 'null', true);
+        if (cmd.aliases.length > 0) embed.addField('Command aliases', cmd.aliases.join(', '), false);
+        else embed.addField('Command aliases', 'None', false);
+        if (cmd.description) embed.addField('Description', cmd.description, false);
+        else embed.addField('Description', 'null', false);
+        if (cmd.detailedDescription) embed.addField('Usage', (cmd.detailedDescription), false);
+        else embed.addField('Usage', 'null', false);
         return message.channel.send({
             embeds: [embed]
         })
