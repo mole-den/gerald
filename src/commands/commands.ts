@@ -291,6 +291,7 @@ export class infoCommand extends sapphire.Command {
 
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'help',
+    
     description: 'Shows infomation about commands'
 }) export class helpCommand extends sapphire.Command {
     public async messageRun(message: discord.Message, args: sapphire.Args) {
@@ -338,6 +339,7 @@ export class infoCommand extends sapphire.Command {
         let opt = args.nextMaybe()
         if (opt.exists && opt.value === 'user') {
             let i = await message.guild!.roles.fetch("915746575689588827")
+            i ??= await message.guild!.roles.fetch('858473576335540224')
             if (!i) return;
             let member: Array<string> = []
             i.members.each((mem) => member.push(mem.user.username));
