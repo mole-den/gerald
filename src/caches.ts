@@ -1,5 +1,5 @@
 import NodeCache from 'node-cache';
-import { db } from './index';
+import { prisma } from './index';
 
 export class membersCache {
 	private readonly ttlSeconds: number
@@ -11,10 +11,10 @@ export class membersCache {
 			checkperiod: this.ttlSeconds * 0.2,
 			useClones: false
 		});
-		db.query('SELECT * FROM guilds').then((output) => {
-			output.rows.forEach(async (row) => {
-				let x = await db.query(`SELECT userid FROM members WHERE guild = $1`, [row.guildid])
-				this.cache.set(`${row.guildid}`, x.rows.map(x => x.userid));
+		prisma.guild.findMany().then((output) => {
+			output.forEach(async (row) => {
+				let x = await prisma.member.findMany({where: {guild: row.guildId}})
+				this.cache.set(`${row.guildId}`, x.map(x => x.userid.toString()));
 			})
 		})
 	}
@@ -23,8 +23,12 @@ export class membersCache {
 		if ((typeof users === 'string') && x.includes(users)) return true;
 		else if (typeof users === 'string') {
 			if (checkOnly) return false
-			await db.query(`INSERT INTO members (guild, userid) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
-				[BigInt(guild), BigInt(users)]);
+			await prisma.member.create({
+				data: {
+					guild: BigInt(guild),
+					userid: BigInt(users)
+				}
+			})
 			return true;
 		}
 		else {
@@ -32,8 +36,12 @@ export class membersCache {
 			users.forEach((user) => {
 				if (!x.includes(user)) {
 					if (checkOnly) res.push(false);
-					else { db.query(`INSERT INTO members (guild, userid) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
-						[BigInt(guild), BigInt(user)])};
+					else { prisma.member.create({
+						data: {
+							guild: BigInt(guild),
+							userid: BigInt(user)
+						}
+					})};
 				} else {
 					if (checkOnly) res.push(true);
 				}
@@ -43,7 +51,14 @@ export class membersCache {
 	}
 
 	async add(guild: string) {
-		let x = await db.query(`SELECT userid FROM members WHERE guild = $1`, [guild])
-		this.cache.set(`${guild}`, x.rows.map(x => x.userid));
+		let x = await prisma.member.findMany({
+			select: {
+				userid: true
+			},
+			where: {
+				guild: BigInt(guild)
+			}
+		})
+		this.cache.set(`${guild}`, x.map(x => x.userid.toString()));
 	}
 }
