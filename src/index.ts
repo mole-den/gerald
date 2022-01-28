@@ -227,7 +227,7 @@ bot.on('messageDelete', async (message) => {
 			name: attachment.name
 		});
 	});
-	prisma.deleted_msg.create({
+	await prisma.deleted_msg.create({
 		data: {
 			author: message.author.id,
 			content: message.content,
@@ -239,6 +239,8 @@ bot.on('messageDelete', async (message) => {
 			msgId: message.id,
 			attachments: attachments
 		}
+	}).catch((e) => {
+		throw e;
 	})
 });
 bot.on('messageDeleteBulk', async (array) => {
