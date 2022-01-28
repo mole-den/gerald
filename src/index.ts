@@ -303,7 +303,7 @@ bot.on('messageDeleteBulk', async (array) => {
 	if (guilds.size > x) {
 		console.log('Guilds:', guilds.size, 'Database:', x)
 		guilds.each(async (guild) => {
-			prisma.guild.create({
+			await prisma.guild.create({
 				data: {
 					guildId: guild.id,
 					joinedTime: new Date()
