@@ -29,7 +29,7 @@ export const bot = new sapphire.SapphireClient({
 		try {
 			let x = await prisma.guild.findUnique({
 				where: {
-					guildId: message.member!.id
+					guildId: message.guildId!
 				},
 				select: {
 					prefix: true
