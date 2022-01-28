@@ -254,7 +254,7 @@ bot.on('messageDeleteBulk', async (array) => {
 			&& Date.now() - a.createdTimestamp < 5000
 		);
 		let entry = auditEntry
-		const executor = (entry && entry.executor) ? entry.executor.tag : 'Deleted by Author or Bot';
+		const executor = (entry && entry.executor) ? entry.executor.tag : 'Unknown (Most likely the author or a bot)';
 		if (message.author?.bot) return
 		if (message.guild === null) return;
 		if (message.partial) return;
