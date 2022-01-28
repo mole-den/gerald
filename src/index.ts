@@ -128,7 +128,10 @@ export function cleanMentions(str: string): string {
 
 export let memberCache: membersCache
 export let taskScheduler: scheduledTaskManager
-export const prisma = new PrismaClient();
+export const prisma = new PrismaClient({
+	rejectOnNotFound: true,
+	log: ['query', 'info', 'warn', 'error'],
+});
 export function getRandomArbitrary(min: number, max: number) {
 	return Math.round(Math.random() * (max - min) + min);
 };
