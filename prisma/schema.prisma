@@ -9,31 +9,31 @@ datasource db {
 
 model deleted_msg {
   id          Int      @id(map: "deletedmsgs_pkey") @default(autoincrement())
-  author      BigInt
+  author      String
   content     String
-  guildId     BigInt
+  guildId     String
   msgTime     DateTime @db.Timestamp(6)
-  channel     BigInt
+  channel     String
   deletedTime DateTime @db.Timestamp(6)
   deletedBy   String   @db.VarChar(200)
-  msgId       BigInt   @unique(map: "deletedmsgs_msgid_key")
+  msgId       String   @unique(map: "deletedmsgs_msgid_key")
   attachments Json?
   member      member   @relation(fields: [author, guildId], references: [userid, guild], onDelete: NoAction, onUpdate: NoAction, map: "deletedmsgs_author_guildid_fkey")
 }
 
 model guild {
   id         Int      @id(map: "guilds_pkey") @default(autoincrement())
-  guildId    BigInt   @unique(map: "guilds_guildid_key")
+  guildId    String   @unique(map: "guilds_guildid_key")
   joinedTime DateTime @db.Timestamp(6)
   prefix     String   @default("g")
-  disabled   String?
+  disabled   String[]
   member     member[]
 }
 
 model member {
   id                  Int           @id(map: "members_pkey") @default(autoincrement())
-  guild               BigInt
-  userid              BigInt
+  guild               String
+  userid              String
   guild_guildTomember guild         @relation(fields: [guild], references: [guildId], onDelete: NoAction, onUpdate: NoAction, map: "members_guild_fkey")
   deleted_msg         deleted_msg[]
   punishment          punishment[]
@@ -43,8 +43,8 @@ model member {
 
 model punishment {
   id                        Int       @id(map: "punishments_pkey") @default(autoincrement())
-  member                    BigInt
-  guild                     BigInt
+  member                    String
+  guild                     String
   type                      String    @db.VarChar(5)
   reason                    String    @default("not given") @db.VarChar(255)
   createdTime               DateTime  @db.Timestamp(6)
