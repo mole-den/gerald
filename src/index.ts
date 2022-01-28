@@ -29,7 +29,7 @@ export const bot = new sapphire.SapphireClient({
 		try {
 			let x = await prisma.guild.findUnique({
 				where: {
-					guildId: BigInt(message.member!.id)
+					guildId: message.member!.id
 				},
 				select: {
 					prefix: true
@@ -164,7 +164,7 @@ bot.on('guildMemberAdd', async (member) => {
 	let x = await prisma.punishment.findMany({
 		where: {
 			id: 1,
-			guild: BigInt(member.guild.id),
+			guild: member.guild.id,
 			type: 'blist'
 		}
 	})
@@ -180,7 +180,7 @@ bot.on('guildCreate', async (guild) => {
 	}
 	prisma.guild.create({
 		data: {
-			guildId: BigInt(guild.id),
+			guildId: guild.id,
 			joinedTime: new Date(),
 		},
 	});
@@ -226,14 +226,14 @@ bot.on('messageDelete', async (message) => {
 	});
 	prisma.deleted_msg.create({
 		data: {
-			author: BigInt(message.author.id),
+			author: message.author.id,
 			content: message.content,
-			guildId: BigInt(message.guildId!),
+			guildId: message.guildId!,
 			msgTime: new Date(message.createdAt.getTime()),
-			channel: BigInt(message.channel.id),
+			channel: message.channel.id,
 			deletedTime: delTime,
 			deletedBy: executor,
-			msgId: BigInt(message.id),
+			msgId: message.id,
 			attachments: attachments
 		}
 	})
@@ -270,14 +270,14 @@ bot.on('messageDeleteBulk', async (array) => {
 		});
 		prisma.deleted_msg.create({
 			data: {
-				author: BigInt(message.author.id),
+				author: message.author.id,
 				content: message.content,
-				guildId: BigInt(message.guildId!),
+				guildId: message.guildId!,
 				msgTime: new Date(message.createdAt.getTime()),
-				channel: BigInt(message.channel.id),
+				channel: message.channel.id,
 				deletedTime: delTime,
 				deletedBy: executor,
-				msgId: BigInt(message.id),
+				msgId: message.id,
 				attachments: attachments
 			}
 		})
@@ -302,7 +302,7 @@ bot.on('messageDeleteBulk', async (array) => {
 		guilds.each(async (guild) => {
 			prisma.guild.create({
 				data: {
-					guildId: BigInt(guild.id),
+					guildId: guild.id,
 					joinedTime: new Date()
 				}
 			})

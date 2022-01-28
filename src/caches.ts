@@ -25,8 +25,8 @@ export class membersCache {
 			if (checkOnly) return false
 			await prisma.member.create({
 				data: {
-					guild: BigInt(guild),
-					userid: BigInt(users)
+					guild: guild,
+					userid: users
 				}
 			})
 			return true;
@@ -38,8 +38,8 @@ export class membersCache {
 					if (checkOnly) res.push(false);
 					else { prisma.member.create({
 						data: {
-							guild: BigInt(guild),
-							userid: BigInt(user)
+							guild: guild,
+							userid: user
 						}
 					})};
 				} else {
@@ -56,7 +56,7 @@ export class membersCache {
 				userid: true
 			},
 			where: {
-				guild: BigInt(guild)
+				guild: guild
 			}
 		})
 		this.cache.set(`${guild}`, x.map(x => x.userid.toString()));

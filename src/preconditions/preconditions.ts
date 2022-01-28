@@ -63,9 +63,8 @@ declare module '@sapphire/framework' {
 export class checkDisabledCondition extends sapphire.Precondition {
     public async run(message: discord.Message, command: sapphire.Command) {
         if (message.channel.type === 'DM') return this.ok()
-        let disabled = (await prisma.guild.findUnique({ where: { guildId: BigInt(message.guildId!) } }))!.disabled!
-        let x = disabled.split(' ');
-        if (x.some(x => x === command.name)) return this.error({
+        let disabled = (await prisma.guild.findUnique({ where: { guildId: message.guildId! } }))!.disabled!
+        if (disabled.some(x => x === command.name)) return this.error({
             message: `This command is disabled in this server.`,
             identifier: 'diabled',
             context: {

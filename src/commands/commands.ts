@@ -56,7 +56,7 @@ export class DeletedMSGCommand extends sapphire.Command {
         })();
         let del = await prisma.deleted_msg.findMany({
             where: {
-                guildId: BigInt(message.guildId!)
+                guildId: message.guildId!
             },
             orderBy: {
                 msgTime: 'desc'
@@ -132,8 +132,8 @@ export class smiteCommand extends SubCommandPluginCommand {
             };
             prisma.punishment.create({
                 data: {
-                    member: BigInt(user.id),
-                    guild: BigInt(message.guildId!),
+                    member: user.id,
+                    guild: message.guildId!,
                     type: 'blist',
                     reason: strReason,
                     createdTime: new Date(),
@@ -146,8 +146,8 @@ export class smiteCommand extends SubCommandPluginCommand {
         } else {
             prisma.punishment.create({
                 data: {
-                    member: BigInt(user.id),
-                    guild: BigInt(message.guildId!),
+                    member: user.id,
+                    guild: message.guildId!,
                     type: 'blist',
                     reason: strReason,
                     createdTime: new Date(),
@@ -166,8 +166,8 @@ export class smiteCommand extends SubCommandPluginCommand {
         let q = await prisma.punishment.findMany({
             where: {
                 type: 'blist',
-                member: BigInt(user.id),
-                guild: BigInt(message.guildId!)
+                member: user.id,
+                guild: message.guildId!
             }
         })
         if ((q).length === 0) return;
@@ -175,8 +175,8 @@ export class smiteCommand extends SubCommandPluginCommand {
         prisma.punishment.updateMany({
             where: {
                 type: 'blist',
-                member: BigInt(user.id),
-                guild: BigInt(message.guildId!)
+                member: user.id,
+                guild: message.guildId!
             },
             data: {
                 resolved: true
@@ -189,7 +189,7 @@ export class smiteCommand extends SubCommandPluginCommand {
         let smite = await prisma.punishment.findMany({
             where: {
                 type: 'blist',
-                guild: BigInt(message.guildId!),
+                guild: message.guildId!,
                 resolved: false,
             }
         })
@@ -205,7 +205,7 @@ export class smiteCommand extends SubCommandPluginCommand {
         let banned = await prisma.punishment.findMany({
             where: {
                 type: 'blist',
-                guild: BigInt(message.guildId!),
+                guild: message.guildId!,
                 resolved: false,
             }
         })
@@ -281,7 +281,7 @@ export class prefixCommand extends sapphire.Command {
         if (!x.exists) {
             let prefix = await prisma.guild.findUnique({
                 where: {
-                    guildId: BigInt(message.guild!.id)
+                    guildId: message.guild!.id
                 },
                 select: { prefix: true }
             })
@@ -293,7 +293,7 @@ export class prefixCommand extends sapphire.Command {
         }
         prisma.guild.update({
             where: {
-                guildId: BigInt(message.guildId!)
+                guildId: message.guildId!
             },
             data: {
                 prefix: x.value!
@@ -448,13 +448,13 @@ export class commandsManagerCommand extends SubCommandPluginCommand {
             message.channel.send(`This command cannot be disabled.`)
             return;
         }
-        let i = ((await prisma.guild.findUnique({ where: { guildId: BigInt(message.guildId!) } }))!.disabled!).split(' ');
+        let i = ((await prisma.guild.findUnique({ where: { guildId: message.guildId!} }))!.disabled!);
         i.some(x => x === cmd.value!) ? (() => {
             throw new sapphire.UserError({ identifier: 'invalid', message: 'Command already disabled' })
         }) : i.push(cmd.value!);
         prisma.guild.update({
-            where: {guildId: BigInt(message.guildId!)},
-            data: {disabled: i.join(' ')}
+            where: {guildId: message.guildId!},
+            data: {disabled: i}
         })
         return message.channel.send(`Disabled command **${cmd.value!}**`)
     }
@@ -464,10 +464,10 @@ export class commandsManagerCommand extends SubCommandPluginCommand {
         if (cmd.exists === false) throw new sapphire.UserError({ identifier: 'invalidsyntax', message: 'Specify a command to enable' });
         let command = this.container.stores.get('commands').find(value => value.name === cmd.value);
         if (!command) return message.channel.send('Command not found');
-        let i = (await prisma.guild.findUnique({ where: { guildId: BigInt(message.guildId!) } }))!.disabled!.split(' ');
+        let i = (await prisma.guild.findUnique({ where: { guildId: message.guildId!}}))!.disabled!;
         prisma.guild.update({
-            where: {guildId: BigInt(message.guildId!)},
-            data: { disabled: i.filter(x => x !== cmd.value).join(' ')}
+            where: {guildId: message.guildId!},
+            data: { disabled: i.filter(x => x !== cmd.value)}
         })
         return message.channel.send(`Enabled command **${cmd.value!}**`)
     }
