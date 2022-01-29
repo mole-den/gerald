@@ -103,18 +103,23 @@ export class DeletedMSGCommand extends sapphire.Command {
 };
 
 @ApplyOptions<SubCommandPluginCommandOptions>({
-    name: 'smite',
+    name: 'ban',
     description: 'Allows management and creation of bans',
     requiredClientPermissions: ['BAN_MEMBERS'],
     requiredUserPermissions: ['BAN_MEMBERS'],
     preconditions: ['GuildOnly'],
-    subCommands: ['add', 'remove', 'list', 'reset', { input: 'add', default: true }]
+    subCommands: ['add', 'remove', 'list', 'clear', { input: 'add', default: true }]
 })
-export class smiteCommand extends SubCommandPluginCommand {
+export class banCommand extends SubCommandPluginCommand {
     public async add(message: discord.Message, args: sapphire.Args) {
         let user = await args.pick('member').catch(() => {
             return args.pick('user')
         })
+        if ((await prisma.punishment.findMany({where: {
+            type: 'blist',
+            member: user.id,
+            guild: message.guildId!
+        }})).length > 0) return message.channel.send(`This user is already banned`)
         await memberCache.validate(message.guild!.id, user.id)
         let content = await args.pick('string').catch(() => null);
         let reason = await args.repeat('string').catch(() => null);
@@ -122,8 +127,10 @@ export class smiteCommand extends SubCommandPluginCommand {
         if (time === null) {
             if (content !== null && reason !== null) reason.unshift(content)
         };
+
         let strReason = reason === null ? 'not given' : reason?.join(' ');
         let endsDate = (time !== null) ? new Date(Date.now() + time) : null;
+
         if (user instanceof discord.GuildMember) {
             if (message.member!.roles.highest.comparePositionTo(user.roles.highest) <= 0 && (message.guild!.ownerId !== message.member!.id)) {
                 message.channel.send(`You do not have a high enough role to do this.`);
@@ -144,7 +151,7 @@ export class smiteCommand extends SubCommandPluginCommand {
             })
             message.guild!.bans.create(user, { reason: strReason, days: 0 });
             if (endsDate) taskScheduler.newTask({ 'task': 'unban', when: lux.DateTime.fromJSDate(endsDate), context: { 'guild': message.guild!.id, 'user': user.id } });
-            message.channel.send(`${user.user.username} has been added to the blacklist and banned ${(time === null) ? '' : durationStringCreator(lux.DateTime.now(), lux.DateTime.fromJSDate(endsDate!))}\nProvided reason: ${strReason}`);
+            message.channel.send(`**${user.user.tag}** has been banned ${(time === null) ? '' : durationStringCreator(lux.DateTime.now(), lux.DateTime.fromJSDate(endsDate!))}\nProvided reason: ${strReason}`);
         } else {
             prisma.punishment.create({
                 data: {
@@ -155,9 +162,10 @@ export class smiteCommand extends SubCommandPluginCommand {
                     createdTime: new Date(),
                     endsAt: endsDate
                 }
-            })
+            });
+            message.guild!.bans.create(user, {reason: strReason, days: 0})
             if (endsDate) taskScheduler.newTask({ 'task': 'unban', when: lux.DateTime.fromJSDate(endsDate), context: { 'guild': message.guild!.id, 'user': user.id } });
-            message.channel.send(`${user.username} has been added to the blacklist and banned ${(time === null) ? '' : durationStringCreator(lux.DateTime.now(), lux.DateTime.fromJSDate(endsDate!))}\nProvided reason: ${strReason}`);
+            message.channel.send(`**${user.tag}** has been banned ${(time === null) ? '' : durationStringCreator(lux.DateTime.now(), lux.DateTime.fromJSDate(endsDate!))}\nProvided reason: ${strReason}`);
         };
         return;
     }
@@ -172,7 +180,7 @@ export class smiteCommand extends SubCommandPluginCommand {
                 guild: message.guildId!
             }
         })
-        if ((q).length === 0) return;
+        if ((q).length === 0) return message.channel.send('This user is not banned');
         message.guild!.members.unban(user).catch(() => { })
         prisma.punishment.updateMany({
             where: {
@@ -184,7 +192,7 @@ export class smiteCommand extends SubCommandPluginCommand {
                 resolved: true
             }
         })
-        message.channel.send(`${user.tag} has been removed from the blacklist`);
+        return message.channel.send(`${user.tag} has been unbanned`);
     }
 
     public async list(message: discord.Message) {
@@ -195,12 +203,12 @@ export class smiteCommand extends SubCommandPluginCommand {
                 resolved: false,
             }
         })
-        if ((smite).length === 0) message.channel.send(`No users are blacklisted`);
+        if ((smite).length === 0) message.channel.send(`No users are banned`);
         smite.forEach(async (i) => {
             let x = await bot.users.fetch(i.member.toString());
             let date = i.endsAt ? (+new Date(i.endsAt) - Date.now()) : null;
             let duration = date === null ? 'permanently' : durationStringCreator(lux.DateTime.now(), lux.DateTime.fromJSDate(new Date(i.endsAt!)));
-            message.channel.send(`**${x.username}#${x.discriminator}** is blacklisted until *${duration}*. Case ID: ${i.id}`);
+            message.channel.send(`**${x.username}#${x.discriminator}** is banned until *${duration}*. Case ID: ${i.id}`);
         });
     }
     public async reset(message: discord.Message) {
@@ -211,7 +219,7 @@ export class smiteCommand extends SubCommandPluginCommand {
                 resolved: false,
             }
         })
-        message.channel.send(`Warning: This will unban all blacklisted users. Are you sure you want to do this?`);
+        message.channel.send(`Warning: This will unban all users. Are you sure you want to do this?`);
         const filter = (m: discord.Message) => m.author.id === message.author.id
         const collector = message.channel.createMessageCollector({ filter, time: 10000 });
         let confirm = false
@@ -222,7 +230,7 @@ export class smiteCommand extends SubCommandPluginCommand {
                 })
                 banned.forEach((i) => {
                     message.guild!.members.unban(i.member.toString()).catch((err) => {
-                        console.log(err)
+                        console.error(err)
                     })
                 });
                 message.channel.send(`Done`)
@@ -356,7 +364,6 @@ export class infoCommand extends sapphire.Command {
 
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'help',
-
     description: 'Shows infomation about commands'
 }) export class helpCommand extends sapphire.Command {
     public async messageRun(message: discord.Message, args: sapphire.Args) {
@@ -472,8 +479,5 @@ export class commandsManagerCommand extends SubCommandPluginCommand {
             data: { disabled: i.filter(x => x !== cmd.value)}
         })
         return message.channel.send(`Enabled command **${cmd.value!}**`)
-    }
-    public async status(message: discord.Message) {
-        message.channel.send(`Not implemented yet`);
     }
 }
