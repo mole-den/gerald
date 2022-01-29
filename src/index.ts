@@ -136,19 +136,6 @@ bot.on('commandError', (error, payload) => {
 	}
 });
 
-bot.on('guildMemberAdd', async (member) => {
-	let x = await prisma.punishment.findMany({
-		where: {
-			id: 1,
-			guild: member.guild.id,
-			type: 'blist'
-		}
-	})
-	if (x.length > 0) {
-		member.ban({ reason: `Blacklisted with reason: ${x[0].reason}` });
-	}
-})
-
 bot.on('guildCreate', async (guild) => {
 	let user = await guild.members.fetch(bot.user!.id)
 	if (user.permissions.has(discord.Permissions.FLAGS.ADMINISTRATOR) === false) {
