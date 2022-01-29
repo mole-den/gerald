@@ -132,7 +132,7 @@ bot.on('commandError', (error, payload) => {
 		payload.message.channel.send(error.message)
 	} else {
 		console.error(error);
-		payload.message.channel.send(`Unhandled exception:\n\`\`\`${(error as any).message}\`\`\``)
+		payload.message.channel.send("Unhandled exception:\n```" + (error as any).message + "```")
 	}
 });
 

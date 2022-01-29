@@ -161,7 +161,6 @@ export class banCommand extends SubCommandPluginCommand {
                     createdTime: new Date(),
                     endsAt: endsDate
                 },
-                
             });
             message.guild!.bans.create(user, {reason: strReason, days: 0})
             if (endsDate) taskScheduler.newTask({ 'task': 'unban', when: lux.DateTime.fromJSDate(endsDate), context: { 'guild': message.guild!.id, 'user': user.id } });
@@ -182,16 +181,16 @@ export class banCommand extends SubCommandPluginCommand {
         })
         if ((q).length === 0) return message.channel.send('This user is not banned');
         message.guild!.members.unban(user).catch(() => { })
-        prisma.punishment.updateMany({
-            where: {
-                type: 'blist',
-                member: user.id,
-                guild: message.guildId!
-            },
-            data: {
-                resolved: true
-            }
-        })
+            prisma.punishment.updateMany({
+                where: {
+                    type: 'blist',
+                    member: user.id,
+                    guild: message.guildId!
+                },
+                data: {
+                    resolved: true
+                }
+            })
         return message.channel.send(`${user.tag} has been unbanned`);
     }
 
