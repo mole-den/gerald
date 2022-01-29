@@ -9,9 +9,9 @@
     "postinstall": "tsc"
   },
   "dependencies": {
-    "@discordjs/voice": "^0.7.5",
+    "@discordjs/voice": "^0.8.0",
     "@prisma/client": "^3.8.1",
-    "@sapphire/decorators": "^3.1.4",
+    "@sapphire/decorators": "^4.0.4",
     "@sapphire/discord.js-utilities": "^4.4.0",
     "@sapphire/framework": "^2.2.0",
     "@sapphire/plugin-subcommands": "^2.0.2",
