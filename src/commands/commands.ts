@@ -45,6 +45,10 @@ export class ownerEvalCommand extends sapphire.Command {
 })
 export class DeletedMSGCommand extends sapphire.Command {
     public async messageRun(message: discord.Message, args: sapphire.Args) {
+        type attachment = Array<{
+            url: string,
+            name: string | null
+        }>;
         let amount: number;
         let arg = await args.pick('number');
         if (isNaN(arg)) return message.channel.send('Please specify a valid amount of messages to view.');
@@ -65,6 +69,7 @@ export class DeletedMSGCommand extends sapphire.Command {
         })
         let embeds: Array<discord.MessageEmbed> = [];
         del.forEach(async (msg) => {
+            let attachments = <attachment>msg.attachments
             if (msg.content.length > 1028) {
                 var content: string = msg.content.substring(0, 1025) + '...';
             } else {
@@ -80,12 +85,9 @@ export class DeletedMSGCommand extends sapphire.Command {
             DeleteEmbed.footer = {
                 text: `ID: ${msg.id} | Message ID: ${msg.msgId}\nAuthor ID: ${msg.author}`
             };
-            if (msg.attachments && msg.attachments !== []) {
+            if (attachments.length > 0) {
                 let attachArray: string[] = [];
-                (<Array<{
-                    url: string,
-                    name: string | null
-                }>>msg.attachments).forEach((attach) => {
+                (attachments).forEach((attach) => {
                     attachArray.push(attach.name ? `[${attach.name}](${attach.url})` : `${attach.url}`);
                 });
                 DeleteEmbed.addField('Attachments', attachArray.join('\n'));
