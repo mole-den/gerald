@@ -311,6 +311,7 @@ bot.on('messageDeleteBulk', async (array) => {
 					joinedTime: new Date()
 				}
 			})
+			memberCache.add(guild.id)
 		})
 	}
 })();
