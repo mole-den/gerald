@@ -22,27 +22,9 @@ export const bot = new sapphire.SapphireClient({
 	discord.Intents.FLAGS.DIRECT_MESSAGES, discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
 	discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS]),
 	partials: ["CHANNEL"],
-	fetchPrefix: async (message: discord.Message): Promise<string | Array<string>> => {
-		if (message.channel.type === 'DM') {
-			return ['', 'g'];
-		}
-		try {
-			let x = await prisma.guild.findUnique({
-				where: {
-					guildId: message.guildId!
-				},
-				select: {
-					prefix: true
-				}
-			})
-			return x?.prefix ?? 'g';
-		} catch (error) {
-			console.error(error)
-			return 'g';
-		}
-	},
+	defaultPrefix: 'EsRtvLIlJ3O5HuNV1Bo824FOzjelsmHmtYFTcBk57',
 	defaultCooldown: {
-		filteredCommands: process.env.OWNERS!.split(' '),
+		filteredUsers: process.env.OWNERS!.split(' '),
 	}
 
 });
@@ -137,7 +119,6 @@ export function getRandomArbitrary(min: number, max: number) {
 };
 
 bot.on('ready', () => {
-	console.log(`Logged in as ${bot.user?.tag}`);
 	bot.user?.setPresence({
 		activities: [{
 			name: 'ghelp',
@@ -295,10 +276,9 @@ bot.on('messageDeleteBulk', async (array) => {
 	await prisma.$connect()
 	console.log('Connected to database')
 	memberCache = new membersCache(18000)
-	await sleep(5000);
+	await sleep(1000);
 	await bot.login(process.env.TOKEN);
 	taskScheduler = new scheduledTaskManager()
-	console.log('Ready')
 	let x = await prisma.guild.count();
 	let guilds = await bot.guilds.fetch()
 	if (guilds.size > x) {
@@ -313,6 +293,27 @@ bot.on('messageDeleteBulk', async (array) => {
 			memberCache.add(guild.id)
 		})
 	}
+	await sleep(4000);
+	bot.fetchPrefix = async (message) => {		
+		if (message.channel.type === 'DM') {
+			return ['', 'g'];
+		}
+		try {
+			let x = await prisma.guild.findUnique({
+				where: {
+					guildId: message.guildId!
+				},
+				select: {
+					prefix: true
+				}
+			})
+			return x?.prefix ?? 'g';
+		} catch (error) {
+			console.error(error)
+			return 'g';
+		}
+	}
+	console.log('Ready')
 })();
 
 //zac very cringe
