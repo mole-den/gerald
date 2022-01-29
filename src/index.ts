@@ -290,7 +290,6 @@ bot.on('messageDeleteBulk', async (array) => {
 	});
 });
 
-// startup sequence
 (async () => {
 	console.log('Starting...')
 	await prisma.$connect()
