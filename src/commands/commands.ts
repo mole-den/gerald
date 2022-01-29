@@ -145,7 +145,7 @@ export class banCommand extends SubCommandPluginCommand {
                     type: 'blist',
                     reason: strReason,
                     createdTime: new Date(),
-                    endsAt: endsDate
+                    endsAt: (endsDate ? endsDate.toISOString(): null)
                 }
             })
             message.guild!.bans.create(user, { reason: strReason, days: 0 });
@@ -159,7 +159,7 @@ export class banCommand extends SubCommandPluginCommand {
                     type: 'blist',
                     reason: strReason,
                     createdTime: new Date(),
-                    endsAt: endsDate
+                    endsAt: (endsDate ? endsDate.toISOString(): null)
                 },
             });
             message.guild!.bans.create(user, {reason: strReason, days: 0})

@@ -49,8 +49,7 @@ model punishment {
   reason                    String    @default("not given") @db.VarChar(255)
   createdTime               DateTime  @db.Timestamp(6)
   resolved                  Boolean   @default(false)
-  endsAt                    DateTime? @db.Timestamp(6)
-  ends                      DateTime? @db.Timestamp(6)
+  endsAt                    DateTime? @db.Timestamp(6) 
   member_memberTopunishment member    @relation(fields: [member, guild], references: [userid, guild], onDelete: NoAction, onUpdate: NoAction, map: "punishments_member_guild_fkey")
 }
 
