@@ -23,30 +23,41 @@ export class membersCache {
 		if ((typeof users === 'string') && x.includes(users)) return true;
 		else if (typeof users === 'string') {
 			if (checkOnly) return false
-			await prisma.member.create({
+			await prisma.member.createMany({
 				data: {
 					guild: guild,
 					userid: users
-				}
+				},
+				skipDuplicates: true
 			})
 			return true;
 		}
 		else {
-			let res: Array<boolean> = [];
-			users.forEach((user) => {
-				if (!x.includes(user)) {
-					if (checkOnly) res.push(false);
-					else { prisma.member.create({
-						data: {
-							guild: guild,
-							userid: user
-						}
-					})};
-				} else {
-					if (checkOnly) res.push(true);
+			if (checkOnly) {
+				let res: Array<boolean> = [];
+				users.forEach((user) => {
+					if (!x.includes(user)) {
+						if (checkOnly) res.push(false);
+					} else {
+						if (checkOnly) res.push(true);
+					}
+				})
+				return res	
+			}
+			let query: Array<{
+				guild: string,
+				userid: string
+			}> = users.map((u) => {
+				return {
+					userid: u,
+					guild: guild
 				}
 			})
-			return res
+			await prisma.member.createMany({
+				data: query,
+				skipDuplicates: true,
+			})
+			return true
 		}
 	}
 

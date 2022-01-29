@@ -139,7 +139,7 @@ export class banCommand extends SubCommandPluginCommand {
             if (!user.bannable) {
                 return message.channel.send("This user is not bannable by the bot.");
             };
-            prisma.punishment.create({
+            await prisma.punishment.create({
                 data: {
                     member: user.id,
                     guild: message.guildId!,
@@ -151,9 +151,9 @@ export class banCommand extends SubCommandPluginCommand {
             })
             message.guild!.bans.create(user, { reason: strReason, days: 0 });
             if (endsDate) taskScheduler.newTask({ 'task': 'unban', when: lux.DateTime.fromJSDate(endsDate), context: { 'guild': message.guild!.id, 'user': user.id } });
-            message.channel.send(`**${user.user.tag}** has been banned ${(time === null) ? '' : durationStringCreator(lux.DateTime.now(), lux.DateTime.fromJSDate(endsDate!))}\nProvided reason: ${strReason}`);
+            message.channel.send(`**${user.user.tag}** has been banned ${(time === null) ? '' : `for ${durationStringCreator(lux.DateTime.now(), lux.DateTime.fromJSDate(endsDate!))}`}\nProvided reason: ${strReason}`);
         } else {
-            prisma.punishment.create({
+            await prisma.punishment.create({
                 data: {
                     member: user.id,
                     guild: message.guildId!,
@@ -161,11 +161,12 @@ export class banCommand extends SubCommandPluginCommand {
                     reason: strReason,
                     createdTime: new Date(),
                     endsAt: endsDate
-                }
+                },
+                
             });
             message.guild!.bans.create(user, {reason: strReason, days: 0})
             if (endsDate) taskScheduler.newTask({ 'task': 'unban', when: lux.DateTime.fromJSDate(endsDate), context: { 'guild': message.guild!.id, 'user': user.id } });
-            message.channel.send(`**${user.tag}** has been banned ${(time === null) ? '' : durationStringCreator(lux.DateTime.now(), lux.DateTime.fromJSDate(endsDate!))}\nProvided reason: ${strReason}`);
+            message.channel.send(`**${user.tag}** has been banned ${(time === null) ? '' : `for ${durationStringCreator(lux.DateTime.now(), lux.DateTime.fromJSDate(endsDate!))}`}\nProvided reason: ${strReason}`);
         };
         return;
     }
