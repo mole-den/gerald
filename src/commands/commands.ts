@@ -191,7 +191,7 @@ export class banCommand extends SubCommandPluginCommand {
                     resolved: true
                 }
             })
-        return message.channel.send(`${user.tag} has been unbanned`);
+        return message.channel.send(`**${user.tag}** has been unbanned`);
     }
 
     public async list(message: discord.Message) {
@@ -210,7 +210,7 @@ export class banCommand extends SubCommandPluginCommand {
             message.channel.send(`**${x.username}#${x.discriminator}** is banned until *${duration}*. Case ID: ${i.id}`);
         });
     }
-    public async reset(message: discord.Message) {
+    public async clear(message: discord.Message) {
         let banned = await prisma.punishment.findMany({
             where: {
                 type: 'blist',
