@@ -118,16 +118,6 @@ export function getRandomArbitrary(min: number, max: number) {
 	return Math.round(Math.random() * (max - min) + min);
 };
 
-bot.on('ready', () => {
-	bot.user?.setPresence({
-		activities: [{
-			name: 'ghelp',
-			type: 'LISTENING'
-		}],
-		status: 'dnd',
-	})
-});
-
 bot.on('commandDenied', ({ context, message: content }: sapphire.UserError, { message }: sapphire.CommandDeniedPayload) => {
 	// `context: { silent: true }` should make UserError silent:
 	// Use cases for this are for example permissions error when running a hidden command.
@@ -294,6 +284,13 @@ bot.on('messageDeleteBulk', async (array) => {
 		})
 	}
 	await sleep(4000);
+	bot.user?.setPresence({
+		activities: [{
+			name: 'ghelp',
+			type: 'LISTENING'
+		}],
+		status: 'dnd',
+	})
 	bot.fetchPrefix = async (message) => {		
 		if (message.channel.type === 'DM') {
 			return ['', 'g'];
