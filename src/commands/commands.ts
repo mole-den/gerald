@@ -123,13 +123,12 @@ export class banCommand extends SubCommandPluginCommand {
         await memberCache.validate(message.guild!.id, user.id)
         let content = await args.pick('string').catch(() => null);
         let reason = await args.repeat('string').catch(() => null);
-        let time = content !== null ? durationToMS(content) : null;
-        if (time === null) {
+        let duration = content !== null ? durationToMS(content) : null;
+        if (duration === null) {
             if (content !== null && reason !== null) reason.unshift(content)
         };
-
         let strReason = reason === null ? 'not given' : reason?.join(' ');
-        let endsDate = (time !== null) ? new Date(Date.now() + time) : null;
+        let endsDate = (duration !== null) ? new Date(Date.now() + duration) : null;
 
         if (user instanceof discord.GuildMember) {
             if (message.member!.roles.highest.comparePositionTo(user.roles.highest) <= 0 && (message.guild!.ownerId !== message.member!.id)) {
@@ -151,7 +150,7 @@ export class banCommand extends SubCommandPluginCommand {
             })
             message.guild!.bans.create(user, { reason: strReason, days: 0 });
             if (endsDate) taskScheduler.newTask({ 'task': 'unban', when: lux.DateTime.fromJSDate(endsDate), context: { 'guild': message.guild!.id, 'user': user.id } });
-            message.channel.send(`**${user.user.tag}** has been banned ${(time === null) ? '' : `for ${durationStringCreator(lux.DateTime.now(), lux.DateTime.fromJSDate(endsDate!))}`}\nProvided reason: ${strReason}`);
+            message.channel.send(`**${user.user.tag}** has been banned ${(duration === null) ? '' : `for ${(lux.DateTime.now(), lux.DateTime.fromJSDate(endsDate!))}`}\nProvided reason: ${strReason}`);
         } else {
             await prisma.punishment.create({
                 data: {
@@ -166,7 +165,7 @@ export class banCommand extends SubCommandPluginCommand {
             });
             message.guild!.bans.create(user, {reason: strReason, days: 0})
             if (endsDate) taskScheduler.newTask({ 'task': 'unban', when: lux.DateTime.fromJSDate(endsDate), context: { 'guild': message.guild!.id, 'user': user.id } });
-            message.channel.send(`**${user.tag}** has been banned ${(time === null) ? '' : `for ${durationStringCreator(lux.DateTime.now(), lux.DateTime.fromJSDate(endsDate!))}`}\nProvided reason: ${strReason}`);
+            message.channel.send(`**${user.tag}** has been banned ${(duration === null) ? '' : `for ${durationStringCreator(lux.DateTime.now(), lux.DateTime.fromJSDate(endsDate!))}`}\nProvided reason: ${strReason}`);
         };
         return;
     }

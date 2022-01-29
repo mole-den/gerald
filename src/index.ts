@@ -88,15 +88,15 @@ export function durationToMS(duration: string): number | null {
 export function durationStringCreator(date1: Date | lux.DateTime, date2: Date | lux.DateTime): string {
 	let startDate = date1 instanceof lux.DateTime ? date1 : lux.DateTime.fromJSDate(date1)
 	let endDate = date2 instanceof lux.DateTime ? date2 : lux.DateTime.fromJSDate(date2)
-	let duration = startDate.diff(endDate, ["years", "months", "days", "hours", "minutes"], {
+	let duration = endDate.diff(startDate, ["years", "months", "days", "hours", "minutes"], {
 		conversionAccuracy: 'casual'
 	})
 	let durationStr = [];
-	if (duration.years) durationStr.push(`${duration.years.toFixed(0)}y`);
-	if (duration.months) durationStr.push(`${duration.months.toFixed(0)}mths`);
-	if (duration.days) durationStr.push(`${duration.days.toFixed(0)}d`);
-	if (duration.hours) durationStr.push(`${duration.hours.toFixed(0)}h`);
-	if (duration.minutes) durationStr.push(`${duration.minutes.toFixed(0)}m`);
+	if (duration.years) durationStr.push(`${duration.years.toFixed(0)}years`);
+	if (duration.months) durationStr.push(`${duration.months.toFixed(0)}months`);
+	if (duration.days) durationStr.push(`${duration.days.toFixed(0)}days`);
+	if (duration.hours) durationStr.push(`${duration.hours.toFixed(0)}hours`);
+	if (duration.minutes) durationStr.push(`${duration.minutes.toFixed(0)}minutes`);
 	return durationStr.join(', ');
 }
 export function sleep(ms: number): Promise<void> {
