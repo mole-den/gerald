@@ -108,7 +108,7 @@ export class DeletedMSGCommand extends sapphire.Command {
     requiredClientPermissions: ['BAN_MEMBERS'],
     requiredUserPermissions: ['BAN_MEMBERS'],
     preconditions: ['GuildOnly'],
-    enabled: false
+    enabled: false,
     subCommands: ['add', 'remove', 'list', 'clear', { input: 'add', default: true }]
 })
 export class banCommand extends SubCommandPluginCommand {
