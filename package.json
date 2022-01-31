@@ -22,6 +22,7 @@
     "libsodium-wrappers": "^0.7.9",
     "luxon": "^2.0.2",
     "node-cache": "^5.1.2",
+    "parse-duration": "^1.0.2",
     "pg": "^8.7.1",
     "tslib": "^2.3.1"
   },

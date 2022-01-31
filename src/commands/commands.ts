@@ -2,6 +2,7 @@ import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
 import { SubCommandPluginCommand, SubCommandPluginCommandOptions } from '@sapphire/plugin-subcommands';
 import { PaginatedMessageEmbedFields } from '@sapphire/discord.js-utilities';
+import parse from 'parse-duration'
 import { durationToMS, prisma, getRandomArbitrary, bot, cleanMentions, memberCache, durationStringCreator, taskScheduler } from '../index';
 import { ApplyOptions } from '@sapphire/decorators';
 import * as lux from 'luxon';
@@ -102,11 +103,52 @@ export class DeletedMSGCommand extends sapphire.Command {
 
 };
 
+@ApplyOptions<sapphire.CommandOptions>({
+    name: 'timeout',
+    aliases: ['tm'],
+    requiredClientPermissions: "MODERATE_MEMBERS",
+    requiredUserPermissions: "MODERATE_MEMBERS",
+    description: 'Time out a user',
+})
+export class timeoutCommand extends sapphire.Command {
+    public async messageRun(message: discord.Message, args: sapphire.Args) {
+        const users = await args.repeatResult('member');
+        let rest = await args.repeatResult('string')
+        if (rest.success === false) {
+            throw new sapphire.UserError({
+                identifier: 'missingargs',
+                message: "Provide a duration for the time out."
+            })
+        }
+        const timeoutDuration = parse(rest.value!.join(' '))
+        if (timeoutDuration === null || Number.isNaN(timeoutDuration), timeoutDuration > 0) {
+            throw new sapphire.UserError({
+                identifier: 'invalidargs',
+                message: "Provide a valid time out duration."
+            })
+        }
+        if (users.success) {
+            users.value!.forEach((u) => {
+                u.timeout(timeoutDuration)
+            });
+            let u = users.value.map(u => `**${u.user.tag}**`)
+            let formatter = new time.DurationFormatter()
+            message.channel.send(`Timed out ${u.length === 1 ? u[0] : u.join(', ')} for ${formatter.format(timeoutDuration)}`)
+        } else {
+            throw new sapphire.UserError({
+                identifier: 'invalidargs',
+                message: "Provide a valid user to time out."
+            })
+        }
+    }
+}
+
 @ApplyOptions<SubCommandPluginCommandOptions>({
     name: 'ban',
     description: 'Allows management and creation of bans',
     requiredClientPermissions: ['BAN_MEMBERS'],
     requiredUserPermissions: ['BAN_MEMBERS'],
+    enabled: false,
     preconditions: ['GuildOnly'],
     subCommands: ['add', 'remove', 'list', 'clear', { input: 'add', default: true }]
 })
@@ -115,11 +157,13 @@ export class banCommand extends SubCommandPluginCommand {
         let user = await args.pick('member').catch(() => {
             return args.pick('user')
         })
-        if ((await prisma.punishment.findMany({where: {
-            type: 'blist',
-            member: user.id,
-            guild: message.guildId!
-        }})).length > 0) return message.channel.send(`This user is already banned`)
+        if ((await prisma.punishment.findMany({
+            where: {
+                type: 'blist',
+                member: user.id,
+                guild: message.guildId!
+            }
+        })).length > 0) return message.channel.send(`This user is already banned`)
         await memberCache.validate(message.guild!.id, user.id)
         let content = await args.pick('string').catch(() => null);
         let reason = await args.repeat('string').catch(() => null);
@@ -145,7 +189,7 @@ export class banCommand extends SubCommandPluginCommand {
                     type: 'blist',
                     reason: strReason,
                     createdTime: new Date(),
-                    endsAt: (endsDate ? endsDate.toISOString(): null)
+                    endsAt: (endsDate ? endsDate.toISOString() : null)
                 }
             })
             message.guild!.bans.create(user, { reason: strReason, days: 0 });
@@ -159,10 +203,10 @@ export class banCommand extends SubCommandPluginCommand {
                     type: 'blist',
                     reason: strReason,
                     createdTime: new Date(),
-                    endsAt: (endsDate ? endsDate.toISOString(): null)
+                    endsAt: (endsDate ? endsDate.toISOString() : null)
                 },
             });
-            message.guild!.bans.create(user, {reason: strReason, days: 0})
+            message.guild!.bans.create(user, { reason: strReason, days: 0 })
             if (endsDate) taskScheduler.newTask({ 'task': 'unban', when: lux.DateTime.fromJSDate(endsDate), context: { 'guild': message.guild!.id, 'user': user.id } });
             message.channel.send(`**${user.tag}** has been banned ${(duration === null) ? '' : `for ${durationStringCreator(lux.DateTime.now(), lux.DateTime.fromJSDate(endsDate!))}`}\nProvided reason: ${strReason}`);
         };
@@ -181,16 +225,16 @@ export class banCommand extends SubCommandPluginCommand {
         })
         if ((q).length === 0) return message.channel.send('This user is not banned');
         message.guild!.members.unban(user).catch(() => { })
-            prisma.punishment.updateMany({
-                where: {
-                    type: 'blist',
-                    member: user.id,
-                    guild: message.guildId!
-                },
-                data: {
-                    resolved: true
-                }
-            })
+        prisma.punishment.updateMany({
+            where: {
+                type: 'blist',
+                member: user.id,
+                guild: message.guildId!
+            },
+            data: {
+                resolved: true
+            }
+        })
         return message.channel.send(`**${user.tag}** has been unbanned`);
     }
 
@@ -456,13 +500,13 @@ export class commandsManagerCommand extends SubCommandPluginCommand {
             message.channel.send(`This command cannot be disabled.`)
             return;
         }
-        let i = ((await prisma.guild.findUnique({ where: { guildId: message.guildId!} }))!.disabled!);
+        let i = ((await prisma.guild.findUnique({ where: { guildId: message.guildId! } }))!.disabled!);
         i.some(x => x === cmd.value!) ? (() => {
             throw new sapphire.UserError({ identifier: 'invalid', message: 'Command already disabled' })
         }) : i.push(cmd.value!);
         prisma.guild.update({
-            where: {guildId: message.guildId!},
-            data: {disabled: i}
+            where: { guildId: message.guildId! },
+            data: { disabled: i }
         })
         return message.channel.send(`Disabled command **${cmd.value!}**`)
     }
@@ -472,10 +516,10 @@ export class commandsManagerCommand extends SubCommandPluginCommand {
         if (cmd.exists === false) throw new sapphire.UserError({ identifier: 'invalidsyntax', message: 'Specify a command to enable' });
         let command = this.container.stores.get('commands').find(value => value.name === cmd.value);
         if (!command) return message.channel.send('Command not found');
-        let i = (await prisma.guild.findUnique({ where: { guildId: message.guildId!}}))!.disabled!;
+        let i = (await prisma.guild.findUnique({ where: { guildId: message.guildId! } }))!.disabled!;
         prisma.guild.update({
-            where: {guildId: message.guildId!},
-            data: { disabled: i.filter(x => x !== cmd.value)}
+            where: { guildId: message.guildId! },
+            data: { disabled: i.filter(x => x !== cmd.value) }
         })
         return message.channel.send(`Enabled command **${cmd.value!}**`)
     }
