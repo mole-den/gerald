@@ -108,6 +108,7 @@ export class DeletedMSGCommand extends sapphire.Command {
     aliases: ['tm'],
     requiredClientPermissions: "MODERATE_MEMBERS",
     requiredUserPermissions: "MODERATE_MEMBERS",
+    preconditions: ["GuildOnly"],
     description: 'Time out a user',
 })
 export class timeoutCommand extends sapphire.Command {
@@ -164,6 +165,7 @@ export class timeoutCommand extends sapphire.Command {
     aliases: ['ctm'],
     requiredClientPermissions: "MODERATE_MEMBERS",
     requiredUserPermissions: "MODERATE_MEMBERS",
+    preconditions: ["GuildOnly"],
     description: 'Remove time out from a user',
 })
 export class rmTimeoutCommand extends sapphire.Command {
