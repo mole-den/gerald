@@ -114,6 +114,27 @@ export class timeoutCommand extends sapphire.Command {
     public async messageRun(message: discord.Message, args: sapphire.Args) {
         const users = await args.repeatResult('member');
         let rest = await args.repeatResult('string')
+        if (users.success) {
+            if (users.value!.some(x => x.isCommunicationDisabled())) {
+                throw new sapphire.UserError({
+                    identifier: 'invalidargs',
+                    message: "This user is aleady timed out."
+                })
+
+            }
+            if (users.value!.some(u => message.member!.roles.highest.comparePositionTo(u.roles.highest)) === true) {
+                throw new sapphire.UserError({
+                    identifier: 'invalidperms',
+                    message: "You do not have permission to do that."
+                })
+            }
+        } else {
+            throw new sapphire.UserError({
+                identifier: 'invalidargs',
+                message: "Provide a valid user to time out."
+            })
+        }
+
         if (rest.success === false) {
             throw new sapphire.UserError({
                 identifier: 'missingargs',
@@ -127,19 +148,12 @@ export class timeoutCommand extends sapphire.Command {
                 message: "Provide a valid time out duration."
             })
         }
-        if (users.success) {
-            users.value!.forEach((u) => {
-                u.timeout(timeoutDuration)
-            });
-            let u = users.value.map(u => `**${u.user.tag}**`)
-            let formatter = new time.DurationFormatter()
-            message.channel.send(`Timed out ${u.length === 1 ? u[0] : u.join(', ')} for ${formatter.format(timeoutDuration)}`)
-        } else {
-            throw new sapphire.UserError({
-                identifier: 'invalidargs',
-                message: "Provide a valid user to time out."
-            })
-        }
+        users.value!.forEach((u) => {
+            u.timeout(timeoutDuration)
+        });
+        let u = users.value.map(u => `**${u.user.tag}**`)
+        let formatter = new time.DurationFormatter()
+        message.channel.send(`Timed out ${u.length === 1 ? u[0] : u.join(', ')} for ${formatter.format(timeoutDuration)}`)
     }
 }
 
