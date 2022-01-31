@@ -112,29 +112,34 @@ export class DeletedMSGCommand extends sapphire.Command {
 })
 export class timeoutCommand extends sapphire.Command {
     public async messageRun(message: discord.Message, args: sapphire.Args) {
-        const users = await args.repeatResult('member');
-        let rest = await args.repeatResult('string')
-        if (users.success) {
-            if (users.value!.some(x => x.isCommunicationDisabled())) {
-                throw new sapphire.UserError({
-                    identifier: 'invalidargs',
-                    message: "This user is aleady timed out."
-                })
-
-            }
-            if (users.value!.some(u => message.member!.roles.highest.comparePositionTo(u.roles.highest) <= 0) === true) {
-                throw new sapphire.UserError({
-                    identifier: 'invalidperms',
-                    message: "You do not have permission to do that."
-                })
-            }
-        } else {
+        try {
+            var user = await args.pick('member');
+        } catch {
             throw new sapphire.UserError({
                 identifier: 'invalidargs',
                 message: "Provide a valid user to time out."
             })
-        }
 
+        }
+        let rest = await args.repeatResult('string')
+        if (user.isCommunicationDisabled()) {
+            throw new sapphire.UserError({
+                identifier: 'invalidargs',
+                message: "This user is aleady timed out."
+            })
+
+        }
+        if (message.member!.roles.highest.comparePositionTo(user.roles.highest) < 0 === true) {
+            throw new sapphire.UserError({
+                identifier: 'invalidperms',
+                message: "You do not have permission to do that."
+            })
+        } else if (user.permissions.has('ADMINISTRATOR')) {
+            throw new sapphire.UserError({
+                identifier: 'ineffectivetimeout',
+                message: 'This user has permissions that make the time out ineffective.'
+            })
+        }
         if (rest.success === false) {
             throw new sapphire.UserError({
                 identifier: 'missingargs',
@@ -148,12 +153,9 @@ export class timeoutCommand extends sapphire.Command {
                 message: "Provide a valid time out duration."
             })
         }
-        users.value!.forEach((u) => {
-            u.timeout(timeoutDuration)
-        });
-        let u = users.value.map(u => `**${u.user.tag}**`)
+        user.timeout(timeoutDuration)
         let formatter = new time.DurationFormatter()
-        message.channel.send(`Timed out ${u.length === 1 ? u[0] : u.join(', ')} for ${formatter.format(timeoutDuration)}`)
+        message.channel.send(`Timed out **${user.user.tag}** for ${formatter.format(timeoutDuration)}`)
     }
 }
 
