@@ -155,7 +155,7 @@ export class timeoutCommand extends sapphire.Command {
         }
         user.timeout(timeoutDuration)
         let formatter = new time.DurationFormatter()
-        message.channel.send(`Timed out **${user.user.tag}** for ${formatter.format(timeoutDuration)}`)
+        message.channel.send(`Timed out **${user.user.tag}** for ${formatter.format(timeoutDuration - 1000)}`)
     }
 }
 
