@@ -164,7 +164,7 @@ export class timeoutCommand extends sapphire.Command {
     aliases: ['ctm'],
     requiredClientPermissions: "MODERATE_MEMBERS",
     requiredUserPermissions: "MODERATE_MEMBERS",
-    description: 'Time out a user',
+    description: 'Remove time out from a user',
 })
 export class rmTimeoutCommand extends sapphire.Command {
     public async messageRun(message: discord.Message, args: sapphire.Args) {
