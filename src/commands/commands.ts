@@ -121,7 +121,7 @@ export class timeoutCommand extends sapphire.Command {
             })
         }
         const timeoutDuration = parse(rest.value!.join(' '))
-        if (timeoutDuration === null || Number.isNaN(timeoutDuration), timeoutDuration > 0) {
+        if (timeoutDuration === null || Number.isNaN(timeoutDuration), timeoutDuration <= 0) {
             throw new sapphire.UserError({
                 identifier: 'invalidargs',
                 message: "Provide a valid time out duration."
@@ -138,6 +138,31 @@ export class timeoutCommand extends sapphire.Command {
             throw new sapphire.UserError({
                 identifier: 'invalidargs',
                 message: "Provide a valid user to time out."
+            })
+        }
+    }
+}
+
+@ApplyOptions<sapphire.CommandOptions>({
+    name: 'cleartimeout',
+    aliases: ['ctm'],
+    requiredClientPermissions: "MODERATE_MEMBERS",
+    requiredUserPermissions: "MODERATE_MEMBERS",
+    description: 'Time out a user',
+})
+export class rmTimeoutCommand extends sapphire.Command {
+    public async messageRun(message: discord.Message, args: sapphire.Args) {
+        const users = await args.repeatResult('member');
+        if (users.success) {
+            users.value!.forEach((u) => {
+                u.timeout(null)
+            });
+            let u = users.value.map(u => `**${u.user.tag}**`)
+            message.channel.send(`Removed time out from ${u.length === 1 ? u[0] : u.join(', ')}`)
+        } else {
+            throw new sapphire.UserError({
+                identifier: 'invalidargs',
+                message: "Provide a valid user."
             })
         }
     }
