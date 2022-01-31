@@ -122,7 +122,7 @@ export class timeoutCommand extends sapphire.Command {
                 })
 
             }
-            if (users.value!.some(u => message.member!.roles.highest.comparePositionTo(u.roles.highest)) === true) {
+            if (users.value!.some(u => message.member!.roles.highest.comparePositionTo(u.roles.highest) <= 0) === true) {
                 throw new sapphire.UserError({
                     identifier: 'invalidperms',
                     message: "You do not have permission to do that."
