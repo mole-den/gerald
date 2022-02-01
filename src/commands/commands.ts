@@ -1,7 +1,7 @@
 import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
 import { SubCommandPluginCommand, SubCommandPluginCommandOptions } from '@sapphire/plugin-subcommands';
-import { PaginatedMessageEmbedFields } from '@sapphire/discord.js-utilities';
+import { PaginatedMessageEmbedFields, MessagePrompter } from '@sapphire/discord.js-utilities';
 import parse from 'parse-duration'
 import { durationToMS, prisma, getRandomArbitrary, bot, cleanMentions, memberCache, durationStringCreator, taskScheduler } from '../index';
 import { ApplyOptions } from '@sapphire/decorators';
@@ -298,34 +298,21 @@ export class banCommand extends SubCommandPluginCommand {
         });
     }
     public async clear(message: discord.Message) {
-        message.channel.send(`Warning: This will unban all users. Are you sure you want to do this?`);
-        const filter = (m: discord.Message) => m.author.id === message.author.id
-        const collector = message.channel.createMessageCollector({ filter, time: 10000 });
-        let confirm = false
-        collector.on('collect', async m => {
-            if (m.content === 'yes') {
-                prisma.punishment.updateMany({
-                    data: { resolved: true }
-                });
-                (await message.guild!.bans.fetch()).each(x => {
-                    message.guild!.bans.remove(x.user)
-                })
-                message.channel.send(`Done`)
-                confirm = true
-                collector.stop();
-                return;
-            } else if (message.content === 'no') {
-                message.channel.send(`Command aborted.`);
-                confirm = true
-                collector.stop()
-                return
-            }
-        });
-        collector.on('end', () => {
-            if (confirm === true) return
-            message.channel.send(`Command timed out`)
-        });
-
+        const collector = new MessagePrompter('Warning: This will unban all users. Are you sure you want to do this?', 'confirm')
+        const result = await collector.run(message.channel, message.author)
+        if (result === true) {
+            prisma.punishment.updateMany({
+                data: { resolved: true }
+            });
+            (await message.guild!.bans.fetch()).each(x => {
+                message.guild!.bans.remove(x.user)
+            })
+            message.channel.send(`Done`)
+            return;
+        } else if (result === false) {
+            message.channel.send(`Command aborted.`);
+            return
+        }
     }
 }
 
