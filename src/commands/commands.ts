@@ -188,10 +188,10 @@ export class rmTimeoutCommand extends sapphire.Command {
 
 @ApplyOptions<SubCommandPluginCommandOptions>({
     name: 'ban',
+    aliases: ['smite'],
     description: 'Allows management and creation of bans',
     requiredClientPermissions: ['BAN_MEMBERS'],
     requiredUserPermissions: ['BAN_MEMBERS'],
-    enabled: false,
     preconditions: ['GuildOnly'],
     subCommands: ['add', 'remove', 'list', 'clear', { input: 'add', default: true }]
 })
@@ -298,13 +298,6 @@ export class banCommand extends SubCommandPluginCommand {
         });
     }
     public async clear(message: discord.Message) {
-        let banned = await prisma.punishment.findMany({
-            where: {
-                type: 'blist',
-                guild: message.guildId!,
-                resolved: false,
-            }
-        })
         message.channel.send(`Warning: This will unban all users. Are you sure you want to do this?`);
         const filter = (m: discord.Message) => m.author.id === message.author.id
         const collector = message.channel.createMessageCollector({ filter, time: 10000 });
@@ -313,12 +306,10 @@ export class banCommand extends SubCommandPluginCommand {
             if (m.content === 'yes') {
                 prisma.punishment.updateMany({
                     data: { resolved: true }
-                })
-                banned.forEach((i) => {
-                    message.guild!.members.unban(i.member.toString()).catch((err) => {
-                        console.error(err)
-                    })
                 });
+                (await message.guild!.bans.fetch()).each(x => {
+                    message.guild!.bans.remove(x.user)
+                })
                 message.channel.send(`Done`)
                 confirm = true
                 collector.stop();
