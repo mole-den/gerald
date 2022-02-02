@@ -208,15 +208,9 @@ export class banCommand extends SubCommandPluginCommand {
             }
         })).length > 0) return message.channel.send(`This user is already banned`)
         await memberCache.validate(message.guild!.id, user.id)
-        let content = await args.pick('string').catch(() => null);
-        let reason = await args.repeat('string').catch(() => null);
-        let duration = content !== null ? durationToMS(content) : null;
-        if (duration === null) {
-            if (content !== null && reason !== null) reason.unshift(content)
-        };
-        let strReason = reason === null ? 'not given' : reason?.join(' ');
-        let endsDate = (duration !== null) ? new Date(Date.now() + duration) : null;
-
+        let next = await args.repeat('string').catch(() => null);
+        let duration = next !== null ? durationToMS(next.join(' ')) : null;
+        let endsDate = duration ? new Date(Date.now() + duration) : null
         if (user instanceof discord.GuildMember) {
             if (message.member!.roles.highest.comparePositionTo(user.roles.highest) <= 0 && (message.guild!.ownerId !== message.member!.id)) {
                 message.channel.send(`You do not have a high enough role to do this.`);
@@ -230,28 +224,30 @@ export class banCommand extends SubCommandPluginCommand {
                     member: user.id,
                     guild: message.guildId!,
                     type: 'blist',
-                    reason: strReason,
                     createdTime: new Date(),
                     endsAt: (endsDate ? endsDate.toISOString() : null)
                 }
             })
-            message.guild!.bans.create(user, { reason: strReason, days: 0 });
+            message.guild!.bans.create(user, { reason: `Banned by ${message.author.tag}`, days: 0 });
             if (endsDate) taskScheduler.newTask({ 'task': 'unban', when: lux.DateTime.fromJSDate(endsDate), context: { 'guild': message.guild!.id, 'user': user.id } });
-            message.channel.send(`**${user.user.tag}** has been banned ${(duration === null) ? '' : `for ${(lux.DateTime.now(), lux.DateTime.fromJSDate(endsDate!))}`}\nProvided reason: ${strReason}`);
+            message.channel.send({
+                content: `**${user.user.tag}** has been banned ${(duration === null) ? '' : `for ${(lux.DateTime.now(), lux.DateTime.fromJSDate(endsDate!))}`}`,
+            });
         } else {
             await prisma.punishment.create({
                 data: {
                     member: user.id,
                     guild: message.guildId!,
                     type: 'blist',
-                    reason: strReason,
                     createdTime: new Date(),
                     endsAt: (endsDate ? endsDate.toISOString() : null)
                 },
             });
-            message.guild!.bans.create(user, { reason: strReason, days: 0 })
+            message.guild!.bans.create(user, { reason: `Banned by ${message.author.tag}`, days: 0 })
             if (endsDate) taskScheduler.newTask({ 'task': 'unban', when: lux.DateTime.fromJSDate(endsDate), context: { 'guild': message.guild!.id, 'user': user.id } });
-            message.channel.send(`**${user.tag}** has been banned ${(duration === null) ? '' : `for ${durationStringCreator(lux.DateTime.now(), lux.DateTime.fromJSDate(endsDate!))}`}\nProvided reason: ${strReason}`);
+            message.channel.send({
+                content: `**${user.tag}** has been banned ${(duration === null) ? '' : `for ${durationStringCreator(lux.DateTime.now(), lux.DateTime.fromJSDate(endsDate!))}`}`,
+            });
         };
         return;
     }
