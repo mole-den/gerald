@@ -250,6 +250,13 @@ bot.on('messageDeleteBulk', async (array) => {
 	});
 });
 
+async function initTasks() {
+	taskScheduler.on('unban', async (a) => {
+		let x = Reflect.get(Object(a), 'guild')
+		let guild = await bot.guilds.fetch(x)
+		guild.bans.remove(Reflect.get(Object(a), 'user') as string)
+	})
+}
 (async () => {
 	console.log('Starting...')
 	await prisma.$connect()
@@ -258,6 +265,7 @@ bot.on('messageDeleteBulk', async (array) => {
 	await sleep(1000);
 	await bot.login(process.env.TOKEN);
 	taskScheduler = new scheduledTaskManager()
+	initTasks()
 	let x = await prisma.guild.count();
 	let guilds = await bot.guilds.fetch()
 	if (guilds.size > x) {
