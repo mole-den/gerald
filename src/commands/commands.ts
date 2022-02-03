@@ -374,6 +374,15 @@ export class prefixCommand extends sapphire.Command {
 }
 
 @ApplyOptions<sapphire.CommandOptions>({
+    name: 'invite',
+    description: 'Shows invite link'
+})
+export class inviteCommand extends sapphire.Command {
+    public async messageRun(message: discord.Message) {
+        message.channel.send(`Invite is: https://discord.com/oauth2/authorize?client_id=671156130483011605&permissions=8&scope=bot%20applications.commands`)
+    }
+}
+@ApplyOptions<sapphire.CommandOptions>({
     name: 'info',
     description: 'Shows general information about the bot',
 })
@@ -399,11 +408,10 @@ export class infoCommand extends sapphire.Command {
         let elapsed = Date.now() - start;
         let embed = new discord.MessageEmbed().setColor('BLURPLE').setFooter({text: `Gerald v${require('../../package.json').version}`})
         embed.setTitle('Info')
-        .addField('Invite', 'https://discord.com/oauth2/authorize?client_id=671156130483011605&permissions=8&scope=bot%20applications.commands', false)
         .addField('Github repo', 'https://github.com/mole-den/Gerald')
         .addField('Uptime', uptimeString)
-        .addField('Discord API heartbeat', `${bot.ws.ping}ms`)
-        .addField('Database Heartbeat', `${elapsed}ms`)
+        .addField('Discord API heartbeat', `${bot.ws.ping}ms`, false)
+        .addField('Database Heartbeat', `${elapsed}ms`, false)
         .addField(`Memory usage`,`${Math.round(process.memoryUsage.rss()/1000000)}MB `)
         message.channel.send({
             embeds: [embed]
