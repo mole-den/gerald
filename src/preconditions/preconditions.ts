@@ -12,7 +12,7 @@ export class OwnerOnlyCondition extends sapphire.Precondition {
         let owners = process.env.OWNERS!.split(' ');
         let x = owners.includes(message.author.id);
         if (x) return this.ok();
-        return this.error({ message: `This command is owner only.`, context: {silent: true} });
+        return this.error({ message: `This command is owner only.`, context: { silent: true } });
     };
 }
 
@@ -84,9 +84,30 @@ declare module '@sapphire/framework' {
 export class dismountPrecondition extends sapphire.CorePreconditions.Enabled {
     public run(_: discord.Message, command: sapphire.Command, context: sapphire.Precondition.Context): sapphire.Precondition.Result {
         command.enabled ? _.channel.sendTyping() : null;
-        return command.enabled ? this.ok() : this.error({ 
-            identifier: sapphire.Identifiers.CommandDisabled, 
-            message: '', 
-            context: { ...context, silent: true } 
-        }); 
-}}
+        return command.enabled ? this.ok() : this.error({
+            identifier: sapphire.Identifiers.CommandDisabled,
+            message: '',
+            context: { ...context, silent: true }
+        });
+    }
+}
+
+export class BigIntArgument extends sapphire.Argument<BigInt> {
+    public run(parameter: string) {
+        if (Number.isNaN(Number(parameter))) {
+            return this.error({
+                parameter,
+                message: 'The provided argument could not be resolved to a valid integer.',
+                identifier: 'ChannelNotATextBasedChannel'
+              });
+          
+        }
+        return this.ok(BigInt(parameter))
+    }
+}
+
+declare module '@sapphire/framework' {
+    interface ArgType {
+        bigInt: BigInt;
+    }
+}

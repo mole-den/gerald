@@ -3,7 +3,7 @@ import * as discord from 'discord.js';
 import { SubCommandPluginCommand, SubCommandPluginCommandOptions } from '@sapphire/plugin-subcommands';
 import { PaginatedMessageEmbedFields, MessagePrompter } from '@sapphire/discord.js-utilities';
 import parse from 'parse-duration'
-import { durationToMS, prisma, getRandomArbitrary, bot, cleanMentions, memberCache, durationStringCreator, taskScheduler } from '../index';
+import { durationToMS, prisma, getRandomArbitrary, bot, cleanMentions, memberCache, taskScheduler } from '../index';
 import { ApplyOptions } from '@sapphire/decorators';
 import * as lux from 'luxon';
 import * as time from '@sapphire/time-utilities';
@@ -246,7 +246,7 @@ export class banCommand extends SubCommandPluginCommand {
             message.guild!.bans.create(user, { reason: `Banned by ${message.author.tag}`, days: 0 })
             if (endsDate) taskScheduler.newTask({ 'task': 'unban', when: lux.DateTime.fromJSDate(endsDate), context: { 'guild': message.guild!.id, 'user': user.id } });
             message.channel.send({
-                content: `**${user.tag}** has been banned ${(duration === null) ? '' : `for ${durationStringCreator(lux.DateTime.now(), lux.DateTime.fromJSDate(endsDate!))}`}`,
+                content: `**${user.tag}** has been banned ${(duration === null) ? '' : `for ${new time.DurationFormatter().format(duration - 1000)}`}`,
             });
         };
         return;
@@ -289,7 +289,7 @@ export class banCommand extends SubCommandPluginCommand {
         smite.forEach(async (i) => {
             let x = await bot.users.fetch(i.member.toString());
             let date = i.endsAt ? (+new Date(i.endsAt) - Date.now()) : null;
-            let duration = date === null ? 'permanently' : durationStringCreator(lux.DateTime.now(), lux.DateTime.fromJSDate(new Date(i.endsAt!)));
+            let duration = date === null ? 'permanently' : new time.DurationFormatter().format(date - time.Time.Second);
             message.channel.send(`**${x.username}#${x.discriminator}** is banned until *${duration}*. Case ID: ${i.id}`);
         });
     }
