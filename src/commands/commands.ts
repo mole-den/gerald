@@ -403,10 +403,8 @@ export class infoCommand extends sapphire.Command {
         .addField('Github repo', 'https://github.com/mole-den/Gerald')
         .addField('Uptime', uptimeString)
         .addField('Discord API heartbeat', `${bot.ws.ping}ms`)
-        .addField('Database Heartbeat', `${elapsed}ms`);
-        for (const [key,value] of Object.entries(process.memoryUsage())){
-            embed.addField(`${key} memory usage`,`${value/1000000}MB `)
-        }        
+        .addField('Database Heartbeat', `${elapsed}ms`)
+        .addField(`Memory usage`,`${Math.round(process.memoryUsage.rss()/1000000)}MB `)
         message.channel.send({
             embeds: [embed]
         })
