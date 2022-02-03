@@ -374,32 +374,12 @@ export class prefixCommand extends sapphire.Command {
 }
 
 @ApplyOptions<sapphire.CommandOptions>({
-    name: 'repo',
-    description: 'Shows the bot\'s source code',
-})
-export class repoCommand extends sapphire.Command {
-    public async messageRun(message: discord.Message) {
-        message.channel.send(`https://github.com/mole-den/Gerald`);
-    }
-}
-
-@ApplyOptions<sapphire.CommandOptions>({
-    name: 'invite',
-    description: 'Shows the bot\'s invite link',
-})
-export class inviteCommand extends sapphire.Command {
-    public async messageRun(message: discord.Message) {
-        message.channel.send(`Invite is: https://discord.com/oauth2/authorize?client_id=671156130483011605&permissions=8&scope=bot`);
-    }
-}
-
-@ApplyOptions<sapphire.CommandOptions>({
     name: 'info',
     description: 'Shows general information about the bot',
 })
 export class infoCommand extends sapphire.Command {
-    public async messageRun(message: discord.Message) {
-        let uptime = process.uptime();
+    public override async messageRun(message: discord.Message) {
+        let uptime = process.uptime()
         let uptimeString = "";
         if (uptime >= 86400) {
             uptimeString += Math.floor(uptime / 86400) + " days ";
@@ -417,7 +397,16 @@ export class infoCommand extends sapphire.Command {
         let start = Date.now()
         await prisma.$queryRawUnsafe('SELECT 1;')
         let elapsed = Date.now() - start;
-        message.channel.send(`**Uptime:** ${uptimeString}\n**Websocket heartbeat:** ${bot.ws.ping}ms\n**Database heartbeat:** ${elapsed}ms`);
+        let embed = new discord.MessageEmbed().setColor('BLURPLE').setFooter({text: `Gerald v${require('../../package.json').version}`})
+        embed.setTitle('Info')
+        .addField('Invite', 'https://discord.com/oauth2/authorize?client_id=671156130483011605&permissions=8&scope=bot', false)
+        .addField('Github repo', 'https://github.com/mole-den/Gerald')
+        .addField('Uptime', uptimeString)
+        .addField('Discord API heartbeat', `${bot.ws.ping}ms`)
+        .addField('Database Heartbeat', `${elapsed}ms`)
+        message.channel.send({
+            embeds: [embed]
+        })
     }
 }
 
