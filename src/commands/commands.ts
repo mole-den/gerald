@@ -148,10 +148,10 @@ export class timeoutCommand extends sapphire.Command {
             })
         }
         const timeoutDuration = parse(rest.value!.join(' '))
-        if (timeoutDuration === null || Number.isNaN(timeoutDuration), timeoutDuration <= 0) {
+        if (timeoutDuration === null || Number.isNaN(timeoutDuration), timeoutDuration <= 0 || timeoutDuration > time.Time.Month) {
             throw new sapphire.UserError({
                 identifier: 'invalidargs',
-                message: "Provide a valid time out duration."
+                message: "Provide a valid time out duration. (max 1 month)"
             })
         }
         user.timeout(timeoutDuration)
