@@ -399,7 +399,7 @@ export class infoCommand extends sapphire.Command {
         let elapsed = Date.now() - start;
         let embed = new discord.MessageEmbed().setColor('BLURPLE').setFooter({text: `Gerald v${require('../../package.json').version}`})
         embed.setTitle('Info')
-        .addField('Invite', 'https://discord.com/oauth2/authorize?client_id=671156130483011605&permissions=8&scope=bot', false)
+        .addField('Invite', 'https://discord.com/oauth2/authorize?client_id=671156130483011605&permissions=8&scope=bot%20applications.commands', false)
         .addField('Github repo', 'https://github.com/mole-den/Gerald')
         .addField('Uptime', uptimeString)
         .addField('Discord API heartbeat', `${bot.ws.ping}ms`)
