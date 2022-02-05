@@ -538,3 +538,13 @@ export class commandsManagerCommand extends SubCommandPluginCommand {
         return message.channel.send(`Enabled command **${cmd.value!}**`)
     }
 }
+
+@ApplyOptions<sapphire.CommandOptions>({
+    name: 'politics',
+    description: 'politics'
+})
+export class polCommand extends sapphire.Command {
+    public async messageRun(message: discord.Message) {
+        message.channel.send('https://cdn.discordapp.com/attachments/377228302336655362/886234477578301490/video0.mp4')
+    }
+}
