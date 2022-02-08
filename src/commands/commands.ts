@@ -581,7 +581,8 @@ export class redditCommand extends sapphire.Command {
 
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'marina',
-    description: ':)'
+    description: ':)',
+    preconditions: ["NSFW"]
 }) 
 export class uwu extends sapphire.Command {
     messageRun(message: discord.Message) {
