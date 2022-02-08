@@ -9,17 +9,15 @@
     "postinstall": "tsc"
   },
   "dependencies": {
-    "@discordjs/voice": "^0.8.0",
     "@prisma/client": "^3.8.1",
     "@sapphire/decorators": "^4.0.4",
     "@sapphire/discord.js-utilities": "^4.4.0",
     "@sapphire/framework": "^2.2.0",
     "@sapphire/plugin-subcommands": "^2.0.2",
     "@sapphire/time-utilities": "^1.5.2",
+    "axios": "^0.25.0",
     "cron": "^1.8.2",
     "discord.js": "^13.6.0",
-    "ffmpeg-static": "^4.4.0",
-    "libsodium-wrappers": "^0.7.9",
     "luxon": "^2.0.2",
     "node-cache": "^5.1.2",
     "parse-duration": "^1.0.2",

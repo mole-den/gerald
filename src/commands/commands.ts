@@ -7,6 +7,7 @@ import { durationToMS, prisma, getRandomArbitrary, bot, cleanMentions, memberCac
 import { ApplyOptions } from '@sapphire/decorators';
 import * as lux from 'luxon';
 import * as time from '@sapphire/time-utilities';
+import axios from 'axios'
 ///<reference types="../index"/>
 time;
 
@@ -406,13 +407,13 @@ export class infoCommand extends sapphire.Command {
         let start = Date.now()
         await prisma.$queryRawUnsafe('SELECT 1;')
         let elapsed = Date.now() - start;
-        let embed = new discord.MessageEmbed().setColor('BLURPLE').setFooter({text: `Gerald v${require('../../package.json').version}`})
+        let embed = new discord.MessageEmbed().setColor('BLURPLE').setFooter({ text: `Gerald v${require('../../package.json').version}` })
         embed.setTitle('Info')
-        .addField('Github repo', 'https://github.com/mole-den/Gerald')
-        .addField('Uptime', uptimeString)
-        .addField('Discord API heartbeat', `${bot.ws.ping}ms`, false)
-        .addField('Database Heartbeat', `${elapsed}ms`, false)
-        .addField(`Memory usage`,`${Math.round(process.memoryUsage.rss()/1000000)}MB `)
+            .addField('Github repo', 'https://github.com/mole-den/Gerald')
+            .addField('Uptime', uptimeString)
+            .addField('Discord API heartbeat', `${bot.ws.ping}ms`, false)
+            .addField('Database Heartbeat', `${elapsed}ms`, false)
+            .addField(`Memory usage`, `${Math.round(process.memoryUsage.rss() / 1000000)}MB `)
         message.channel.send({
             embeds: [embed]
         })
@@ -546,5 +547,45 @@ export class commandsManagerCommand extends SubCommandPluginCommand {
 export class polCommand extends sapphire.Command {
     public async messageRun(message: discord.Message) {
         message.channel.send('https://cdn.discordapp.com/attachments/377228302336655362/886234477578301490/video0.mp4')
+    }
+}
+/*
+@ApplyOptions<sapphire.CommandOptions>({
+    name: 'reddit',
+    description: 'Fetches posts from reddit'
+})
+export class redditCommand extends sapphire.Command {
+    token: string = ""
+    async messageRun(message: discord.Message, args: sapphire.Args) {
+        this.token ??= (await axios.post("https://www.reddit.com/api/v1/access_token", {
+            method: 'POST',
+            contentType: 'application/x-www-form-urlencoded',
+            headers: {
+                'User-Agent': "Gerald/v1.0.0"
+            },
+            auth: {
+                'username': "eESC9zKdQ2XRhnSgNEozGA",
+                'password': (process.env.REDDIT_SECRET!.split(', '))[0]
+            },
+            body: `grant_type=password&username=GeraldAPI&password=${(process.env.REDDIT_SECRET!.split(', '))[1]}`,
+        })).data.access_token!
+        let sr = args.nextMaybe()
+        if (!sr.exists) return message.channel.send('Specify a subreddit.')
+        let posts = axios.get(`https://oauth.reddit.com/r/${sr.value}/hot`, {
+            headers: {
+                Authorization: `Bearer ${this.token}`
+            }
+        })
+    }
+}*/
+
+@ApplyOptions<sapphire.CommandOptions>({
+    name: 'marina',
+    description: ':)'
+}) 
+export class uwu extends sapphire.Command {
+    messageRun(message: discord.Message) {
+        axios
+        message.channel.send(`https://cdn.discordapp.com/attachments/865431012703469578/914432381002350632/SPOILER_image0.jpg`)
     }
 }
