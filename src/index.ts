@@ -15,6 +15,26 @@ process.on('SIGTERM', async () => {
 	process.exit(0);
 });
 
+process.on('uncaughtException', (err) => {
+	let x = {
+		type: 'exception',
+		data: [err.name, err.message, err.stack]
+	};
+	new WebSocket(Buffer.from(process.env.ERROR_URL!, 'hex').toString()).send(JSON.stringify(x))
+	console.error(err)
+	process.exit(1)
+})
+
+process.on('unhandledRejection', (err: any) => {
+	let x = {
+		type: 'rejection',
+		data: [err?.name, err?.message, err?.stack, JSON.stringify(err)]
+	};
+	new WebSocket(Buffer.from(process.env.ERROR_URL!, 'hex').toString()).send(JSON.stringify(x))
+	console.error(err)
+	process.exit(1)
+})
+
 export const bot = new sapphire.SapphireClient({
 	typing: true,
 	caseInsensitiveCommands: true,

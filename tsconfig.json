@@ -9,9 +9,6 @@
     "rootDir": "src",
     "importHelpers": true,
     "noEmitHelpers": true,
-    "lib": [
-    "ESNext"
-    ],
     "removeComments": true,
     "noEmitOnError": true,
     "strict": true,
