@@ -3,6 +3,7 @@ import * as sapphire from '@sapphire/framework';
 import { scheduledTaskManager } from './taskManager'
 import { membersCache } from './caches';
 import { PrismaClient } from '@prisma/client';
+import Time from '@sapphire/time-utilities'
 import WebSocket from 'ws'
 //import crypto from "crypto";
 process.on('SIGTERM', async () => {
@@ -48,7 +49,10 @@ export const bot = new sapphire.SapphireClient({
 	partials: ["CHANNEL"],
 	defaultPrefix: 'EsRtvLIlJ3O5HuNV1Bo824FOzjelsmHmtYFTcBk57',
 	defaultCooldown: {
-		filteredUsers: process.env.OWNERS!.split(' '),
+		scope: 3,
+		limit: 5,
+		delay: Time.Time.Second * 10
+		
 	}
 
 });
