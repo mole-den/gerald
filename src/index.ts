@@ -17,6 +17,7 @@ process.on('SIGTERM', async () => {
 });
 
 process.on('uncaughtException', (err) => {
+	process.exit(1)
 	let x = {
 		type: 'exception',
 		data: [err.name, err.message, err.stack]
@@ -27,6 +28,7 @@ process.on('uncaughtException', (err) => {
 })
 
 process.on('unhandledRejection', (err: any) => {
+	process.exit(1)
 	let x = {
 		type: 'rejection',
 		data: [err?.name, err?.message, err?.stack, JSON.stringify(err)]
