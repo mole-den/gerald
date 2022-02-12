@@ -51,7 +51,7 @@ export const bot = new sapphire.SapphireClient({
 	defaultCooldown: {
 		scope: 3,
 		limit: 3,
-		delay: Time.Time.Second * 15
+		delay: Time.Time.Second * 10
 	}
 
 });
