@@ -3,6 +3,7 @@ import * as sapphire from '@sapphire/framework';
 import { scheduledTaskManager } from './taskManager'
 import { membersCache } from './caches';
 import { PrismaClient } from '@prisma/client';
+import WebSocket from 'ws'
 //import crypto from "crypto";
 process.on('SIGTERM', async () => {
 	console.log('SIGTERM received');
