@@ -50,9 +50,9 @@ export const bot = new sapphire.SapphireClient({
 	defaultPrefix: 'EsRtvLIlJ3O5HuNV1Bo824FOzjelsmHmtYFTcBk57',
 	defaultCooldown: {
 		scope: 3,
-		limit: 3,
-		delay: Time.Time.Second * 10
-	}
+		limit: 2,
+		delay: Time.Time.Second * 3
+		}
 
 });
 export function durationToMS(duration: string): number | null {
