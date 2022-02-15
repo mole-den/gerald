@@ -52,7 +52,7 @@ export const bot = new sapphire.SapphireClient({
 		scope: 3,
 		limit: 2,
 		delay: Time.Time.Second * 3
-		}
+	}
 
 });
 export function durationToMS(duration: string): number | null {
@@ -167,11 +167,8 @@ bot.on('guildCreate', async (guild) => {
 		})
 	})
 });
-
-bot.on('messageDelete', async (message) => {
-	let delTime = new Date()
-	if (!message.guild) return
-	if (message.partial) return;
+async function deletedMessageHandler(message: discord.Message | discord.PartialMessage, delTime: Date) {
+	if (message.partial || message.author.bot || message.guild === null) return;
 	await sleep(100)
 	let logs = await message.guild.fetchAuditLogs({
 		type: 72
@@ -184,9 +181,6 @@ bot.on('messageDelete', async (message) => {
 	);
 	let entry = auditEntry
 	const executor = (entry && entry.executor) ? entry.executor.tag : 'Unknown (Most likely the author or a bot)';
-	if (message.author?.bot) return
-	if (message.guild === null) return;
-	if (message.partial) return;
 	let attachments: Array<{
 		url: string,
 		name: string | null
@@ -209,54 +203,16 @@ bot.on('messageDelete', async (message) => {
 			msgId: message.id,
 			attachments: attachments
 		}
-	}).catch((e) => {
-		throw e;
+
 	})
-});
+}
+
+bot.on('messageDelete', async (message) => await deletedMessageHandler(message, new Date()));
 bot.on('messageDeleteBulk', async (array) => {
 	let delTime = new Date();
 	await sleep(100)
 	array.each(async (message) => {
-		if (!message.guild) return
-		if (message.partial) return;
-		let logs = await message.guild.fetchAuditLogs({
-			type: 72
-		});
-		await memberCache.validate(message.guild.id, message.author.id)
-		const auditEntry = logs.entries.find(a =>
-			a.target.id === message.author.id
-			&& a.extra.channel.id === message.channel.id
-			&& Date.now() - a.createdTimestamp < 5000
-		);
-		let entry = auditEntry
-		const executor = (entry && entry.executor) ? entry.executor.tag : 'Unknown (Most likely the author or a bot)';
-		if (message.author?.bot) return
-		if (message.guild === null) return;
-		if (message.partial) return;
-		let attachments: Array<{
-			url: string,
-			name: string | null
-		}> = [];
-		message.attachments.each((attachment) => {
-			attachments.push({
-				url: attachment.url,
-				name: attachment.name
-			});
-		});
-		prisma.deleted_msg.create({
-			data: {
-				author: message.author.id,
-				content: message.content,
-				guildId: message.guildId!,
-				msgTime: new Date(message.createdAt.getTime()),
-				channel: message.channel.id,
-				deletedTime: delTime,
-				deletedBy: executor,
-				msgId: message.id,
-				attachments: attachments
-			}
-		})
-
+		await deletedMessageHandler(message, delTime)
 	});
 });
 
@@ -298,7 +254,7 @@ async function initTasks() {
 		}],
 		status: 'dnd',
 	})
-	bot.fetchPrefix = async (message) => {		
+	bot.fetchPrefix = async (message) => {
 		if (message.channel.type === 'DM') {
 			return ['', 'g'];
 		}
