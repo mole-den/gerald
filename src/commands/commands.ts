@@ -2,7 +2,6 @@ import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
 import { SubCommandPluginCommand, SubCommandPluginCommandOptions } from '@sapphire/plugin-subcommands';
 import { PaginatedMessageEmbedFields, MessagePrompter } from '@sapphire/discord.js-utilities';
-import parse from 'parse-duration'
 import { durationToMS, prisma, getRandomArbitrary, bot, cleanMentions, memberCache, taskScheduler } from '../index';
 import { ApplyOptions } from '@sapphire/decorators';
 import * as lux from 'luxon';
@@ -148,7 +147,7 @@ export class timeoutCommand extends sapphire.Command {
                 message: "Provide a duration for the time out."
             })
         }
-        const timeoutDuration = parse(rest.value!.join(' '))
+        const timeoutDuration = durationToMS(rest.value!.join(' '))
         if (timeoutDuration === null || Number.isNaN(timeoutDuration), timeoutDuration <= 0 || timeoutDuration > time.Time.Month) {
             throw new sapphire.UserError({
                 identifier: 'invalidargs',
