@@ -3,9 +3,9 @@ import * as sapphire from '@sapphire/framework';
 import { scheduledTaskManager } from './taskManager'
 import { membersCache } from './caches';
 import { PrismaClient } from '@prisma/client';
-import Time from '@sapphire/time-utilities'
-import WebSocket from 'ws'
-//import crypto from "crypto";
+import Time from '@sapphire/time-utilities';
+import Bugsnag from '@bugsnag/js'
+if (process.env.BUGSNAG_KEY) Bugsnag.start({ apiKey: process.env.BUGSNAG_KEY });
 process.on('SIGTERM', async () => {
 	console.log('SIGTERM received');
 	bot.fetchPrefix = async () => {
@@ -16,29 +16,6 @@ process.on('SIGTERM', async () => {
 	void prisma.$disconnect();
 	process.exit(0);
 });
-
-process.on('uncaughtException', (err) => {
-	process.exit(1)
-	let x = {
-		type: 'exception',
-		data: [err.name, err.message, err.stack]
-	};
-	new WebSocket(Buffer.from(process.env.ERROR_URL!, 'hex').toString()).send(JSON.stringify(x))
-	console.error(err)
-	process.exit(1)
-})
-
-process.on('unhandledRejection', (err: any) => {
-	process.exit(1)
-	let x = {
-		type: 'rejection',
-		data: [err?.name, err?.message, err?.stack, JSON.stringify(err)]
-	};
-	new WebSocket(Buffer.from(process.env.ERROR_URL!, 'hex').toString()).send(JSON.stringify(x))
-	console.error(err)
-	process.exit(1)
-})
-
 export const bot = new sapphire.SapphireClient({
 	typing: true,
 	caseInsensitiveCommands: true,
@@ -141,6 +118,10 @@ bot.on('commandError', (error, payload) => {
 	if (error instanceof sapphire.UserError) {
 		payload.message.channel.send(error.message)
 	} else {
+		if (process.env.BUGSNAG_KEY) {
+			Bugsnag.leaveBreadcrumb(JSON.stringify(payload))
+			Bugsnag.notify(JSON.stringify(error))
+		}
 		console.error(error);
 		payload.message.channel.send("Unhandled exception:\n```" + (error as any).message + "```")
 	}
