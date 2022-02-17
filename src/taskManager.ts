@@ -16,7 +16,9 @@ class ScheduledTask {
 	readonly task: string
 	readonly when: DateTime
 	private readonly manager: scheduledTaskManager
-	readonly context: unknown
+	readonly context: {
+		[key: string]: unknown
+	}
 	readonly overdue: boolean
 	trigger: NodeJS.Timeout | undefined
 	canceled: boolean
@@ -54,9 +56,9 @@ class ScheduledTask {
 
 	async run(): Promise<void> {
 		console.log('task running, id:', this.id);
-		this.manager.emit(this.task, this)
-		this.manager.emit("every", this)
-		if (this.overdue) this.manager.emit("overdue", this)
+		this.manager.emitTask(this.task, this)
+		this.manager.emitTask("every", this)
+		if (this.overdue) this.manager.emitTask("overdue", this)
 		this.cancel()
 	}
 }
@@ -64,11 +66,17 @@ class ScheduledTask {
 export class scheduledTaskManager extends EventEmitter {
 	private _id!: number;
 	private readonly cronJob: CronJob;
+	public emitTask(eventName: string | symbol, arg: ScheduledTask): boolean {
+		return super.emit(eventName, arg)
+	}
+	public override on(eventName: string | symbol, listener: (arg: ScheduledTask) => void): this {
+		return super.on(eventName, listener)
+	}
 	public loadedIds: string[] = []
 	public loadedTasks: Array<{
 		task: ScheduledTask,
 		trigger: NodeJS.Timeout
-	}> = []
+	}> = [];
 	private get id(): number {
 		return this._id++;
 	}

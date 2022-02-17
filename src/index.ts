@@ -199,9 +199,9 @@ bot.on('messageDeleteBulk', async (array) => {
 
 async function initTasks() {
 	taskScheduler.on('unban', async (a) => {
-		let x = Reflect.get(Object(a), 'guild')
+		let x = <string>Reflect.get(a.context, 'guild')
 		let guild = await bot.guilds.fetch(x)
-		guild.bans.remove(Reflect.get(Object(a), 'user') as string)
+		guild.bans.remove(<string>Reflect.get(a.context, 'user'))
 	})
 }
 (async () => {
