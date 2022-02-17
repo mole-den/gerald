@@ -453,7 +453,15 @@ export class infoCommand extends sapphire.Command {
         else embed.addField('Command aliases:', 'None', false);
         if (cmd.description) embed.addField('Description:', cmd.description, false);
         else embed.addField('Description:', 'null', false);
-        if (cmd.detailedDescription) embed.addField('Usage:', (cmd.detailedDescription), false);
+        if (cmd.detailedDescription) {
+            if (typeof cmd.detailedDescription === 'string') embed.addField('Usage:', (cmd.detailedDescription), false);
+            else {
+                Object.keys(cmd.detailedDescription).forEach(c => {
+                    //@ts-expect-error
+                    embed.addField(`${c}:`, cmd?.detailedDescription[c])
+                })
+            }
+        }
         else embed.addField('Usage:', 'null', false);
         return message.channel.send({
             embeds: [embed]
