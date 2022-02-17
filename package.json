@@ -5,10 +5,11 @@
   "main": "build/index.js",
   "scripts": {
     "start": "node --enable-source-maps build/index.js",
-    "inspect-start": "node --inspect=$PORT --enable-source-maps build/index.js",
+    "heroku-start": "npx bugsnag-source-maps upload-node --api-key $BUGSNAG_KEY --directory build --detect-app-version && npm start",
     "postinstall": "tsc"
   },
   "dependencies": {
+    "@bugsnag/js": "^7.16.1",
     "@prisma/client": "^3.8.1",
     "@sapphire/decorators": "^4.0.4",
     "@sapphire/discord.js-utilities": "^4.4.0",
