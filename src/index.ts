@@ -35,6 +35,7 @@ export const bot = new sapphire.SapphireClient({
 export function durationToMS(duration: string): number {
 	let timeRegex = /([0-9]+(m($| )|min($| )|mins($| )|minute($| )|minutes($| )|h($| )|hr($| )|hrs($| )|hour($| )|hours($| )|d($| )|day($| )|days($| )|wk($| )|wks($| )|week($| )|weeks($| )|mth($| )|mths($| )|month($| )|months($| )|y($| )|yr($| )|yrs($| )|year($| )|years($| )))+/gmi
 	let durationMS = 0;
+	if (duration.length > 30) return NaN
 	let durationArr = duration.match(timeRegex);
 	if (!durationArr) return NaN;
 	durationArr.forEach((d) => {

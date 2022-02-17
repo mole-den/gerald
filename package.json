@@ -1,7 +1,7 @@
 {
   "name": "gerald",
   "description": "no",
-  "version": "0.9.5",
+  "version": "1.0.0",
   "main": "build/index.js",
   "scripts": {
     "start": "node --enable-source-maps build/index.js",
@@ -10,18 +10,18 @@
   },
   "dependencies": {
     "@bugsnag/js": "^7.16.1",
+    "@bugsnag/source-maps": "^2.3.1",
     "@prisma/client": "^3.8.1",
     "@sapphire/decorators": "^4.0.4",
     "@sapphire/discord.js-utilities": "^4.4.0",
     "@sapphire/framework": "^2.2.0",
     "@sapphire/plugin-subcommands": "^2.0.2",
     "@sapphire/time-utilities": "^1.5.2",
-    "axios": "^0.25.0",
+    "axios": "^0.26.0",
     "cron": "^1.8.2",
     "discord.js": "^13.6.0",
     "luxon": "^2.0.2",
     "node-cache": "^5.1.2",
-    "parse-duration": "^1.0.2",
     "pg": "^8.7.1",
     "tslib": "^2.3.1"
   },
