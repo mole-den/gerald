@@ -5,7 +5,10 @@ import { membersCache } from './caches';
 import { PrismaClient } from '@prisma/client';
 import Time from '@sapphire/time-utilities';
 import Bugsnag from '@bugsnag/js'
-if (process.env.BUGSNAG_KEY) Bugsnag.start({ apiKey: process.env.BUGSNAG_KEY });
+if (process.env.BUGSNAG_KEY) Bugsnag.start({ 
+	apiKey: process.env.BUGSNAG_KEY,
+	appVersion: (require('../package.json').version)
+});
 process.on('SIGTERM', async () => {
 	console.log('SIGTERM received');
 	bot.fetchPrefix = async () => {
