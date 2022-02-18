@@ -5,15 +5,11 @@
     "module": "commonJS",
     "moduleResolution": "node",
     "sourceMap": true,
-    "inlineSources": true,
-    "sourceRoot": "/",
-    "allowJs": true,
     "outDir": "build",
+    "rootDir": "src",
+    "lib": ["ESNext"],
     "importHelpers": true,
     "noEmitHelpers": true,
-    "lib": [
-    "ESNext"
-    ],
     "removeComments": true,
     "noEmitOnError": true,
     "strict": true,

@@ -1,36 +1,38 @@
 {
-  "name": "gerard-scelzi",
+  "name": "gerald",
   "description": "no",
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "main": "build/index.js",
   "scripts": {
-    "start": "cd build && node index.js",
-    "inspect-start": "cd build && node --inspect index.js",
-    "postinstall": "tsc"
+    "start": "node --enable-source-maps build/index.js",
+    "heroku-start": "npm start",
+    "postinstall": "tsc && npx bugsnag-source-maps upload-node --api-key $BUGSNAG_KEY --directory build --detect-app-version &&"
   },
   "dependencies": {
-    "@bugsnag/js": "^7.14.1",
-    "@discordjs/voice": "^0.7.5",
-    "@sapphire/decorators": "^3.1.4",
+    "@bugsnag/js": "^7.16.1",
+    "@bugsnag/source-maps": "^2.3.1",
+    "@prisma/client": "^3.8.1",
+    "@sapphire/decorators": "^4.0.4",
+    "@sapphire/discord.js-utilities": "^4.4.0",
     "@sapphire/framework": "^2.2.0",
     "@sapphire/plugin-subcommands": "^2.0.2",
-    "@types/pg": "^8.6.3",
-    "axios": "^0.24.0",
-    "discord.js": "^13.5.0",
-    "ffmpeg-static": "^4.4.0",
-    "libsodium-wrappers": "^0.7.9",
+    "@sapphire/time-utilities": "^1.5.2",
+    "axios": "^0.26.0",
+    "cron": "^1.8.2",
+    "discord.js": "^13.6.0",
     "luxon": "^2.0.2",
     "node-cache": "^5.1.2",
-    "node-cron": "^3.0.0",
     "pg": "^8.7.1",
     "tslib": "^2.3.1"
   },
   "devDependencies": {
-    "@bugsnag/source-maps": "^2.3.0",
+    "@types/cron": "^1.7.3",
     "@types/luxon": "^2.0.5",
-    "@types/node-cron": "^3.0.0",
-    "typescript": "^4.4.3"
+    "@types/pg": "^8.6.4",
+    "prisma": "^3.8.1",
+    "typescript": "^4.5.5"
   },
   "engines": {
-    "node": "16.10.0"
+    "node": "17.3.0"
   }
 }
