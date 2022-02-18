@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node --enable-source-maps build/index.js",
     "heroku-start": "npm start",
-    "postinstall": "tsc && npx bugsnag-source-maps upload-node --api-key $BUGSNAG_KEY --directory build --detect-app-version &&"
+    "postinstall": "tsc && npx bugsnag-source-maps upload-node --api-key $BUGSNAG_KEY --directory build --detect-app-version"
   },
   "dependencies": {
     "@bugsnag/js": "^7.16.1",
