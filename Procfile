@@ -1,2 +1,2 @@
-worker: npm run inspect-start
-web: npm run inspect-start
+worker: npm run heroku-start
+web: npm run heroku-start

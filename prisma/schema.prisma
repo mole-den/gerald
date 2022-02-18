@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model deleted_msg {
+  id          Int      @id(map: "deletedmsgs_pkey") @default(autoincrement())
+  author      String
+  content     String
+  guildId     String
+  msgTime     DateTime @db.Timestamp(6)
+  channel     String
+  deletedTime DateTime @db.Timestamp(6)
+  deletedBy   String   @db.VarChar(200)
+  msgId       String   @unique(map: "deletedmsgs_msgid_key")
+  attachments Json?
+  member      member   @relation(fields: [author, guildId], references: [userid, guild], onDelete: NoAction, onUpdate: NoAction, map: "deletedmsgs_author_guildid_fkey")
+}
+
+model guild {
+  id         Int      @id(map: "guilds_pkey") @default(autoincrement())
+  guildId    String   @unique(map: "guilds_guildid_key")
+  joinedTime DateTime @db.Timestamp(6)
+  prefix     String   @default("g")
+  disabled   String[]
+  member     member[]
+}
+
+model member {
+  id                  Int           @id(map: "members_pkey") @default(autoincrement())
+  guild               String
+  userid              String
+  guild_guildTomember guild         @relation(fields: [guild], references: [guildId], onDelete: NoAction, onUpdate: NoAction, map: "members_guild_fkey")
+  deleted_msg         deleted_msg[]
+  punishment          punishment[]
+
+  @@unique([guild, userid], map: "members_guild_userid_key")
+}
+
+model punishment {
+  id                        Int       @id(map: "punishments_pkey") @default(autoincrement())
+  member                    String
+  guild                     String
+  type                      String    @db.VarChar(5)
+  reason                    String    @default("not given") @db.VarChar(255)
+  createdTime               DateTime  @db.Timestamp(6)
+  resolved                  Boolean   @default(false)
+  endsAt                    DateTime? @db.Timestamp(6) 
+  member_memberTopunishment member    @relation(fields: [member, guild], references: [userid, guild], onDelete: NoAction, onUpdate: NoAction, map: "punishments_member_guild_fkey")
+}
+
+model scheduled_task {
+  id      Int      @id(map: "scheduled_tasks_pkey") @default(autoincrement())
+  task    String   @db.VarChar(255)
+  context Json?    @db.Json
+  time    DateTime @db.Timestamp(6)
+  done    Boolean  @default(false)
+}
