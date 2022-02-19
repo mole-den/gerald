@@ -142,7 +142,6 @@ bot.on('guildCreate', async (guild) => {
 			joinedTime: new Date(),
 		},
 	});
-	memberCache.add(guild.id)
 	guild.channels.fetch().then(async (channels) => {
 		channels.each(async (ch) => {
 			if (ch.type === 'GUILD_TEXT') {
@@ -228,7 +227,6 @@ async function initTasks() {
 					joinedTime: new Date()
 				}
 			})
-			memberCache.add(guild.id)
 		})
 	}
 	await sleep(4000);
