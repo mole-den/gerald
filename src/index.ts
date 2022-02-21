@@ -23,6 +23,7 @@ export const bot = new sapphire.SapphireClient({
 	typing: true,
 	caseInsensitiveCommands: true,
 	caseInsensitivePrefixes: true,
+	loadMessageCommandListeners: true,
 	intents: new discord.Intents([discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS, discord.Intents.FLAGS.GUILD_MESSAGES,
 	discord.Intents.FLAGS.DIRECT_MESSAGES, discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
 	discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS]),
@@ -111,14 +112,14 @@ export function getRandomArbitrary(min: number, max: number) {
 	return Math.round(Math.random() * (max - min) + min);
 };
 
-bot.on('commandDenied', ({ context, message: content }: sapphire.UserError, { message }: sapphire.CommandDeniedPayload) => {
+bot.on('messageCommandDenied', ({ context, message: content }: sapphire.UserError, { message }: sapphire.MessageCommandDeniedPayload) => {
 	// `context: { silent: true }` should make UserError silent:
 	// Use cases for this are for example permissions error when running a hidden command.
 	if (Reflect.get(Object(context), 'silent')) return;
 	message.channel.send({ content, allowedMentions: { users: [message.author.id], roles: [] } });
 });
 
-bot.on('commandError', (error, payload) => {
+bot.on('messageCommandError', (error, payload) => {
 	if (error instanceof sapphire.UserError) {
 		payload.message.channel.send(error.message)
 	} else {

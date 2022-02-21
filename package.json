@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node --enable-source-maps build/index.js",
     "heroku-start": "npm start",
-    "postinstall": "tsc && npx bugsnag-source-maps upload-node --api-key $BUGSNAG_KEY --directory build --detect-app-version --overwrite"
+    "source": "npx bugsnag-source-maps upload-node --api-key $BUGSNAG_KEY --directory build --detect-app-version --overwrite",
+    "postinstall": "tsc"
   },
   "dependencies": {
     "@bugsnag/js": "^7.16.1",
@@ -14,7 +15,7 @@
     "@prisma/client": "^3.8.1",
     "@sapphire/decorators": "^4.0.4",
     "@sapphire/discord.js-utilities": "^4.4.0",
-    "@sapphire/framework": "^2.2.0",
+    "@sapphire/framework": "next",
     "@sapphire/plugin-subcommands": "^2.0.2",
     "@sapphire/time-utilities": "^1.5.2",
     "axios": "^0.26.0",

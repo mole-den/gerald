@@ -34,6 +34,7 @@ export class ownerEvalCommand extends sapphire.Command {
             message.channel.send(`Unhandled exception: \n ${error}`);
         }
     };
+    
 };
 
 @ApplyOptions<sapphire.CommandOptions>({

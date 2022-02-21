@@ -1,4 +1,4 @@
-import { Precondition, PreconditionOptions,  Command, Identifiers, Argument } from '@sapphire/framework';
+import { Precondition, PreconditionOptions,  Command, Identifiers, Argument} from '@sapphire/framework';
 import { Message } from 'discord.js';
 import { prisma } from '../index';
 import { ApplyOptions } from '@sapphire/decorators';
@@ -7,7 +7,7 @@ import { ApplyOptions } from '@sapphire/decorators';
     name: 'OwnerOnly',
 })
 export class OwnerOnlyCondition extends Precondition {
-    public async run(message: Message) {
+    public async messageRun(message: Message)     {
         return (process.env.OWNERS!.split(' ').includes(message.author.id)) ? this.ok()
         : this.error({ message: `This command is owner only.`, context: { silent: true } });
     };
@@ -23,7 +23,7 @@ declare module '@sapphire/framework' {
     position: 1,
 })
 export class checkDisabledCondition extends Precondition {
-    public async run(message: Message, command: Command) {
+    public async messageRun(message: Message, command: Command) {
         if (message.channel.type === 'DM') return this.ok()
         let disabled = (await prisma.guild.findUnique({ where: { guildId: message.guildId! } }))!.disabled!
         if (disabled.some(x => x === command.name)) return this.error({
