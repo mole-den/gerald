@@ -388,8 +388,26 @@ export class inviteCommand extends sapphire.Command {
     description: 'Shows general information about the bot',
 })
 export class infoCommand extends sapphire.Command {
+    public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
+        reg.registerChatInputCommand((builder) => {
+            return builder.setName(this.name)
+            .setDescription(this.description);
+        }, {
+            guildIds: ['809675885330432051']
+        })
+    }
     public override async messageRun(message: discord.Message) {
-        let uptime = process.uptime()
+        message.channel.send({
+            embeds: [await this.execute()]
+        });
+    }
+	public async chatInputRun(interaction: sapphire.ChatInputCommand.Interaction) {
+		return interaction.reply({
+            embeds: [await this.execute()]
+        })
+	}
+    private async execute() {
+        let uptime = process.uptime();
         let uptimeString = "";
         if (uptime >= 86400) {
             uptimeString += Math.floor(uptime / 86400) + " days ";
@@ -404,19 +422,17 @@ export class infoCommand extends sapphire.Command {
             uptime %= 60;
         }
         uptimeString += Math.floor(uptime) + " seconds";
-        let start = Date.now()
-        await prisma.$queryRawUnsafe('SELECT 1;')
+        let start = Date.now();
+        await prisma.$queryRawUnsafe('SELECT 1;');
         let elapsed = Date.now() - start;
-        let embed = new discord.MessageEmbed().setColor('BLURPLE').setFooter({ text: `Gerald v${require('../../package.json').version}` })
+        let embed = new discord.MessageEmbed().setColor('BLURPLE').setFooter({ text: `Gerald v${require('../../package.json').version}` });
         embed.setTitle('Info')
             .addField('Github repo', 'https://github.com/mole-den/Gerald')
             .addField('Uptime', uptimeString)
             .addField('Discord API heartbeat', `${bot.ws.ping}ms`, false)
             .addField('Database Heartbeat', `${elapsed}ms`, false)
-            .addField(`Memory usage`, `${Math.round(process.memoryUsage.rss() / 1000000)}MB `)
-        message.channel.send({
-            embeds: [embed]
-        })
+            .addField(`Memory usage`, `${Math.round(process.memoryUsage.rss() / 1000000)}MB `);
+        return embed
     }
 }
 
