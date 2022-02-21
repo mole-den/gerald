@@ -36,6 +36,10 @@ export class checkDisabledCondition extends Precondition {
         });
         return this.ok();
     };
+    public async chatInputRun() {
+        return this.ok()
+    }
+
 }
 
 declare module '@sapphire/framework' {

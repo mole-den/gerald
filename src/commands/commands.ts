@@ -34,7 +34,7 @@ export class ownerEvalCommand extends sapphire.Command {
             message.channel.send(`Unhandled exception: \n ${error}`);
         }
     };
-    
+
 };
 
 @ApplyOptions<sapphire.CommandOptions>({
@@ -391,9 +391,7 @@ export class infoCommand extends sapphire.Command {
     public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
         reg.registerChatInputCommand((builder) => {
             return builder.setName(this.name)
-            .setDescription(this.description);
-        }, {
-            guildIds: ['809675885330432051']
+                .setDescription(this.description);
         })
     }
     public override async messageRun(message: discord.Message) {
@@ -401,11 +399,11 @@ export class infoCommand extends sapphire.Command {
             embeds: [await this.execute()]
         });
     }
-	public async chatInputRun(interaction: sapphire.ChatInputCommand.Interaction) {
-		return interaction.reply({
+    public override async chatInputRun(interaction: sapphire.ChatInputCommand.Interaction) {
+        return interaction.reply({
             embeds: [await this.execute()]
         })
-	}
+    }
     private async execute() {
         let uptime = process.uptime();
         let uptimeString = "";
@@ -440,48 +438,78 @@ export class infoCommand extends sapphire.Command {
     name: 'help',
     description: 'Shows infomation about commands'
 }) export class helpCommand extends sapphire.Command {
+    public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
+        let choices: Array<[string, string]> = [];
+        bot.stores.get('commands').each(x => {
+            choices.push([x.name, x.name])
+        })
+        reg.registerChatInputCommand((builder) => {
+            return builder.setName(this.name)
+                .setDescription(this.description)
+                .addStringOption(i => {
+                    return i.setName('Command').setDescription('The command to get help for.')
+                        .addChoices(choices).setRequired(false)
+                })
+        }, {guildIds: ["809675885330432051"]})
+    }
     public async messageRun(message: discord.Message, args: sapphire.Args) {
         let maybe = args.nextMaybe();
-        if (!maybe.exists) {
-            let items: Array<discord.EmbedFieldData> = bot.stores.get('commands').filter(cmd => cmd.fullCategory.includes('_hidden') === false).map((x) => {
-                let aliases = x.aliases.length > 0 ? `(aliases: ${x.aliases.join(', ')})` : '';
-                return {
-                    name: `${x.name} ${aliases}`,
-                    value: x.description,
-                    inline: false
-                }
-            })
-            let response = new PaginatedMessageEmbedFields()
-            response.setTemplate({ title: 'Help', color: '#0099ff', footer: { text: `Use \`help <command>\` to get more information on a command\nGerald v${require('../../package.json').version!}` } })
-                .setItems(items)
-                .setItemsPerPage(5)
-                .make()
-                .run(message)
-            return
-        }
+        if (!maybe.exists) return this.baseHelp(message);
         let command = maybe.value!;
         let cmd = bot.stores.get('commands').find(cmd => (cmd.name === command || cmd.aliases.includes(command)) && !cmd.fullCategory.includes("_hidden"));
         if (!cmd) return message.channel.send(`Command \`${command}\` not found`);
+        return message.channel.send({ embeds: [this.cmdHelp(cmd)] });
+    };
+
+    public override async chatInputRun(interaction: sapphire.ChatInputCommand.Interaction) {
+        let x = interaction.options.get('Command')
+        if (x === null || x.value === undefined) return this.baseHelp(interaction);
+        let cmd = bot.stores.get('commands').find(cmd => cmd.name === x!.value)
+        interaction.reply({embeds: [this.cmdHelp(cmd!)]})
+    }
+    private cmdHelp(cmd: sapphire.Command) {
         let embed = new discord.MessageEmbed()
             .setColor('#0099ff')
             .setTitle(`Help for **${cmd.name}**`);
-        if (cmd.aliases.length > 0) embed.addField('Command aliases:', cmd.aliases.join(', '), false);
-        else embed.addField('Command aliases:', 'None', false);
-        if (cmd.description) embed.addField('Description:', cmd.description, false);
-        else embed.addField('Description:', 'null', false);
+        if (cmd.aliases.length > 0)
+            embed.addField('Command aliases:', cmd.aliases.join(', '), false);
+        else
+            embed.addField('Command aliases:', 'None', false);
+        if (cmd.description)
+            embed.addField('Description:', cmd.description, false);
+        else
+            embed.addField('Description:', 'null', false);
         if (cmd.detailedDescription) {
-            if (typeof cmd.detailedDescription === 'string') embed.addField('Usage:', (cmd.detailedDescription), false);
+            if (typeof cmd.detailedDescription === 'string')
+                embed.addField('Usage:', (cmd.detailedDescription), false);
             else {
                 Object.keys(cmd.detailedDescription).forEach(c => {
                     //@ts-expect-error
-                    embed.addField(`${c}:`, cmd?.detailedDescription[c])
-                })
+                    embed.addField(`${c}:`, cmd?.detailedDescription[c]);
+                });
             }
         }
-        else embed.addField('Usage:', 'null', false);
-        return message.channel.send({
-            embeds: [embed]
-        })
+        else
+            embed.addField('Usage:', 'null', false);
+        return embed
+    }
+
+    private baseHelp(message: discord.Message | sapphire.ChatInputCommand.Interaction) {
+        let items: Array<discord.EmbedFieldData> = bot.stores.get('commands').filter(cmd => cmd.fullCategory.includes('_hidden') === false).map((x) => {
+            let aliases = x.aliases.length > 0 ? `(aliases: ${x.aliases.join(', ')})` : '';
+            return {
+                name: `${x.name} ${aliases}`,
+                value: x.description,
+                inline: false
+            };
+        });
+        let response = new PaginatedMessageEmbedFields();
+        response.setTemplate({ title: 'Help', color: '#0099ff', footer: { text: `Use \`help <command>\` to get more information on a command\nGerald v${require('../../package.json').version!}` } })
+            .setItems(items)
+            .setItemsPerPage(5)
+            .make()
+            .run(message);
+        return;
     }
 }
 
@@ -607,8 +635,19 @@ export class redditCommand extends sapphire.Command {
     name: 'marina',
     description: ':)',
     preconditions: ["NSFW"]
-}) 
+})
 export class uwu extends sapphire.Command {
+    public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
+        reg.registerChatInputCommand({
+            name: this.name,
+            description: this.description,
+        }, {
+            guildIds: ["809675885330432051"]
+        })
+    }
+    override chatInputRun(interaction: discord.CommandInteraction) {
+        interaction.reply(`https://cdn.discordapp.com/attachments/865431012703469578/914432381002350632/SPOILER_image0.jpg`)
+    }
     messageRun(message: discord.Message) {
         axios
         message.channel.send(`https://cdn.discordapp.com/attachments/865431012703469578/914432381002350632/SPOILER_image0.jpg`)
