@@ -634,7 +634,6 @@ export class redditCommand extends sapphire.Command {
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'marina',
     description: ':)',
-    preconditions: ["NSFW"]
 })
 export class uwu extends sapphire.Command {
     public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
@@ -645,7 +644,7 @@ export class uwu extends sapphire.Command {
             guildIds: ["809675885330432051"]
         })
     }
-    override chatInputRun(interaction: discord.CommandInteraction) {
+    public chatInputRun(interaction: discord.CommandInteraction) {
         interaction.reply(`https://cdn.discordapp.com/attachments/865431012703469578/914432381002350632/SPOILER_image0.jpg`)
     }
     messageRun(message: discord.Message) {
