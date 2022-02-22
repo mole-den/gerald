@@ -439,18 +439,14 @@ export class infoCommand extends sapphire.Command {
     description: 'Shows infomation about commands'
 }) export class helpCommand extends sapphire.Command {
     public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
-        let choices: Array<[string, string]> = [];
-        bot.stores.get('commands').each(x => {
-            choices.push([x.name, x.name])
-        })
         reg.registerChatInputCommand((builder) => {
             return builder.setName(this.name)
                 .setDescription(this.description)
                 .addStringOption(i => {
                     return i.setName('Command').setDescription('The command to get help for.')
-                        .addChoices(choices).setRequired(false)
+                        .setRequired(false)
                 })
-        }, {guildIds: ["809675885330432051"]})
+        })
     }
     public async messageRun(message: discord.Message, args: sapphire.Args) {
         let maybe = args.nextMaybe();
@@ -464,8 +460,12 @@ export class infoCommand extends sapphire.Command {
     public override async chatInputRun(interaction: sapphire.ChatInputCommand.Interaction) {
         let x = interaction.options.get('Command')
         if (x === null || x.value === undefined) return this.baseHelp(interaction);
-        let cmd = bot.stores.get('commands').find(cmd => cmd.name === x!.value)
-        interaction.reply({embeds: [this.cmdHelp(cmd!)]})
+        let cmd = bot.stores.get('commands').find(cmd => cmd.name === x!.value);
+        if (cmd === null) return interaction.reply({
+            content: 'Specify a valid command.',
+            ephemeral: true
+        })
+        interaction.reply({ embeds: [this.cmdHelp(cmd!)] })
     }
     private cmdHelp(cmd: sapphire.Command) {
         let embed = new discord.MessageEmbed()
