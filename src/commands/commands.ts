@@ -442,10 +442,8 @@ export class infoCommand extends sapphire.Command {
         reg.registerChatInputCommand((builder) => {
             return builder.setName(this.name)
                 .setDescription(this.description)
-                .addStringOption(i => {
-                    return i.setName('Command').setDescription('The command to get help for.')
-                        .setRequired(false)
-                })
+                .addStringOption(i => i.setName('Command')
+                .setAutocomplete(false).setRequired(false))
         })
     }
     public async messageRun(message: discord.Message, args: sapphire.Args) {
@@ -545,18 +543,27 @@ export class infoCommand extends sapphire.Command {
 }
 
 
-@ApplyOptions<SubCommandPluginCommandOptions>({
+@ApplyOptions<sapphire.CommandOptions>({
     name: 'commands',
     aliases: ['cmds'],
     fullCategory: ['_enabled'],
     description: 'Allows management of commands and other bot features',
     requiredUserPermissions: 'ADMINISTRATOR',
     preconditions: ['GuildOnly'],
-    subCommands: ['disable', 'enable', 'status'],
 
 })
-export class commandsManagerCommand extends SubCommandPluginCommand {
-    public async disable(message: discord.Message, args: sapphire.Args) {
+export class commandsManagerCommand extends sapphire.Command {
+    public async messageRun(message: discord.Message, args: sapphire.Args) {
+        const subcmd = await args.peek('string');
+        if (!(subcmd in ['disable', 'enable', 'status'])) return message.channel.send({
+            content: ""
+        })
+        if (subcmd == "disable") return this.disable(message, args)
+        if (subcmd == "enable") return this.enable(message, args)
+       // if (subcmd == "status") return this.status(message, args)
+       return
+    }
+    private async disable(message: discord.Message, args: sapphire.Args) {
         let cmd = args.nextMaybe()
         if (cmd.exists === false) {
             throw new sapphire.UserError({ identifier: 'invalidsyntax', message: 'Specify a command to disable' });
@@ -578,7 +585,7 @@ export class commandsManagerCommand extends SubCommandPluginCommand {
         return message.channel.send(`Disabled command **${cmd.value!}**`)
     }
 
-    public async enable(message: discord.Message, args: sapphire.Args) {
+    private async enable(message: discord.Message, args: sapphire.Args) {
         let cmd = args.nextMaybe()
         if (cmd.exists === false) throw new sapphire.UserError({ identifier: 'invalidsyntax', message: 'Specify a command to enable' });
         let command = this.container.stores.get('commands').find(value => value.name === cmd.value);
