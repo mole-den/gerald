@@ -1,12 +1,10 @@
 import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
 import { SubCommandPluginCommand, SubCommandPluginCommandOptions } from '@sapphire/plugin-subcommands';
-import { PaginatedMessageEmbedFields, MessagePrompter } from '@sapphire/discord.js-utilities';
-import { durationToMS, prisma, getRandomArbitrary, bot, cleanMentions, memberCache, taskScheduler } from '../index';
+import { PaginatedMessageEmbedFields } from '@sapphire/discord.js-utilities';
+import { durationToMS, prisma, getRandomArbitrary, bot, cleanMentions, memberCache } from '../index';
 import { ApplyOptions } from '@sapphire/decorators';
-import * as lux from 'luxon';
 import * as time from '@sapphire/time-utilities';
-import axios from 'axios'
 ///<reference types="../index"/>
 time;
 
@@ -65,7 +63,7 @@ export class DeletedMSGCommand extends sapphire.Command {
                 guildId: message.guildId!
             },
             orderBy: {
-                msgTime: 'desc'
+                msgTime: "desc"
             },
             take: amount
         })
@@ -194,24 +192,17 @@ export class rmTimeoutCommand extends sapphire.Command {
     requiredClientPermissions: ['BAN_MEMBERS'],
     requiredUserPermissions: ['BAN_MEMBERS'],
     preconditions: ['GuildOnly'],
-    subCommands: ['add', 'remove', 'list', 'clear', { input: 'add', default: true }]
+    subCommands: ['add', 'remove', { input: 'add', default: true }]
 })
 export class banCommand extends SubCommandPluginCommand {
     public async add(message: discord.Message, args: sapphire.Args) {
+        const bans = await message.guild!.bans.fetch()
         let user = await args.pick('member').catch(() => {
             return args.pick('user')
         })
-        if ((await prisma.punishment.findMany({
-            where: {
-                type: 'blist',
-                member: user.id,
-                guild: message.guildId!
-            }
-        })).length > 0) return message.channel.send(`This user is already banned`)
-        await memberCache.validate(message.guild!.id, user.id)
-        let next = await args.repeat('string').catch(() => null);
-        let duration = next !== null ? durationToMS(next.join(' ')) : null;
-        let endsDate = duration ? new Date(Date.now() + duration) : null
+        if (bans.find(v => v.user.id === user.id) !== undefined) return message.channel.send(`This user is already banned`)
+        
+        let reason = ((await args.repeat('string').catch(() => null))?.join(" ") || "none")
         if (user instanceof discord.GuildMember) {
             if (message.member!.roles.highest.comparePositionTo(user.roles.highest) <= 0 && (message.guild!.ownerId !== message.member!.id)) {
                 message.channel.send(`You do not have a high enough role to do this.`);
@@ -220,34 +211,14 @@ export class banCommand extends SubCommandPluginCommand {
             if (!user.bannable) {
                 return message.channel.send("This user is not bannable by the bot.");
             };
-            await prisma.punishment.create({
-                data: {
-                    member: user.id,
-                    guild: message.guildId!,
-                    type: 'blist',
-                    createdTime: new Date(),
-                    endsAt: (endsDate ? endsDate.toISOString() : null)
-                }
-            })
-            message.guild!.bans.create(user, { reason: `Banned by ${message.author.tag}`, days: 0 });
-            if (endsDate) taskScheduler.newTask({ 'task': 'unban', when: lux.DateTime.fromJSDate(endsDate), context: { 'guild': message.guild!.id, 'user': user.id } });
+            message.guild!.bans.create(user, { reason: `Banned by ${message.author.tag} with reason "${reason}"`, days: 0 });
             message.channel.send({
-                content: `**${user.user.tag}** has been banned ${(duration === null) ? '' : `for ${(lux.DateTime.now(), lux.DateTime.fromJSDate(endsDate!))}`}`,
+                content: `**${user.user.tag}** has been banned.`,
             });
         } else {
-            await prisma.punishment.create({
-                data: {
-                    member: user.id,
-                    guild: message.guildId!,
-                    type: 'blist',
-                    createdTime: new Date(),
-                    endsAt: (endsDate ? endsDate.toISOString() : null)
-                },
-            });
-            message.guild!.bans.create(user, { reason: `Banned by ${message.author.tag}`, days: 0 })
-            if (endsDate) taskScheduler.newTask({ 'task': 'unban', when: lux.DateTime.fromJSDate(endsDate), context: { 'guild': message.guild!.id, 'user': user.id } });
+            message.guild!.bans.create(user, { reason: `Banned by ${message.author.tag} with reason ${reason}`, days: 0 })
             message.channel.send({
-                content: `**${user.tag}** has been banned ${(duration === null) ? '' : `for ${new time.DurationFormatter().format(duration - 1000)}`}`,
+                content: `**${user.tag}** has been banned.`,
             });
         };
         return;
@@ -256,60 +227,10 @@ export class banCommand extends SubCommandPluginCommand {
     public async remove(message: discord.Message, args: sapphire.Args) {
         let user = await args.pick('user');
         await memberCache.validate(message.guild!.id, user.id)
-        let q = await prisma.punishment.findMany({
-            where: {
-                type: 'blist',
-                member: user.id,
-                guild: message.guildId!
-            }
-        })
-        if ((q).length === 0) return message.channel.send('This user is not banned');
+        const bans = await message.guild!.bans.fetch()
+        if (bans.find(v => v.user.id === user.id) === undefined) return message.channel.send('This user is not banned');
         message.guild!.members.unban(user).catch(() => { })
-        prisma.punishment.updateMany({
-            where: {
-                type: 'blist',
-                member: user.id,
-                guild: message.guildId!
-            },
-            data: {
-                resolved: true
-            }
-        })
         return message.channel.send(`**${user.tag}** has been unbanned`);
-    }
-
-    public async list(message: discord.Message) {
-        let smite = await prisma.punishment.findMany({
-            where: {
-                type: 'blist',
-                guild: message.guildId!,
-                resolved: false,
-            }
-        })
-        if ((smite).length === 0) message.channel.send(`No users are banned`);
-        smite.forEach(async (i) => {
-            let x = await bot.users.fetch(i.member.toString());
-            let date = i.endsAt ? (+new Date(i.endsAt) - Date.now()) : null;
-            let duration = date === null ? 'permanently' : new time.DurationFormatter().format(date - time.Time.Second);
-            message.channel.send(`**${x.username}#${x.discriminator}** is banned until *${duration}*. Case ID: ${i.id}`);
-        });
-    }
-    public async clear(message: discord.Message) {
-        const collector = new MessagePrompter('Warning: This will unban all users. Are you sure you want to do this?', 'confirm')
-        const result = await collector.run(message.channel, message.author)
-        if (result === true) {
-            prisma.punishment.updateMany({
-                data: { resolved: true }
-            });
-            (await message.guild!.bans.fetch()).each(x => {
-                message.guild!.bans.remove(x.user)
-            })
-            message.channel.send(`Done`)
-            return;
-        } else if (result === false) {
-            message.channel.send(`Command aborted.`);
-            return
-        }
     }
 }
 
@@ -443,7 +364,7 @@ export class infoCommand extends sapphire.Command {
             return builder.setName(this.name)
                 .setDescription(this.description)
                 .addStringOption(i => i.setName('Command')
-                .setAutocomplete(false).setRequired(false))
+                .setDescription('The command to get help for.').setAutocomplete(false).setRequired(false))
         })
     }
     public async messageRun(message: discord.Message, args: sapphire.Args) {
@@ -455,7 +376,7 @@ export class infoCommand extends sapphire.Command {
         return message.channel.send({ embeds: [this.cmdHelp(cmd)] });
     };
 
-    public override async chatInputRun(interaction: sapphire.ChatInputCommand.Interaction) {
+    public async chatInputRun(interaction: sapphire.ChatInputCommand.Interaction) {
         let x = interaction.options.get('Command')
         if (x === null || x.value === undefined) return this.baseHelp(interaction);
         let cmd = bot.stores.get('commands').find(cmd => cmd.name === x!.value);
@@ -598,64 +519,24 @@ export class commandsManagerCommand extends sapphire.Command {
         return message.channel.send(`Enabled command **${cmd.value!}**`)
     }
 }
-
+/**
 @ApplyOptions<sapphire.CommandOptions>({
-    name: 'politics',
-    description: 'politics'
-})
-export class polCommand extends sapphire.Command {
-    public async messageRun(message: discord.Message) {
-        message.channel.send('https://cdn.discordapp.com/attachments/377228302336655362/886234477578301490/video0.mp4')
-    }
-}
-/*
-@ApplyOptions<sapphire.CommandOptions>({
-    name: 'reddit',
-    description: 'Fetches posts from reddit'
-})
-export class redditCommand extends sapphire.Command {
-    token: string = ""
-    async messageRun(message: discord.Message, args: sapphire.Args) {
-        this.token ??= (await axios.post("https://www.reddit.com/api/v1/access_token", {
-            method: 'POST',
-            contentType: 'application/x-www-form-urlencoded',
-            headers: {
-                'User-Agent': "Gerald/v1.0.0"
-            },
-            auth: {
-                'username': "eESC9zKdQ2XRhnSgNEozGA",
-                'password': (process.env.REDDIT_SECRET!.split(', '))[0]
-            },
-            body: `grant_type=password&username=GeraldAPI&password=${(process.env.REDDIT_SECRET!.split(', '))[1]}`,
-        })).data.access_token!
-        let sr = args.nextMaybe()
-        if (!sr.exists) return message.channel.send('Specify a subreddit.')
-        let posts = axios.get(`https://oauth.reddit.com/r/${sr.value}/hot`, {
-            headers: {
-                Authorization: `Bearer ${this.token}`
+    name: 'level',
+    description: 'Shows the level of a user.',
+    
+}) export class viewLevelCommand extends sapphire.Command {
+    public async messageRun(message: discord.Message, args: sapphire.Args) {
+        const user = await args.pick("member")
+        prisma.member_level.findMany({
+            where: {
+                memberID: user.id,
+                guildID: message.guildId!
             }
         })
     }
-}*/
 
-@ApplyOptions<sapphire.CommandOptions>({
-    name: 'marina',
-    description: ':)',
-})
-export class uwu extends sapphire.Command {
-    public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
-        reg.registerChatInputCommand({
-            name: this.name,
-            description: this.description,
-        }, {
-            guildIds: ["809675885330432051"]
-        })
+    public async chatInputRun(interaction: discord.CommandInteraction) {
+        interaction
     }
-    public chatInputRun(interaction: discord.CommandInteraction) {
-        interaction.reply(`https://cdn.discordapp.com/attachments/865431012703469578/914432381002350632/SPOILER_image0.jpg`)
-    }
-    messageRun(message: discord.Message) {
-        axios
-        message.channel.send(`https://cdn.discordapp.com/attachments/865431012703469578/914432381002350632/SPOILER_image0.jpg`)
-    }
-}
+
+}**/
