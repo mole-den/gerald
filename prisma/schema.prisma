@@ -36,21 +36,9 @@ model member {
   userid              String
   guild_guildTomember guild         @relation(fields: [guild], references: [guildId], onDelete: NoAction, onUpdate: NoAction, map: "members_guild_fkey")
   deleted_msg         deleted_msg[]
-  punishment          punishment[]
+  member_level        member_level? 
 
   @@unique([guild, userid], map: "members_guild_userid_key")
-}
-
-model punishment {
-  id                        Int       @id(map: "punishments_pkey") @default(autoincrement())
-  member                    String
-  guild                     String
-  type                      String    @db.VarChar(5)
-  reason                    String    @default("not given") @db.VarChar(255)
-  createdTime               DateTime  @db.Timestamp(6)
-  resolved                  Boolean   @default(false)
-  endsAt                    DateTime? @db.Timestamp(6) 
-  member_memberTopunishment member    @relation(fields: [member, guild], references: [userid, guild], onDelete: NoAction, onUpdate: NoAction, map: "punishments_member_guild_fkey")
 }
 
 model scheduled_task {
@@ -59,4 +47,15 @@ model scheduled_task {
   context Json?    @db.Json
   time    DateTime @db.Timestamp(6)
   done    Boolean  @default(false)
+}
+
+model member_level {
+  id                          Int    @default(autoincrement())
+  memberID                    String
+  guildID                     String
+  level                       Int    @default(0) 
+  nextLevelXp                 BigInt @default(1000)
+  xp                          BigInt @default(0)
+  member_memberTomember_level member @relation(fields: [memberID, guildID], references: [userid, guild], onDelete: Cascade, onUpdate: Cascade)
+  @@unique([memberID, guildID])
 }
