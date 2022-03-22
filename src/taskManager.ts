@@ -142,8 +142,7 @@ export class scheduledTaskManager extends EventEmitter {
 		if (params?.context !== undefined) {
 			let keys = Object.keys(params.context)
 			keys.forEach(key => {
-				//@ts-expect-error
-				q = q.filter(y => y.context[key] == params.context![key])
+				q = q.filter(y => (y.context as {[key: string]: validJSON})[key] == params.context![key])
 			})
 		}
 		if (q.length == 0) {
