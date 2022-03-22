@@ -223,6 +223,16 @@ async function initTasks() {
 (async () => {
 	console.log('Starting...')
 	await prisma.$connect()
+	prisma.$use(async (params, next) => {
+		if (params.model === "member") {
+			if (params.action === 'createMany' || params.action === "create") {
+				let data = params.args
+				console.log(data)
+			}
+		}
+		return next(params)
+	  })
+	  
 	console.log('Connected to database')
 	memberCache = new membersCache(18000)
 	await sleep(1000);
