@@ -322,7 +322,7 @@ export class prefixCommand extends sapphire.Command {
                 prefix: x
             }
         })
-        return send(`Changed prefix for ${item.guild!.name} to ${x}`);
+        return send(`Changed prefix for ${item.guild!.name} to \`${x}\``);
 
     }
 }
