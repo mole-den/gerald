@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = "postgresql://gzibkeghhcxlfq:81c60eaff2267799b3a0e3a6e9cc829ec97bd97dbdf6c61b7827287d29d4f9df@ec2-34-194-100-156.compute-1.amazonaws.com:5432/ddo6pnpikd2ji3?schema=public"
 }
 
 model deleted_msg {
@@ -36,7 +36,7 @@ model member {
   userid              String
   guild_guildTomember guild         @relation(fields: [guild], references: [guildId], onDelete: NoAction, onUpdate: NoAction, map: "members_guild_fkey")
   deleted_msg         deleted_msg[]
-  member_level        member_level? 
+  member_level        member_level?
 
   @@unique([guild, userid], map: "members_guild_userid_key")
 }
@@ -50,12 +50,11 @@ model scheduled_task {
 }
 
 model member_level {
-  id                          Int    @default(autoincrement())
   memberID                    String
   guildID                     String
-  level                       Int    @default(0) 
+  level                       Int    @default(0)
   nextLevelXp                 BigInt @default(1000)
   xp                          BigInt @default(0)
-  member_memberTomember_level member @relation(fields: [memberID, guildID], references: [userid, guild], onDelete: Cascade, onUpdate: Cascade)
+  member_memberTomember_level member @relation(fields: [memberID, guildID], references: [userid, guild], onDelete: Cascade)
   @@unique([memberID, guildID])
 }
