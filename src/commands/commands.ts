@@ -201,7 +201,7 @@ export class banCommand extends SubCommandPluginCommand {
             return args.pick('user')
         })
         if (bans.find(v => v.user.id === user.id) !== undefined) return message.channel.send(`This user is already banned`)
-        
+
         let reason = ((await args.repeat('string').catch(() => null))?.join(" ") || "none")
         if (user instanceof discord.GuildMember) {
             if (message.member!.roles.highest.comparePositionTo(user.roles.highest) <= 0 && (message.guild!.ownerId !== message.member!.id)) {
@@ -273,7 +273,7 @@ export class prefixCommand extends sapphire.Command {
             return builder.setName(this.name)
                 .setDescription(this.description)
                 .addStringOption(i => i.setName('prefix')
-                .setDescription('New bot prefix.').setAutocomplete(false).setRequired(false))
+                    .setDescription('New bot prefix.').setAutocomplete(false).setRequired(false))
         }, {
             idHints: ["955744435654787082"]
         })
@@ -309,10 +309,10 @@ export class prefixCommand extends sapphire.Command {
         if (item instanceof discord.CommandInteraction) {
             if (!item.memberPermissions) return send("Failed to resolve user permissions.")
             if (!item.memberPermissions.has("ADMINISTRATOR"))
-            return send(`You are missing the following permissions to run this command: Administrator`);
+                return send(`You are missing the following permissions to run this command: Administrator`);
         } else {
-            if (!item.member!.permissions.has("ADMINISTRATOR"))  
-            return send(`You are missing the following permissions to run this command: Administrator`);
+            if (!item.member!.permissions.has("ADMINISTRATOR"))
+                return send(`You are missing the following permissions to run this command: Administrator`);
         }
         prisma.guild.update({
             where: {
@@ -396,7 +396,7 @@ export class infoCommand extends sapphire.Command {
             return builder.setName(this.name)
                 .setDescription(this.description)
                 .addStringOption(i => i.setName('command')
-                .setDescription('The command to get help for').setAutocomplete(false).setRequired(false))
+                    .setDescription('The command to get help for').setAutocomplete(false).setRequired(false))
         })
     }
     public async messageRun(message: discord.Message, args: sapphire.Args) {
@@ -513,8 +513,8 @@ export class commandsManagerCommand extends sapphire.Command {
         })
         if (subcmd == "disable") return this.disable(message, args)
         if (subcmd == "enable") return this.enable(message, args)
-       // if (subcmd == "status") return this.status(message, args)
-       return
+        // if (subcmd == "status") return this.status(message, args)
+        return
     }
     private async disable(message: discord.Message, args: sapphire.Args) {
         let cmd = args.nextMaybe()
@@ -551,24 +551,40 @@ export class commandsManagerCommand extends sapphire.Command {
         return message.channel.send(`Enabled command **${cmd.value!}**`)
     }
 }
-/**
+
 @ApplyOptions<sapphire.CommandOptions>({
     name: 'level',
     description: 'Shows the level of a user.',
-    
+    preconditions: ["GuildOnly"]
+
 }) export class viewLevelCommand extends sapphire.Command {
+    public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
+        reg.registerChatInputCommand((builder) => {
+            return builder.setName(this.name)
+                .setDescription(this.description)
+                .addUserOption(i => i.setName('user')
+                    .setDescription('Get a specific members level.').setRequired(false))
+        })
+    }
     public async messageRun(message: discord.Message, args: sapphire.Args) {
         const user = await args.pick("member")
-        prisma.member_level.findMany({
+        let x = (await prisma.member_level.findMany({
             where: {
                 memberID: user.id,
                 guildID: message.guildId!
             }
-        })
+        }))[0]
+        message.channel.send(`${user.user.username} is level ${x.level} and has ${x.xp} xp.`)
     }
 
     public async chatInputRun(interaction: discord.CommandInteraction) {
-        interaction
+        let user = interaction.options.getUser("user") ?? interaction.user
+        let x = (await prisma.member_level.findMany({
+            where: {
+                memberID: user.id!,
+                guildID: interaction.guildId!
+            }
+        }))[0]
+        interaction.reply(`${user.username} is level ${x.level} and has ${x.xp} xp.`)
     }
-
-}**/
+}
