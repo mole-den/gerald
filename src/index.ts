@@ -128,7 +128,16 @@ bot.on('messageCommandError', (error, payload) => {
 			Bugsnag.notify(JSON.stringify(error))
 		}
 		console.error(error);
-		payload.message.channel.send("Unhandled exception:\n```" + (error as any).message + "```")
+		let embed = new discord.MessageEmbed()
+		embed.setTitle("Error")
+		embed.setColor("RED")
+		embed.setTimestamp(new Date())
+		embed.setDescription("An unhandled exception occurred.")
+		const content = (<any>error).message as string
+		embed.addField("Message", content ?? JSON.stringify(error))
+		payload.message.channel.send({
+			embeds: [embed]
+		})
 	}
 });
 
@@ -201,6 +210,9 @@ bot.on('messageDeleteBulk', async (array) => {
 	});
 });
 
+bot.on("messageCreate", (message) => {
+	message
+})
 async function initTasks() {
 	taskScheduler.on('unban', async (a) => {
 		let x = <string>Reflect.get(a.context, 'guild')
