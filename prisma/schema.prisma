@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://gzibkeghhcxlfq:81c60eaff2267799b3a0e3a6e9cc829ec97bd97dbdf6c61b7827287d29d4f9df@ec2-34-194-100-156.compute-1.amazonaws.com:5432/ddo6pnpikd2ji3?schema=public"
+  url      = env("DATABASE_URL")
 }
 
 model deleted_msg {
@@ -18,7 +18,7 @@ model deleted_msg {
   deletedBy   String   @db.VarChar(200)
   msgId       String   @unique(map: "deletedmsgs_msgid_key")
   attachments Json?
-  member      member   @relation(fields: [author, guildId], references: [userid, guild], onDelete: NoAction, onUpdate: NoAction, map: "deletedmsgs_author_guildid_fkey")
+  member      member   @relation(fields: [author, guildId], references: [userid, guild], onDelete: Cascade, onUpdate: Cascade, map: "deletedmsgs_author_guildid_fkey")
 }
 
 model guild {
@@ -34,7 +34,7 @@ model member {
   id                  Int           @id(map: "members_pkey") @default(autoincrement())
   guild               String
   userid              String
-  guild_guildTomember guild         @relation(fields: [guild], references: [guildId], onDelete: NoAction, onUpdate: NoAction, map: "members_guild_fkey")
+  guild_guildTomember guild         @relation(fields: [guild], references: [guildId], onDelete: Cascade, onUpdate: Cascade, map: "members_guild_fkey")
   deleted_msg         deleted_msg[]
   member_level        member_level?
 
