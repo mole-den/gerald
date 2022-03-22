@@ -268,30 +268,62 @@ export class queryCommand extends sapphire.Command {
     preconditions: ['GuildOnly']
 })
 export class prefixCommand extends sapphire.Command {
+    public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
+        reg.registerChatInputCommand((builder) => {
+            return builder.setName(this.name)
+                .setDescription(this.description)
+                .addStringOption(i => i.setName('prefix')
+                .setDescription('New bot prefix.').setAutocomplete(false).setRequired(false))
+        }, {
+            idHints: ["955744435654787082"]
+        })
+    }
+    public override async chatInputRun(interaction: sapphire.ChatInputCommand.Interaction) {
+        let x = interaction.options.get("prefix")
+        this.baseRun((x?.value as string) ?? null, interaction)
+    }
     public async messageRun(message: discord.Message, args: sapphire.Args) {
         let x = args.nextMaybe()
-        if (!x.exists) {
+        this.baseRun(x.value ?? null, message)
+    }
+    private async baseRun(x: string | null, item: discord.Message | discord.CommandInteraction) {
+        function send(msg: string) {
+            if (item instanceof discord.Message) {
+                item.channel.send(msg)
+            } else {
+                item.reply({
+                    content: msg
+                })
+            }
+        }
+        if (!x) {
             let prefix = await prisma.guild.findUnique({
                 where: {
-                    guildId: message.guild!.id
+                    guildId: item.guild!.id
                 },
                 select: { prefix: true }
             })
-            message.channel.send(`The prefix for this server is \`${prefix!.prefix}\``);
+            send(`The prefix for this server is \`${prefix!.prefix}\``);
             return
         }
-        if (message.member?.permissions.has('ADMINISTRATOR') === false) {
-            return message.channel.send(`You are missing the following permissions to run this command: Administrator`);
+        if (item instanceof discord.CommandInteraction) {
+            if (!item.memberPermissions) return send("Failed to resolve user permissions.")
+            if (!item.memberPermissions.has("ADMINISTRATOR"))
+            return send(`You are missing the following permissions to run this command: Administrator`);
+        } else {
+            if (!item.member!.permissions.has("ADMINISTRATOR"))  
+            return send(`You are missing the following permissions to run this command: Administrator`);
         }
         prisma.guild.update({
             where: {
-                guildId: message.guildId!
+                guildId: item.guildId!
             },
             data: {
-                prefix: x.value!
+                prefix: x
             }
         })
-        return message.channel.send(`Changed prefix for ${message.guild!.name} to ${x.value}`);
+        return send(`Changed prefix for ${item.guild!.name} to ${x}`);
+
     }
 }
 
@@ -363,8 +395,8 @@ export class infoCommand extends sapphire.Command {
         reg.registerChatInputCommand((builder) => {
             return builder.setName(this.name)
                 .setDescription(this.description)
-                .addStringOption(i => i.setName('Command')
-                .setDescription('The command to get help for.').setAutocomplete(false).setRequired(false))
+                .addStringOption(i => i.setName('command')
+                .setDescription('The command to get help for').setAutocomplete(false).setRequired(false))
         })
     }
     public async messageRun(message: discord.Message, args: sapphire.Args) {
@@ -377,7 +409,7 @@ export class infoCommand extends sapphire.Command {
     };
 
     public async chatInputRun(interaction: sapphire.ChatInputCommand.Interaction) {
-        let x = interaction.options.get('Command')
+        let x = interaction.options.get('command')
         if (x === null || x.value === undefined) return this.baseHelp(interaction);
         let cmd = bot.stores.get('commands').find(cmd => cmd.name === x!.value);
         if (cmd === null) return interaction.reply({
