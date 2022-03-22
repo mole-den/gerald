@@ -223,6 +223,19 @@ async function initTasks() {
 (async () => {
 	console.log('Starting...')
 	await prisma.$connect()
+	prisma.$use(async (params, next) => {
+		if (!(params.action === "create" || params.action === "createMany")) next(params)
+		if (params.model !== "member") next(params)
+		let guild = params.args.data["guild"]
+		let user = params.args.data["userid"]
+		await prisma.member_level.create({
+			data: {
+				memberID: user,
+				guildID: guild
+			}
+		})
+		next(params)
+	})
 	console.log('Connected to database')
 	memberCache = new membersCache(18000)
 	await sleep(1000);
