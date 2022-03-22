@@ -224,15 +224,23 @@ async function initTasks() {
 	console.log('Starting...')
 	await prisma.$connect()
 	prisma.$use(async (params, next) => {
-		if (params.model === "member") {
-			if (params.action === 'createMany' || params.action === "create") {
-				let data = params.args
-				console.log(data)
+		try {
+			if (params.model === "member" && (params.action === "create")) {
+				let guildID = params.args.data.guild;
+				let memberID = params.args.data.userid;
+				await prisma.member_level.create({
+					data: {
+						guildID: guildID,
+						memberID: memberID
+					}
+				})
 			}
+		} catch (error) {
+			console.error(error, params)
+		} finally {
+			return next(params)
 		}
-		return next(params)
-	  })
-	  
+	})
 	console.log('Connected to database')
 	memberCache = new membersCache(18000)
 	await sleep(1000);
@@ -252,7 +260,6 @@ async function initTasks() {
 			})
 		})
 	}
-	
 	await sleep(4000);
 	bot.user?.setPresence({
 		activities: [{
