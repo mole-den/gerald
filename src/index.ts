@@ -226,14 +226,10 @@ async function initTasks() {
 	prisma.$use(async (params, next) => {
 		try {
 			if (params.model === "member" && (params.action === "create")) {
-				let guildID = params.args.data.guild;
-				let memberID = params.args.data.userid;
-				await prisma.member_level.create({
-					data: {
-						guildID: guildID,
-						memberID: memberID
-					}
-				})
+				params.args.data.member_level = {
+					create: [{
+					}]
+				}
 			}
 		} catch (error) {
 			console.error(error, params)

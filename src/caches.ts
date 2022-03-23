@@ -14,7 +14,7 @@ export class membersCache {
 	async create(guildid: string) {
 		let members = (await prisma.member.findMany({
 			where: {
-				guild: guildid
+				guildid: guildid
 			},
 			select: {
 				userid: true
@@ -30,7 +30,7 @@ export class membersCache {
 			if (checkOnly) return false
 			await prisma.member.create({
 				data: {
-					guild: guild,
+					guildid: guild,
 					userid: users
 				}
 			})
@@ -51,7 +51,7 @@ export class membersCache {
 				data: users.map((u) => {
 					return {
 						userid: u,
-						guild: guild
+						guildid: guild
 					}
 				}),
 				skipDuplicates: true,
