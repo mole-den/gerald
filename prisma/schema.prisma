@@ -4,26 +4,12 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-model deleted_msg {
-  id          Int      @id(map: "deletedmsgs_pkey") @default(autoincrement())
-  author      String
-  content     String
-  guildId     String
-  msgTime     DateTime @db.Timestamp(6)
-  channel     String
-  deletedTime DateTime @db.Timestamp(6)
-  deletedBy   String   @db.VarChar(200)
-  msgId       String   @unique(map: "deletedmsgs_msgid_key")
-  attachments Json?
-  member      member   @relation(fields: [author, guildId], references: [userid, guild], onDelete: Cascade, onUpdate: Cascade, map: "deletedmsgs_author_guildid_fkey")
+  url      = "postgres://gzibkeghhcxlfq:81c60eaff2267799b3a0e3a6e9cc829ec97bd97dbdf6c61b7827287d29d4f9df@ec2-34-194-100-156.compute-1.amazonaws.com:5432/ddo6pnpikd2ji3"
 }
 
 model guild {
-  id         Int      @id(map: "guilds_pkey") @default(autoincrement())
-  guildId    String   @unique(map: "guilds_guildid_key")
+  id         Int      @id() @default(autoincrement())
+  guildId    String   @unique()
   joinedTime DateTime @db.Timestamp(6)
   prefix     String   @default("g")
   disabled   String[]
@@ -31,22 +17,14 @@ model guild {
 }
 
 model member {
-  id                  Int           @id(map: "members_pkey") @default(autoincrement())
-  guild               String
+  id                  Int           @id() @default(autoincrement())
+  guildid              String
   userid              String
-  guild_guildTomember guild         @relation(fields: [guild], references: [guildId], onDelete: Cascade, onUpdate: Cascade, map: "members_guild_fkey")
+  guild guild         @relation(fields: [guildid], references: [guildId], onDelete: Cascade, onUpdate: Cascade)
   deleted_msg         deleted_msg[]
   member_level        member_level?
 
-  @@unique([guild, userid], map: "members_guild_userid_key")
-}
-
-model scheduled_task {
-  id      Int      @id(map: "scheduled_tasks_pkey") @default(autoincrement())
-  task    String   @db.VarChar(255)
-  context Json?    @db.Json
-  time    DateTime @db.Timestamp(6)
-  done    Boolean  @default(false)
+  @@unique([guildid, userid])
 }
 
 model member_level {
@@ -55,6 +33,28 @@ model member_level {
   level                       Int    @default(0)
   nextLevelXp                 BigInt @default(1000)
   xp                          BigInt @default(0)
-  member_memberTomember_level member @relation(fields: [memberID, guildID], references: [userid, guild], onDelete: Cascade)
+  member member @relation(fields: [memberID, guildID], references: [userid, guildid], onDelete: Cascade)
   @@unique([memberID, guildID])
+}
+
+model deleted_msg {
+  id          Int      @id() @default(autoincrement())
+  author      String
+  content     String
+  guildId     String
+  msgTime     DateTime @db.Timestamp(6)
+  channel     String
+  deletedTime DateTime @db.Timestamp(6)
+  deletedBy   String   @db.VarChar(200)
+  msgId       String   @unique()
+  attachments Json?
+  member      member   @relation(fields: [author, guildId], references: [userid, guildid], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model scheduled_task {
+  id      Int      @id() @default(autoincrement())
+  task    String   @db.VarChar(255)
+  context Json?    @db.Json
+  time    DateTime @db.Timestamp(6)
+  done    Boolean  @default(false)
 }
