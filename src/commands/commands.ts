@@ -2,7 +2,7 @@ import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
 import { SubCommandPluginCommand, SubCommandPluginCommandOptions } from '@sapphire/plugin-subcommands';
 import { PaginatedMessageEmbedFields } from '@sapphire/discord.js-utilities';
-import { durationToMS, prisma, getRandomArbitrary, bot, cleanMentions, memberCache } from '../index';
+import { durationToMS, prisma, getRandomArbitrary, bot, cleanMentions } from '../index';
 import { ApplyOptions } from '@sapphire/decorators';
 import * as time from '@sapphire/time-utilities';
 ///<reference types="../index"/>
@@ -226,7 +226,6 @@ export class banCommand extends SubCommandPluginCommand {
 
     public async remove(message: discord.Message, args: sapphire.Args) {
         let user = await args.pick('user');
-        await memberCache.validate(message.guild!.id, user.id)
         const bans = await message.guild!.bans.fetch()
         if (bans.find(v => v.user.id === user.id) === undefined) return message.channel.send('This user is not banned');
         message.guild!.members.unban(user).catch(() => { })

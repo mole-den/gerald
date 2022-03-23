@@ -1,7 +1,6 @@
 import * as discord from 'discord.js';
 import * as sapphire from '@sapphire/framework';
 import { scheduledTaskManager } from './taskManager'
-import { membersCache } from './caches';
 import { PrismaClient } from '@prisma/client';
 import Time from '@sapphire/time-utilities';
 import Bugsnag from '@bugsnag/js'
@@ -103,7 +102,6 @@ export function cleanMentions(str: string): string {
 };
 
 
-export let memberCache: membersCache
 export let taskScheduler: scheduledTaskManager
 export const prisma = new PrismaClient({
 	log: ['info', 'warn', 'error'],
@@ -167,7 +165,6 @@ async function deletedMessageHandler(message: discord.Message | discord.PartialM
 	let logs = await message.guild.fetchAuditLogs({
 		type: 72
 	});
-	await memberCache.validate(message.guild.id, message.author.id)
 	const auditEntry = logs.entries.find(a =>
 		a.target.id === message.author.id
 		&& a.extra.channel.id === message.channel.id
@@ -185,6 +182,13 @@ async function deletedMessageHandler(message: discord.Message | discord.PartialM
 			name: attachment.name
 		});
 	});
+	await prisma.member.createMany({
+		data: [{
+			userid: message.author.id,
+			guildid: message.guildId!
+		}],
+		skipDuplicates: true
+	})
 	await prisma.deleted_msg.create({
 		data: {
 			author: message.author.id,
@@ -195,7 +199,7 @@ async function deletedMessageHandler(message: discord.Message | discord.PartialM
 			deletedTime: delTime,
 			deletedBy: executor,
 			msgId: message.id,
-			attachments: attachments
+			attachments: attachments,
 		}
 
 	})
@@ -227,8 +231,10 @@ async function initTasks() {
 		try {
 			if (params.model === "member" && (params.action === "create")) {
 				params.args.data.member_level = {
-					create: [{
-					}]
+					create: {
+						xp: 0,
+						level: 0,
+					}
 				}
 			}
 		} catch (error) {
@@ -238,7 +244,6 @@ async function initTasks() {
 		}
 	})
 	console.log('Connected to database')
-	memberCache = new membersCache(18000)
 	await sleep(1000);
 	await bot.login(process.env.TOKEN);
 	taskScheduler = new scheduledTaskManager()

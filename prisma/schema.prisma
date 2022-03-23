@@ -17,23 +17,24 @@ model guild {
 }
 
 model member {
-  id                  Int           @id() @default(autoincrement())
-  guildid              String
-  userid              String
-  guild guild         @relation(fields: [guildid], references: [guildId], onDelete: Cascade, onUpdate: Cascade)
-  deleted_msg         deleted_msg[]
-  member_level        member_level?
+  id           Int           @id() @default(autoincrement())
+  guildid      String
+  userid       String
+  guild        guild         @relation(fields: [guildid], references: [guildId], onDelete: Cascade, onUpdate: Cascade)
+  deleted_msg  deleted_msg[]
+  member_level member_level?
 
   @@unique([guildid, userid])
 }
 
 model member_level {
-  memberID                    String
-  guildID                     String
-  level                       Int    @default(0)
-  nextLevelXp                 BigInt @default(1000)
-  xp                          BigInt @default(0)
-  member member @relation(fields: [memberID, guildID], references: [userid, guildid], onDelete: Cascade)
+  memberID    String
+  guildID     String
+  level       Int    @default(0)
+  nextLevelXp BigInt @default(1000)
+  xp          BigInt @default(0)
+  member      member @relation(fields: [memberID, guildID], references: [userid, guildid], onDelete: Cascade)
+
   @@unique([memberID, guildID])
 }
 
