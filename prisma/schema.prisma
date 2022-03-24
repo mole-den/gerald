@@ -9,7 +9,7 @@ datasource db {
 
 model guild {
   id         Int      @id() @default(autoincrement())
-  guildId    String   @unique()
+  guildId    String   @unique() 
   joinedTime DateTime @db.Timestamp(6)
   prefix     String   @default("g")
   disabled   String[]
@@ -31,10 +31,10 @@ model member_level {
   memberID    String
   guildID     String
   level       Int    @default(0)
-  nextLevelXp BigInt @default(1000)
-  xp          BigInt @default(0)
+  nextLevelXp Int @default(1000)
+  xp          Int @default(0)
   member      member @relation(fields: [memberID, guildID], references: [userid, guildid], onDelete: Cascade)
-
+  @@id([memberID, guildID])
   @@unique([memberID, guildID])
 }
 
