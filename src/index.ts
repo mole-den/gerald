@@ -1,7 +1,7 @@
 import * as discord from 'discord.js';
 import * as sapphire from '@sapphire/framework';
 import { scheduledTaskManager } from './taskManager'
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import Time from '@sapphire/time-utilities';
 import Bugsnag from '@bugsnag/js'
 if (process.env.BUGSNAG_KEY) Bugsnag.start({
@@ -214,9 +214,6 @@ bot.on('messageDeleteBulk', async (array) => {
 	});
 });
 
-bot.on("messageCreate", (message) => {
-	message
-})
 async function initTasks() {
 	taskScheduler.on('unban', async (a) => {
 		let x = <string>Reflect.get(a.context, 'guild')
@@ -230,16 +227,16 @@ async function initTasks() {
 	prisma.$use(async (params, next) => {
 		try {
 			if (params.model === "member" && (params.action === "create")) {
-				params.args.data.member_level = {
+				(<Prisma.memberCreateArgs>params.args).data.member_level = {
 					create: {
 						xp: 0,
 						level: 0,
 					}
 				}
 			}
+			return next(params)
 		} catch (error) {
 			console.error(error, params)
-		} finally {
 			return next(params)
 		}
 	})
