@@ -41,7 +41,7 @@ export abstract class GeraldCommand extends sapphire.Command {
             }*/
             console.error(error);
             let embed = new discord.MessageEmbed()
-            embed.setTitle("Error")
+            embed.setTitle(`Error: Command "${context.commandName}" failed`)
             embed.setColor("RED")
             embed.setTimestamp(new Date())
             embed.setDescription("An unhandled exception occurred.")
@@ -68,7 +68,7 @@ export abstract class GeraldCommand extends sapphire.Command {
             }*/
             console.error(error);
             let embed = new discord.MessageEmbed()
-            embed.setTitle("Error")
+            embed.setTitle(`Error: Command "${context.commandName}" failed`)
             embed.setColor("RED")
             embed.setTimestamp(new Date())
             embed.setDescription("An unhandled exception occurred.")
