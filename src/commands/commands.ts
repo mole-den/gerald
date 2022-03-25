@@ -3,20 +3,23 @@ import * as discord from 'discord.js';
 import { SubCommandPluginCommand, SubCommandPluginCommandOptions } from '@sapphire/plugin-subcommands';
 import { PaginatedMessageEmbedFields } from '@sapphire/discord.js-utilities';
 import { durationToMS, prisma, getRandomArbitrary, bot, cleanMentions } from '../index';
+import { GeraldCommand, geraldCommandOptions } from '../commandClass';
 import { ApplyOptions } from '@sapphire/decorators';
 import * as time from '@sapphire/time-utilities';
 ///<reference types="../index"/>
 time;
 
-@ApplyOptions<sapphire.CommandOptions>({
+@ApplyOptions<geraldCommandOptions>({
     name: 'eval',
-    fullCategory: ['_enabled', '_owner', '_hidden'],
+    alwaysEnabled: true,
+    ownerOnly: true,
+    hidden: true,
     description: 'Evaluates JS input',
     requiredClientPermissions: [],
     preconditions: ['OwnerOnly']
 })
-export class ownerEvalCommand extends sapphire.Command {
-    public async messageRun(message: discord.Message) {
+export class ownerEvalCommand extends GeraldCommand {
+    public async chatRun(message: discord.Message) {
         let str = message.content;
         let out = str.substring(str.indexOf('```') + 3, str.lastIndexOf('```'));
         let container = this.container
@@ -35,7 +38,7 @@ export class ownerEvalCommand extends sapphire.Command {
 
 };
 
-@ApplyOptions<sapphire.CommandOptions>({
+@ApplyOptions<geraldCommandOptions>({
     name: 'deleted',
     description: 'Shows infomation about the last deleted messages',
     requiredClientPermissions: [],
@@ -43,8 +46,8 @@ export class ownerEvalCommand extends sapphire.Command {
     preconditions: ['GuildOnly'],
     options: ['id']
 })
-export class DeletedMSGCommand extends sapphire.Command {
-    public async messageRun(message: discord.Message, args: sapphire.Args) {
+export class DeletedMSGCommand extends GeraldCommand {
+    public async chatRun(message: discord.Message, args: sapphire.Args) {
         type attachment = Array<{
             url: string,
             name: string | null

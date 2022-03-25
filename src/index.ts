@@ -117,28 +117,6 @@ bot.on('messageCommandDenied', ({ context, message: content }: sapphire.UserErro
 	message.channel.send({ content, allowedMentions: { users: [message.author.id], roles: [] } });
 });
 
-bot.on('messageCommandError', (error, payload) => {
-	if (error instanceof sapphire.UserError) {
-		payload.message.channel.send(error.message)
-	} else {
-		if (process.env.BUGSNAG_KEY) {
-			Bugsnag.leaveBreadcrumb(JSON.stringify(payload))
-			Bugsnag.notify(JSON.stringify(error))
-		}
-		console.error(error);
-		let embed = new discord.MessageEmbed()
-		embed.setTitle("Error")
-		embed.setColor("RED")
-		embed.setTimestamp(new Date())
-		embed.setDescription("An unhandled exception occurred.")
-		const content = (<any>error).message as string
-		embed.addField("Message", content ?? JSON.stringify(error))
-		payload.message.channel.send({
-			embeds: [embed]
-		})
-	}
-});
-
 bot.on('guildCreate', async (guild) => {
 	let user = await guild.members.fetch(bot.user!.id)
 	if (user.permissions.has(discord.Permissions.FLAGS.ADMINISTRATOR) === false) {
