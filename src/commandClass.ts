@@ -1,11 +1,7 @@
 import * as sapphire from "@sapphire/framework"
 import * as discord from 'discord.js';
 import Bugsnag from '@bugsnag/js';
-if (process.env.BUGSNAG_KEY) Bugsnag.start({
-	apiKey: process.env.BUGSNAG_KEY,
-	appVersion: (require('../package.json').version)
-});
-
+Bugsnag
 export interface geraldCommandOptions extends sapphire.CommandOptions {
     usage?: string,
     alwaysEnabled?: boolean,
