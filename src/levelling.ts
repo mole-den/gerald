@@ -6,6 +6,7 @@ export function runLevelling() {
         duration: 60
     })
     bot.on("messageCreate", async (message) => {
+        console.log("a")
         if (!message.guildId) return
         let x = await prisma.member_level.findUnique({
             where: {
