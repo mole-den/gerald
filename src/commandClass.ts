@@ -51,9 +51,8 @@ export abstract class GeraldCommand extends sapphire.Command {
 
     }
     private slashHandler(error: unknown, interaction: discord.CommandInteraction, context: sapphire.ChatInputCommand.RunContext): void {
-        let channel = interaction.channel
         if (error instanceof sapphire.UserError) {
-            if (channel) channel.send(error.message)
+            interaction.reply(error.message)
         } else {
             if (process.env.BUGSNAG_KEY) {
                 Bugsnag.leaveBreadcrumb(JSON.stringify({
@@ -70,7 +69,7 @@ export abstract class GeraldCommand extends sapphire.Command {
             embed.setDescription("An unhandled exception occurred.")
             const content = (<any>error).message as string
             embed.addField("Message", content ?? JSON.stringify(error))
-            if (channel) channel.send({
+            interaction.reply({
                 embeds: [embed]
             })
         }
