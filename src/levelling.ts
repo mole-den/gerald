@@ -7,12 +7,12 @@ export function runLevelling() {
     })
     bot.on("messageCreate", async (message) => {
         console.log("a")
-        if (!message.guildId) return
+        if (!message.guild) return
         let x = await prisma.member_level.findUnique({
             where: {
                 memberID_guildID: {
                     memberID: message.author.id,
-                    guildID: message.guildId
+                    guildID: message.guildId!
                 }
             }
         })
@@ -37,7 +37,7 @@ export function runLevelling() {
         prisma.member_level.update({
             where: {
                 memberID_guildID: {
-                    memberID: message.member!.id,
+                    memberID: message.author!.id,
                     guildID: message.guildId!
                 },
             },
