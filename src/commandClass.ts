@@ -28,6 +28,9 @@ export abstract class GeraldCommand extends sapphire.Command {
         if (error instanceof sapphire.UserError) {
             channel.send(error.message)
         } else {
+            args
+            context
+            /*
             if (process.env.BUGSNAG_KEY) {
                 Bugsnag.leaveBreadcrumb(JSON.stringify({
                     message: message,
@@ -35,7 +38,7 @@ export abstract class GeraldCommand extends sapphire.Command {
                     content: context
                 }))
                 Bugsnag.notify(JSON.stringify(error))
-            }
+            }*/
             console.error(error);
             let embed = new discord.MessageEmbed()
             embed.setTitle("Error")
@@ -54,13 +57,15 @@ export abstract class GeraldCommand extends sapphire.Command {
         if (error instanceof sapphire.UserError) {
             interaction.reply(error.message)
         } else {
+            context
+            /*
             if (process.env.BUGSNAG_KEY) {
                 Bugsnag.leaveBreadcrumb(JSON.stringify({
                     interaction: interaction,
                     content: context
                 }))
                 Bugsnag.notify(JSON.stringify(error))
-            }
+            }*/
             console.error(error);
             let embed = new discord.MessageEmbed()
             embed.setTitle("Error")
