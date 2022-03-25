@@ -105,7 +105,7 @@ export class DeletedMSGCommand extends GeraldCommand {
 
 };
 
-@ApplyOptions<sapphire.CommandOptions>({
+@ApplyOptions<geraldCommandOptions>({
     name: 'timeout',
     aliases: ['tm'],
     requiredClientPermissions: "MODERATE_MEMBERS",
@@ -113,8 +113,8 @@ export class DeletedMSGCommand extends GeraldCommand {
     preconditions: ["GuildOnly"],
     description: 'Time out a user',
 })
-export class timeoutCommand extends sapphire.Command {
-    public async messageRun(message: discord.Message, args: sapphire.Args) {
+export class timeoutCommand extends GeraldCommand {
+    public async chatRun(message: discord.Message, args: sapphire.Args) {
         try {
             var user = await args.pick('member');
         } catch {
@@ -162,7 +162,7 @@ export class timeoutCommand extends sapphire.Command {
     }
 }
 
-@ApplyOptions<sapphire.CommandOptions>({
+@ApplyOptions<geraldCommandOptions>({
     name: 'cleartimeout',
     aliases: ['ctm'],
     requiredClientPermissions: "MODERATE_MEMBERS",
@@ -170,8 +170,8 @@ export class timeoutCommand extends sapphire.Command {
     preconditions: ["GuildOnly"],
     description: 'Remove time out from a user',
 })
-export class rmTimeoutCommand extends sapphire.Command {
-    public async messageRun(message: discord.Message, args: sapphire.Args) {
+export class rmTimeoutCommand extends GeraldCommand {
+    public async chatRun(message: discord.Message, args: sapphire.Args) {
         const users = await args.repeatResult('member');
         if (users.success) {
             users.value!.forEach((u) => {
@@ -236,15 +236,15 @@ export class banCommand extends SubCommandPluginCommand {
     }
 }
 
-@ApplyOptions<sapphire.CommandOptions>({
+@ApplyOptions<geraldCommandOptions>({
     name: 'query',
     fullCategory: ['_enabled', '_owner', '_hidden'],
     description: 'Runs SQL input against database',
     requiredClientPermissions: [],
     preconditions: ['OwnerOnly']
 })
-export class queryCommand extends sapphire.Command {
-    public async messageRun(message: discord.Message) {
+export class queryCommand extends GeraldCommand {
+    public async chatRun(message: discord.Message) {
         let str = message.content;
         let out = str.substring(str.indexOf('```') + 3, str.lastIndexOf('```'));
         let data = await prisma.$queryRawUnsafe(out);
@@ -261,7 +261,7 @@ export class queryCommand extends sapphire.Command {
 
 };
 
-@ApplyOptions<sapphire.CommandOptions>({
+@ApplyOptions<geraldCommandOptions>({
     name: 'prefix',
     fullCategory: ['_enabled'],
     description: 'Shows and allows configuration of the bot prefix',
@@ -269,7 +269,7 @@ export class queryCommand extends sapphire.Command {
     requiredUserPermissions: [],
     preconditions: ['GuildOnly']
 })
-export class prefixCommand extends sapphire.Command {
+export class prefixCommand extends GeraldCommand {
     public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
         reg.registerChatInputCommand((builder) => {
             return builder.setName(this.name)
@@ -280,11 +280,11 @@ export class prefixCommand extends sapphire.Command {
             idHints: ["955744435654787082"]
         })
     }
-    public override async chatInputRun(interaction: sapphire.ChatInputCommand.Interaction) {
+    public override async slashRun(interaction: sapphire.ChatInputCommand.Interaction) {
         let x = interaction.options.get("prefix")
         this.baseRun((x?.value as string) ?? null, interaction)
     }
-    public async messageRun(message: discord.Message, args: sapphire.Args) {
+    public async chatRun(message: discord.Message, args: sapphire.Args) {
         let x = args.nextMaybe()
         this.baseRun(x.value ?? null, message)
     }
@@ -329,32 +329,32 @@ export class prefixCommand extends sapphire.Command {
     }
 }
 
-@ApplyOptions<sapphire.CommandOptions>({
+@ApplyOptions<geraldCommandOptions>({
     name: 'invite',
     description: 'Shows invite link'
 })
-export class inviteCommand extends sapphire.Command {
-    public async messageRun(message: discord.Message) {
+export class inviteCommand extends GeraldCommand {
+    public async chatRun(message: discord.Message) {
         message.channel.send(`Invite is: https://discord.com/oauth2/authorize?client_id=671156130483011605&permissions=8&scope=bot%20applications.commands`)
     }
 }
-@ApplyOptions<sapphire.CommandOptions>({
+@ApplyOptions<geraldCommandOptions>({
     name: 'info',
     description: 'Shows general information about the bot',
 })
-export class infoCommand extends sapphire.Command {
+export class infoCommand extends GeraldCommand {
     public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
         reg.registerChatInputCommand((builder) => {
             return builder.setName(this.name)
                 .setDescription(this.description);
         })
     }
-    public override async messageRun(message: discord.Message) {
+    public override async chatRun(message: discord.Message) {
         message.channel.send({
             embeds: [await this.execute()]
         });
     }
-    public override async chatInputRun(interaction: sapphire.ChatInputCommand.Interaction) {
+    public override async slashRun(interaction: sapphire.ChatInputCommand.Interaction) {
         return interaction.reply({
             embeds: [await this.execute()]
         })
@@ -389,10 +389,10 @@ export class infoCommand extends sapphire.Command {
     }
 }
 
-@ApplyOptions<sapphire.CommandOptions>({
+@ApplyOptions<geraldCommandOptions>({
     name: 'help',
     description: 'Shows infomation about commands'
-}) export class helpCommand extends sapphire.Command {
+}) export class helpCommand extends GeraldCommand {
     public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
         reg.registerChatInputCommand((builder) => {
             return builder.setName(this.name)
@@ -401,7 +401,7 @@ export class infoCommand extends sapphire.Command {
                     .setDescription('The command to get help for').setAutocomplete(false).setRequired(false))
         })
     }
-    public async messageRun(message: discord.Message, args: sapphire.Args) {
+    public async chatRun(message: discord.Message, args: sapphire.Args) {
         let maybe = args.nextMaybe();
         if (!maybe.exists) return this.baseHelp(message);
         let command = maybe.value!;
@@ -410,7 +410,7 @@ export class infoCommand extends sapphire.Command {
         return message.channel.send({ embeds: [this.cmdHelp(cmd)] });
     };
 
-    public async chatInputRun(interaction: sapphire.ChatInputCommand.Interaction) {
+    public async slashRun(interaction: sapphire.ChatInputCommand.Interaction) {
         let x = interaction.options.get('command')
         if (x === null || x.value === undefined) return this.baseHelp(interaction);
         let cmd = bot.stores.get('commands').find(cmd => cmd.name === x!.value);
@@ -466,12 +466,12 @@ export class infoCommand extends sapphire.Command {
     }
 }
 
-@ApplyOptions<sapphire.CommandOptions>({
+@ApplyOptions<geraldCommandOptions>({
     name: 'ask',
     description: 'Ask a question and get a response',
     options: ['user']
-}) export class askCommand extends sapphire.Command {
-    public async messageRun(message: discord.Message, args: sapphire.Args) {
+}) export class askCommand extends GeraldCommand {
+    public async chatRun(message: discord.Message, args: sapphire.Args) {
         let opt = args.nextMaybe()
         if (opt.exists && opt.value === 'user') {
             let i = await message.guild?.roles.fetch("915746575689588827")
@@ -498,7 +498,7 @@ export class infoCommand extends sapphire.Command {
 }
 
 
-@ApplyOptions<sapphire.CommandOptions>({
+@ApplyOptions<geraldCommandOptions>({
     name: 'commands',
     aliases: ['cmds'],
     fullCategory: ['_enabled'],
@@ -507,8 +507,8 @@ export class infoCommand extends sapphire.Command {
     preconditions: ['GuildOnly'],
 
 })
-export class commandsManagerCommand extends sapphire.Command {
-    public async messageRun(message: discord.Message, args: sapphire.Args) {
+export class commandsManagerCommand extends GeraldCommand {
+    public async chatRun(message: discord.Message, args: sapphire.Args) {
         const subcmd = await args.peek('string');
         if (!(subcmd in ['disable', 'enable', 'status'])) return message.channel.send({
             content: ""
@@ -554,12 +554,12 @@ export class commandsManagerCommand extends sapphire.Command {
     }
 }
 
-@ApplyOptions<sapphire.CommandOptions>({
+@ApplyOptions<geraldCommandOptions>({
     name: 'level',
     description: 'Shows the level of a user.',
     preconditions: ["GuildOnly"]
 
-}) export class viewLevelCommand extends sapphire.Command {
+}) export class viewLevelCommand extends GeraldCommand {
     public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
         reg.registerChatInputCommand((builder) => {
             return builder.setName(this.name)
@@ -568,7 +568,7 @@ export class commandsManagerCommand extends sapphire.Command {
                     .setDescription('Get a specific members level.').setRequired(false))
         })
     }
-    public async messageRun(message: discord.Message, args: sapphire.Args) {
+    public async chatRun(message: discord.Message, args: sapphire.Args) {
         const user = await args.pick("member")
         let x = (await prisma.member_level.findMany({
             where: {
@@ -579,7 +579,7 @@ export class commandsManagerCommand extends sapphire.Command {
         message.channel.send(`${user.user.username} is level ${x.level} and has ${x.xp} xp.`)
     }
 
-    public async chatInputRun(interaction: discord.CommandInteraction) {
+    public async slashRun(interaction: discord.CommandInteraction) {
         let user = interaction.options.getUser("user") ?? interaction.user
         let x = (await prisma.member_level.findMany({
             where: {
