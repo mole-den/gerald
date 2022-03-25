@@ -1,7 +1,7 @@
 import * as discord from 'discord.js';
 import * as sapphire from '@sapphire/framework';
 import { scheduledTaskManager } from './taskManager'
-import { Prisma, PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import Time from '@sapphire/time-utilities';
 import Bugsnag from '@bugsnag/js'
 if (process.env.BUGSNAG_KEY) Bugsnag.start({
@@ -202,22 +202,6 @@ async function initTasks() {
 (async () => {
 	console.log('Starting...')
 	await prisma.$connect()
-	prisma.$use(async (params, next) => {
-		try {
-			if (params.model === "member" && (params.action === "create")) {
-				(<Prisma.memberCreateArgs>params.args).data.member_level = {
-					create: {
-						xp: 0,
-						level: 0,
-					}
-				}
-			}
-			return next(params)
-		} catch (error) {
-			console.error(error, params)
-			return next(params)
-		}
-	})
 	console.log('Connected to database')
 	await sleep(1000);
 	await bot.login(process.env.TOKEN);

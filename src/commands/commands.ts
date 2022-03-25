@@ -569,24 +569,43 @@ export class commandsManagerCommand extends GeraldCommand {
         })
     }
     public async chatRun(message: discord.Message, args: sapphire.Args) {
-        const user = await args.pick("member")
-        let x = (await prisma.member_level.findMany({
+        let user = await args.pick("member").catch(() => {
+            return message.member!
+        }) 
+        let x = (await prisma.member_level.findUnique({
             where: {
-                memberID: user.id,
-                guildID: message.guildId!
+                memberID_guildID: {
+                    memberID: user.id,
+                    guildID: message.guildId!
+                }
             }
-        }))[0]
+        }))
+        if (x === null) x = await prisma.member_level.create({
+            data: {
+                memberID: user.id,
+                guildID: message.guildId!,
+            }
+        })
         message.channel.send(`${user.user.username} is level ${x.level} and has ${x.xp} xp.`)
     }
 
     public async slashRun(interaction: discord.CommandInteraction) {
         let user = interaction.options.getUser("user") ?? interaction.user
-        let x = (await prisma.member_level.findMany({
+        let x = (await prisma.member_level.findUnique({
             where: {
-                memberID: user.id!,
-                guildID: interaction.guildId!
+                memberID_guildID: {
+                    memberID: user.id,
+                    guildID: interaction.guildId!
+                }
             }
-        }))[0]
+        }))
+        if (x === null) x = await prisma.member_level.create({
+            data: {
+                memberID: user.id,
+                guildID: interaction.guildId!,
+            }
+        })
+
         interaction.reply(`${user.username} is level ${x.level} and has ${x.xp} xp.`)
     }
 }
