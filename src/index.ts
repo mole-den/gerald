@@ -4,6 +4,7 @@ import { scheduledTaskManager } from './taskManager'
 import { PrismaClient } from '@prisma/client';
 import Time from '@sapphire/time-utilities';
 import Bugsnag from '@bugsnag/js'
+import { runLevelling } from './levelling';
 if (process.env.BUGSNAG_KEY) Bugsnag.start({
 	apiKey: process.env.BUGSNAG_KEY,
 	appVersion: (require('../package.json').version)
@@ -247,6 +248,7 @@ async function initTasks() {
 			return 'g';
 		}
 	}
+	runLevelling()
 	console.log('Ready')
 })();
 
