@@ -571,7 +571,7 @@ export class commandsManagerCommand extends GeraldCommand {
     public async chatRun(message: discord.Message, args: sapphire.Args) {
         let user = await args.pick("member").catch(() => {
             return message.member!
-        }) 
+        })
         let x = (await prisma.member_level.findUnique({
             where: {
                 memberID_guildID: {
