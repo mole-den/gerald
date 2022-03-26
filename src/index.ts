@@ -4,11 +4,13 @@ import { scheduledTaskManager } from './taskManager'
 import { PrismaClient } from '@prisma/client';
 import Time from '@sapphire/time-utilities';
 import Bugsnag from '@bugsnag/js'
+export let bugsnag = Bugsnag
 import { runLevelling } from './levelling';
-if (process.env.BUGSNAG_KEY) Bugsnag.start({
+if (process.env.BUGSNAG_KEY) bugsnag.start({
 	apiKey: process.env.BUGSNAG_KEY,
 	appVersion: (require('../package.json').version)
 });
+
 process.on('SIGTERM', async () => {
 	console.log('SIGTERM received');
 	bot.fetchPrefix = async () => {

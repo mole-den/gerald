@@ -1,7 +1,6 @@
 import * as sapphire from "@sapphire/framework"
 import * as discord from 'discord.js';
-import Bugsnag from '@bugsnag/js';
-Bugsnag
+import { bugsnag } from ".";
 export interface geraldCommandOptions extends sapphire.CommandOptions {
     usage?: string,
     alwaysEnabled?: boolean,
@@ -26,15 +25,9 @@ export abstract class GeraldCommand extends sapphire.Command {
         } else {
             args
             context
-            /*
             if (process.env.BUGSNAG_KEY) {
-                Bugsnag.leaveBreadcrumb(JSON.stringify({
-                    message: message,
-                    args: args,
-                    content: context
-                }))
-                Bugsnag.notify(JSON.stringify(error))
-            }*/
+                bugsnag.notify(JSON.stringify(error))
+            }
             console.error(error);
             let embed = new discord.MessageEmbed()
             embed.setTitle(`Error: Command "${context.commandName}" failed`)
@@ -54,14 +47,9 @@ export abstract class GeraldCommand extends sapphire.Command {
             interaction.reply(error.message)
         } else {
             context
-            /*
             if (process.env.BUGSNAG_KEY) {
-                Bugsnag.leaveBreadcrumb(JSON.stringify({
-                    interaction: interaction,
-                    content: context
-                }))
-                Bugsnag.notify(JSON.stringify(error))
-            }*/
+                bugsnag.notify(JSON.stringify(error))
+            }
             console.error(error);
             let embed = new discord.MessageEmbed()
             embed.setTitle(`Error: Command "${context.commandName}" failed`)
