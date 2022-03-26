@@ -653,6 +653,6 @@ export class commandsManagerCommand extends GeraldCommand {
             selected.push(orders[Math.floor(Math.random() * orders.length)])
         }
         orders = []
-        interaction.editReply("  ")
+        interaction.editReply("e")
     }
 }
