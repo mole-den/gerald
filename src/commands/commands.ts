@@ -6,6 +6,8 @@ import { durationToMS, prisma, getRandomArbitrary, bot, cleanMentions } from '..
 import { GeraldCommand, geraldCommandOptions } from '../commandClass';
 import { ApplyOptions } from '@sapphire/decorators';
 import * as time from '@sapphire/time-utilities';
+import axios from 'axios';
+axios.defaults.validateStatus = () => true
 ///<reference types="../index"/>
 time;
 
@@ -607,5 +609,50 @@ export class commandsManagerCommand extends GeraldCommand {
         })
 
         interaction.reply(`${user.username} is level ${x.level} and has ${x.xp} xp.`)
+    }
+}
+
+@ApplyOptions<geraldCommandOptions>({
+    name: 'warframe',
+    description: 'Command to access warframe APIs.'
+}) export class warframeCommand extends GeraldCommand {
+    public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
+        reg.registerChatInputCommand((builder) => {
+            return builder.setName(this.name)
+                .setDescription(this.description)
+                .addSubcommand(subcommand =>
+                    subcommand
+                        .setName('market')
+                        .setDescription('Access the warframe.market API')
+                        .addStringOption(option => option.setName('item').setDescription('The item to get information about').setRequired(true)))
+        }, {
+            idHints: ["957171251271585822"]
+        })
+    }
+    public async slashRun(interaction: discord.CommandInteraction) {
+        interaction.reply("Loading...")
+        let item = interaction.options.getString("item")!
+        item = item.replace(/([^a-z])/gmi, "_").toLowerCase()
+        let data = await axios.get(`https://api.warframe.market/v1/items/${item}/orders?include=item`, {
+            responseType: "json",
+            headers: {
+                "Platform": "pc"
+            }
+        })
+        if (data.status === 404) {
+            interaction.editReply(`404: Item "${item}" not found.`)
+            return
+        }
+        if (data.status !== 200) {
+            interaction.editReply(`${data.status}: ${data.statusText}`)
+            return
+        }
+        let orders = (<Array<any>>data.data.payload.orders)
+        let selected = []
+        for (let i = 0; i < 10; i++) {
+            selected.push(orders[Math.floor(Math.random() * orders.length)])
+        }
+        orders = []
+        interaction.editReply("  ")
     }
 }
