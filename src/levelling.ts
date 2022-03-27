@@ -2,7 +2,7 @@ import { prisma, bot, getRandomArbitrary } from ".";
 import { RateLimiterMemory } from "rate-limiter-flexible"
 export function runLevelling() {
     const xpLimit = new RateLimiterMemory({
-        points: 100,
+        points: 30,
         duration: 60
     })
     bot.on("messageCreate", async (message) => {
