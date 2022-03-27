@@ -631,7 +631,7 @@ export class commandsManagerCommand extends GeraldCommand {
         })
     }
     public async slashRun(interaction: discord.CommandInteraction) {
-        interaction.reply("**Loading...**")
+        await interaction.reply("**Loading...**")
         let item = interaction.options.getString("item")!
         item = item.replace(/([^a-z])/gmi, "_").toLowerCase()
         let data = await axios.get(`https://api.warframe.market/v1/items/${item}/orders?include=item`, {
@@ -648,19 +648,44 @@ export class commandsManagerCommand extends GeraldCommand {
             interaction.editReply(`${data.status}: ${data.statusText}`)
             return
         }
-        let orders = (<Array<any>>data.data.payload.orders).filter(x => {
-            x.quantity === 1 && x.visible === true && x.order_type === "sell"
-        })
-        let selected = []
-        for (let i = 0; i < 10; i++) {
-            selected.push(orders[Math.floor(Math.random() * orders.length)])
+        interface order {
+            quantity: number,
+            platinum: number,
+            order_type: "sell" | "buy", 
+            user: {
+              reputation: number,
+              region: string,
+              last_seen: string,
+              ingame_name: string,
+              id: string,
+              avatar: null | string,
+              status: string
+            },
+            platform: string,
+            region: string,
+            creation_date: string,
+            last_update: string,
+            visible: boolean,
+            id: string
         }
-        orders = []
-        let prices: number[] = [];
-        selected.forEach(x => {
-            prices.push(x.platinum)
+        let orders: order[] = data.data.payload.orders
+        _.remove(orders, (i) => {
+            return i.quantity !== 1
         })
-        let mean = _.mean(prices)
-        interaction.editReply(`Average price: ${mean}`)
+        let prices: number[] = []
+        orders.forEach(x => {
+            prices.push(x.platinum)
+        });
+        let mean = Math.round(_.mean(prices))
+        const min = Math.min(...prices)
+        const max = Math.max(...prices)
+        let embed = new discord.MessageEmbed()
+        .setTitle(`Market information for ${interaction.options.getString("item")!}`)
+        .setColor("BLURPLE")
+        .setTimestamp(new Date())
+        .addField("Price information", `Highest price: ${max}p\nLowest price: ${min}p\nMean price: ${mean}p`)
+        interaction.editReply({
+            embeds: [embed]
+        })
     }
 }
