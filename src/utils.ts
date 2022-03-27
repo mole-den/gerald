@@ -19,7 +19,7 @@ export namespace utils {
                     return false
                 }
                 return true
-            }, componentType: "BUTTON", time: 10000
+            }, componentType: "BUTTON", time: 15000
         })
             .then(() => interaction.deleteReply())
             .catch(() => {
