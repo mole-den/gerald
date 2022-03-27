@@ -69,7 +69,7 @@ export abstract class GeraldCommand extends sapphire.Command {
             embed.setDescription("An unhandled exception occurred.")
             const content = (<any>error).message as string
             embed.addField("Message", content ?? JSON.stringify(error))
-            interaction.reply({
+            interaction.followUp({
                 embeds: [embed]
             })
         }
