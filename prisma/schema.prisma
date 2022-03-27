@@ -9,8 +9,8 @@ datasource db {
 
 model guild {
   id         Int      @id @default(autoincrement())
-  guildId    String   @unique
-  joinedTime DateTime @db.Timestamp(6)
+  guildId    String   @unique @map("guild_id")
+  joinedTime DateTime @db.Timestamp(6) @map("join_Time")
   prefix     String   @default("g")
   disabled   String[]
   member     member[]
@@ -28,10 +28,10 @@ model member {
 }
 
 model member_level {
-  memberID    String
-  guildID     String
-  level       Int    @default(0)
-  nextLevelXp Int    @default(100)
+  memberID    String  @map("user_id")
+  guildID     String  @map("guild_id")
+  level       Int    @default(0) 
+  nextLevelXp Int    @default(100) @map("next_xp")
   xp          Int    @default(0)
   member      member @relation(fields: [memberID, guildID], references: [userid, guildid], onDelete: Cascade)
 
@@ -43,12 +43,12 @@ model deleted_msg {
   id          Int      @id @default(autoincrement())
   author      String
   content     String
-  guildId     String
-  msgTime     DateTime @db.Timestamp(6)
+  guildId     String @map("guild_id")
+  msgTime     DateTime @db.Timestamp(6) @map("msg_time")
   channel     String
-  deletedTime DateTime @db.Timestamp(6)
-  deletedBy   String   @db.VarChar(200)
-  msgId       String   @unique
+  deletedTime DateTime @db.Timestamp(6) @map("del_time")
+  deletedBy   String   @db.VarChar(200) @map("del_by")
+  msgId       String   @unique @map("msg_id")
   attachments Json?
   member      member   @relation(fields: [author, guildId], references: [userid, guildid], onDelete: Cascade)
 }
@@ -66,7 +66,7 @@ model scheduled_task {
 //   RETURNS trigger AS
 // $func$
 // BEGIN
-//    INSERT INTO member (guildid, userid) VALUES (NEW.guildID, NEW.memberID) ON CONFLICT DO NOTHING;
+//    INSERT INTO member (guildid, userid) VALUES (NEW.guild_id, NEW.user_id) ON CONFLICT DO NOTHING;
 // END
 // $func$  LANGUAGE plpgsql;
 
