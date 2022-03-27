@@ -646,7 +646,7 @@ export class commandsManagerCommand extends GeraldCommand {
             }
         })
         if (data.status === 404) {
-            interaction.editReply(`404: Item "${item}" not found.`)
+            interaction.editReply(`404: Item \`${item}\` not found.`)
             return
         }
         if (data.status !== 200) {
