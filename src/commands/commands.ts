@@ -1,5 +1,6 @@
 import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
+import _ from "lodash"
 import { SubCommandPluginCommand, SubCommandPluginCommandOptions } from '@sapphire/plugin-subcommands';
 import { PaginatedMessageEmbedFields } from '@sapphire/discord.js-utilities';
 import { durationToMS, prisma, getRandomArbitrary, bot, cleanMentions } from '../index';
@@ -630,7 +631,7 @@ export class commandsManagerCommand extends GeraldCommand {
         })
     }
     public async slashRun(interaction: discord.CommandInteraction) {
-        interaction.reply("Loading...")
+        interaction.reply("**Loading...**")
         let item = interaction.options.getString("item")!
         item = item.replace(/([^a-z])/gmi, "_").toLowerCase()
         let data = await axios.get(`https://api.warframe.market/v1/items/${item}/orders?include=item`, {
@@ -647,12 +648,19 @@ export class commandsManagerCommand extends GeraldCommand {
             interaction.editReply(`${data.status}: ${data.statusText}`)
             return
         }
-        let orders = (<Array<any>>data.data.payload.orders)
+        let orders = (<Array<any>>data.data.payload.orders).filter(x => {
+            x.quantity === 1 && x.visible === true && x.order_type === "sell"
+        })
         let selected = []
         for (let i = 0; i < 10; i++) {
             selected.push(orders[Math.floor(Math.random() * orders.length)])
         }
         orders = []
-        interaction.editReply("e")
+        let prices: number[] = [];
+        selected.forEach(x => {
+            prices.push(x.platinum)
+        })
+        let mean = _.mean(prices)
+        interaction.editReply(`Average price: ${mean}`)
     }
 }

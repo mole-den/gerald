@@ -21,12 +21,14 @@
     "axios": "^0.26.0",
     "cron": "^1.8.2",
     "discord.js": "^13.6.0",
+    "lodash": "^4.17.21",
     "luxon": "^2.0.2",
     "rate-limiter-flexible": "^2.3.6",
     "tslib": "^2.3.1"
   },
   "devDependencies": {
     "@types/cron": "^1.7.3",
+    "@types/lodash": "^4.14.180",
     "@types/luxon": "^2.0.5",
     "@types/pg": "^8.6.4",
     "prisma": "^3.8.1",
