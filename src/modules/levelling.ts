@@ -1,11 +1,17 @@
-import { prisma, bot, getRandomArbitrary } from ".";
+import { prisma, bot, getRandomArbitrary, } from "..";
 import { RateLimiterMemory } from "rate-limiter-flexible"
-export function runLevelling() {
-    const xpLimit = new RateLimiterMemory({
-        points: 30,
-        duration: 60
-    })
-    bot.on("messageCreate", async (message) => {
+import { Module } from "../commandClass";
+import { Message } from "discord.js";
+export class Levelling extends Module {
+    xpLimit: RateLimiterMemory | undefined
+    constructor() {
+		super({
+            name: "levelling",
+            description: "Levelling",
+        })
+    }
+
+    async handler(message: Message) {
         if (message.author.bot) return
         console.log("a")
         if (!message.guild) return
@@ -25,7 +31,7 @@ export function runLevelling() {
         })
         let add = getRandomArbitrary(1, 4)
         try {
-            xpLimit.consume(`${message.guildId}-${message.author.id}`, add)
+            this.xpLimit!.consume(`${message.guildId}-${message.author.id}`, add)
         } catch (error) {
             return
         }
@@ -48,6 +54,16 @@ export function runLevelling() {
                 xp: x.xp
             }
         })
-    })
-
+    }
+    async load(): Promise<void> {
+        this.xpLimit = new RateLimiterMemory({
+            points: 30,
+            duration: 60
+        })
+        bot.on("messageCreate", x => this.handler(x))
+    
+    }
+    async unload(): Promise<void> {
+        bot.off("messageCreate", x => this.handler(x))
+    }
 }

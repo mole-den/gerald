@@ -706,7 +706,6 @@ export class commandsManagerCommand extends GeraldCommand {
         utils.handleDismissButton(interaction, response)
     }
 }
-/*
 @ApplyOptions<geraldCommandOptions>({
     name: 'settings',
     description: 'Manage bot settings',
@@ -717,18 +716,12 @@ export class SettingsCommand extends GeraldCommand {
         reg.registerChatInputCommand((builder) => {
             return builder.setName(this.name)
                 .setDescription(this.description)
-                .addSubcommand(subcommand =>
-                    subcommand
-                        .setName('market')
-                        .setDescription('Access the warframe.market API')
-                        .addStringOption(option => option.setName('item').setDescription('The item to get information about').setRequired(true))
-                        .addStringOption(option => option.addChoices([["xbox", "xbox"], ["pc", "pc"], ["ps4", "ps4"], ["switch", "switch"]])
-                        .setRequired(false).setDescription("Return data for specified platform. Default: pc").setName("platform")))
-
         }, {
-            
             behaviorWhenNotIdentical: sapphire.RegisterBehavior.Overwrite
         })
     }
  
-}*/
+    public async slashRun(interaction: discord.CommandInteraction) {
+        interaction
+    }
+}

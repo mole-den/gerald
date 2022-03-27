@@ -3,12 +3,18 @@ import * as discord from 'discord.js';
 import { bugsnag } from ".";
 
 type optionTypes = "string" | "number" | "channel" | "role";
-
+declare module '@sapphire/pieces' {
+    interface Container {
+      modules: Module[]; // Replace this with the connection type of your database library
+    }
+  }
+  
 interface ModuleSetting {
+    id: string,
     name: string,
     description: string
     type: optionTypes,
-    choices?: Array<string|number|discord.Channel|discord.Role>
+    choices?: Array<string | number | discord.Channel | discord.Role>
 }
 export interface geraldCommandOptions extends sapphire.CommandOptions {
     usage?: string,
@@ -18,6 +24,24 @@ export interface geraldCommandOptions extends sapphire.CommandOptions {
     userOptions?: ModuleSetting[]
 }
 
+export interface ModuleOptions {
+    name: string,
+    description: string,
+    userOptions?: ModuleSetting[]
+}
+export abstract class Module {
+    description: string;
+    userConfig: ModuleSetting[] | undefined;
+    name
+    constructor(options: ModuleOptions) {
+        this.description = options.description;
+        this.name = options.name
+        this.userConfig = options.userOptions
+    }
+
+    abstract load(): Promise<void>
+    abstract unload(): Promise<void>
+}
 
 export abstract class GeraldCommand extends sapphire.Command {
     public constructor(context: sapphire.Command.Context, options: geraldCommandOptions) {
