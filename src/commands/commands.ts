@@ -673,8 +673,8 @@ export class commandsManagerCommand extends GeraldCommand {
             id: string
         }
         let orders: order[] = data.data.payload.orders
-        _.remove(orders, (i) => {
-            return i.quantity !== 1 && i.order_type === "buy"
+        orders = orders.filter(v => {
+            v.quantity !== 1 && v.order_type === "sell"
         })
         let prices: number[] = []
         orders.forEach(x => {
