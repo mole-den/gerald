@@ -71,14 +71,20 @@ export class DeletedMSGCommand extends GeraldCommand {
         amount = (arg >= 0) ? arg : (() => {
             throw new sapphire.UserError({ identifier: 'amount<=0', message: 'Amount must be greater than 0.' });
         })();
-        this.mainRun(message.guildId!, amount, message.channel.send)
+        let x = await this.mainRun(message.guildId!, amount)
+        message.channel.send({
+            embeds: x
+        })
         return
     }
     public async slashRun(interaction: discord.CommandInteraction) {
         interaction.deferReply()
-        this.mainRun(interaction.guildId!, interaction.options.getInteger('amount')!, interaction.reply)
+        let x = await this.mainRun(interaction.guildId!, interaction.options.getInteger('amount')!)
+        interaction.editReply({
+            embeds: x
+        })
     }
-    private async mainRun(guild: string, amount: number, send: (...a: any) => any) {
+    private async mainRun(guild: string, amount: number): Promise<discord.MessageEmbed[]> {
         type attachment = Array<{
             url: string,
             name: string | null
@@ -119,10 +125,7 @@ export class DeletedMSGCommand extends GeraldCommand {
             }
             embeds.push(DeleteEmbed)
         });
-        send({
-            embeds: embeds
-        });
-        return;
+        return embeds;
     };
 
 };
