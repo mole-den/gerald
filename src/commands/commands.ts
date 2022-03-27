@@ -625,9 +625,13 @@ export class commandsManagerCommand extends GeraldCommand {
                     subcommand
                         .setName('market')
                         .setDescription('Access the warframe.market API')
-                        .addStringOption(option => option.setName('item').setDescription('The item to get information about').setRequired(true)))
+                        .addStringOption(option => option.setName('item').setDescription('The item to get information about').setRequired(true))
+                        .addStringOption(option => option.addChoices([["xbox", "xbox"], ["pc", "pc"], ["ps4", "ps4"], ["switch", "switch"]])
+                        .setRequired(false).setDescription("Return data for specified platform. Default: pc").setName("platform")))
+
         }, {
-            idHints: ["957171251271585822"]
+            idHints: ["957171251271585822"],
+            behaviorWhenNotIdentical: sapphire.RegisterBehavior.Overwrite
         })
     }
     public async slashRun(interaction: discord.CommandInteraction) {
@@ -637,7 +641,7 @@ export class commandsManagerCommand extends GeraldCommand {
         let data = await axios.get(`https://api.warframe.market/v1/items/${item}/orders?include=item`, {
             responseType: "json",
             headers: {
-                "Platform": "pc"
+                "Platform": (interaction.options.getString("platform") ?? 'pc')
             }
         })
         if (data.status === 404) {
@@ -651,15 +655,15 @@ export class commandsManagerCommand extends GeraldCommand {
         interface order {
             quantity: number,
             platinum: number,
-            order_type: "sell" | "buy", 
+            order_type: "sell" | "buy",
             user: {
-              reputation: number,
-              region: string,
-              last_seen: string,
-              ingame_name: string,
-              id: string,
-              avatar: null | string,
-              status: string
+                reputation: number,
+                region: string,
+                last_seen: string,
+                ingame_name: string,
+                id: string,
+                avatar: null | string,
+                status: string
             },
             platform: string,
             region: string,
@@ -680,21 +684,20 @@ export class commandsManagerCommand extends GeraldCommand {
         const min = Math.min(...prices)
         const max = Math.max(...prices)
         const row = new discord.MessageActionRow()
-			.addComponents(
-				new discord.MessageButton()
-					.setCustomId('link')
-					.setLabel('Market listing')
+            .addComponents(
+                new discord.MessageButton()
+                    .setLabel('Market listing')
                     .setURL(`https://warframe.market/items/${item}`)
-					.setStyle("LINK"),
-			);
+                    .setStyle("LINK"),
+            );
 
         let embed = new discord.MessageEmbed()
-        .setTitle(`Market information for ${interaction.options.getString("item")!}`)
-        .setColor("BLURPLE")
-        .setTimestamp(new Date())
-        .addField("Price information", `Highest price: ${max}p\nLowest price: ${min}p\nMean price: ${mean}p`)
+            .setTitle(`Market information for ${interaction.options.getString("item")!}`)
+            .setColor("BLURPLE")
+            .setTimestamp(new Date())
+            .addField("Price information", `Highest price: ${max}p\nLowest price: ${min}p\nMean price: ${mean}p`)
         interaction.editReply({
-            content: "Loaded",
+            content: "",
             embeds: [embed],
             components: [row]
         })
