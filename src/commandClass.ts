@@ -1,12 +1,23 @@
 import * as sapphire from "@sapphire/framework"
 import * as discord from 'discord.js';
 import { bugsnag } from ".";
+
+type optionTypes = "string" | "number" | "channel" | "role";
+
+interface ModuleSetting {
+    name: string,
+    description: string
+    type: optionTypes,
+    choices?: Array<string|number|discord.Channel|discord.Role>
+}
 export interface geraldCommandOptions extends sapphire.CommandOptions {
     usage?: string,
     alwaysEnabled?: boolean,
     hidden?: boolean,
     ownerOnly?: boolean
+    userOptions?: ModuleSetting[]
 }
+
 
 export abstract class GeraldCommand extends sapphire.Command {
     public constructor(context: sapphire.Command.Context, options: geraldCommandOptions) {

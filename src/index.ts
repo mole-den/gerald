@@ -5,7 +5,6 @@ import { PrismaClient } from '@prisma/client';
 import Time from '@sapphire/time-utilities';
 import Bugsnag from '@bugsnag/js'
 export let bugsnag = Bugsnag
-import { runLevelling } from './levelling';
 if (process.env.BUGSNAG_KEY) bugsnag.start({
 	apiKey: process.env.BUGSNAG_KEY,
 	appVersion: (require('../package.json').version)
@@ -13,31 +12,75 @@ if (process.env.BUGSNAG_KEY) bugsnag.start({
 
 process.on('SIGTERM', async () => {
 	console.log('SIGTERM received');
-	bot.fetchPrefix = async () => {
-		return "EsRtvLIlJ3O5HuNV1Bo824FOzjelsmHmtYFTcBk57";
-	};
-	await sleep(3000)
 	void bot.destroy();
-	void prisma.$disconnect();
 	process.exit(0);
 });
-export const bot = new sapphire.SapphireClient({
-	typing: true,
-	caseInsensitiveCommands: true,
-	caseInsensitivePrefixes: true,
-	loadMessageCommandListeners: true,
-	intents: new discord.Intents([discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS, discord.Intents.FLAGS.GUILD_MESSAGES,
-	discord.Intents.FLAGS.DIRECT_MESSAGES, discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
-	discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS]),
-	partials: ["CHANNEL"],
-	defaultPrefix: 'EsRtvLIlJ3O5HuNV1Bo824FOzjelsmHmtYFTcBk57',
-	defaultCooldown: {
-		scope: 3,
-		limit: 2,
-		delay: Time.Time.Second * 3
-	}
+class Gerald extends sapphire.SapphireClient {
+	constructor() {
+		super({
+			typing: true,
+			caseInsensitiveCommands: true,
+			caseInsensitivePrefixes: true,
+			fetchPrefix: async (message) => {
+				try {
+					let x = await prisma.guild.findUnique({
+						where: {
+							guildId: message.guildId!
+						},
+						select: {
+							prefix: true
+						}
+					});
+					return x?.prefix ?? 'g';
+				} catch (error) {
+					return 'g';
+				}
 
-});
+			},
+			loadMessageCommandListeners: true,
+			intents: new discord.Intents([discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS, discord.Intents.FLAGS.GUILD_MESSAGES,
+			discord.Intents.FLAGS.DIRECT_MESSAGES, discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
+			discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS]),
+			partials: ["CHANNEL"],
+			defaultCooldown: {
+				scope: 3,
+				limit: 2,
+				delay: Time.Time.Second * 3
+			}
+		})
+	}
+	
+	public async start(): Promise<void> {
+		console.log('Starting...')
+		await prisma.$connect()
+		console.log('Connected to database')
+		await sleep(1000);
+		await super.login(process.env.TOKEN);
+		taskScheduler = new scheduledTaskManager()
+		let x = await prisma.guild.count();
+		let guilds = await this.guilds.fetch()
+		if (guilds.size > x) {
+			console.log('Guilds:', guilds.size, 'Database:', x)
+			guilds.each(async (guild) => {
+				await prisma.guild.create({
+					data: {
+						guildId: guild.id,
+						joinedTime: new Date()
+					}
+				})
+			})
+		}
+		await sleep(4000);
+		this.user?.setStatus("dnd")
+		console.log('Ready')
+	} 
+	public override destroy(): void {
+		prisma.$disconnect()
+		taskScheduler.removeAllListeners()
+		super.destroy()
+	}
+}
+export const bot = new Gerald();
 export function durationToMS(duration: string): number {
 	let timeRegex = /([0-9]+(m($| )|min($| )|mins($| )|minute($| )|minutes($| )|h($| )|hr($| )|hrs($| )|hour($| )|hours($| )|d($| )|day($| )|days($| )|wk($| )|wks($| )|week($| )|weeks($| )|mth($| )|mths($| )|month($| )|months($| )|y($| )|yr($| )|yrs($| )|year($| )|years($| )))+/gmi
 	let durationMS = 0;
@@ -195,65 +238,7 @@ bot.on('messageDeleteBulk', async (array) => {
 	});
 });
 
-async function initTasks() {
-	taskScheduler.on('unban', async (a) => {
-		let x = <string>Reflect.get(a.context, 'guild')
-		let guild = await bot.guilds.fetch(x)
-		guild.bans.remove(<string>Reflect.get(a.context, 'user'))
-	})
-}
-(async () => {
-	console.log('Starting...')
-	await prisma.$connect()
-	console.log('Connected to database')
-	await sleep(1000);
-	await bot.login(process.env.TOKEN);
-	taskScheduler = new scheduledTaskManager()
-	initTasks()
-	let x = await prisma.guild.count();
-	let guilds = await bot.guilds.fetch()
-	if (guilds.size > x) {
-		console.log('Guilds:', guilds.size, 'Database:', x)
-		guilds.each(async (guild) => {
-			await prisma.guild.create({
-				data: {
-					guildId: guild.id,
-					joinedTime: new Date()
-				}
-			})
-		})
-	}
-	await sleep(4000);
-	bot.user?.setPresence({
-		activities: [{
-			name: 'ghelp',
-			type: 'LISTENING'
-		}],
-		status: 'dnd',
-	})
-	bot.fetchPrefix = async (message) => {
-		if (message.channel.type === 'DM') {
-			return ['', 'g'];
-		}
-		try {
-			let x = await prisma.guild.findUnique({
-				where: {
-					guildId: message.guildId!
-				},
-				select: {
-					prefix: true
-				}
-			})
-			return x?.prefix ?? 'g';
-		} catch (error) {
-			console.error(error)
-			return 'g';
-		}
-	}
-	runLevelling()
-	console.log('Ready')
-})();
-
+bot.start()
 //zac very cringe
 //gustavo cringe
 //gerald cringe
