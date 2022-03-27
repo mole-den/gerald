@@ -685,6 +685,7 @@ export class commandsManagerCommand extends GeraldCommand {
         .setTimestamp(new Date())
         .addField("Price information", `Highest price: ${max}p\nLowest price: ${min}p\nMean price: ${mean}p`)
         interaction.editReply({
+            content: "Done.",
             embeds: [embed]
         })
     }
