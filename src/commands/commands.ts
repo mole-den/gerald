@@ -8,6 +8,7 @@ import { GeraldCommand, geraldCommandOptions } from '../commandClass';
 import { ApplyOptions } from '@sapphire/decorators';
 import * as time from '@sapphire/time-utilities';
 import axios from 'axios';
+import { utils } from '../utils';
 axios.defaults.validateStatus = () => true
 ///<reference types="../index"/>
 time;
@@ -689,8 +690,7 @@ export class commandsManagerCommand extends GeraldCommand {
                     .setLabel('Market listing')
                     .setURL(`https://warframe.market/items/${item}`)
                     .setStyle("LINK"),
-            ).addComponents(new discord.MessageButton().setLabel("Dismiss").setCustomId('dismissEmbed').setStyle("DANGER"))
-        const dismiss = new discord.MessageActionRow().addComponents(new discord.MessageButton().setLabel("Dismiss").setCustomId('dismissEmbed').setStyle("SECONDARY").setDisabled(true))
+            ).addComponents(utils.dismissButton)
         let embed = new discord.MessageEmbed()
             .setTitle(`Market information for ${interaction.options.getString("item")!}`)
             .setColor("BLURPLE")
@@ -701,27 +701,8 @@ export class commandsManagerCommand extends GeraldCommand {
             components: [row]
         })
         let response = await interaction.fetchReply()
-        if (!(response instanceof discord.Message)) return
-
-        response.awaitMessageComponent({
-            filter: (i) => {
-                i.deferReply()
-                if (i.user.id !== interaction.user.id) {
-                    i.reply({
-                        ephemeral: true,
-                        content: `Please stop interacting with the components on this message. They are only for ${i.user.toString()}.`,
-                        allowedMentions: { users: [], roles: [] }
-                    })
-                }
-                return true
-            }, componentType: "BUTTON", time: 15000
-        })
-            .then(() => interaction.deleteReply())
-            .catch(() => {
-                interaction.editReply({
-                    components: [dismiss]
-                })
-            });
+        if (response instanceof discord.Message)
+        utils.handleDismissButton(interaction, response)
     }
 }
 /*
