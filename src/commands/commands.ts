@@ -51,11 +51,17 @@ export class ownerEvalCommand extends GeraldCommand {
     options: ['id']
 })
 export class DeletedMSGCommand extends GeraldCommand {
+    public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
+        reg.registerChatInputCommand((builder) => {
+            return builder.setName(this.name)
+                .setDescription(this.description).addIntegerOption(i => i.setName('amount')
+                    .setDescription("Amount of messages to get").setMinValue(1).setMaxValue(10).setRequired(true))
+        }, {
+            behaviorWhenNotIdentical: sapphire.RegisterBehavior.Overwrite
+        })
+    }
+
     public async chatRun(message: discord.Message, args: sapphire.Args) {
-        type attachment = Array<{
-            url: string,
-            name: string | null
-        }>;
         let amount: number;
         let arg = await args.pick('number');
         if (isNaN(arg)) return message.channel.send('Please specify a valid amount of messages to view.');
@@ -65,9 +71,21 @@ export class DeletedMSGCommand extends GeraldCommand {
         amount = (arg >= 0) ? arg : (() => {
             throw new sapphire.UserError({ identifier: 'amount<=0', message: 'Amount must be greater than 0.' });
         })();
+        this.mainRun(message.guildId!, amount, message.channel.send)
+        return
+    }
+    public async slashRun(interaction: discord.CommandInteraction) {
+        interaction.deferReply()
+        this.mainRun(interaction.guildId!, interaction.options.getInteger('amount')!, interaction.reply)
+    }
+    private async mainRun(guild: string, amount: number, send: (...a: any) => any) {
+        type attachment = Array<{
+            url: string,
+            name: string | null
+        }>;
         let del = await prisma.deleted_msg.findMany({
             where: {
-                guildId: message.guildId!
+                guildId: guild
             },
             orderBy: {
                 msgTime: "desc"
@@ -101,7 +119,7 @@ export class DeletedMSGCommand extends GeraldCommand {
             }
             embeds.push(DeleteEmbed)
         });
-        message.channel.send({
+        send({
             embeds: embeds
         });
         return;
@@ -703,7 +721,7 @@ export class commandsManagerCommand extends GeraldCommand {
         })
         let response = await interaction.fetchReply()
         if (response instanceof discord.Message)
-        utils.handleDismissButton(interaction, response)
+            utils.handleDismissButton(interaction, response)
     }
 }
 @ApplyOptions<geraldCommandOptions>({
@@ -720,7 +738,7 @@ export class SettingsCommand extends GeraldCommand {
             behaviorWhenNotIdentical: sapphire.RegisterBehavior.Overwrite
         })
     }
- 
+
     public async slashRun(interaction: discord.CommandInteraction) {
         interaction.deferReply()
     }
