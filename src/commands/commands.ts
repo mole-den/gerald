@@ -635,7 +635,7 @@ export class commandsManagerCommand extends GeraldCommand {
         })
     }
     public async slashRun(interaction: discord.CommandInteraction) {
-        await interaction.reply("**Loading...**")
+        await interaction.deferReply()
         let item = interaction.options.getString("item")!
         item = item.replace(/([^a-z])/gmi, "_").toLowerCase()
         let data = await axios.get(`https://api.warframe.market/v1/items/${item}/orders?include=item`, {
@@ -697,9 +697,34 @@ export class commandsManagerCommand extends GeraldCommand {
             .setTimestamp(new Date())
             .addField("Price information", `Highest price: ${max}p\nLowest price: ${min}p\nMean price: ${mean}p`)
         interaction.editReply({
-            content: "Done",
             embeds: [embed],
             components: [row]
         })
     }
 }
+/*
+@ApplyOptions<geraldCommandOptions>({
+    name: 'settings',
+    description: 'Manage bot settings',
+    preconditions: ["GuildOnly"]
+})
+export class SettingsCommand extends GeraldCommand {
+    public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
+        reg.registerChatInputCommand((builder) => {
+            return builder.setName(this.name)
+                .setDescription(this.description)
+                .addSubcommand(subcommand =>
+                    subcommand
+                        .setName('market')
+                        .setDescription('Access the warframe.market API')
+                        .addStringOption(option => option.setName('item').setDescription('The item to get information about').setRequired(true))
+                        .addStringOption(option => option.addChoices([["xbox", "xbox"], ["pc", "pc"], ["ps4", "ps4"], ["switch", "switch"]])
+                        .setRequired(false).setDescription("Return data for specified platform. Default: pc").setName("platform")))
+
+        }, {
+            idHints: ["957171251271585822"],
+            behaviorWhenNotIdentical: sapphire.RegisterBehavior.Overwrite
+        })
+    }
+ 
+}*/
