@@ -693,7 +693,7 @@ export class commandsManagerCommand extends GeraldCommand {
                     .setStyle("LINK"),
             ).addComponents(utils.dismissButton)
         let embed = new discord.MessageEmbed()
-            .setTitle(`Market information for ${interaction.options.getString("item")!}`)
+            .setTitle(`Market information for ${interaction.options.getString("item")!} on ${(interaction.options.getString("platform") ?? 'pc')}`)
             .setColor("BLURPLE")
             .setTimestamp(new Date())
             .addField("Price information", `Highest price: ${max}p\nLowest price: ${min}p\nMean price: ${mean}p\nTotal sell orders: ${totalOrders}`)
