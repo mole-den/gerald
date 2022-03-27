@@ -8,8 +8,8 @@ datasource db {
 }
 
 model guild {
-  id         Int      @id() @default(autoincrement())
-  guildId    String   @unique() 
+  id         Int      @id @default(autoincrement())
+  guildId    String   @unique
   joinedTime DateTime @db.Timestamp(6)
   prefix     String   @default("g")
   disabled   String[]
@@ -17,10 +17,10 @@ model guild {
 }
 
 model member {
-  id           Int           @id() @default(autoincrement())
+  id           Int           @id @default(autoincrement())
   guildid      String
   userid       String
-  guild        guild         @relation(fields: [guildid], references: [guildId], onDelete: Cascade, onUpdate: Cascade)
+  guild        guild         @relation(fields: [guildid], references: [guildId], onDelete: Cascade)
   deleted_msg  deleted_msg[]
   member_level member_level?
 
@@ -31,15 +31,16 @@ model member_level {
   memberID    String
   guildID     String
   level       Int    @default(0)
-  nextLevelXp Int @default(100)
-  xp          Int @default(0)
+  nextLevelXp Int    @default(100)
+  xp          Int    @default(0)
   member      member @relation(fields: [memberID, guildID], references: [userid, guildid], onDelete: Cascade)
+
   @@id([memberID, guildID])
   @@unique([memberID, guildID])
 }
 
 model deleted_msg {
-  id          Int      @id() @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   author      String
   content     String
   guildId     String
@@ -47,15 +48,29 @@ model deleted_msg {
   channel     String
   deletedTime DateTime @db.Timestamp(6)
   deletedBy   String   @db.VarChar(200)
-  msgId       String   @unique()
+  msgId       String   @unique
   attachments Json?
-  member      member   @relation(fields: [author, guildId], references: [userid, guildid], onDelete: Cascade, onUpdate: Cascade)
+  member      member   @relation(fields: [author, guildId], references: [userid, guildid], onDelete: Cascade)
 }
 
 model scheduled_task {
-  id      Int      @id() @default(autoincrement())
+  id      Int      @id @default(autoincrement())
   task    String   @db.VarChar(255)
   context Json?    @db.Json
   time    DateTime @db.Timestamp(6)
   done    Boolean  @default(false)
 }
+
+// Trigger on member_level table
+// CREATE FUNCTION insert_level()
+//   RETURNS trigger AS
+// $func$
+// BEGIN
+//    INSERT INTO member (guildid, userid) VALUES (NEW.guildID, NEW.memberID) ON CONFLICT DO NOTHING;
+// END
+// $func$  LANGUAGE plpgsql;
+
+// CREATE TRIGGER addLevel
+//     BEFORE INSERT ON member
+//     FOR EACH ROW
+//     EXECUTE FUNCTION insert_level();
