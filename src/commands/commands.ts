@@ -78,7 +78,7 @@ export class DeletedMSGCommand extends GeraldCommand {
         return
     }
     public async slashRun(interaction: discord.CommandInteraction) {
-        interaction.deferReply()
+        await interaction.deferReply()
         let x = await this.mainRun(interaction.guildId!, interaction.options.getInteger('amount')!)
         interaction.editReply({
             embeds: x
