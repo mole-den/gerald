@@ -627,7 +627,7 @@ export class commandsManagerCommand extends GeraldCommand {
                         .setDescription('Access the warframe.market API')
                         .addStringOption(option => option.setName('item').setDescription('The item to get information about').setRequired(true))
                         .addStringOption(option => option.addChoices([["xbox", "xbox"], ["pc", "pc"], ["ps4", "ps4"], ["switch", "switch"]])
-                        .setRequired(false).setDescription("Return data for specified platform. Default: pc").setName("platform")))
+                            .setRequired(false).setDescription("Return data for specified platform. Default: pc").setName("platform")))
 
         }, {
             idHints: ["957171251271585822"],
@@ -689,17 +689,39 @@ export class commandsManagerCommand extends GeraldCommand {
                     .setLabel('Market listing')
                     .setURL(`https://warframe.market/items/${item}`)
                     .setStyle("LINK"),
-            );
-
+            ).addComponents(new discord.MessageButton().setLabel("Dismiss").setCustomId('dismissEmbed').setStyle("DANGER"))
+        const dismiss = new discord.MessageActionRow().addComponents(new discord.MessageButton().setLabel("Dismiss").setCustomId('dismissEmbed').setStyle("SECONDARY").setDisabled(true))
         let embed = new discord.MessageEmbed()
             .setTitle(`Market information for ${interaction.options.getString("item")!}`)
             .setColor("BLURPLE")
             .setTimestamp(new Date())
             .addField("Price information", `Highest price: ${max}p\nLowest price: ${min}p\nMean price: ${mean}p`)
-        interaction.editReply({
+        await interaction.editReply({
             embeds: [embed],
             components: [row]
         })
+        let response = await interaction.fetchReply()
+        if (!(response instanceof discord.Message)) return
+
+        response.awaitMessageComponent({
+            filter: (i) => {
+                i.deferReply()
+                if (i.user.id !== interaction.user.id) {
+                    i.reply({
+                        ephemeral: true,
+                        content: `Please stop interacting with the components on this message. They are only for ${i.user.toString()}.`,
+                        allowedMentions: { users: [], roles: [] }
+                    })
+                }
+                return true
+            }, componentType: "BUTTON", time: 15000
+        })
+            .then(() => interaction.deleteReply())
+            .catch(() => {
+                interaction.editReply({
+                    components: [dismiss]
+                })
+            });
     }
 }
 /*
