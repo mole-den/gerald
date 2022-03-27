@@ -35,7 +35,7 @@ export function runLevelling() {
             x.nextLevelXp = Math.round(100 * ((1 + 0.15) ** x.level))
             message.channel.send(``)
         }
-        prisma.member_level.update({
+        await prisma.member_level.update({
             where: {
                 memberID_guildID: {
                     memberID: message.author!.id,

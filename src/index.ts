@@ -205,23 +205,6 @@ async function initTasks() {
 (async () => {
 	console.log('Starting...')
 	await prisma.$connect()
-	prisma.$use(async (params, next) => {
-		try {
-			if (params.model === "member_level" && (params.action === "create")) {
-				await prisma.member.createMany({
-					data: [{
-						userid: params.args.data.memberID,
-						guildid: params.args.data.guildID
-					}],
-					skipDuplicates: true
-				})
-			}
-			return next(params)
-		} catch (error) {
-			console.error(error, params)
-			return next(params)
-		}
-	})
 	console.log('Connected to database')
 	await sleep(1000);
 	await bot.login(process.env.TOKEN);
