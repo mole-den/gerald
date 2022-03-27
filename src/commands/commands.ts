@@ -670,7 +670,7 @@ export class commandsManagerCommand extends GeraldCommand {
         }
         let orders: order[] = data.data.payload.orders
         _.remove(orders, (i) => {
-            return i.quantity !== 1
+            return i.quantity !== 1 && i.order_type === "buy"
         })
         let prices: number[] = []
         orders.forEach(x => {
@@ -679,14 +679,24 @@ export class commandsManagerCommand extends GeraldCommand {
         let mean = Math.round(_.mean(prices))
         const min = Math.min(...prices)
         const max = Math.max(...prices)
+        const row = new discord.MessageActionRow()
+			.addComponents(
+				new discord.MessageButton()
+					.setCustomId('link')
+					.setLabel('Market listing')
+                    .setURL(`https://warframe.market/items/${item}`)
+					.setStyle("LINK"),
+			);
+
         let embed = new discord.MessageEmbed()
         .setTitle(`Market information for ${interaction.options.getString("item")!}`)
         .setColor("BLURPLE")
         .setTimestamp(new Date())
         .addField("Price information", `Highest price: ${max}p\nLowest price: ${min}p\nMean price: ${mean}p`)
         interaction.editReply({
-            content: "Done.",
-            embeds: [embed]
+            content: "Loaded",
+            embeds: [embed],
+            components: [row]
         })
     }
 }
