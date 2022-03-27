@@ -722,6 +722,6 @@ export class SettingsCommand extends GeraldCommand {
     }
  
     public async slashRun(interaction: discord.CommandInteraction) {
-        interaction
+        interaction.deferReply()
     }
 }
