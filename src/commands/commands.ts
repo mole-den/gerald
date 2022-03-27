@@ -684,6 +684,7 @@ export class commandsManagerCommand extends GeraldCommand {
         let mean = Math.round(_.mean(prices))
         const min = Math.min(...prices)
         const max = Math.max(...prices)
+        const totalOrders = orders.length
         const row = new discord.MessageActionRow()
             .addComponents(
                 new discord.MessageButton()
@@ -695,7 +696,7 @@ export class commandsManagerCommand extends GeraldCommand {
             .setTitle(`Market information for ${interaction.options.getString("item")!}`)
             .setColor("BLURPLE")
             .setTimestamp(new Date())
-            .addField("Price information", `Highest price: ${max}p\nLowest price: ${min}p\nMean price: ${mean}p`)
+            .addField("Price information", `Highest price: ${max}p\nLowest price: ${min}p\nMean price: ${mean}p\nTotal sell orders: ${totalOrders}`)
         await interaction.editReply({
             embeds: [embed],
             components: [row]
@@ -725,7 +726,7 @@ export class SettingsCommand extends GeraldCommand {
                         .setRequired(false).setDescription("Return data for specified platform. Default: pc").setName("platform")))
 
         }, {
-            idHints: ["957171251271585822"],
+            
             behaviorWhenNotIdentical: sapphire.RegisterBehavior.Overwrite
         })
     }
