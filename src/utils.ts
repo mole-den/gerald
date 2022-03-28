@@ -61,5 +61,26 @@ export namespace utils {
             components: [...button]
         })
     }
+    export async function awaitSelectMenu(interaction: discord.CommandInteraction, response: discord.Message, timeout: number = 15000)  {
+        let x: discord.SelectMenuInteraction<discord.CacheType>;
+        try {
+             x = await response.awaitMessageComponent({
+                filter: (i) => {
+                    if (i.user.id !== interaction.user.id) {
+                        i.reply({
+                            ephemeral: true,
+                            content: `Please stop interacting with the components on this message. They are only for ${interaction.user.toString()}.`,
+                            allowedMentions: { users: [], roles: [] }
+                        })
+                        return false
+                    }
+                    return true
+                }, componentType: "SELECT_MENU", time: timeout
+            })
+        } catch {
+            return null
+        }
+        return x;
 
+    }
 }
