@@ -647,7 +647,6 @@ export class SettingsCommand extends GeraldCommand {
         let modules = sapphire.container.modules.filter(i => i.settings !== null)
         let all = <Array<GeraldCommand | Module>>[...modules, ...commands]
         all;
-        console.log(all)
         let x = all.map(i => {
             return {
                 name: i.name,
