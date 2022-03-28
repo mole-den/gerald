@@ -654,7 +654,7 @@ export class SettingsCommand extends GeraldCommand {
             }
         })
         let a = new discord.MessageEmbed()
-        .setTitle("Settings").setColor("GREEN").addFields(x)
+            .setTitle("Settings").setColor("GREEN").addFields(x)
         let row = new discord.MessageActionRow().addComponents(
             new discord.MessageButton().setCustomId("category").setLabel("Select Category").setStyle("PRIMARY"), utils.dismissButton)
 
@@ -662,33 +662,38 @@ export class SettingsCommand extends GeraldCommand {
             embeds: [a],
             components: [row]
         })
-        let handled: boolean = false
-        utils.handleDismissButton(interaction, reply)
-        while (handled !== true) {
-            let categoryButton = await utils.awaitButtonResponse(interaction, reply, "category")
-            await categoryButton?.reply({
-                content: "Select a command category.",
-                ephemeral: true,
-                components: [ new discord.MessageActionRow()
-                    .addComponents(
-                        new discord.MessageSelectMenu()
-                            .setCustomId('select_category')
-                            .setPlaceholder('Nothing selected')
-                            .addOptions(x.map(i => {
-                                return {
-                                    label: i.name,
-                                    value: i.name,
-                                    description: i.value
-                                }
-                            })),
-                    )]
-            });
-            let categoryRequest = await categoryButton!.fetchReply()
-            let category = await utils.awaitSelectMenu(interaction, <discord.Message>categoryRequest)
-            if (category) {
-                handled = true
+        let value = await utils.buttonListener({
+            interaction: interaction,
+            response: reply,
+            async onClick(button, next) {
+                await button.reply({
+                    content: "Select a command category.",
+                    ephemeral: true,
+                    components: [new discord.MessageActionRow()
+                        .addComponents(
+                            new discord.MessageSelectMenu()
+                                .setCustomId('select_category')
+                                .setPlaceholder('Nothing selected')
+                                .addOptions(x.map(i => {
+                                    return {
+                                        label: i.name,
+                                        value: i.name,
+                                        description: i.value
+                                    }
+                                })),
+                        )]
+                });
+                let categoryRequest = await button.fetchReply()
+                let category = await utils.awaitSelectMenu(interaction, <discord.Message>categoryRequest)
+                if (category) {
+                    next(button)
+                }
+    
+            },
+            onEnd() {
+                utils.disableButtons(reply, interaction)
             }
-        }
-
+        })
+        console.log(value)
     }
 }

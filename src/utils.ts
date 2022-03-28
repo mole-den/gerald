@@ -32,7 +32,7 @@ export namespace utils {
     export async function awaitButtonResponse(interaction: discord.CommandInteraction, response: discord.Message, type?: string, timeout: number = 15000) {
         let x: discord.ButtonInteraction<discord.CacheType>;
         try {
-             x = await response.awaitMessageComponent({
+            x = await response.awaitMessageComponent({
                 filter: (i) => {
                     if (i.user.id !== interaction.user.id) {
                         i.reply({
@@ -53,6 +53,44 @@ export namespace utils {
         }
         return x;
     }
+    interface buttonListenerInput { 
+        interaction: discord.CommandInteraction; 
+        response: discord.Message; 
+        type?: string; 
+        timeout?: number; 
+        onClick: (button: discord.ButtonInteraction, next: (value: discord.ButtonInteraction) => void) => Promise<void>;
+        onEnd: () => void
+    }
+    export function buttonListener(input: buttonListenerInput): Promise<discord.ButtonInteraction> {
+        return new Promise((resolve) => {
+            const collector = input.response.createMessageComponentCollector({ componentType: 'BUTTON', time: input.timeout ?? 15000 });
+
+            collector.on('collect', async i => {
+                if (i.user.id === input.interaction.user.id) {
+                    if (i.customId === "dismissEmbed") return await input.interaction.deleteReply()
+                    if (input.type) {
+                        if (input.type === i.customId) return await input.onClick(i, next)
+                        else return
+                    }
+                    return await input.onClick(i, next)
+                } else {
+                    return await i.reply({
+                        ephemeral: true,
+                        content: `Please stop interacting with the components on this message. They are only for ${input.interaction.user.toString()}.`,
+                        allowedMentions: { users: [], roles: [] }
+                    })
+                }
+            });
+    
+            collector.on('end', () => {
+                utils.disableButtons(input.response, input.interaction)
+            });
+            function next(value: discord.ButtonInteraction) {
+                resolve(value)
+            }
+        })
+        
+    }
     export async function disableButtons(response: discord.Message, interaction: discord.CommandInteraction) {
         let button = response.components;
         button.forEach(i => {
@@ -64,10 +102,10 @@ export namespace utils {
             components: [...button]
         })
     }
-    export async function awaitSelectMenu(interaction: discord.CommandInteraction, response: discord.Message, timeout: number = 15000)  {
+    export async function awaitSelectMenu(interaction: discord.CommandInteraction, response: discord.Message, timeout: number = 15000) {
         let x: discord.SelectMenuInteraction<discord.CacheType>;
         try {
-             x = await response.awaitMessageComponent({
+            x = await response.awaitMessageComponent({
                 filter: (i) => {
                     if (i.user.id !== interaction.user.id) {
                         i.reply({
