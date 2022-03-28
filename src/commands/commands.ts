@@ -77,7 +77,6 @@ export class DeletedMSGCommand extends GeraldCommand {
         return
     }
     public async slashRun(interaction: discord.CommandInteraction) {
-        await interaction.deferReply()
         let x = await this.mainRun(interaction.guildId!, interaction.options.getInteger('amount')!)
         interaction.editReply({
             embeds: x
@@ -554,7 +553,6 @@ export class infoCommand extends GeraldCommand {
         })
     }
     public async slashRun(interaction: discord.CommandInteraction) {
-        await interaction.deferReply()
         let item = interaction.options.getString("item")!
         item = item.replace(/([^a-z])/gmi, "_").toLowerCase()
         let data = await axios.get(`https://api.warframe.market/v1/items/${item}/orders?include=item`, {
