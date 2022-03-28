@@ -83,7 +83,8 @@ export namespace utils {
             });
 
             collector.on('end', async () => {
-                console.log(await input.interaction.fetchReply())
+            if ((await pCall(input.interaction.fetchReply)) instanceof Failed) return
+            utils.disableButtons(input.response, input.interaction)
             });
             function next<T>(value: T) {
                 resolve(value)
@@ -126,10 +127,11 @@ export namespace utils {
     }
     class Failed {
     }
-    export const pCall = async <T, U>(fn: (...args: T[]) => U, args: T): Promise<Failed | U> => {
+    export const pCall = async <T, U>(fn: (...args: T[]) => U, args?: T | undefined): Promise<Failed | U> => {
         let x: U;
         try {
-            x = fn(args)
+            if (args) x = fn(args)
+            else x = fn()
             return x;
         } catch {
             return new Failed()
