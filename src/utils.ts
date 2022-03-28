@@ -53,11 +53,11 @@ export namespace utils {
         }
         return x;
     }
-    interface buttonListenerInput { 
-        interaction: discord.CommandInteraction; 
-        response: discord.Message; 
-        type?: string; 
-        timeout?: number; 
+    interface buttonListenerInput {
+        interaction: discord.CommandInteraction;
+        response: discord.Message;
+        type?: string;
+        timeout?: number;
         onClick: (button: discord.ButtonInteraction, next: (value: discord.ButtonInteraction) => void) => Promise<void>;
         onEnd: () => void
     }
@@ -81,7 +81,7 @@ export namespace utils {
                     })
                 }
             });
-    
+
             collector.on('end', () => {
                 utils.disableButtons(input.response, input.interaction)
             });
@@ -89,7 +89,7 @@ export namespace utils {
                 resolve(value)
             }
         })
-        
+
     }
     export async function disableButtons(response: discord.Message, interaction: discord.CommandInteraction) {
         let button = response.components;
@@ -98,7 +98,7 @@ export namespace utils {
                 x.disabled = true;
             })
         })
-        interaction.editReply({
+        await utils.pCall(interaction.editReply, {
             components: [...button]
         })
     }
@@ -124,4 +124,19 @@ export namespace utils {
         return x;
 
     }
+    class Failed {
+        data: unknown
+        constructor(x: unknown) {
+            this.data = x
+        }
+    }
+    export const pCall = async <T, U>(fn: (...args: T[]) => U, args: T) => {
+        let x: U;
+        try {
+            x = fn(args)
+            return x;
+        } catch (error) {
+            return new Failed(error)
+        }
+      }
 }
