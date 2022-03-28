@@ -55,7 +55,7 @@ export class DeletedMSGCommand extends GeraldCommand {
         reg.registerChatInputCommand((builder) => {
             return builder.setName(this.name)
                 .setDescription(this.description).addIntegerOption(i => i.setName('amount')
-                    .setDescription("Amount of messages to get").setMinValue(1).setMaxValue(10).setRequired(true))
+                    .setDescription("Amount of messages to get").setMinValue(1).setMaxValue(5).setRequired(true))
         }, {
             behaviorWhenNotIdentical: sapphire.RegisterBehavior.Overwrite
         })
@@ -263,7 +263,9 @@ export class banCommand extends SubCommandPluginCommand {
 
 @ApplyOptions<geraldCommandOptions>({
     name: 'query',
-    fullCategory: ['_enabled', '_owner', '_hidden'],
+    ownerOnly: true,
+    alwaysEnabled: true,
+    hidden: true,
     description: 'Runs SQL input against database',
     requiredClientPermissions: [],
     preconditions: ['OwnerOnly']
@@ -519,63 +521,6 @@ export class infoCommand extends GeraldCommand {
             return message.channel.send('no');
         }
 
-    }
-}
-
-
-@ApplyOptions<geraldCommandOptions>({
-    name: 'commands',
-    aliases: ['cmds'],
-    fullCategory: ['_enabled'],
-    description: 'Allows management of commands and other bot features',
-    requiredUserPermissions: 'ADMINISTRATOR',
-    preconditions: ['GuildOnly'],
-
-})
-export class commandsManagerCommand extends GeraldCommand {
-    public async chatRun(message: discord.Message, args: sapphire.Args) {
-        const subcmd = await args.peek('string');
-        if (!(subcmd in ['disable', 'enable', 'status'])) return message.channel.send({
-            content: ""
-        })
-        if (subcmd == "disable") return this.disable(message, args)
-        if (subcmd == "enable") return this.enable(message, args)
-        // if (subcmd == "status") return this.status(message, args)
-        return
-    }
-    private async disable(message: discord.Message, args: sapphire.Args) {
-        let cmd = args.nextMaybe()
-        if (cmd.exists === false) {
-            throw new sapphire.UserError({ identifier: 'invalidsyntax', message: 'Specify a command to disable' });
-        }
-        let command = this.container.stores.get('commands').find(value => value.name === cmd.value)
-        if (!command || command.fullCategory.includes('_hidden')) return message.channel.send('Command not found');
-        if (command.fullCategory.some(x => x === '_enabled')) {
-            message.channel.send(`This command cannot be disabled.`)
-            return;
-        }
-        let i = ((await prisma.guild.findUnique({ where: { guildId: message.guildId! } }))!.disabled!);
-        i.some(x => x === cmd.value!) ? (() => {
-            throw new sapphire.UserError({ identifier: 'invalid', message: 'Command already disabled' })
-        }) : i.push(cmd.value!);
-        prisma.guild.update({
-            where: { guildId: message.guildId! },
-            data: { disabled: i }
-        })
-        return message.channel.send(`Disabled command **${cmd.value!}**`)
-    }
-
-    private async enable(message: discord.Message, args: sapphire.Args) {
-        let cmd = args.nextMaybe()
-        if (cmd.exists === false) throw new sapphire.UserError({ identifier: 'invalidsyntax', message: 'Specify a command to enable' });
-        let command = this.container.stores.get('commands').find(value => value.name === cmd.value);
-        if (!command) return message.channel.send('Command not found');
-        let i = (await prisma.guild.findUnique({ where: { guildId: message.guildId! } }))!.disabled!;
-        prisma.guild.update({
-            where: { guildId: message.guildId! },
-            data: { disabled: i.filter(x => x !== cmd.value) }
-        })
-        return message.channel.send(`Enabled command **${cmd.value!}**`)
     }
 }
 

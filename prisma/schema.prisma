@@ -14,6 +14,7 @@ model guild {
   prefix     String   @default("g")
   disabled   String[]
   member     member[]
+  settings    module_settings[]
 }
 
 model member {
@@ -51,6 +52,14 @@ model deleted_msg {
   msgId       String   @unique @map("msg_id")
   attachments Json?
   member      member   @relation(fields: [author, guildId], references: [userid, guildid], onDelete: Cascade)
+}
+
+model module_settings {
+  guildid String
+  moduleName String @map("module")
+  settings String[]
+  guild guild @relation(fields: [guildid], references: [guildId], onDelete: Cascade)
+  @@id([guildid, moduleName])
 }
 
 model scheduled_task {
