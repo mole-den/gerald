@@ -662,28 +662,33 @@ export class SettingsCommand extends GeraldCommand {
             embeds: [a],
             components: [row]
         })
-        let categoryButton = await utils.awaitButtonResponse(interaction, reply)
-        if (!categoryButton) utils.disableButtons(reply, interaction);
-        if (categoryButton?.customId === "dismissEmbed") return interaction.deleteReply()
-        await categoryButton!.reply({
-            ephemeral: true,
-            content: "Select a command category.",
-            components: [ new discord.MessageActionRow()
-                .addComponents(
-                    new discord.MessageSelectMenu()
-                        .setCustomId('select_category')
-                        .setPlaceholder('Nothing selected')
-                        .addOptions(x.map(i => {
-                            return {
-                                label: i.name,
-                                value: i.name,
-                                description: i.value
-                            }
-                        })),
-                )]
-        });
-        let categoryRequest = await categoryButton!.fetchReply()
-        let category = await utils.awaitSelectMenu(interaction, <discord.Message>categoryRequest)
-        console.log(category)
+        let handled: boolean = false
+        utils.handleDismissButton(interaction, reply)
+        while (handled !== true) {
+            let categoryButton = await utils.awaitButtonResponse(interaction, reply, "category")
+            await categoryButton?.reply({
+                content: "Select a command category.",
+                ephemeral: true,
+                components: [ new discord.MessageActionRow()
+                    .addComponents(
+                        new discord.MessageSelectMenu()
+                            .setCustomId('select_category')
+                            .setPlaceholder('Nothing selected')
+                            .addOptions(x.map(i => {
+                                return {
+                                    label: i.name,
+                                    value: i.name,
+                                    description: i.value
+                                }
+                            })),
+                    )]
+            });
+            let categoryRequest = await categoryButton!.fetchReply()
+            let category = await utils.awaitSelectMenu(interaction, <discord.Message>categoryRequest)
+            if (category) {
+                handled = true
+            }
+        }
+
     }
 }

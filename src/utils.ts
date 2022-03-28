@@ -29,7 +29,7 @@ export namespace utils {
             });
 
     }
-    export async function awaitButtonResponse(interaction: discord.CommandInteraction, response: discord.Message, timeout: number = 15000) {
+    export async function awaitButtonResponse(interaction: discord.CommandInteraction, response: discord.Message, type?: string, timeout: number = 15000) {
         let x: discord.ButtonInteraction<discord.CacheType>;
         try {
              x = await response.awaitMessageComponent({
@@ -40,6 +40,9 @@ export namespace utils {
                             content: `Please stop interacting with the components on this message. They are only for ${interaction.user.toString()}.`,
                             allowedMentions: { users: [], roles: [] }
                         })
+                        return false
+                    }
+                    if (type && i.customId !== type) {
                         return false
                     }
                     return true
