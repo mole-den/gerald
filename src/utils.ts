@@ -83,7 +83,9 @@ export namespace utils {
             });
 
             collector.on('end', async () => {
+            console.log('here')
             if ((await pCall(input.interaction.fetchReply)) instanceof Failed) return
+            console.log("exists")
             utils.disableButtons(input.response, input.interaction)
             });
             function next<T>(value: T) {
