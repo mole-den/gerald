@@ -1,6 +1,5 @@
-import { Precondition, PreconditionOptions,  Command} from '@sapphire/framework';
+import { Precondition, PreconditionOptions} from '@sapphire/framework';
 import { Message } from 'discord.js';
-import { prisma } from '../index';
 import { ApplyOptions } from '@sapphire/decorators';
 
 @ApplyOptions<PreconditionOptions>({
@@ -24,16 +23,7 @@ declare module '@sapphire/framework' {
     position: 10,
 })
 export class checkDisabledCondition extends Precondition {
-    public async messageRun(message: Message, command: Command) {
-        if (message.channel.type === 'DM') return this.ok()
-        let disabled = (await prisma.guild.findUnique({ where: { guildId: message.guildId! } }))!.disabled!
-        if (disabled.some(x => x === command.name)) return this.error({
-            message: `This command is disabled in this server.`,
-            identifier: 'diabled',
-            context: {
-                silent: true,
-            },
-        });
+    public async messageRun() {
         return this.ok();
     };
     public async chatInputRun() {
