@@ -83,10 +83,11 @@ export namespace utils {
             });
 
             collector.on('end', async () => {
-            console.log('here')
-            if ((await pCall(input.interaction.fetchReply)) instanceof Failed) return
-            console.log("exists")
-            utils.disableButtons(input.response, input.interaction)
+                console.log('here')
+                let x = (await pCall(input.interaction.fetchReply))
+                if (x.exists === false) return
+                console.log("exists")
+                utils.disableButtons(input.response, input.interaction)
             });
             function next<T>(value: T) {
                 resolve(value)
@@ -127,16 +128,20 @@ export namespace utils {
         return x;
 
     }
-    class Failed {
-    }
-    export const pCall = async <T, U>(fn: (...args: T[]) => U, args?: T | undefined): Promise<Failed | U> => {
+    type Maybe<T> = {value?: T, exists: boolean}
+    export const pCall = async <T, U>(fn: (...args: T[]) => U, args?: T | undefined): Promise<Maybe<U>> => {
         let x: U;
         try {
             if (args) x = fn(args)
             else x = fn()
-            return x;
+            return {
+                value: x,
+                exists: true
+            };
         } catch {
-            return new Failed()
+            return {
+                exists: false
+            }
         }
     }
 }
