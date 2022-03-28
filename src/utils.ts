@@ -58,10 +58,10 @@ export namespace utils {
         response: discord.Message;
         type?: string;
         timeout?: number;
-        onClick: (button: discord.ButtonInteraction, next: (value: discord.ButtonInteraction) => void) => Promise<void>;
+        onClick: (button: discord.ButtonInteraction, next: (value: any) => void) => Promise<void>;
         onEnd: () => void
     }
-    export function buttonListener(input: buttonListenerInput): Promise<discord.ButtonInteraction> {
+    export function buttonListener(input: buttonListenerInput) {
         return new Promise((resolve) => {
             const collector = input.response.createMessageComponentCollector({ componentType: 'BUTTON', time: input.timeout ?? 15000 });
 
@@ -84,7 +84,7 @@ export namespace utils {
 
             collector.on('end', () => {
             });
-            function next(value: discord.ButtonInteraction) {
+            function next<T>(value: T) {
                 resolve(value)
             }
         })
@@ -125,7 +125,7 @@ export namespace utils {
     }
     class Failed {
     }
-    export const pCall = async <T, U>(fn: (...args: T[]) => U, args: T) => {
+    export const pCall = async <T, U>(fn: (...args: T[]) => U, args: T): Promise<Failed | U> => {
         let x: U;
         try {
             x = fn(args)
@@ -133,5 +133,5 @@ export namespace utils {
         } catch {
             return new Failed()
         }
-      }
+    }
 }

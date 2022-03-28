@@ -660,7 +660,7 @@ export class SettingsCommand extends GeraldCommand {
             embeds: [a],
             components: [row]
         })
-        let value = await utils.buttonListener({
+        let value = <discord.SelectMenuInteraction>await utils.buttonListener({
             interaction: interaction,
             response: reply,
             async onClick(button, next) {
@@ -684,7 +684,7 @@ export class SettingsCommand extends GeraldCommand {
                 let categoryRequest = await button.fetchReply()
                 let category = await utils.awaitSelectMenu(interaction, <discord.Message>categoryRequest)
                 if (category) {
-                    next(button)
+                    next(category)
                 }
     
             },
@@ -692,6 +692,6 @@ export class SettingsCommand extends GeraldCommand {
                 utils.disableButtons(reply, interaction)
             }
         })
-        console.log(value)
+        console.log(value.values)
     }
 }
