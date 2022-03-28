@@ -657,14 +657,15 @@ export class SettingsCommand extends GeraldCommand {
         .setTitle("Settings").setColor("GREEN").addFields(x)
         let row = new discord.MessageActionRow().addComponents(
             new discord.MessageButton().setCustomId("category").setLabel("Select Category").setStyle("PRIMARY"), utils.dismissButton)
-        interaction.editReply({
+
+        await interaction.editReply({
             embeds: [a],
             components: [row]
         })
         let categoryButton = await utils.awaitButtonResponse(interaction, reply)
         if (!categoryButton) utils.disableButtons(reply, interaction);
         if (categoryButton?.customId === "dismissEmbed") return interaction.deleteReply()
-        let categoryRequest = await interaction.followUp({
+        await categoryButton!.reply({
             ephemeral: true,
             content: "Select a command category.",
             components: [ new discord.MessageActionRow()
@@ -680,10 +681,9 @@ export class SettingsCommand extends GeraldCommand {
                             }
                         })),
                 )]
-        })
+        });
+        let categoryRequest = await categoryButton!.fetchReply()
         let category = await utils.awaitSelectMenu(interaction, <discord.Message>categoryRequest)
-        if (!category) {
-            reply.components[0].components[0].setDisabled(true)
-        }
+        console.log(category)
     }
 }
