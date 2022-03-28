@@ -83,7 +83,6 @@ export namespace utils {
             });
 
             collector.on('end', () => {
-                utils.disableButtons(input.response, input.interaction)
             });
             function next(value: discord.ButtonInteraction) {
                 resolve(value)
@@ -125,18 +124,14 @@ export namespace utils {
 
     }
     class Failed {
-        data: unknown
-        constructor(x: unknown) {
-            this.data = x
-        }
     }
     export const pCall = async <T, U>(fn: (...args: T[]) => U, args: T) => {
         let x: U;
         try {
             x = fn(args)
             return x;
-        } catch (error) {
-            return new Failed(error)
+        } catch {
+            return new Failed()
         }
       }
 }
