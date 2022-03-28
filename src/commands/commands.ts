@@ -1,10 +1,9 @@
 import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
 import _ from "lodash"
-import { SubCommandPluginCommand, SubCommandPluginCommandOptions } from '@sapphire/plugin-subcommands';
 import { PaginatedMessageEmbedFields } from '@sapphire/discord.js-utilities';
 import { durationToMS, prisma, getRandomArbitrary, bot, cleanMentions } from '../index';
-import { GeraldCommand, geraldCommandOptions } from '../commandClass';
+import { GeraldCommand, geraldCommandOptions, Module } from '../commandClass';
 import { ApplyOptions } from '@sapphire/decorators';
 import * as time from '@sapphire/time-utilities';
 import axios from 'axios';
@@ -213,53 +212,6 @@ export class rmTimeoutCommand extends GeraldCommand {
     }
 }
 
-@ApplyOptions<SubCommandPluginCommandOptions>({
-    name: 'ban',
-    aliases: ['smite'],
-    description: 'Allows management and creation of bans',
-    requiredClientPermissions: ['BAN_MEMBERS'],
-    requiredUserPermissions: ['BAN_MEMBERS'],
-    preconditions: ['GuildOnly'],
-    subCommands: ['add', 'remove', { input: 'add', default: true }]
-})
-export class banCommand extends SubCommandPluginCommand {
-    public async add(message: discord.Message, args: sapphire.Args) {
-        const bans = await message.guild!.bans.fetch()
-        let user = await args.pick('member').catch(() => {
-            return args.pick('user')
-        })
-        if (bans.find(v => v.user.id === user.id) !== undefined) return message.channel.send(`This user is already banned`)
-
-        let reason = ((await args.repeat('string').catch(() => null))?.join(" ") || "none")
-        if (user instanceof discord.GuildMember) {
-            if (message.member!.roles.highest.comparePositionTo(user.roles.highest) <= 0 && (message.guild!.ownerId !== message.member!.id)) {
-                message.channel.send(`You do not have a high enough role to do this.`);
-                return;
-            }
-            if (!user.bannable) {
-                return message.channel.send("This user is not bannable by the bot.");
-            };
-            message.guild!.bans.create(user, { reason: `Banned by ${message.author.tag} with reason "${reason}"`, days: 0 });
-            message.channel.send({
-                content: `**${user.user.tag}** has been banned.`,
-            });
-        } else {
-            message.guild!.bans.create(user, { reason: `Banned by ${message.author.tag} with reason ${reason}`, days: 0 })
-            message.channel.send({
-                content: `**${user.tag}** has been banned.`,
-            });
-        };
-        return;
-    }
-
-    public async remove(message: discord.Message, args: sapphire.Args) {
-        let user = await args.pick('user');
-        const bans = await message.guild!.bans.fetch()
-        if (bans.find(v => v.user.id === user.id) === undefined) return message.channel.send('This user is not banned');
-        message.guild!.members.unban(user).catch(() => { })
-        return message.channel.send(`**${user.tag}** has been unbanned`);
-    }
-}
 
 @ApplyOptions<geraldCommandOptions>({
     name: 'query',
@@ -687,7 +639,31 @@ export class SettingsCommand extends GeraldCommand {
         })
     }
 
-    public async slashRun(interaction: discord.CommandInteraction) {
-        interaction.deferReply()
+    public async slashRun(interaction: discord.CommandInteraction, reply: discord.Message) {
+        let commands = bot.stores.get("commands").filter((i) => {
+            let a = <GeraldCommand>i
+            return a.settings !== null
+        })
+        let modules = sapphire.container.modules.filter(i => i.settings !== null)
+        let all = <Array<GeraldCommand | Module>>[...modules, ...commands]
+        all;
+        console.log(all)
+        let x = all.map(i => {
+            return {
+                name: i.name,
+                value: i.description
+            }
+        })
+        let a = new discord.MessageEmbed()
+        .setTitle("Settings Categories").setColor("GREEN").addFields(x)
+        let row = new discord.MessageActionRow().addComponents(
+            new discord.MessageButton().setCustomId("category").setLabel("Select Category").setStyle("PRIMARY"), utils.dismissButton)
+        interaction.editReply({
+            embeds: [a],
+            components: [row]
+        })
+        let categoryButton = await utils.awaitButtonResponse(interaction, reply)
+        if (!categoryButton) utils.disableButtons(reply, interaction);
+        categoryButton!.applicationId;
     }
 }
