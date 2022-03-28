@@ -82,7 +82,8 @@ export namespace utils {
                 }
             });
 
-            collector.on('end', () => {
+            collector.on('end', async () => {
+                console.log(await input.interaction.fetchReply())
             });
             function next<T>(value: T) {
                 resolve(value)
