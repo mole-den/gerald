@@ -663,7 +663,7 @@ export class SettingsCommand extends GeraldCommand {
         })
         let categoryButton = await utils.awaitButtonResponse(interaction, reply)
         if (!categoryButton) utils.disableButtons(reply, interaction);
-        if (categoryButton?.customId === "dismissEmbed") interaction.deleteReply()
+        if (categoryButton?.customId === "dismissEmbed") return interaction.deleteReply()
         let categoryRequest = await interaction.followUp({
             ephemeral: true,
             content: "Select a command category.",
