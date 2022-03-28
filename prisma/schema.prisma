@@ -12,7 +12,6 @@ model guild {
   guildId    String   @unique @map("guild_id")
   joinedTime DateTime @db.Timestamp(6) @map("join_Time")
   prefix     String   @default("g")
-  disabled   String[]
   member     member[]
   settings    module_settings[]
 }
@@ -57,7 +56,7 @@ model deleted_msg {
 model module_settings {
   guildid String
   moduleName String @map("module")
-  settings String[]
+  settings String @db.Text
   guild guild @relation(fields: [guildid], references: [guildId], onDelete: Cascade)
   @@id([guildid, moduleName])
 }
