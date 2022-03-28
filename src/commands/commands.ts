@@ -334,7 +334,7 @@ export class infoCommand extends GeraldCommand {
         });
     }
     public override async slashRun(interaction: sapphire.ChatInputCommand.Interaction) {
-        return interaction.reply({
+        return interaction.editReply({
             embeds: [await this.execute()]
         })
     }
@@ -393,11 +393,11 @@ export class infoCommand extends GeraldCommand {
         let x = interaction.options.get('command')
         if (x === null || x.value === undefined) return this.baseHelp(interaction);
         let cmd = bot.stores.get('commands').find(cmd => cmd.name === x!.value);
-        if (cmd === null) return interaction.reply({
+        if (cmd === null) return interaction.followUp({
             content: 'Specify a valid command.',
             ephemeral: true
         })
-        interaction.reply({ embeds: [this.cmdHelp(cmd!)] })
+        interaction.editReply({ embeds: [this.cmdHelp(cmd!)] })
     }
     private cmdHelp(cmd: sapphire.Command) {
         let embed = new discord.MessageEmbed()
@@ -528,7 +528,7 @@ export class infoCommand extends GeraldCommand {
             }
         })
 
-        interaction.reply(`${user.username} is level ${x.level} and has ${x.xp} xp.`)
+        interaction.editReply(`${user.username} is level ${x.level} and has ${x.xp} xp.`)
     }
 }
 
@@ -664,6 +664,6 @@ export class SettingsCommand extends GeraldCommand {
         })
         let categoryButton = await utils.awaitButtonResponse(interaction, reply)
         if (!categoryButton) utils.disableButtons(reply, interaction);
-        categoryButton!.applicationId;
+        if (categoryButton?.customId === "dismissEmbed") interaction.deleteReply()
     }
 }
