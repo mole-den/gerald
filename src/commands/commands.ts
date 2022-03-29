@@ -666,7 +666,6 @@ export class SettingsCommand extends GeraldCommand {
             async onClick(button, next) {
                 await button.reply({
                     content: "Select a settings category.",
-                    ephemeral: true,
                     components: [new discord.MessageActionRow()
                         .addComponents(
                             new discord.MessageSelectMenu()
@@ -693,6 +692,7 @@ export class SettingsCommand extends GeraldCommand {
             }
         })
         await value?.deferUpdate()
+        if (value?.message instanceof discord.Message) await value.message.delete()
         let selected = all.find(i => i.name === value?.values[0])
         if (selected) {
             selected.settingsHandler(interaction)
