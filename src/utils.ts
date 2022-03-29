@@ -59,13 +59,14 @@ export namespace utils {
         type?: string;
         timeout?: number;
         onClick: (button: discord.ButtonInteraction, next: (value: any) => void) => Promise<void>;
-        onEnd: () => void
+        onEnd: (next: (value: any) => void) => void
     }
     export function buttonListener(input: buttonListenerInput) {
         return new Promise((resolve) => {
             const collector = input.response.createMessageComponentCollector({ componentType: 'BUTTON', time: input.timeout ?? 15000 });
 
             collector.on('collect', async i => {
+                console.log("collected")
                 if (i.user.id === input.interaction.user.id) {
                     if (i.customId === "dismissEmbed") return await input.interaction.deleteReply()
                     if (input.type) {
@@ -83,11 +84,8 @@ export namespace utils {
             });
 
             collector.on('end', async () => {
-                console.log('here')
-                let x = (await pCall(input.interaction.fetchReply))
-                if (x.exists === false) return
-                console.log("exists")
-                utils.disableButtons(input.response, input.interaction)
+                console.log("ended")
+                input.onEnd(next)
             });
             function next<T>(value: T) {
                 resolve(value)
@@ -95,16 +93,16 @@ export namespace utils {
         })
 
     }
-    export async function disableButtons(response: discord.Message, interaction: discord.CommandInteraction) {
+    export async function disableButtons(response: discord.Message) {
         let button = response.components;
         button.forEach(i => {
             i.components.forEach(x => {
                 x.disabled = true;
             })
         })
-        await utils.pCall(interaction.editReply, {
+        await response.edit({
             components: [...button]
-        })
+        }).catch(() => { })
     }
     export async function awaitSelectMenu(interaction: discord.CommandInteraction, response: discord.Message, timeout: number = 15000) {
         let x: discord.SelectMenuInteraction<discord.CacheType>;
@@ -127,21 +125,5 @@ export namespace utils {
         }
         return x;
 
-    }
-    type Maybe<T> = {value?: T, exists: boolean}
-    export const pCall = async <T, U>(fn: (...args: T[]) => U, args?: T | undefined): Promise<Maybe<U>> => {
-        let x: U;
-        try {
-            if (args) x = fn(args)
-            else x = fn()
-            return {
-                value: x,
-                exists: true
-            };
-        } catch {
-            return {
-                exists: false
-            }
-        }
     }
 }

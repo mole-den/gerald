@@ -688,8 +688,9 @@ export class SettingsCommand extends GeraldCommand {
                 }
     
             },
-            onEnd() {
-                utils.disableButtons(reply, interaction)
+            onEnd(next) {
+                utils.disableButtons(reply)
+                next(undefined)
             }
         })
         console.log(value.values)
