@@ -682,12 +682,14 @@ export class SettingsCommand extends GeraldCommand {
                 });
                 let categoryRequest = await button.fetchReply()
                 let category = await utils.awaitSelectMenu(interaction, <discord.Message>categoryRequest)
+
                 if (category) {
                     next(category)
                 }
 
             },
             onEnd() {
+                reply.delete()
                 utils.disableButtons(reply)
             }
         })
