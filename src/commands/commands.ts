@@ -660,12 +660,14 @@ export class SettingsCommand extends GeraldCommand {
             embeds: [a],
             components: [row]
         })
+        let categoryRequest: Awaited<ReturnType<discord.ButtonInteraction["fetchReply"]>>
         let value = await utils.buttonListener<discord.SelectMenuInteraction>({
             interaction: interaction,
             response: reply,
             async onClick(button, next) {
                 await button.reply({
                     content: "Select a settings category.",
+                    ephemeral: true,
                     components: [new discord.MessageActionRow()
                         .addComponents(
                             new discord.MessageSelectMenu()
@@ -680,7 +682,7 @@ export class SettingsCommand extends GeraldCommand {
                                 })),
                         )]
                 });
-                let categoryRequest = await button.fetchReply()
+                categoryRequest = await button.fetchReply()
                 let category = await utils.awaitSelectMenu(interaction, <discord.Message>categoryRequest)
 
                 if (category) {
@@ -689,7 +691,7 @@ export class SettingsCommand extends GeraldCommand {
 
             },
             onEnd() {
-                reply.delete()
+                (<discord.Message>categoryRequest).delete()
                 utils.disableButtons(reply)
             }
         })
