@@ -59,9 +59,9 @@ export namespace utils {
         type?: string;
         timeout?: number;
         onClick: (button: discord.ButtonInteraction, next: (value: any) => void) => Promise<void>;
-        onEnd: (next: (value: any) => void) => void
+        onEnd: () => void
     }
-    export function buttonListener(input: buttonListenerInput) {
+    export function buttonListener<T>(input: buttonListenerInput): Promise<T | undefined> {
         return new Promise((resolve) => {
             const collector = input.response.createMessageComponentCollector({ componentType: 'BUTTON', time: input.timeout ?? 15000 });
 
@@ -85,9 +85,10 @@ export namespace utils {
 
             collector.on('end', async () => {
                 console.log("ended")
-                input.onEnd(next)
+                input.onEnd()
+                resolve(undefined)
             });
-            function next<T>(value: T) {
+            function next(value: T) {
                 resolve(value)
             }
         })
