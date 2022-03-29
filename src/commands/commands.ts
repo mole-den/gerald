@@ -692,10 +692,10 @@ export class SettingsCommand extends GeraldCommand {
                 utils.disableButtons(reply)
             }
         })
-        console.log(value)
+        await value?.deferUpdate()
+        if (value?.message instanceof discord.Message) await value.message.delete()
         let selected = all.find(i => i.name === value?.values[0])
         if (selected) {
-            console.log(selected)
             selected.settingsHandler(interaction)
         }
     }
