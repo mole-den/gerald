@@ -686,12 +686,16 @@ export class SettingsCommand extends GeraldCommand {
                 if (category) {
                     next(category)
                 }
-    
+
             },
             onEnd() {
                 utils.disableButtons(reply)
             }
         })
         console.log(value)
+        let selected = all.find(i => i.name === value?.values[0])
+        if (selected) {
+            selected.settings!.settingsHandler(interaction)
+        }
     }
 }

@@ -3,7 +3,7 @@ import * as discord from 'discord.js';
 import _ from "lodash";
 import { bugsnag, prisma } from ".";
 
-type settingTypes = string | number | boolean | Array<settingTypes>
+type settingTypes = string | number | boolean | Array<settingTypes> | {[key: string]: settingTypes}
 
 declare module '@sapphire/pieces' {
     interface Container {
@@ -11,31 +11,29 @@ declare module '@sapphire/pieces' {
     }
 }
 
-export interface ModuleOptions {
-    name: string,
-    description: string,
-    settings?: Setting[]
-}
-
 interface Setting {
     id: string
-    name: string;
-    description: string;
+    name?: string;
+    description?: string;
     default: settingTypes;
-    choices?: settingTypes[] | undefined
+    choices?: settingTypes | undefined
 }
 
 interface SettingWithData extends Setting {
     value: settingTypes | undefined
 }
+
+interface SettingGet<T extends settingTypes> extends Setting {
+    value: T | undefined
+}
 class SettingsManager {
     readonly settings: Setting[]
     readonly module: string
     settingsHandler: (interaction: discord.CommandInteraction) => Promise<void>
-    constructor(settings: Setting[], module: string, customHandler: (interaction: discord.CommandInteraction) => Promise<void>) {
+    constructor(settings: Setting[], module: string, handler: (interaction: discord.CommandInteraction) => Promise<void>) {
         this.settings = settings
         this.module = module
-        this.settingsHandler = customHandler
+        this.settingsHandler = handler
     }
     public async getSetting(guild: string): Promise<SettingWithData[]> {
         let x = await prisma.module_settings.findUnique({
@@ -63,10 +61,12 @@ class SettingsManager {
         }
         return JSON.parse(x.settings)
     }
+}
 
-    public async customHandler(interaction: discord.CommandInteraction) {
-        this.settingsHandler(interaction)
-    }
+export interface ModuleOptions {
+    name: string,
+    description: string,
+    settings?: Setting[]
 }
 
 export abstract class Module {
@@ -212,26 +212,38 @@ export class CommandManager extends Module {
             name: "Command Management",
             description: "Allows management of commands",
             settings: [{
-                id: "channelDisabled",
-                name: "channelDisabled",
-                description: "N/A",
+                id: "disabledInGuild",
                 default: [],
+            },
+            {
+                id: "channelDisabled",
+                default: []
+            },
+            {
+                id: "roleDisabled",
+                default: []
             }]
         })
     }
     async load(): Promise<void> {}
     async unload(): Promise<void> {}
     override async settingsHandler(interaction: discord.CommandInteraction) {
-        let a = (await this.settings!.getSetting(interaction.guildId!)).find(i => i.id === "channelDisabled")
-        console.log(a?.value)
+        let settings = await this.settings!.getSetting(interaction.guildId!)
+        let disabledInServer = <SettingGet<string[]>>settings.find(i => i.id === "disabledInGuild")
+        let channelDisabled = <SettingGet<{cmd: string, channel: string}[]>>settings.find(i => i.id === "channelDisabled")
+        let roleDisabled = <SettingGet<{cmd: string, role: string}[]>>settings.find(i => i.id === "roleDisabled")
+        console.log(disabledInServer)
+        console.log(channelDisabled)
+        console.log(roleDisabled)
+        /*
         let x = new discord.MessageEmbed()
         x.setTitle("Command management")
         x.setColor("BLURPLE")
         .setTimestamp(new Date())
-        ///.addField("Current disabled commands", )
+        .addField("Current command settings", )
         interaction.editReply({
 
-        })
+        })*/
     }
  
 }
