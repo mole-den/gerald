@@ -3,7 +3,7 @@ import * as discord from 'discord.js';
 import _ from "lodash";
 import { bugsnag, prisma } from ".";
 
-type settingTypes = string | number | boolean | Array<settingTypes> | {[key: string]: settingTypes}
+type settingTypes = string | number | boolean | Array<settingTypes> | { [key: string]: settingTypes }
 
 declare module '@sapphire/pieces' {
     interface Container {
@@ -26,21 +26,35 @@ interface SettingWithData extends Setting {
 interface SettingGet<T extends settingTypes> extends Setting {
     value: T | undefined
 }
-class SettingsManager {
-    readonly settings: Setting[]
-    readonly module: string
-    settingsHandler: (interaction: discord.CommandInteraction) => Promise<void>
-    constructor(settings: Setting[], module: string, handler: (interaction: discord.CommandInteraction) => Promise<void>) {
-        this.settings = settings
-        this.module = module
-        this.settingsHandler = handler
+
+export interface ModuleOptions {
+    name: string,
+    description: string,
+    settings?: Setting[]
+}
+
+export abstract class Module {
+    description: string;
+    name: string;
+    settings: Setting[] | null
+    constructor(options: ModuleOptions) {
+        this.description = options.description;
+        this.name = options.name
+        this.settings = options.settings ?? null
     }
-    public async getSetting(guild: string): Promise<SettingWithData[]> {
+
+    abstract load(): Promise<void>
+    abstract unload(): Promise<void>
+    public async settingsHandler(interaction: discord.CommandInteraction): Promise<void> {
+        interaction
+    }
+    protected async getSetting(guild: string): Promise<SettingWithData[] | null> {
+        if (!this.settings) return null
         let x = await prisma.module_settings.findUnique({
             where: {
                 guildid_moduleName: {
                     guildid: guild,
-                    moduleName: this.module
+                    moduleName: this.name
                 }
             }
         })
@@ -48,7 +62,7 @@ class SettingsManager {
             let a = await prisma.module_settings.create({
                 data: {
                     guildid: guild,
-                    moduleName: this.module,
+                    moduleName: this.name,
                     settings: JSON.stringify(this.settings.map(i => {
                         return <SettingWithData>{
                             ...i,
@@ -61,29 +75,25 @@ class SettingsManager {
         }
         return JSON.parse(x.settings)
     }
-}
-
-export interface ModuleOptions {
-    name: string,
-    description: string,
-    settings?: Setting[]
-}
-
-export abstract class Module {
-    description: string;
-    name: string;
-    settings: SettingsManager | null
-    constructor(options: ModuleOptions) {
-        this.description = options.description;
-        this.name = options.name
-        if (options.settings) this.settings = new SettingsManager(options.settings, this.name, this.settingsHandler)
-        else this.settings = null
-    }
-
-    abstract load(): Promise<void>
-    abstract unload(): Promise<void>
-    public async settingsHandler(interaction: discord.MessageInteraction) {
-        interaction
+    protected async changeSetting(guild: string, settings: SettingWithData[], id: string, value: settingTypes) {
+        await prisma.module_settings.create({
+            data: {
+                guildid: guild,
+                moduleName: this.name,
+                settings: JSON.stringify(settings.map(i => {
+                    if (i.id === id) {
+                        return <SettingWithData>{
+                            ...i,
+                            value: value
+                        }
+                    }
+                    return <SettingWithData>{
+                        ...i,
+                        value: i.value
+                    }
+                }))
+            }
+        })
     }
 }
 
@@ -96,21 +106,68 @@ export interface geraldCommandOptions extends sapphire.CommandOptions {
 }
 
 export abstract class GeraldCommand extends sapphire.Command {
-    settings: SettingsManager | null;
+    settings: Setting[] | null;
     public constructor(context: sapphire.Command.Context, options: geraldCommandOptions) {
         super(context, {
             ...options,
         });
-        if (options.settings) this.settings = new SettingsManager(options.settings, this.name, this.settingsHandler)
-        else this.settings = null
+        this.settings = options.settings ?? null
         if (!options.fullCategory) options.fullCategory = []
         if (options.ownerOnly === true) options.fullCategory.push("_owner")
         if (options.hidden === true) options.fullCategory.push("_hidden")
         if (options.alwaysEnabled === true) options.fullCategory.push("_enabled")
     }
-    private async settingsHandler(interaction: discord.CommandInteraction) {
-        interaction;
+    public async settingsHandler(interaction: discord.CommandInteraction): Promise<void> {
+        interaction
     }
+    public async getSetting(guild: string): Promise<SettingWithData[] | null> {
+        if (!this.settings) return null
+        let x = await prisma.module_settings.findUnique({
+            where: {
+                guildid_moduleName: {
+                    guildid: guild,
+                    moduleName: this.name
+                }
+            }
+        })
+        if (x === null) {
+            let a = await prisma.module_settings.create({
+                data: {
+                    guildid: guild,
+                    moduleName: this.name,
+                    settings: JSON.stringify(this.settings.map(i => {
+                        return <SettingWithData>{
+                            ...i,
+                            value: i.default
+                        }
+                    }))
+                }
+            })
+            return JSON.parse(a.settings)
+        }
+        return JSON.parse(x.settings)
+    }
+    protected async changeSetting(guild: string, settings: SettingWithData[], id: string, value: settingTypes) {
+        await prisma.module_settings.create({
+            data: {
+                guildid: guild,
+                moduleName: this.name,
+                settings: JSON.stringify(settings.map(i => {
+                    if (i.id === id) {
+                        return <SettingWithData>{
+                            ...i,
+                            value: value
+                        }
+                    }
+                    return <SettingWithData>{
+                        ...i,
+                        value: i.value
+                    }
+                }))
+            }
+        })
+    }
+
     private messageHandler(error: unknown, message: discord.Message, args: sapphire.Args, context: sapphire.MessageCommand.RunContext): void {
         let channel = message.channel
         if (error instanceof sapphire.UserError) {
@@ -190,25 +247,11 @@ export abstract class GeraldCommand extends sapphire.Command {
         })
 
     }
-    /*
-    contextMenuRun(interaction: discord.ContextMenuInteraction, context: sapphire.ContextMenuCommand.RunContext) {
-        if (!this.menuRun) return
-        let x;
-        try {
-            x = this.menuRun(interaction, context)
-        } catch (error) {
-            this.errorHandler(error, interaction, context)
-        }
-        if (!(x instanceof Promise)) return
-        x.catch(e => {
-            this.errorHandler(e, interaction, context)
-        })
-    }*/
 }
 
 export class CommandManager extends Module {
     constructor() {
-		super({
+        super({
             name: "Command Management",
             description: "Allows management of commands",
             settings: [{
@@ -225,13 +268,14 @@ export class CommandManager extends Module {
             }]
         })
     }
-    async load(): Promise<void> {}
-    async unload(): Promise<void> {}
-    override async settingsHandler(interaction: discord.CommandInteraction) {
-        let settings = await this.settings!.getSetting(interaction.guildId!)
+    async load(): Promise<void> { }
+    async unload(): Promise<void> { }
+    async settingsHandler(interaction: discord.CommandInteraction) {
+        let settings = await this.getSetting(interaction.guildId!)
+        if (!settings) return
         let disabledInServer = <SettingGet<string[]>>settings.find(i => i.id === "disabledInGuild")
-        let channelDisabled = <SettingGet<{cmd: string, channel: string}[]>>settings.find(i => i.id === "channelDisabled")
-        let roleDisabled = <SettingGet<{cmd: string, role: string}[]>>settings.find(i => i.id === "roleDisabled")
+        let channelDisabled = <SettingGet<{ cmd: string, channel: string }[]>>settings.find(i => i.id === "channelDisabled")
+        let roleDisabled = <SettingGet<{ cmd: string, role: string }[]>>settings.find(i => i.id === "roleDisabled")
         console.log(disabledInServer)
         console.log(channelDisabled)
         console.log(roleDisabled)
@@ -245,5 +289,5 @@ export class CommandManager extends Module {
 
         })*/
     }
- 
+
 }

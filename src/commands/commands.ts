@@ -695,7 +695,8 @@ export class SettingsCommand extends GeraldCommand {
         console.log(value)
         let selected = all.find(i => i.name === value?.values[0])
         if (selected) {
-            selected.settings!.settingsHandler(interaction)
+            console.log(selected)
+            selected.settingsHandler(interaction)
         }
     }
 }
