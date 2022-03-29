@@ -665,7 +665,7 @@ export class SettingsCommand extends GeraldCommand {
             response: reply,
             async onClick(button, next) {
                 await button.reply({
-                    content: "Select a command category.",
+                    content: "Select a settings category.",
                     ephemeral: true,
                     components: [new discord.MessageActionRow()
                         .addComponents(

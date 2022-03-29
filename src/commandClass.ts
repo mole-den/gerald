@@ -274,20 +274,29 @@ export class CommandManager extends Module {
         let settings = await this.getSetting(interaction.guildId!)
         if (!settings) return
         let disabledInServer = <SettingGet<string[]>>settings.find(i => i.id === "disabledInGuild")
-        let channelDisabled = <SettingGet<{ cmd: string, channel: string }[]>>settings.find(i => i.id === "channelDisabled")
-        let roleDisabled = <SettingGet<{ cmd: string, role: string }[]>>settings.find(i => i.id === "roleDisabled")
+        let channelDisabled = <SettingGet<{ cmd: string, channel: string | string[] }[]>>settings.find(i => i.id === "channelDisabled")
+        let roleDisabled = <SettingGet<{ cmd: string, role: string | string[] }[]>>settings.find(i => i.id === "roleDisabled")
         console.log(disabledInServer)
         console.log(channelDisabled)
         console.log(roleDisabled)
-        /*
+        let serverStr = (disabledInServer.value!.length === 0) ? "None" : disabledInServer.value!.join(", ")
+        let channelStr = (channelDisabled.value!.length === 0) ? "None" : channelDisabled.value!.map(i => {
+            return `${i}: Usage in ${typeof i.channel == "string" ? `<#${i.channel}>` : i.channel.map(i => `<#${i}>`).join(", ")} disabled.`
+        }).join("\n")
+        let roleStr = (roleDisabled.value!.length === 0) ? "None" : roleDisabled.value!.map(i => {
+            return `${i}: Usage by ${typeof i.role == "string" ? `<@&${i.role}>` : i.role.map(i => `<@&${i}>`).join(", ")} disabled.`
+        }).join("\n")
         let x = new discord.MessageEmbed()
         x.setTitle("Command management")
         x.setColor("BLURPLE")
         .setTimestamp(new Date())
-        .addField("Current command settings", )
-        interaction.editReply({
-
-        })*/
+        .addField(`Commands disabled in ${interaction.guild!.name}`, serverStr)
+        .addField(`Commands blocked in channels`,  channelStr)
+        .addField(`Command usage by roles disabled`, roleStr)
+        await interaction.editReply({
+            embeds: [x],
+            components: []
+        })
     }
 
 }
