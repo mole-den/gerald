@@ -66,7 +66,6 @@ export namespace utils {
             const collector = input.response.createMessageComponentCollector({ componentType: 'BUTTON', time: input.timeout ?? 15000 });
 
             collector.on('collect', async i => {
-                console.log("collected")
                 if (i.user.id === input.interaction.user.id) {
                     if (i.customId === "dismissEmbed") return await input.interaction.deleteReply()
                     if (input.type) {
@@ -84,7 +83,6 @@ export namespace utils {
             });
 
             collector.on('end', async () => {
-                console.log("ended")
                 input.onEnd()
                 resolve(undefined)
             });
