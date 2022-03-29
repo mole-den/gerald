@@ -53,15 +53,15 @@ export namespace utils {
         }
         return x;
     }
-    interface buttonListenerInput {
+    interface buttonListenerInput<T> {
         interaction: discord.CommandInteraction;
         response: discord.Message;
         type?: string;
         timeout?: number;
-        onClick: (button: discord.ButtonInteraction, next: (value: any) => void) => Promise<void>;
+        onClick: (button: discord.ButtonInteraction, next: (value: T) => void) => Promise<void>;
         onEnd: () => void
     }
-    export function buttonListener<T>(input: buttonListenerInput): Promise<T | undefined> {
+    export function buttonListener<T>(input: buttonListenerInput<T>): Promise<T | undefined> {
         return new Promise((resolve) => {
             const collector = input.response.createMessageComponentCollector({ componentType: 'BUTTON', time: input.timeout ?? 15000 });
 
