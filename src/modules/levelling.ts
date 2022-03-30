@@ -62,6 +62,7 @@ export class Levelling extends Module {
         })
     }
     async load(): Promise<void> {
+        console.log(await this.getSetting("levelUpMsg"))
         this.xpLimit = new RateLimiterMemory({
             points: 30,
             duration: 60
