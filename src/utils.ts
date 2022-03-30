@@ -130,4 +130,11 @@ export namespace utils {
         return x;
 
     }
+    
+    export function formatMessage(string: string, items: {[key: string]: string}) {
+        Object.keys(items).forEach(k => {
+            string = string.replace(`{{${k}}}`, items[k])
+        });
+        return string
+    }
 }

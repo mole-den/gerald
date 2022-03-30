@@ -11,7 +11,7 @@ declare module '@sapphire/pieces' {
     }
 }
 
-interface Setting {
+export interface Setting {
     id: string
     name?: string;
     description?: string;
@@ -69,16 +69,28 @@ export abstract class Module {
                     guildid: guild,
                     moduleName: this.name,
                     settings: JSON.stringify(this.settings.map(i => {
-                        return <SettingWithData>{
-                            ...i,
+                        return {
+                            id: i.id,
                             value: i.default
                         }
                     }))
                 }
             })
-            return JSON.parse(a.settings)
+            let parsed = <Array<{ id: string, value: string }>>JSON.parse(a.settings)
+            return this.settings.map(i => {
+                return <SettingWithData>{
+                    ...i,
+                    value: parsed.find(y => y.id === i.id)!.value
+                }
+            })
         }
-        return JSON.parse(x.settings)
+        let parsed = <Array<{ id: string, value: string }>>JSON.parse(x.settings)
+        return this.settings.map(i => {
+            return <SettingWithData>{
+                ...i,
+                value: parsed.find(y => y.id === i.id)!.value
+            }
+        })
     }
     protected async changeSetting(guild: string, settings: SettingWithData[], id: string, value: settingTypes) {
         await prisma.module_settings.create({
@@ -132,7 +144,7 @@ export abstract class GeraldCommand extends sapphire.Command {
         interaction
         return true
     }
-    public async getSetting(guild: string): Promise<SettingWithData[] | null> {
+    protected async getSetting(guild: string): Promise<SettingWithData[] | null> {
         if (!this.settings) return null
         let x = await prisma.module_settings.findUnique({
             where: {
@@ -148,16 +160,28 @@ export abstract class GeraldCommand extends sapphire.Command {
                     guildid: guild,
                     moduleName: this.name,
                     settings: JSON.stringify(this.settings.map(i => {
-                        return <SettingWithData>{
-                            ...i,
+                        return {
+                            id: i.id,
                             value: i.default
                         }
                     }))
                 }
             })
-            return JSON.parse(a.settings)
+            let parsed = <Array<{ id: string, value: string }>>JSON.parse(a.settings)
+            return this.settings.map(i => {
+                return <SettingWithData>{
+                    ...i,
+                    value: parsed.find(y => y.id === i.id)!
+                }
+            })
         }
-        return JSON.parse(x.settings)
+        let parsed = <Array<{ id: string, value: string }>>JSON.parse(x.settings)
+        return this.settings.map(i => {
+            return <SettingWithData>{
+                ...i,
+                value: parsed.find(y => y.id === i.id)!
+            }
+        })
     }
     protected async changeSetting(guild: string, settings: SettingWithData[], id: string, value: settingTypes) {
         await prisma.module_settings.create({

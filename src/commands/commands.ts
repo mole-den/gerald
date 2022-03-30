@@ -596,7 +596,7 @@ export class SettingsCommand extends GeraldCommand {
     }
 
     public async slashRun(interaction: discord.CommandInteraction) {
-        let x = interaction.options.getString("Item")
+        let x = interaction.options.getString("item")
         let item: Module | GeraldCommand | null = <GeraldCommand|null>bot.stores.get("commands").find(i => i.name === x)
         item ??= sapphire.container.modules.find(i => i.name === x) ?? null;
         if (!item) return
