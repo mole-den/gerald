@@ -79,23 +79,4 @@ export class Levelling extends Module {
     async unload(): Promise<void> {
         bot.off("messageCreate", x => this.handler(x))
     }
-    public async settingsHandler(interaction: discord.CommandInteraction): Promise<boolean> {
-        let embed = new discord.MessageEmbed().setColor("GREEN").setTimestamp(new Date()).setTitle("Settings for levelling");
-        let settings = (await this.getSetting(interaction.guildId!))!;
-        settings.forEach(x => {
-            console.log(x)
-            embed.addField(`${x.name!}`, `${x.description}\n**Current value:** ${x.value!}`)
-        })
-        let row = new discord.MessageActionRow().addComponents(new discord.MessageSelectMenu().setPlaceholder("Select a setting to change").setOptions(settings.map(i => {
-            return {
-                label: i.name!,
-                value: i.name!
-            }
-        })).setCustomId("settingToEdit"))
-        interaction.editReply({
-            embeds: [embed],
-            components: [row]
-        })
-        return true
-    }
 }

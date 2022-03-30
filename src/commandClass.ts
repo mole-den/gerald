@@ -2,9 +2,9 @@ import * as sapphire from "@sapphire/framework"
 import * as discord from 'discord.js';
 import _ from "lodash";
 import { bugsnag, prisma } from ".";
+import { utils } from "./utils";
 
 type settingTypes = string | number | boolean | Array<settingTypes> | { [key: string]: settingTypes }
-
 declare module '@sapphire/pieces' {
     interface Container {
         modules: Module[];
@@ -48,11 +48,6 @@ export abstract class Module {
 
     abstract load(): Promise<void>
     abstract unload(): Promise<void>
-    public async settingsHandler(interaction: discord.CommandInteraction): Promise<boolean> {
-        interaction
-        return true
-    }
-
     protected async getSetting(guild: string): Promise<SettingWithData[] | null> {
         if (!this.settings) return null
         let x = await prisma.module_settings.findUnique({
@@ -112,6 +107,25 @@ export abstract class Module {
             }
         })
     }
+    public async settingsHandler(interaction: discord.CommandInteraction): Promise<boolean> {
+        let embed = new discord.MessageEmbed().setColor("GREEN").setTimestamp(new Date()).setTitle("Settings for levelling");
+        let settings = (await this.getSetting(interaction.guildId!))!;
+        settings.forEach(x => {
+            console.log(x)
+            embed.addField(`${x.name!}`, `${x.description}\n**Current value:** \`${x.value!}\``)
+        })
+        let row = new discord.MessageActionRow().addComponents(new discord.MessageSelectMenu().setPlaceholder("Select a setting to change").setOptions(settings.map(i => {
+            return {
+                label: i.name!,
+                value: i.name!
+            }
+        })).setCustomId("settingToEdit"))
+        interaction.editReply({
+            embeds: [embed],
+            components: [row]
+        })
+        return true
+    }
 }
 
 export interface geraldCommandOptions extends sapphire.CommandOptions {
@@ -141,9 +155,42 @@ export abstract class GeraldCommand extends sapphire.Command {
         this.private = options.private ?? false
     }
     public async settingsHandler(interaction: discord.CommandInteraction): Promise<boolean> {
-        interaction
-        return true
+        let embed = new discord.MessageEmbed().setColor("GREEN").setTimestamp(new Date()).setTitle("Settings for levelling");
+        let settings = (await this.getSetting(interaction.guildId!))!;
+        settings.forEach(x => {
+            console.log(x)
+            embed.addField(`${x.name!}`, `${x.description}\n**Current value:** \`${x.value!}\``)
+        })
+        let row = new discord.MessageActionRow().addComponents(new discord.MessageSelectMenu().setPlaceholder("Select a setting to change").setOptions(settings.map(i => {
+            return {
+                label: i.name!,
+                value: i.id!
+            }
+        })).setCustomId("settingToEdit"))
+        let reply = await interaction.editReply({
+            embeds: [embed],
+            components: [row]
+        })
+        if (reply instanceof discord.Message) {
+            let x = await utils.selectMenuListener<string[]>({
+                user: interaction.user.id,
+                response: reply,
+                timeout: 20000,
+                onEnd() {
+                    utils.disableButtons(<discord.Message>reply)
+                },
+                async onClick(menu, next) {
+                    next(menu.values)
+                }
+            })
+            if (x === undefined) return true;
+            let setting = settings.find(i => i.id === x![0])
+            console.log(setting)
+            return true
+        }
+        return false
     }
+
     protected async getSetting(guild: string): Promise<SettingWithData[] | null> {
         if (!this.settings) return null
         let x = await prisma.module_settings.findUnique({
