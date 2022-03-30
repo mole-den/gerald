@@ -584,9 +584,9 @@ export class SettingsCommand extends GeraldCommand {
             return builder.setName(this.name)
                 .setDescription(this.description)
                 .addStringOption(option => {
-                    option.setName("Item").setDescription("The item to view settings for.").setRequired(true)
+                    option.setName("item").setDescription("The item to view settings for.").setRequired(true)
                     all.forEach(i => {
-                        option.addChoice(`${i.name}: ${i.description}`, i.name)
+                        option.addChoice(`${i.name}`, i.name)
                     })
                     return option
                 })
