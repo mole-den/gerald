@@ -1,7 +1,8 @@
 import * as sapphire from "@sapphire/framework"
 import * as discord from 'discord.js';
 import _ from "lodash";
-import { bugsnag, prisma } from ".";
+import { bot, bugsnag, prisma } from ".";
+import { utils } from "./utils";
 
 type settingTypes = string | number | boolean | Array<settingTypes> | { [key: string]: settingTypes }
 
@@ -293,9 +294,61 @@ export class CommandManager extends Module {
         .addField(`Commands disabled in ${interaction.guild!.name}`, serverStr)
         .addField(`Commands blocked in channels`,  channelStr)
         .addField(`Command usage by roles disabled`, roleStr)
+        let row1 = new discord.MessageActionRow().addComponents(new discord.MessageButton().setCustomId("addServer").setLabel("Disable module in server").setStyle("PRIMARY"),
+        new discord.MessageButton().setCustomId("addChannel").setLabel("Disable command in channel").setStyle("PRIMARY"),
+        new discord.MessageButton().setCustomId("addRole").setLabel("Disable command usage by role").setStyle("PRIMARY"),
+        utils.dismissButton)
+        let row2 = new discord.MessageActionRow().addComponents(new discord.MessageButton().setCustomId("rmServer").setLabel("Enable module in server").setStyle("PRIMARY"),
+        new discord.MessageButton().setCustomId("rmChannel").setLabel("Enable command in channel").setStyle("PRIMARY"),
+        new discord.MessageButton().setCustomId("rmRole").setLabel("Enable command usage by role").setStyle("PRIMARY"))
         await interaction.editReply({
             embeds: [x],
-            components: []
+            components: [row1, row2]
+        });
+        let msg = <discord.Message>await interaction.fetchReply();
+        let request: discord.Message;
+        let commands = bot.stores.get("commands")
+        let modules = sapphire.container.modules
+        await utils.buttonListener<void>({
+            interaction: interaction,
+            response: msg,
+            onClick: async (i, next) => {
+                let map = commands.map(i => {
+                    return {
+                        label: i.name,
+                        value: i.name,
+                        description: i.description
+                    }
+                })
+                await i.reply({
+                    content: `Select an item to ${i.customId.startsWith("rm") ? "disable" : "enable"}.`,
+                    components: [new discord.MessageActionRow()
+                        .addComponents(
+                            new discord.MessageSelectMenu()
+                                .setCustomId('select_category')
+                                .setPlaceholder('Nothing selected')
+                                .addOptions(i.customId.endsWith("Server") ? map.concat(modules.map(i => {
+                                    return {
+                                        label: i.name,
+                                        value: i.name,
+                                        description: i.description
+                                    }
+                                })) : map),
+                        )]
+                });
+                request = <discord.Message>await i.fetchReply()
+                let category = await utils.awaitSelectMenu(interaction, <discord.Message>request)
+
+                if (category) {
+                    console.log("here")
+                    next()
+                }
+
+            },
+            onEnd() {
+                (<discord.Message>request).delete()
+                utils.disableButtons(msg)
+            }
         })
     }
 
