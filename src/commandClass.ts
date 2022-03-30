@@ -111,20 +111,36 @@ export abstract class Module {
         let embed = new discord.MessageEmbed().setColor("GREEN").setTimestamp(new Date()).setTitle("Settings for levelling");
         let settings = (await this.getSetting(interaction.guildId!))!;
         settings.forEach(x => {
-            console.log(x)
             embed.addField(`${x.name!}`, `${x.description}\n**Current value:** \`${x.value!}\``)
         })
         let row = new discord.MessageActionRow().addComponents(new discord.MessageSelectMenu().setPlaceholder("Select a setting to change").setOptions(settings.map(i => {
             return {
                 label: i.name!,
-                value: i.name!
+                value: i.id!
             }
         })).setCustomId("settingToEdit"))
-        interaction.editReply({
+        let reply = await interaction.editReply({
             embeds: [embed],
             components: [row]
         })
-        return true
+        if (reply instanceof discord.Message) {
+            let x = await utils.selectMenuListener<string[]>({
+                user: interaction.user.id,
+                response: reply,
+                timeout: 20000,
+                onEnd() {
+                    utils.disableButtons(<discord.Message>reply)
+                },
+                async onClick(menu, next) {
+                    next(menu.values)
+                }
+            })
+            if (x === undefined) return true;
+            let setting = settings.find(i => i.id === x![0])
+            console.log(setting)
+            return true
+        }
+        return false
     }
 }
 
@@ -158,7 +174,6 @@ export abstract class GeraldCommand extends sapphire.Command {
         let embed = new discord.MessageEmbed().setColor("GREEN").setTimestamp(new Date()).setTitle("Settings for levelling");
         let settings = (await this.getSetting(interaction.guildId!))!;
         settings.forEach(x => {
-            console.log(x)
             embed.addField(`${x.name!}`, `${x.description}\n**Current value:** \`${x.value!}\``)
         })
         let row = new discord.MessageActionRow().addComponents(new discord.MessageSelectMenu().setPlaceholder("Select a setting to change").setOptions(settings.map(i => {
