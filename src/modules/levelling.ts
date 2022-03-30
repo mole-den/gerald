@@ -8,6 +8,12 @@ export class Levelling extends Module {
 		super({
             name: "levelling",
             description: "Levelling",
+            settings: [{
+                id: "levelUpMsg",
+                name: "Message sent on level up",
+                description: "Message sent when a user levels up. Use {{user}} to mention the user and {{level}} to get the user's new level.",
+                default: "{{user}} is now level {{level}}."
+            }]
         })
     }
 

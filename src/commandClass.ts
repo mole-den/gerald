@@ -1,8 +1,7 @@
 import * as sapphire from "@sapphire/framework"
 import * as discord from 'discord.js';
 import _ from "lodash";
-import { bot, bugsnag, prisma } from ".";
-import { utils } from "./utils";
+import { bugsnag, prisma } from ".";
 
 type settingTypes = string | number | boolean | Array<settingTypes> | { [key: string]: settingTypes }
 
@@ -24,7 +23,7 @@ interface SettingWithData extends Setting {
     value: settingTypes | undefined
 }
 
-interface SettingGet<T extends settingTypes> extends Setting {
+export interface SettingGet<T extends settingTypes> extends Setting {
     value: T | undefined
 }
 
@@ -32,13 +31,16 @@ export interface ModuleOptions {
     name: string,
     description: string,
     settings?: Setting[]
+    hidden?: boolean
 }
 
 export abstract class Module {
     description: string;
     name: string;
+    hidden: boolean
     settings: Setting[] | null
     constructor(options: ModuleOptions) {
+        this.hidden = options.hidden ?? false
         this.description = options.description;
         this.name = options.name
         this.settings = options.settings ?? null
@@ -46,9 +48,11 @@ export abstract class Module {
 
     abstract load(): Promise<void>
     abstract unload(): Promise<void>
-    public async settingsHandler(interaction: discord.CommandInteraction): Promise<void> {
+    public async settingsHandler(interaction: discord.CommandInteraction): Promise<boolean> {
         interaction
+        return true
     }
+
     protected async getSetting(guild: string): Promise<SettingWithData[] | null> {
         if (!this.settings) return null
         let x = await prisma.module_settings.findUnique({
@@ -101,25 +105,32 @@ export abstract class Module {
 export interface geraldCommandOptions extends sapphire.CommandOptions {
     usage?: string,
     alwaysEnabled?: boolean,
-    hidden?: boolean,
-    ownerOnly?: boolean,
+    private?: boolean
     settings?: Setting[]
+}
+
+declare class CommandStore extends sapphire.AliasStore<GeraldCommand> {
+    constructor();
+    get categories(): string[];
+    unload(name: string | GeraldCommand): Promise<GeraldCommand>;
+    loadAll(): Promise<void>;
 }
 
 export abstract class GeraldCommand extends sapphire.Command {
     settings: Setting[] | null;
+    alwaysEnabled: boolean
+    private: boolean
     public constructor(context: sapphire.Command.Context, options: geraldCommandOptions) {
         super(context, {
             ...options,
         });
         this.settings = options.settings ?? null
-        if (!options.fullCategory) options.fullCategory = []
-        if (options.ownerOnly === true) options.fullCategory.push("_owner")
-        if (options.hidden === true) options.fullCategory.push("_hidden")
-        if (options.alwaysEnabled === true) options.fullCategory.push("_enabled")
+        this.alwaysEnabled = options.alwaysEnabled ?? false
+        this.private = options.private ?? false
     }
-    public async settingsHandler(interaction: discord.CommandInteraction): Promise<void> {
+    public async settingsHandler(interaction: discord.CommandInteraction): Promise<boolean> {
         interaction
+        return true
     }
     public async getSetting(guild: string): Promise<SettingWithData[] | null> {
         if (!this.settings) return null
@@ -249,12 +260,13 @@ export abstract class GeraldCommand extends sapphire.Command {
 
     }
 }
-
+/*
 export class CommandManager extends Module {
     constructor() {
         super({
             name: "Command Management",
             description: "Allows management of commands",
+            hidden: true,
             settings: [{
                 id: "disabledInGuild",
                 default: [],
@@ -307,40 +319,19 @@ export class CommandManager extends Module {
         });
         let msg = <discord.Message>await interaction.fetchReply();
         let request: discord.Message;
-        let commands = bot.stores.get("commands")
-        let modules = sapphire.container.modules
+        let commands = <CommandStore>bot.stores.get("commands")
+        let modules = sapphire.container.modules.filter(x => x.hidden === false)
         await utils.buttonListener<void>({
             interaction: interaction,
             response: msg,
             onClick: async (i, next) => {
-                let map = commands.map(i => {
-                    return {
-                        label: i.name,
-                        value: i.name,
-                        description: i.description
-                    }
-                })
-                await i.reply({
-                    content: `Select an item to ${i.customId.startsWith("rm") ? "disable" : "enable"}.`,
-                    components: [new discord.MessageActionRow()
-                        .addComponents(
-                            new discord.MessageSelectMenu()
-                                .setCustomId('select_category')
-                                .setPlaceholder('Nothing selected')
-                                .addOptions(i.customId.endsWith("Server") ? map.concat(modules.map(i => {
-                                    return {
-                                        label: i.name,
-                                        value: i.name,
-                                        description: i.description
-                                    }
-                                })) : map),
-                        )]
-                });
+                if (i.customId.startsWith("add")) await disableItem(i)
                 request = <discord.Message>await i.fetchReply()
                 let category = await utils.awaitSelectMenu(interaction, <discord.Message>request)
 
                 if (category) {
                     console.log("here")
+                    console.log(category.values)
                     next()
                 }
 
@@ -350,6 +341,32 @@ export class CommandManager extends Module {
                 utils.disableButtons(msg)
             }
         })
+
+        async function disableItem(i: discord.ButtonInteraction<discord.CacheType>) {
+            let map = commands.filter(cmd => cmd.alwaysEnabled === false && cmd.private === false).map(i => {
+                return {
+                    label: `Command: ${i.name}`,
+                    value: i.name,
+                    description: i.description
+                };
+            });
+            await i.reply({
+                content: `Select an item to disable`,
+                components: [new discord.MessageActionRow()
+                    .addComponents(
+                        new discord.MessageSelectMenu()
+                            .setCustomId('select_category')
+                            .setPlaceholder('Nothing selected')
+                            .addOptions(i.customId.endsWith("Server") ? map.concat(modules.map(i => {
+                                return {
+                                    label: `Module: ${i.name}`,
+                                    value: i.name,
+                                    description: i.description
+                                };
+                            })) : map)
+                    )]
+            });
+        }
     }
 
-}
+}*/

@@ -2,7 +2,7 @@ import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
 import _ from "lodash"
 import { PaginatedMessageEmbedFields } from '@sapphire/discord.js-utilities';
-import { durationToMS, prisma, getRandomArbitrary, bot, cleanMentions } from '../index';
+import { durationToMS, prisma, getRandomArbitrary, bot } from '../index';
 import { GeraldCommand, geraldCommandOptions, Module } from '../commandClass';
 import { ApplyOptions } from '@sapphire/decorators';
 import * as time from '@sapphire/time-utilities';
@@ -12,34 +12,6 @@ axios.defaults.validateStatus = () => true
 ///<reference types="../index"/>
 time;
 
-@ApplyOptions<geraldCommandOptions>({
-    name: 'eval',
-    alwaysEnabled: true,
-    ownerOnly: true,
-    hidden: true,
-    description: 'Evaluates JS input',
-    requiredClientPermissions: [],
-    preconditions: ['OwnerOnly']
-})
-export class ownerEvalCommand extends GeraldCommand {
-    public async chatRun(message: discord.Message) {
-        let str = message.content;
-        let out = str.substring(str.indexOf('```') + 3, str.lastIndexOf('```'));
-        let container = this.container
-        try {
-            container;
-            eval(`
-            (async () => {
-                ${out}
-            })()`);
-        } catch (error) {
-            console.log("error");
-            console.log(error);
-            message.channel.send(`Unhandled exception: \n ${error}`);
-        }
-    };
-
-};
 
 @ApplyOptions<geraldCommandOptions>({
     name: 'deleted',
@@ -211,33 +183,6 @@ export class rmTimeoutCommand extends GeraldCommand {
     }
 }
 
-
-@ApplyOptions<geraldCommandOptions>({
-    name: 'query',
-    ownerOnly: true,
-    alwaysEnabled: true,
-    hidden: true,
-    description: 'Runs SQL input against database',
-    requiredClientPermissions: [],
-    preconditions: ['OwnerOnly']
-})
-export class queryCommand extends GeraldCommand {
-    public async chatRun(message: discord.Message) {
-        let str = message.content;
-        let out = str.substring(str.indexOf('```') + 3, str.lastIndexOf('```'));
-        let data = await prisma.$queryRawUnsafe(out);
-        let JSONdata = JSON.stringify(data, null, 1);
-        if (JSONdata?.length && JSONdata.length < 2000) {
-            message.channel.send(`${cleanMentions(JSONdata)}`);
-            return;
-        } else if (JSONdata?.length && JSONdata.length > 2000) {
-            const buffer = Buffer.from(JSONdata)
-            const attachment = new discord.MessageAttachment(buffer, 'file.json');
-            message.channel.send({ files: [attachment] });
-        }
-    };
-
-};
 
 @ApplyOptions<geraldCommandOptions>({
     name: 'prefix',
@@ -630,75 +575,31 @@ export class infoCommand extends GeraldCommand {
 export class SettingsCommand extends GeraldCommand {
     public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
         reg.registerChatInputCommand((builder) => {
+            let commands = bot.stores.get("commands").filter((i) => {
+                let a = <GeraldCommand>i
+                return a.settings !== null
+            })
+            let modules = sapphire.container.modules.filter(i => i.settings !== null)
+            let all = (<Array<GeraldCommand | Module>>[...modules, ...commands])
             return builder.setName(this.name)
                 .setDescription(this.description)
+                .addStringOption(option => {
+                    option.setName("Item").setDescription("The item to view settings for.").setRequired(true)
+                    all.forEach(i => {
+                        option.addChoice(`${i.name}: ${i.description}`, i.name)
+                    })
+                    return option
+                })
         }, {
             behaviorWhenNotIdentical: sapphire.RegisterBehavior.Overwrite
         })
     }
 
-    public async slashRun(interaction: discord.CommandInteraction, reply: discord.Message) {
-        let commands = bot.stores.get("commands").filter((i) => {
-            let a = <GeraldCommand>i
-            return a.settings !== null
-        })
-        let modules = sapphire.container.modules.filter(i => i.settings !== null)
-        let all = <Array<GeraldCommand | Module>>[...modules, ...commands]
-        all;
-        let x = all.map(i => {
-            return {
-                name: i.name,
-                value: i.description
-            }
-        })
-        let a = new discord.MessageEmbed()
-            .setTitle("Settings").setColor("GREEN").addFields(x)
-        let row = new discord.MessageActionRow().addComponents(
-            new discord.MessageButton().setCustomId("category").setLabel("Select Category").setStyle("PRIMARY"), utils.dismissButton)
-
-        await interaction.editReply({
-            embeds: [a],
-            components: [row]
-        })
-        let categoryRequest: Awaited<ReturnType<discord.ButtonInteraction["fetchReply"]>>
-        let value = await utils.buttonListener<discord.SelectMenuInteraction>({
-            interaction: interaction,
-            response: reply,
-            async onClick(button, next) {
-                await button.reply({
-                    content: "Select a settings category.",
-                    components: [new discord.MessageActionRow()
-                        .addComponents(
-                            new discord.MessageSelectMenu()
-                                .setCustomId('select_category')
-                                .setPlaceholder('Nothing selected')
-                                .addOptions(x.map(i => {
-                                    return {
-                                        label: i.name,
-                                        value: i.name,
-                                        description: i.value
-                                    }
-                                })),
-                        )]
-                });
-                categoryRequest = await button.fetchReply()
-                let category = await utils.awaitSelectMenu(interaction, <discord.Message>categoryRequest)
-
-                if (category) {
-                    next(category)
-                }
-
-            },
-            onEnd() {
-                (<discord.Message>categoryRequest).delete()
-                utils.disableButtons(reply)
-            }
-        })
-        await value?.deferUpdate()
-        if (value?.message instanceof discord.Message) await value.message.delete()
-        let selected = all.find(i => i.name === value?.values[0])
-        if (selected) {
-            selected.settingsHandler(interaction)
-        }
+    public async slashRun(interaction: discord.CommandInteraction) {
+        let x = interaction.options.getString("Item")
+        let item: Module | GeraldCommand | null = <GeraldCommand|null>bot.stores.get("commands").find(i => i.name === x)
+        item ??= sapphire.container.modules.find(i => i.name === x) ?? null;
+        if (!item) return
+        item.settingsHandler(interaction)
     }
 }

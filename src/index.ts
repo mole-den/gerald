@@ -5,7 +5,6 @@ import { PrismaClient } from '@prisma/client';
 import Time from '@sapphire/time-utilities';
 import Bugsnag from '@bugsnag/js'
 import { Levelling } from './modules/levelling';
-import { CommandManager } from './commandClass';
 export let bugsnag = Bugsnag
 if (process.env.BUGSNAG_KEY) bugsnag.start({
 	apiKey: process.env.BUGSNAG_KEY,
@@ -50,7 +49,7 @@ class Gerald extends sapphire.SapphireClient {
 				delay: Time.Time.Second * 3
 			}
 		})
-		sapphire.container.modules = [new Levelling(), new CommandManager()]
+		sapphire.container.modules = [new Levelling()]
 	}
 	
 	public async start(): Promise<void> {

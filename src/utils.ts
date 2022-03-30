@@ -53,7 +53,7 @@ export namespace utils {
         }
         return x;
     }
-    interface buttonListenerInput<T> {
+    export interface buttonListenerInput<T> {
         interaction: discord.CommandInteraction;
         response: discord.Message;
         type?: string;
@@ -63,6 +63,7 @@ export namespace utils {
     }
     export function buttonListener<T>(input: buttonListenerInput<T>): Promise<T | undefined> {
         return new Promise((resolve) => {
+            let resolved :boolean = false
             const collector = input.response.createMessageComponentCollector({ componentType: 'BUTTON', time: input.timeout ?? 15000 });
 
             collector.on('collect', async i => {
@@ -83,10 +84,14 @@ export namespace utils {
             });
 
             collector.on('end', async () => {
-                input.onEnd()
-                resolve(undefined)
+                if (resolved == false)  {
+                    input.onEnd()
+                    resolve(undefined)
+                }
             });
             function next(value: T) {
+                resolved = true
+                collector.stop()
                 resolve(value)
             }
         })
