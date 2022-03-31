@@ -12,13 +12,15 @@ export class Levelling extends Module {
             settings: [{
                 id: "levelUpMsg",
                 name: "Message sent on level up",
-                description: "Message sent when a user levels up. Use {{user}} to mention the user and {{level}} to get the user's new level.",
+                type: "string",
+                description: "Message sent when a user levels up. Use `{{user}}` to mention the user and `{{level}}` to get the user's new level.",
                 default: "{{user}} is now level {{level}}."
             }, {
                 id: "levelUpMsgType",
                 name: "Level up message type",
                 description: "Type of message sent when a user levels up. Can be a message in the server or a dm.",
                 default: "Server",
+                type: "choice",
                 choices: ["Server", "DM"]
             }]
         })

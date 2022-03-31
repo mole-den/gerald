@@ -63,7 +63,7 @@ export namespace utils {
     }
     export function buttonListener<T>(input: buttonListenerInput<T>): Promise<T | undefined> {
         return new Promise((resolve) => {
-            let resolved :boolean = false
+            let resolved: boolean = false
             const collector = input.response.createMessageComponentCollector({ componentType: 'BUTTON', time: input.timeout ?? 15000 });
 
             collector.on('collect', async i => {
@@ -84,7 +84,7 @@ export namespace utils {
             });
 
             collector.on('end', async () => {
-                if (resolved == false)  {
+                if (resolved == false) {
                     input.onEnd()
                     resolve(undefined)
                 }
@@ -117,11 +117,17 @@ export namespace utils {
     }
     export function selectMenuListener<T>(input: selectMenuInput<T>): Promise<T | undefined> {
         return new Promise((resolve) => {
-            let resolved :boolean = false
+            let resolved: boolean = false
             const collector = input.response.createMessageComponentCollector({ componentType: "SELECT_MENU", time: input.timeout ?? 15000 });
+            const col2 = input.response.createMessageComponentCollector({ componentType: "BUTTON", time: input.timeout ?? 15000 });
+            col2.on("collect", async (i) => {
+                if (i.user.id === input.user && i.customId === "dismissEmbed") {
+                    input.response.delete()
+                }
+            })
             collector.on('collect', async i => {
                 if (i.user.id === input.user) {
-                        return await input.onClick(i, next)
+                    return await input.onClick(i, next)
                 } else {
                     return await i.reply({
                         ephemeral: true,
@@ -132,7 +138,7 @@ export namespace utils {
             });
 
             collector.on('end', async () => {
-                if (resolved == false)  {
+                if (resolved == false) {
                     input.onEnd()
                     resolve(undefined)
                 }
@@ -145,11 +151,44 @@ export namespace utils {
         })
 
     }
-    
-    export function formatMessage(string: string, items: {[key: string]: string}) {
+    export interface awaitMessageInput<T> {
+        user: string
+        response: discord.Message;
+        timeout?: number;
+        onClick: (message: discord.Message, next: (value: T) => void) => Promise<void>;
+        onEnd: () => void
+    }
+    export function awaitMessageResponse<T>(input: awaitMessageInput<T>): Promise<T | undefined> {
+        return new Promise((resolve) => {
+            let resolved: boolean = false
+            const collector = input.response.channel.createMessageCollector({  time: input.timeout ?? 15000 });
+
+            collector.on('collect', async i => {
+                if (i.author.id === input.user) {
+                    return await input.onClick(i, next)
+                }
+            });
+
+            collector.on('end', async () => {
+                if (resolved == false) {
+                    input.onEnd()
+                    resolve(undefined)
+                }
+            });
+            function next(value: T) {
+                resolved = true
+                collector.stop()
+                resolve(value)
+            }
+        })
+
+    }
+
+    export function formatMessage(string: string, items: { [key: string]: string }) {
         Object.keys(items).forEach(k => {
             string = string.replace(`{{${k}}}`, items[k])
         });
         return string
     }
+
 }
