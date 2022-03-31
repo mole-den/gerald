@@ -66,7 +66,9 @@ async function settingsRun(interaction: discord.CommandInteraction, settings: Se
         let setting = settings.find(i => i.id === x![0])!
         if (setting?.type === "string") {
             interaction.editReply({
-                content: `Enter a string value for \`${setting.name!}\``
+                content: `Enter a string value for \`${setting.name!}\``,
+                embeds: [],
+                components: []
             })
             let message = await utils.awaitMessageResponse<discord.Message>({
                 response: <discord.Message>reply,
@@ -78,7 +80,7 @@ async function settingsRun(interaction: discord.CommandInteraction, settings: Se
                     next(msg)
                 })
             })
-            if (!message) return "Input timed out";
+            if (!message) return "end";
             message.delete()
             await changeSetting(interaction.guildId!, settings, setting.id, message.content)
             return true
@@ -92,7 +94,8 @@ async function settingsRun(interaction: discord.CommandInteraction, settings: Se
             }))
             interaction.editReply({
                 content: `Select a value for \`${setting.name!}\``,
-                components: [boolRow]
+                components: [boolRow],
+                embeds: [],
             })
             let i = await utils.selectMenuListener<string>({
                 user: interaction.user.id,
@@ -105,12 +108,14 @@ async function settingsRun(interaction: discord.CommandInteraction, settings: Se
                     utils.disableButtons(<discord.Message>reply)
                 }
             })
-            if (!i) return "Input timed out";
+            if (!i) return "end";
             await changeSetting(interaction.guildId!, settings, setting.id, i)
             return true
         } else if (setting.type === "number") {
             interaction.editReply({
-                content: `Enter a number value for \`${setting.name!}\``
+                content: `Enter a number value for \`${setting.name!}\``,
+                embeds: [],
+                components: []
             })
             let message = await utils.awaitMessageResponse<discord.Message>({
                 response: <discord.Message>reply,
@@ -122,7 +127,7 @@ async function settingsRun(interaction: discord.CommandInteraction, settings: Se
                     next(msg)
                 })
             })
-            if (!message) return "Input timed out";
+            if (!message) return "end";
             let content = message.content
             message.delete()
             if (isNaN(Number(content)) || !isFinite(Number(content))) return `"${content}" is not a valid number, try again.`
@@ -141,6 +146,7 @@ async function settingsRun(interaction: discord.CommandInteraction, settings: Se
             let boolRow = new discord.MessageActionRow().addComponents(selectMenu)
             interaction.editReply({
                 content: `Select a value for \`${setting.name!}\``,
+                embeds: [],
                 components: [boolRow]
             })
             let i = await utils.selectMenuListener<string>({
@@ -154,7 +160,7 @@ async function settingsRun(interaction: discord.CommandInteraction, settings: Se
                     utils.disableButtons(<discord.Message>reply)
                 }
             })
-            if (!i) return false
+            if (!i) return "end"
             await changeSetting(interaction.guildId!, settings, setting.id, i)
             return true
         };
@@ -241,7 +247,9 @@ export abstract class Module {
         while (true) {
             let i = await settingsRun(interaction, (await this.getSetting(interaction.guildId!)!)!, this.changeSetting)
             if (i === false) break;
-            if (typeof i === "string") interaction.followUp({
+            else if (i === true) {}
+            else if (typeof i === "string" && i === "end") {}
+            else if (typeof i === "string") interaction.followUp({
                 ephemeral: true,
                 content: i
             })
@@ -419,13 +427,14 @@ export abstract class GeraldCommand extends sapphire.Command {
         while (true) {
             let i = await settingsRun(interaction, (await this.getSetting(interaction.guildId!)!)!, this.changeSetting)
             if (i === false) break;
-            if (typeof i === "string") interaction.followUp({
+            else if (i === true) {}
+            else if (typeof i === "string" && i === "end") {}
+            else if (typeof i === "string") interaction.followUp({
                 ephemeral: true,
                 content: i
             })
         }
     }
-
 }
 /*
 export class CommandManager extends Module {
