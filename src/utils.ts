@@ -113,7 +113,8 @@ export namespace utils {
         response: discord.Message;
         timeout?: number;
         onClick: (menu: discord.SelectMenuInteraction, next: (value: T) => void) => Promise<void>;
-        onEnd: () => void
+        onEnd: () => void;
+        other: (next: (value: T) => void) => Promise<void>;
     }
     export function selectMenuListener<T>(input: selectMenuInput<T>): Promise<T | undefined> {
         return new Promise((resolve) => {
@@ -148,6 +149,7 @@ export namespace utils {
                 collector.stop()
                 resolve(value)
             }
+            input.other(next)
         })
 
     }
@@ -156,7 +158,8 @@ export namespace utils {
         response: discord.Message;
         timeout?: number;
         onClick: (message: discord.Message, next: (value: T) => void) => Promise<void>;
-        onEnd: () => void
+        onEnd: () => void;
+        other: (next: (value: T) => void) => Promise<void>
     }
     export function awaitMessageResponse<T>(input: awaitMessageInput<T>): Promise<T | undefined> {
         return new Promise((resolve) => {
@@ -180,6 +183,7 @@ export namespace utils {
                 collector.stop()
                 resolve(value)
             }
+            input.other(next)
         })
 
     }

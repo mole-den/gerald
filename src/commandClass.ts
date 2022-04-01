@@ -4,193 +4,215 @@ import _ from "lodash";
 import { bugsnag, prisma } from ".";
 import { utils } from "./utils";
 
-type settingTypes = string | number | boolean
 declare module '@sapphire/pieces' {
     interface Container {
         modules: Module[];
     }
 }
 
-export interface Setting {
-    id: string
-    name?: string;
-    type: "string" | "number" | "bool" | "choice"
-    description?: string;
-    default: settingTypes;
-    choices?: string[] | undefined
-}
+export namespace settings {
+    type settingTypes = string | number | boolean
+    interface SettingWithData extends Setting {
+        value: settingTypes | undefined
+    }
 
-interface SettingWithData extends Setting {
-    value: settingTypes | undefined
-}
-
-export interface SettingGet<T extends settingTypes> extends Setting {
-    value: T | undefined
-}
-
-export interface ModuleOptions {
-    name: string,
-    description: string,
-    settings?: Setting[]
-    hidden?: boolean
-}
-async function settingsRun(interaction: discord.CommandInteraction, settings: SettingWithData[], changeSetting: (guild: string, settings: SettingWithData[], id: string, value: settingTypes) => Promise<void>): Promise<boolean | string> {
-    let embed = new discord.MessageEmbed().setColor("GREEN").setTimestamp(new Date()).setTitle("Settings for levelling");
-    settings.forEach(x => {
-        embed.addField(`${x.name!}`, `${x.description}\n**Current value:** \`${x.value!}\``)
-    })
-    let row = new discord.MessageActionRow().addComponents(new discord.MessageSelectMenu().setPlaceholder("Select a setting to change").setOptions(settings.map(i => {
-        return {
-            label: i.name!,
-            value: i.id!
-        }
-    })).setCustomId("settingToEdit"))
-    let row2 = new discord.MessageActionRow().addComponents(utils.dismissButton)
-    let reply = await interaction.editReply({
-        embeds: [embed],
-        components: [row, row2]
-    })
-    if (reply instanceof discord.Message) {
-        let x = await utils.selectMenuListener<string[]>({
-            user: interaction.user.id,
-            response: reply,
-            timeout: 20000,
-            onEnd() {
-                utils.disableButtons(<discord.Message>reply)
-            },
-            async onClick(menu, next) {
-                await menu.deferUpdate()
-                next(menu.values)
-            }
+    export interface SettingGet<T extends settingTypes> extends Setting {
+        value: T | undefined
+    }
+    export interface Setting {
+        id: string
+        name?: string;
+        type: "string" | "number" | "bool" | "choice"
+        description?: string;
+        default: settingTypes;
+        choices?: string[] | undefined
+    }
+    export async function settingsRun(interaction: discord.CommandInteraction, settings: SettingWithData[], i: boolean): Promise<boolean | string> {
+        let module = interaction.options.getString("item")!
+        let embed = new discord.MessageEmbed().setColor("GREEN").setTimestamp(new Date()).setTitle("Settings for levelling");
+        settings.forEach(x => {
+            embed.addField(`${x.name!}`, `${x.description}\n**Current value:** \`${x.value!}\``)
         })
-        if (x === undefined) return false;
-        let setting = settings.find(i => i.id === x![0])!
-        if (setting?.type === "string") {
-            interaction.editReply({
-                content: `Enter a string value for \`${setting.name!}\``,
-                embeds: [],
-                components: []
-            })
-            let message = await utils.awaitMessageResponse<discord.Message>({
-                response: <discord.Message>reply,
-                user: interaction.user.id,
-                onEnd: () => {
-                    utils.disableButtons(<discord.Message>reply)
-                },
-                onClick: (async (msg, next) => {
-                    next(msg)
-                })
-            })
-            if (!message) return "end";
-            message.delete()
-            await changeSetting(interaction.guildId!, settings, setting.id, message.content)
-            return true
-        } else if (setting.type === "bool") {
-            let boolRow = new discord.MessageActionRow().addComponents(new discord.MessageSelectMenu().setCustomId("newValue").setOptions({
-                value: "true",
-                label: "true",
-            }, {
-                label: "false",
-                value: "false"
-            }))
-            interaction.editReply({
-                content: `Select a value for \`${setting.name!}\``,
-                components: [boolRow],
-                embeds: [],
-            })
-            let i = await utils.selectMenuListener<string>({
+        let row = new discord.MessageActionRow().addComponents(new discord.MessageSelectMenu().setPlaceholder("Select a setting to change").setOptions(settings.map(i => {
+            return {
+                label: i.name!,
+                value: i.id!
+            }
+        })).setCustomId("settingToEdit"))
+        let row2 = new discord.MessageActionRow().addComponents(utils.dismissButton)
+        let resetCmdRow = new discord.MessageActionRow().addComponents(new discord.MessageButton().setCustomId("default").setLabel("Reset to default").setStyle("PRIMARY"),
+            new discord.MessageButton().setCustomId("dismiss").setStyle("SECONDARY").setLabel("Back"))
+        if (i) {
+            interaction.deleteReply()
+        }
+        let reply = (!i) ? await interaction.editReply({
+            content: null,
+            embeds: [embed],
+            components: [row, row2]
+        }) : await interaction.followUp({
+            content: null,
+            embeds: [embed],
+            components: [row, row2]
+        });
+        if (reply instanceof discord.Message) {
+            let x = await utils.selectMenuListener<string[]>({
                 user: interaction.user.id,
                 response: reply,
                 timeout: 20000,
-                onClick: (async (val, next) => {
-                    next(val.values[0])
-                }),
-                onEnd: () => {
-                    utils.disableButtons(<discord.Message>reply)
-                }
-            })
-            if (!i) return "end";
-            await changeSetting(interaction.guildId!, settings, setting.id, i)
-            return true
-        } else if (setting.type === "number") {
-            interaction.editReply({
-                content: `Enter a number value for \`${setting.name!}\``,
-                embeds: [],
-                components: []
-            })
-            let message = await utils.awaitMessageResponse<discord.Message>({
-                response: <discord.Message>reply,
-                user: interaction.user.id,
-                onEnd: () => {
+                onEnd() {
                     utils.disableButtons(<discord.Message>reply)
                 },
-                onClick: (async (msg, next) => {
-                    next(msg)
+                async onClick(menu, next) {
+                    await menu.deferUpdate()
+                    next(menu.values)
+                },
+                other: async () => { }
+            })
+            if (x === undefined) return false;
+            let setting = settings.find(i => i.id === x![0])!
+            if (setting?.type === "string") {
+                await reply.edit({
+                    content: `Enter a string value for \`${setting.name!}\``,
+                    embeds: [],
+                    components: [resetCmdRow]
                 })
-            })
-            if (!message) return "end";
-            let content = message.content
-            message.delete()
-            if (isNaN(Number(content)) || !isFinite(Number(content))) return `"${content}" is not a valid number, try again.`
-            await changeSetting(interaction.guildId!, settings, setting.id, content)
-            return true
-        } else if (setting.type === "choice") {
-            let selectMenu = new discord.MessageSelectMenu().setCustomId("newValue");
-            let options: Array<discord.MessageSelectOptionData> = []
-            setting.choices!.forEach(item => {
-             options.push({
-                 value: item,
-                 label: item
-             })
-            })
-            selectMenu.setOptions(options)
-            let boolRow = new discord.MessageActionRow().addComponents(selectMenu)
-            interaction.editReply({
-                content: `Select a value for \`${setting.name!}\``,
-                embeds: [],
-                components: [boolRow]
-            })
-            let i = await utils.selectMenuListener<string>({
-                user: interaction.user.id,
-                response: reply,
-                timeout: 20000,
-                onClick: (async (val, next) => {
-                    next(val.values[0])
-                }),
-                onEnd: () => {
-                    utils.disableButtons(<discord.Message>reply)
+                let message = await utils.awaitMessageResponse<discord.Message | string | undefined>({
+                    response: <discord.Message>reply,
+                    user: interaction.user.id,
+                    onEnd: () => {
+                        utils.disableButtons(<discord.Message>reply)
+                    },
+                    onClick: (async (msg, next) => {
+                        next(msg)
+                    }),
+                    other: async (next) => {
+                        (<discord.Message>reply).awaitMessageComponent({ componentType: "BUTTON" }).then(i => {
+                            if (i.customId === "dismiss") next(undefined)
+                            if (i.customId === "default") next(setting.default as string)
+                        }).catch(() => { })
+                    }
+                })
+                if (!message) return "end";
+                if (typeof message === "string") {
+                    changeSetting(module, interaction.guildId!, settings, setting.id, message)
+                    return true
                 }
-            })
-            if (!i) return "end"
-            await changeSetting(interaction.guildId!, settings, setting.id, i)
+                message.delete()
+                await changeSetting(module, interaction.guildId!, settings, setting.id, message.content)
+                return true
+            } else if (setting.type === "bool") {
+                let boolRow = new discord.MessageActionRow().addComponents(new discord.MessageSelectMenu().setCustomId("newValue").setOptions({
+                    value: "true",
+                    label: "true",
+                }, {
+                    label: "false",
+                    value: "false"
+                }))
+                reply.edit({
+                    content: `Select a value for \`${setting.name!}\``,
+                    components: [boolRow, resetCmdRow],
+                    embeds: [],
+                })
+                let i = await utils.selectMenuListener<string | undefined>({
+                    user: interaction.user.id,
+                    response: reply,
+                    timeout: 20000,
+                    onClick: (async (val, next) => {
+                        next(val.values[0])
+                    }),
+                    onEnd: () => {
+                        utils.disableButtons(<discord.Message>reply)
+                    },
+                    other: async (next) => {
+                        (<discord.Message>reply).awaitMessageComponent({ componentType: "BUTTON" }).then(i => {
+                            if (i.customId === "dismiss") next(undefined)
+                            if (i.customId === "default") next(setting.default as string)
+                        }).catch(() => { })
+                    }
+                })
+                if (!i) return "end";
+                await changeSetting(module, interaction.guildId!, settings, setting.id, i)
+                return true
+            } else if (setting.type === "number") {
+                await reply.edit({
+                    content: `Enter a number value for \`${setting.name!}\``,
+                    embeds: [],
+                    components: [resetCmdRow]
+                })
+                let message = await utils.awaitMessageResponse<discord.Message | string | undefined>({
+                    response: <discord.Message>reply,
+                    user: interaction.user.id,
+                    onEnd: () => {
+                        utils.disableButtons(<discord.Message>reply)
+                    },
+                    onClick: (async (msg, next) => {
+                        next(msg)
+                    }),
+                    other: async (next) => {
+                        (<discord.Message>reply).awaitMessageComponent({ componentType: "BUTTON" }).then(i => {
+                            if (i.customId === "dismiss") next(undefined)
+                            if (i.customId === "default") next(setting.default as string)
+                        }).catch(() => { })
+                    }
+                })
+                if (!message) return "end";
+                if (typeof message === "string") {
+                    changeSetting(module, interaction.guildId!, settings, setting.id, message)
+                    return true
+                }
+                let content = message.content
+                message.delete()
+                if (isNaN(Number(content)) || !isFinite(Number(content))) return `"${content}" is not a valid number, try again.`
+                await changeSetting(module, interaction.guildId!, settings, setting.id, content)
+                return true
+            } else if (setting.type === "choice") {
+                let selectMenu = new discord.MessageSelectMenu().setCustomId("newValue");
+                let options: Array<discord.MessageSelectOptionData> = []
+                setting.choices!.forEach(item => {
+                    options.push({
+                        value: item,
+                        label: item
+                    })
+                })
+                selectMenu.setOptions(options)
+                let boolRow = new discord.MessageActionRow().addComponents(selectMenu)
+                await reply.edit({
+                    content: `Select a value for \`${setting.name!}\``,
+                    embeds: [],
+                    components: [boolRow, resetCmdRow]
+                })
+                let i = await utils.selectMenuListener<string | undefined>({
+                    user: interaction.user.id,
+                    response: reply,
+                    timeout: 20000,
+                    onClick: (async (val, next) => {
+                        next(val.values[0])
+                    }),
+                    onEnd: () => {
+                        utils.disableButtons(<discord.Message>reply)
+                    },
+                    other: async (next) => {
+                        (<discord.Message>reply).awaitMessageComponent({ componentType: "BUTTON" }).then(i => {
+                            if (i.customId === "dismiss") next(undefined)
+                            if (i.customId === "default") next(setting.default as string)
+                        }).catch(() => { })
+                    }
+                })
+                if (!i) return "end"
+                await changeSetting(module, interaction.guildId!, settings, setting.id, i)
+                return true
+            };
             return true
-        };
-        return true
-    }
-    return false
-}
-
-export abstract class Module {
-    description: string;
-    name: string;
-    hidden: boolean
-    settings: Setting[] | null
-    constructor(options: ModuleOptions) {
-        this.hidden = options.hidden ?? false
-        this.description = options.description;
-        this.name = options.name
-        this.settings = options.settings ?? null
+        }
+        return false
     }
 
-    abstract load(): Promise<void>
-    abstract unload(): Promise<void>
-    protected async getSetting(guild: string): Promise<SettingWithData[] | null> {
-        if (!this.settings) return null
+    export async function getSetting(module: string, guild: string, settings: Setting[]): Promise<SettingWithData[] | null> {
         let x = await prisma.module_settings.findUnique({
             where: {
                 guildid_moduleName: {
                     guildid: guild,
-                    moduleName: this.name
+                    moduleName: module
                 }
             }
         })
@@ -198,8 +220,8 @@ export abstract class Module {
             let a = await prisma.module_settings.create({
                 data: {
                     guildid: guild,
-                    moduleName: this.name,
-                    settings: JSON.stringify(this.settings.map(i => {
+                    moduleName: module,
+                    settings: JSON.stringify(settings.map(i => {
                         return {
                             id: i.id,
                             value: i.default
@@ -208,7 +230,7 @@ export abstract class Module {
                 }
             })
             let parsed = <Array<{ id: string, value: string }>>JSON.parse(a.settings)
-            return this.settings.map(i => {
+            return settings.map(i => {
                 return <SettingWithData>{
                     ...i,
                     value: parsed.find(y => y.id === i.id)!.value
@@ -216,18 +238,18 @@ export abstract class Module {
             })
         }
         let parsed = <Array<{ id: string, value: string }>>JSON.parse(x.settings)
-        return this.settings.map(i => {
+        return settings.map(i => {
             return <SettingWithData>{
                 ...i,
                 value: parsed.find(y => y.id === i.id)!.value
             }
         })
     }
-    protected async changeSetting(guild: string, settings: SettingWithData[], id: string, value: settingTypes) {
-        await prisma.module_settings.create({
+    export async function changeSetting(module: string, guild: string, settings: SettingWithData[], id: string, value: settingTypes) {
+        await prisma.module_settings.update({
             data: {
                 guildid: guild,
-                moduleName: this.name,
+                moduleName: module,
                 settings: JSON.stringify(settings.map(i => {
                     if (i.id === id) {
                         return <SettingWithData>{
@@ -240,20 +262,52 @@ export abstract class Module {
                         value: i.value
                     }
                 }))
+            },
+            where: {
+                guildid_moduleName: {
+                    guildid: guild,
+                    moduleName: module
+                }
             }
         })
     }
+
+}
+
+export interface ModuleOptions {
+    name: string,
+    description: string,
+    settings?: settings.Setting[]
+    hidden?: boolean
+}
+
+export abstract class Module {
+    description: string;
+    name: string;
+    hidden: boolean
+    settings: settings.Setting[] | null
+    constructor(options: ModuleOptions) {
+        this.hidden = options.hidden ?? false
+        this.description = options.description;
+        this.name = options.name
+        this.settings = options.settings ?? null
+    }
+
+    abstract load(): Promise<void>
+    abstract unload(): Promise<void>
     public async settingsHandler(interaction: discord.CommandInteraction) {
         if (!this.settings) return
+        let x = false
         while (true) {
-            let i = await settingsRun(interaction, (await this.getSetting(interaction.guildId!)!)!, this.changeSetting)
+            let i = await settings.settingsRun(interaction, (await settings.getSetting(this.name, interaction.guildId!, this.settings!))!, x)
             if (i === false) break;
-            else if (i === true) {}
-            else if (typeof i === "string" && i === "end") {}
+            else if (i === true) { }
+            else if (typeof i === "string" && i === "end") { }
             else if (typeof i === "string") interaction.followUp({
                 ephemeral: true,
                 content: i
             })
+            x = true
         }
     }
 }
@@ -262,7 +316,7 @@ export interface geraldCommandOptions extends sapphire.CommandOptions {
     usage?: string,
     alwaysEnabled?: boolean,
     private?: boolean
-    settings?: Setting[]
+    settings?: settings.Setting[]
 }
 
 declare class CommandStore extends sapphire.AliasStore<GeraldCommand> {
@@ -273,7 +327,7 @@ declare class CommandStore extends sapphire.AliasStore<GeraldCommand> {
 }
 
 export abstract class GeraldCommand extends sapphire.Command {
-    settings: Setting[] | null;
+    settings: settings.Setting[] | null;
     alwaysEnabled: boolean
     private: boolean
     public constructor(context: sapphire.Command.Context, options: geraldCommandOptions) {
@@ -364,78 +418,22 @@ export abstract class GeraldCommand extends sapphire.Command {
 
     }
 
-    protected async getSetting(guild: string): Promise<SettingWithData[] | null> {
-        if (!this.settings) return null
-        let x = await prisma.module_settings.findUnique({
-            where: {
-                guildid_moduleName: {
-                    guildid: guild,
-                    moduleName: this.name
-                }
-            }
-        })
-        if (x === null) {
-            let a = await prisma.module_settings.create({
-                data: {
-                    guildid: guild,
-                    moduleName: this.name,
-                    settings: JSON.stringify(this.settings.map(i => {
-                        return {
-                            id: i.id,
-                            value: i.default
-                        }
-                    }))
-                }
-            })
-            let parsed = <Array<{ id: string, value: string }>>JSON.parse(a.settings)
-            return this.settings.map(i => {
-                return <SettingWithData>{
-                    ...i,
-                    value: parsed.find(y => y.id === i.id)!.value
-                }
-            })
-        }
-        let parsed = <Array<{ id: string, value: string }>>JSON.parse(x.settings)
-        return this.settings.map(i => {
-            return <SettingWithData>{
-                ...i,
-                value: parsed.find(y => y.id === i.id)!.value
-            }
-        })
-    }
-    protected async changeSetting(guild: string, settings: SettingWithData[], id: string, value: settingTypes) {
-        await prisma.module_settings.create({
-            data: {
-                guildid: guild,
-                moduleName: this.name,
-                settings: JSON.stringify(settings.map(i => {
-                    if (i.id === id) {
-                        return <SettingWithData>{
-                            ...i,
-                            value: value
-                        }
-                    }
-                    return <SettingWithData>{
-                        ...i,
-                        value: i.value
-                    }
-                }))
-            }
-        })
-    }
     public async settingsHandler(interaction: discord.CommandInteraction) {
         if (!this.settings) return
+        let x = false
         while (true) {
-            let i = await settingsRun(interaction, (await this.getSetting(interaction.guildId!)!)!, this.changeSetting)
+            let i = await settings.settingsRun(interaction, (await settings.getSetting(this.name, interaction.guildId!, this.settings!))!, x)
             if (i === false) break;
-            else if (i === true) {}
-            else if (typeof i === "string" && i === "end") {}
+            else if (i === true) { }
+            else if (typeof i === "string" && i === "end") { }
             else if (typeof i === "string") interaction.followUp({
                 ephemeral: true,
                 content: i
             })
+            x = true
         }
     }
+
 }
 /*
 export class CommandManager extends Module {

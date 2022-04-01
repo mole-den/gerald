@@ -1,10 +1,10 @@
 import { prisma, bot, getRandomArbitrary, } from "..";
 import { RateLimiterMemory } from "rate-limiter-flexible"
-import { Module, Setting } from "../commandClass";
+import { Module, settings } from "../commandClass";
 import * as discord from "discord.js";
 export class Levelling extends Module {
     xpLimit: RateLimiterMemory | undefined
-    declare settings: Setting[]
+    declare settings: settings.Setting[]
     constructor() {
         super({
             name: "levelling",
