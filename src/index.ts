@@ -73,6 +73,7 @@ class Gerald extends sapphire.SapphireClient {
 			})
 		}
 		await sleep(4000);
+		sapphire.container.modules.forEach(m => m.load())
 		this.user?.setStatus("dnd")
 		console.log('Ready')
 	} 
