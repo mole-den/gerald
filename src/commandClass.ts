@@ -59,6 +59,7 @@ async function settingsRun(interaction: discord.CommandInteraction, settings: Se
                 utils.disableButtons(<discord.Message>reply)
             },
             async onClick(menu, next) {
+                await menu.deferUpdate()
                 next(menu.values)
             }
         })
