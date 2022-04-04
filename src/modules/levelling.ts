@@ -47,7 +47,7 @@ export class Levelling extends Module {
         x.xp = x.xp + add
         if (x.xp >= x.nextLevelXp) {
             x.level++
-            x.nextLevelXp = Math.round(100 * ((1 + 0.15) ** x.level))
+            x.nextLevelXp = x.nextLevelXp + Math.round(100 * ((1 + 0.15) ** x.level))
             let item = (await settings.getSetting(this.name, message.member!.guild.id, this.settings))!.find(i => i.id === "levelUpMsg")
             await message.channel.send({
                 content: utils.formatMessage(item!.value as string, {
