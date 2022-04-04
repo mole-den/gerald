@@ -1,6 +1,7 @@
 import { prisma, bot, getRandomArbitrary, } from "..";
 import { RateLimiterMemory } from "rate-limiter-flexible"
 import { Module, settings } from "../commandClass";
+import { utils } from "../utils";
 import * as discord from "discord.js";
 export class Levelling extends Module {
     xpLimit: RateLimiterMemory | undefined
@@ -15,13 +16,6 @@ export class Levelling extends Module {
                 type: "string",
                 description: "Message sent when a user levels up. Use `{{user}}` to mention the user and `{{level}}` to get the user's new level.",
                 default: "{{user}} is now level {{level}}."
-            }, {
-                id: "levelUpMsgType",
-                name: "Level up message type",
-                description: "Type of message sent when a user levels up. Can be a message in the server or a dm.",
-                default: "Server",
-                type: "choice",
-                choices: ["Server", "DM"]
             }]
         })
     }
@@ -54,7 +48,11 @@ export class Levelling extends Module {
         if (x.xp >= x.nextLevelXp) {
             x.level++
             x.nextLevelXp = Math.round(100 * ((1 + 0.15) ** x.level))
-            message.channel.send(``)
+            let item = (await settings.getSetting(this.name, message.member!.guild.id, this.settings))!.find(i => i.id === "levelUpMsg")
+            await message.channel.send(utils.formatMessage(item!.value as string, {
+                user: `<@${message.author.id}>`,
+                level: x.level.toString(),
+            }))
         }
         await prisma.member_level.update({
             where: {

@@ -438,6 +438,7 @@ export class infoCommand extends GeraldCommand {
         let user = await args.pick("member").catch(() => {
             return message.member!
         })
+        if (user.user.bot) return message.channel.send("Bots do not earn xp")
         let x = (await prisma.member_level.findUnique({
             where: {
                 memberID_guildID: {
@@ -452,11 +453,12 @@ export class infoCommand extends GeraldCommand {
                 guildID: message.guildId!,
             }
         })
-        message.channel.send(`${user.user.username} is level ${x.level} and has ${x.xp} xp.`)
+        return message.channel.send(`${user.user.username} is level ${x.level} and has ${x.xp}/${x.nextLevelXp}xp`)
     }
 
     public async slashRun(interaction: discord.CommandInteraction) {
         let user = interaction.options.getUser("user") ?? interaction.user
+        if (user.bot) return interaction.editReply("Bots do not earn xp")
         let x = (await prisma.member_level.findUnique({
             where: {
                 memberID_guildID: {
@@ -472,7 +474,7 @@ export class infoCommand extends GeraldCommand {
             }
         })
 
-        interaction.editReply(`${user.username} is level ${x.level} and has ${x.xp} xp.`)
+        return interaction.editReply(`${user.username} is level ${x.level} and has ${x.xp}/${x.nextLevelXp}xp`)
     }
 }
 
