@@ -54,7 +54,7 @@ export class Levelling extends Module {
                     user: `<@${message.author.id}>`,
                     level: x.level.toString(),
                 }),
-                allowedMentions: { parse: ["users"], users: [message.author.id] }
+                allowedMentions: { users: [message.author.id] }
             })
         }
         await prisma.member_level.update({
