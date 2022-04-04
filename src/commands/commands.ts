@@ -614,10 +614,9 @@ export class SettingsCommand extends GeraldCommand {
     preconditions: ['OwnerOnly']
 })
 export class queryCommand extends GeraldCommand {
-    public async chatRun(message: discord.Message) {
-        let str = message.content;
-        let out = str.substring(str.indexOf('```') + 3, str.lastIndexOf('```'));
-        let data = await prisma.$queryRawUnsafe(out);
+    public async chatRun(message: discord.Message, args: sapphire.Args) {
+        let out = await args.restResult("string")
+        let data = await prisma.$queryRawUnsafe(out.value!);
         let JSONdata = JSON.stringify(data, null, 1);
         if (JSONdata?.length && JSONdata.length < 2000) {
             message.channel.send({
