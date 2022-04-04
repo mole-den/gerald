@@ -605,3 +605,31 @@ export class SettingsCommand extends GeraldCommand {
         item.settingsHandler(interaction)
     }
 }
+
+@ApplyOptions<geraldCommandOptions>({
+    name: 'query',
+    fullCategory: ['_enabled', '_owner', '_hidden'],
+    description: 'Runs SQL input against database',
+    requiredClientPermissions: [],
+    preconditions: ['OwnerOnly']
+})
+export class queryCommand extends GeraldCommand {
+    public async chatRun(message: discord.Message) {
+        let str = message.content;
+        let out = str.substring(str.indexOf('```') + 3, str.lastIndexOf('```'));
+        let data = await prisma.$queryRawUnsafe(out);
+        let JSONdata = JSON.stringify(data, null, 1);
+        if (JSONdata?.length && JSONdata.length < 2000) {
+            message.channel.send({
+                allowedMentions: {parse: []},
+                content: JSONdata
+            });
+            return;
+        } else if (JSONdata?.length && JSONdata.length > 2000) {
+            const buffer = Buffer.from(JSONdata)
+            const attachment = new discord.MessageAttachment(buffer, 'file.json');
+            message.channel.send({ files: [attachment] });
+        }
+    };
+
+};
