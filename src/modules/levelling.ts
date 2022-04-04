@@ -23,6 +23,7 @@ export class Levelling extends Module {
     async handler(message: discord.Message) {
         if (message.author.bot) return
         if (!message.guild) return
+        
         let x = await prisma.member_level.findUnique({
             where: {
                 memberID_guildID: {
