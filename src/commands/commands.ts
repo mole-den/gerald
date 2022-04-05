@@ -657,22 +657,22 @@ export class queryCommand extends GeraldCommand {
             take: 10
         })
         let index = 0
-        let content = [`Leaderboard for ${interaction.guild!.name}`]
+        let content = [`**Leaderboard for ${interaction.guild!.name}**`]
         top.forEach(i => {
             if (index === 0) {
-                content.push(`1st: <@${i.memberID}>: lvl${i.level}, ${i.xp}xp`)
+                content.push(`**1st:** <@${i.memberID}>: lvl${i.level}, ${i.xp}xp`)
                 index++
                 return
             } else if (index === 1) {
-                content.push(`2nd: <@${i.memberID}>: lvl${i.level}, ${i.xp}xp`)
+                content.push(`**2nd:** <@${i.memberID}>: lvl${i.level}, ${i.xp}xp`)
                 index++
                 return
             } else if (index === 2) {
-                content.push(`3rd: <@${i.memberID}>: lvl${i.level}, ${i.xp}xp`)
+                content.push(`**3rd:** <@${i.memberID}>: lvl${i.level}, ${i.xp}xp`)
                 index++
                 return
             }
-            content.push(`${index}th: <@${i.memberID}>: lvl${i.level}, ${i.xp}xp`)
+            content.push(`**${index}th:** <@${i.memberID}>: lvl${i.level}, ${i.xp}xp`)
             index++
             return
         })
