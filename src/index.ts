@@ -41,7 +41,7 @@ class Gerald extends sapphire.SapphireClient {
 			loadMessageCommandListeners: true,
 			intents: new discord.Intents([discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS, discord.Intents.FLAGS.GUILD_MESSAGES,
 			discord.Intents.FLAGS.DIRECT_MESSAGES, discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
-			discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS]),
+			discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS, discord.Intents.FLAGS.GUILD_VOICE_STATES]),
 			partials: ["CHANNEL"],
 			defaultCooldown: {
 				scope: 3,
@@ -76,12 +76,17 @@ class Gerald extends sapphire.SapphireClient {
 		sapphire.container.modules.forEach(m => m.load())
 		this.user?.setStatus("dnd")
 		console.log('Ready')
+		this.on("voiceStateUpdate", (i, x) => {
+			i;
+			console.log(x)
+		})
 	} 
 	public override destroy(): void {
 		prisma.$disconnect()
 		taskScheduler.removeAllListeners()
 		super.destroy()
 	}
+
 }
 export const bot = new Gerald();
 export function durationToMS(duration: string): number {
