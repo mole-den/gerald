@@ -672,7 +672,7 @@ export class queryCommand extends GeraldCommand {
                 index++
                 return
             }
-            content.push(`**${index}th:** <@${i.memberID}>: lvl${i.level}, ${i.xp}xp`)
+            content.push(`**${index+1}th:** <@${i.memberID}>: lvl${i.level}, ${i.xp}xp`)
             index++
             return
         })
