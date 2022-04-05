@@ -644,7 +644,7 @@ export class queryCommand extends GeraldCommand {
     public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
         reg.registerChatInputCommand((builder) => {
             return builder.setName(this.name).setDescription(this.description)
-        }, {guildIds: ["809675885330432051"]})
+        })
     }
     public async slashRun(interaction: discord.CommandInteraction) {
         let top = await prisma.member_level.findMany({
