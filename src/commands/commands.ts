@@ -423,7 +423,8 @@ export class infoCommand extends GeraldCommand {
 @ApplyOptions<geraldCommandOptions>({
     name: 'level',
     description: 'Shows the level of a user.',
-    preconditions: ["GuildOnly"]
+    preconditions: ["GuildOnly"],
+    fullCategory: ["levelling"]
 
 }) export class viewLevelCommand extends GeraldCommand {
     public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
@@ -599,7 +600,7 @@ export class SettingsCommand extends GeraldCommand {
 
     public async slashRun(interaction: discord.CommandInteraction) {
         let x = interaction.options.getString("item")
-        let item: Module | GeraldCommand | null = <GeraldCommand|null>bot.stores.get("commands").find(i => i.name === x)
+        let item: Module | GeraldCommand | null = <GeraldCommand | null>bot.stores.get("commands").find(i => i.name === x)
         item ??= sapphire.container.modules.find(i => i.name === x) ?? null;
         if (!item) return
         item.settingsHandler(interaction)
@@ -620,7 +621,7 @@ export class queryCommand extends GeraldCommand {
         let JSONdata = JSON.stringify(data, null, 1);
         if (JSONdata?.length && JSONdata.length < 2000) {
             message.channel.send({
-                allowedMentions: {parse: []},
+                allowedMentions: { parse: [] },
                 content: JSONdata
             });
             return;
@@ -632,3 +633,52 @@ export class queryCommand extends GeraldCommand {
     };
 
 };
+
+
+@ApplyOptions<geraldCommandOptions>({
+    name: 'leaderboard',
+    description: 'Shows the leaderboard for levelling.',
+    preconditions: ["GuildOnly"],
+    fullCategory: ["levelling"]
+}) export class leaderBoardCommand extends GeraldCommand {
+    public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
+        reg.registerChatInputCommand((builder) => {
+            return builder.setName(this.name).setDescription(this.description)
+        }, {guildIds: ["809675885330432051"]})
+    }
+    public async slashRun(interaction: discord.CommandInteraction) {
+        let top = await prisma.member_level.findMany({
+            where: {
+                guildID: interaction.guildId!,
+            },
+            orderBy: {
+                xp: "desc"
+            },
+            take: 10
+        })
+        let index = 0
+        let content = [`Leaderboard for ${interaction.guild!.name}`]
+        top.forEach(i => {
+            if (index === 0) {
+                content.push(`1st: <@${i.memberID}>: lvl${i.level}, ${i.xp}xp`)
+                index++
+                return
+            } else if (index === 1) {
+                content.push(`2nd: <@${i.memberID}>: lvl${i.level}, ${i.xp}xp`)
+                index++
+                return
+            } else if (index === 2) {
+                content.push(`3rd: <@${i.memberID}>: lvl${i.level}, ${i.xp}xp`)
+                index++
+                return
+            }
+            content.push(`${index}th: <@${i.memberID}>: lvl${i.level}, ${i.xp}xp`)
+            index++
+            return
+        })
+        interaction.editReply({
+            content: content.join("\n"),
+            allowedMentions: {parse: []}
+        })
+    }
+}
