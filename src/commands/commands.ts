@@ -31,42 +31,19 @@ export class DeletedMSGCommand extends GeraldCommand {
             behaviorWhenNotIdentical: sapphire.RegisterBehavior.Overwrite
         })
     }
-
-    public async chatRun(message: discord.Message, args: sapphire.Args) {
-        let amount: number;
-        let arg = await args.pick('number');
-        if (isNaN(arg)) return message.channel.send('Please specify a valid amount of messages to view.');
-        amount = (arg <= 10) ? arg : (() => {
-            throw new sapphire.UserError({ identifier: 'amount>10', message: 'Amount must be less than 10.' });
-        })();
-        amount = (arg >= 0) ? arg : (() => {
-            throw new sapphire.UserError({ identifier: 'amount<=0', message: 'Amount must be greater than 0.' });
-        })();
-        let x = await this.mainRun(message.guildId!, amount)
-        message.channel.send({
-            embeds: x
-        })
-        return
-    }
     public async slashRun(interaction: discord.CommandInteraction) {
-        let x = await this.mainRun(interaction.guildId!, interaction.options.getInteger('amount')!)
-        interaction.editReply({
-            embeds: x
-        })
-    }
-    private async mainRun(guild: string, amount: number): Promise<discord.MessageEmbed[]> {
         type attachment = Array<{
             url: string,
             name: string | null
         }>;
         let del = await prisma.deleted_msg.findMany({
             where: {
-                guildId: guild
+                guildId: interaction.guildId!
             },
             orderBy: {
                 msgTime: "desc"
             },
-            take: amount
+            take: interaction.options.getInteger("amount")!
         })
         let embeds: Array<discord.MessageEmbed> = [];
         del.forEach(async (msg) => {
@@ -95,8 +72,10 @@ export class DeletedMSGCommand extends GeraldCommand {
             }
             embeds.push(DeleteEmbed)
         });
-        return embeds;
-    };
+        interaction.editReply({
+            embeds: embeds
+        })
+    }
 
 };
 
@@ -682,3 +661,22 @@ export class queryCommand extends GeraldCommand {
         })
     }
 }
+
+@ApplyOptions<geraldCommandOptions>({
+    name: 'eval',
+    fullCategory: ['_enabled', '_owner', '_hidden'],
+    description: 'eval',
+    requiredClientPermissions: [],
+    preconditions: ['OwnerOnly']
+})
+export class evalCommand extends GeraldCommand {
+    public async chatRun(message: discord.Message, args: sapphire.Args) {
+        let out = await args.restResult("string")
+        let data = await eval(out.value!);
+        message.channel.send({
+            content: data,
+            allowedMentions: {parse: []}
+        })
+    };
+
+};
