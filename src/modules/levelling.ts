@@ -16,6 +16,12 @@ export class Levelling extends Module {
                 type: "string",
                 description: "Message sent when a user levels up. Use `{{user}}` to mention the user and `{{level}}` to get the user's new level.",
                 default: "{{user}} is now level {{level}}."
+            }, {
+                id: "earnVcXp",
+                name: "Earn xp from activty in voice channels.",
+                type: "bool",
+                default: true,
+                description: "Earn xp from talking in voice channels and streaming."
             }]
         })
     }
@@ -24,14 +30,12 @@ export class Levelling extends Module {
         if (message.author.bot) return
         if (!message.guild) return
         
-        let x = await prisma.member_level.findUnique({
+        let x = ((await prisma.member_level.findMany({
             where: {
-                memberID_guildID: {
                     memberID: message.author.id,
                     guildID: message.guildId!
-                }
             }
-        })
+        }))[0])
         if (!x) x = await prisma.member_level.create({
             data: {
                 memberID: message.author.id,
