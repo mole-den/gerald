@@ -241,7 +241,7 @@ export namespace settings {
         return settings.map(i => {
             return <SettingWithData>{
                 ...i,
-                value: parsed.find(y => y.id === i.id)!.value
+                value: parsed.find(y => y.id === i.id)!.value ?? i.default
             }
         })
     }
