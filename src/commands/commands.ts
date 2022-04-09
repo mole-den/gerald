@@ -6,6 +6,7 @@ import { durationToMS, prisma, getRandomArbitrary, bot } from '../index';
 import { GeraldCommand, geraldCommandOptions, Module } from '../commandClass';
 import { ApplyOptions } from '@sapphire/decorators';
 import * as time from '@sapphire/time-utilities';
+import * as voice from "@discordjs/voice"
 import axios from 'axios';
 import { utils } from '../utils';
 axios.defaults.validateStatus = () => true
@@ -661,3 +662,24 @@ export class queryCommand extends GeraldCommand {
         })
     }
 }
+
+@ApplyOptions<geraldCommandOptions>({
+    name: 'eval',
+    fullCategory: ['_enabled', '_owner', '_hidden'],
+    description: 'eval',
+    requiredClientPermissions: [],
+    preconditions: ['OwnerOnly'],
+})
+export class evalCommand extends GeraldCommand {
+    public async chatRun(message: discord.Message, args: sapphire.Args, context: sapphire.MessageCommand.RunContext) {
+        args;
+        voice
+        let out = message.content.replace(`${context.prefix as string}eval`, ` `)
+        let data = await eval(out);
+        message.channel.send({
+            content: data,
+            allowedMentions: {parse: []}
+        })
+    };
+
+};

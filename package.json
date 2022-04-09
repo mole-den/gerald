@@ -12,6 +12,7 @@
   "dependencies": {
     "@bugsnag/js": "^7.16.1",
     "@bugsnag/source-maps": "^2.3.1",
+    "@discordjs/voice": "^0.8.0",
     "@prisma/client": "^3.8.1",
     "@sapphire/decorators": "^4.0.4",
     "@sapphire/discord.js-utilities": "^4.4.0",
@@ -21,6 +22,7 @@
     "axios": "^0.26.0",
     "cron": "^1.8.2",
     "discord.js": "^13.6.0",
+    "libsodium-wrappers": "^0.7.10",
     "lodash": "^4.17.21",
     "luxon": "^2.0.2",
     "rate-limiter-flexible": "^2.3.6",
