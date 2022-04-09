@@ -661,22 +661,3 @@ export class queryCommand extends GeraldCommand {
         })
     }
 }
-
-@ApplyOptions<geraldCommandOptions>({
-    name: 'eval',
-    fullCategory: ['_enabled', '_owner', '_hidden'],
-    description: 'eval',
-    requiredClientPermissions: [],
-    preconditions: ['OwnerOnly']
-})
-export class evalCommand extends GeraldCommand {
-    public async chatRun(message: discord.Message, args: sapphire.Args) {
-        let out = await args.restResult("string")
-        let data = await eval(out.value!);
-        message.channel.send({
-            content: data,
-            allowedMentions: {parse: []}
-        })
-    };
-
-};
