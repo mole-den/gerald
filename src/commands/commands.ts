@@ -656,6 +656,9 @@ export class queryCommand extends GeraldCommand {
             index++
             return
         })
+        if (content.length === 1) {
+            content.push("All members have 0 xp.")
+        }
         interaction.editReply({
             content: content.join("\n"),
             allowedMentions: {parse: []}
