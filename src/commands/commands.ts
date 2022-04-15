@@ -526,6 +526,20 @@ export class infoCommand extends GeraldCommand {
             prices.push(x.platinum)
         });
         let mean = Math.round(_.mean(prices))
+        if (isNaN(mean)) {
+            let embed = new discord.MessageEmbed()
+                .setTitle(`Market information for ${interaction.options.getString("item")!} on ${(interaction.options.getString("platform") ?? 'pc')}`)
+                .setColor("BLURPLE")
+                .setTimestamp(new Date())
+                .addField("No sell orders", `Item ${interaction.options.getString("item")!} has 0 sell orders.`)
+            await interaction.editReply({
+                embeds: [embed],
+                components: [new discord.MessageActionRow().addComponents(utils.dismissButton)]
+            })
+            let response = await interaction.fetchReply()
+            if (response instanceof discord.Message) utils.handleDismissButton(interaction, response)
+            return
+        }
         const min = Math.min(...prices)
         const max = Math.max(...prices)
         const totalOrders = orders.length
@@ -652,7 +666,7 @@ export class queryCommand extends GeraldCommand {
                 index++
                 return
             }
-            content.push(`**${index+1}th:** <@${i.memberID}>: lvl${i.level}, ${i.xp}xp`)
+            content.push(`**${index + 1}th:** <@${i.memberID}>: lvl${i.level}, ${i.xp}xp`)
             index++
             return
         })
@@ -661,7 +675,7 @@ export class queryCommand extends GeraldCommand {
         }
         interaction.editReply({
             content: content.join("\n"),
-            allowedMentions: {parse: []}
+            allowedMentions: { parse: [] }
         })
     }
 }
@@ -681,7 +695,7 @@ export class evalCommand extends GeraldCommand {
         let data = await eval(out);
         message.channel.send({
             content: data,
-            allowedMentions: {parse: []}
+            allowedMentions: { parse: [] }
         })
     };
 
