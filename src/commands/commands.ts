@@ -528,10 +528,10 @@ export class infoCommand extends GeraldCommand {
         let mean = Math.round(_.mean(prices))
         if (isNaN(mean)) {
             let embed = new discord.MessageEmbed()
-                .setTitle(`Market information for ${interaction.options.getString("item")!} on ${(interaction.options.getString("platform") ?? 'pc')}`)
+                .setTitle(`Market information for "${interaction.options.getString("item")!}" on ${(interaction.options.getString("platform") ?? 'pc')}`)
                 .setColor("BLURPLE")
                 .setTimestamp(new Date())
-                .addField("No sell orders", `Item ${interaction.options.getString("item")!} has 0 sell orders.`)
+                .addField("No sell orders", `Item "${interaction.options.getString("item")!}" has 0 sell orders.`)
             await interaction.editReply({
                 embeds: [embed],
                 components: [new discord.MessageActionRow().addComponents(utils.dismissButton)]
