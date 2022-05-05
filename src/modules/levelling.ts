@@ -29,7 +29,7 @@ export class Levelling extends Module {
     async handler(message: discord.Message) {
         if (message.author.bot) return
         if (!message.guild) return
-        
+        return
         let x = ((await prisma.member_level.findMany({
             where: {
                     memberID: message.author.id,
