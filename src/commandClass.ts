@@ -1,7 +1,7 @@
 import * as sapphire from "@sapphire/framework"
 import * as discord from 'discord.js';
 import _ from "lodash";
-import { bugsnag, prisma } from ".";
+import { bot, bugsnag } from ".";
 import { utils } from "./utils";
 
 declare module '@sapphire/pieces' {
@@ -29,7 +29,7 @@ export namespace settings {
     }
     export async function settingsRun(interaction: discord.CommandInteraction, settings: SettingWithData[], i: boolean): Promise<boolean | string> {
         let module = interaction.options.getString("item")!
-        let embed = new discord.MessageEmbed().setColor("GREEN").setTimestamp(new Date()).setTitle("Settings for levelling");
+        let embed = new discord.MessageEmbed().setColor("GREEN").setTimestamp(new Date()).setTitle(`Settings for ${module}`);
         settings.forEach(x => {
             embed.addField(`${x.name!}`, `${x.description}\n**Current value:** \`${x.value!}\``)
         })
@@ -208,7 +208,7 @@ export namespace settings {
     }
 
     export async function getSetting(module: string, guild: string, settings: Setting[]): Promise<SettingWithData[] | null> {
-        let x = await prisma.module_settings.findUnique({
+        let x = await bot.db.module_settings.findUnique({
             where: {
                 guildid_moduleName: {
                     guildid: guild,
@@ -217,7 +217,7 @@ export namespace settings {
             }
         })
         if (x === null) {
-            let a = await prisma.module_settings.create({
+            let a = await bot.db.module_settings.create({
                 data: {
                     guildid: guild,
                     moduleName: module,
@@ -246,7 +246,7 @@ export namespace settings {
         })
     }
     export async function changeSetting(module: string, guild: string, settings: SettingWithData[], id: string, value: settingTypes) {
-        await prisma.module_settings.update({
+        await bot.db.module_settings.update({
             data: {
                 guildid: guild,
                 moduleName: module,

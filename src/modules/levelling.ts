@@ -1,4 +1,4 @@
-import { prisma, bot, getRandomArbitrary, } from "..";
+import { bot, getRandomArbitrary, } from "..";
 import { RateLimiterMemory } from "rate-limiter-flexible"
 import { Module, settings } from "../commandClass";
 import { utils } from "../utils";
@@ -30,13 +30,13 @@ export class Levelling extends Module {
         if (message.author.bot) return
         if (!message.guild) return
         return
-        let x = ((await prisma.member_level.findMany({
+        let x = ((await bot.db.member_level.findMany({
             where: {
                     memberID: message.author.id,
                     guildID: message.guildId!
             }
         }))[0])
-        if (!x) x = await prisma.member_level.create({
+        if (!x) x = await bot.db.member_level.create({
             data: {
                 memberID: message.author.id,
                 guildID: message.guildId!,
@@ -61,7 +61,7 @@ export class Levelling extends Module {
                 allowedMentions: { users: [message.author.id] }
             })
         }
-        await prisma.member_level.update({
+        await bot.db.member_level.update({
             where: {
                 memberID_guildID: {
                     memberID: message.author!.id,

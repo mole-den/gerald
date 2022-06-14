@@ -5,6 +5,7 @@ import { PrismaClient } from '@prisma/client';
 import Time from '@sapphire/time-utilities';
 import Bugsnag from '@bugsnag/js'
 import { Levelling } from './modules/levelling';
+import { Counting } from './modules/counting';
 export let bugsnag = Bugsnag
 if (process.env.BUGSNAG_KEY) bugsnag.start({
 	apiKey: process.env.BUGSNAG_KEY,
@@ -17,6 +18,7 @@ process.on('SIGTERM', async () => {
 	process.exit(0);
 });
 class Gerald extends sapphire.SapphireClient {
+	db: PrismaClient;
 	constructor() {
 		super({
 			typing: true,
@@ -24,7 +26,7 @@ class Gerald extends sapphire.SapphireClient {
 			caseInsensitivePrefixes: true,
 			fetchPrefix: async (message) => {
 				try {
-					let x = await prisma.guild.findUnique({
+					let x = await bot.db.guild.findUnique({
 						where: {
 							guildId: message.guildId!
 						},
@@ -49,22 +51,25 @@ class Gerald extends sapphire.SapphireClient {
 				delay: Time.Time.Second * 3
 			}
 		})
-		sapphire.container.modules = [new Levelling()]
+		this.db = new PrismaClient({
+			log: ['info', 'warn', 'error'],
+		});
+		sapphire.container.modules = [new Levelling(), new Counting()];
 	}
 	
 	public async start(): Promise<void> {
 		console.log('Starting...')
-		await prisma.$connect()
+		await this.db.$connect()
 		console.log('Connected to database')
 		await sleep(1000);
 		await super.login(process.env.TOKEN);
 		taskScheduler = new scheduledTaskManager()
-		let x = await prisma.guild.count();
+		let x = await this.db.guild.count();
 		let guilds = await this.guilds.fetch()
 		if (guilds.size > x) {
 			console.log('Guilds:', guilds.size, 'Database:', x)
 			guilds.each(async (guild) => {
-				await prisma.guild.create({
+				await this.db.guild.create({
 					data: {
 						guildId: guild.id,
 						joinedTime: new Date()
@@ -82,7 +87,7 @@ class Gerald extends sapphire.SapphireClient {
 		})
 	} 
 	public override destroy(): void {
-		prisma.$disconnect()
+		bot.db.$disconnect()
 		taskScheduler.removeAllListeners()
 		super.destroy()
 	}
@@ -157,9 +162,6 @@ export function cleanMentions(str: string): string {
 
 
 export let taskScheduler: scheduledTaskManager
-export const prisma = new PrismaClient({
-	log: ['info', 'warn', 'error'],
-});
 export function getRandomArbitrary(min: number, max: number) {
 	return Math.round(Math.random() * (max - min) + min);
 };
@@ -176,7 +178,7 @@ bot.on('guildCreate', async (guild) => {
 	if (user.permissions.has(discord.Permissions.FLAGS.ADMINISTRATOR) === false) {
 		guild.leave();
 	}
-	prisma.guild.create({
+	bot.db.guild.create({
 		data: {
 			guildId: guild.id,
 			joinedTime: new Date(),
@@ -214,14 +216,14 @@ async function deletedMessageHandler(message: discord.Message | discord.PartialM
 			name: attachment.name
 		});
 	});
-	await prisma.member.createMany({
+	await bot.db.member.createMany({
 		data: [{
 			userid: message.author.id,
 			guildid: message.guildId!
 		}],
 		skipDuplicates: true
 	})
-	await prisma.deleted_msg.create({
+	await bot.db.deleted_msg.create({
 		data: {
 			author: message.author.id,
 			content: message.content,

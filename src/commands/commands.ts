@@ -2,11 +2,10 @@ import * as sapphire from '@sapphire/framework';
 import * as discord from 'discord.js';
 import _ from "lodash"
 import { PaginatedMessageEmbedFields } from '@sapphire/discord.js-utilities';
-import { durationToMS, prisma, getRandomArbitrary, bot } from '../index';
+import { durationToMS, getRandomArbitrary, bot } from '../index';
 import { GeraldCommand, geraldCommandOptions, Module } from '../commandClass';
 import { ApplyOptions } from '@sapphire/decorators';
 import * as time from '@sapphire/time-utilities';
-import * as voice from "@discordjs/voice"
 import axios from 'axios';
 import { utils } from '../utils';
 axios.defaults.validateStatus = () => true
@@ -37,7 +36,7 @@ export class DeletedMSGCommand extends GeraldCommand {
             url: string,
             name: string | null
         }>;
-        let del = await prisma.deleted_msg.findMany({
+        let del = await bot.db.deleted_msg.findMany({
             where: {
                 guildId: interaction.guildId!
             },
@@ -202,7 +201,7 @@ export class prefixCommand extends GeraldCommand {
             }
         }
         if (!x) {
-            let prefix = await prisma.guild.findUnique({
+            let prefix = await bot.db.guild.findUnique({
                 where: {
                     guildId: item.guild!.id
                 },
@@ -219,7 +218,7 @@ export class prefixCommand extends GeraldCommand {
             if (!item.member!.permissions.has("ADMINISTRATOR"))
                 return send(`You are missing the following permissions to run this command: Administrator`);
         }
-        prisma.guild.update({
+        bot.db.guild.update({
             where: {
                 guildId: item.guildId!
             },
@@ -279,7 +278,7 @@ export class infoCommand extends GeraldCommand {
         }
         uptimeString += Math.floor(uptime) + " seconds";
         let start = Date.now();
-        await prisma.$queryRawUnsafe('SELECT 1;');
+        await bot.db.$queryRawUnsafe('SELECT 1;');
         let elapsed = Date.now() - start;
         let embed = new discord.MessageEmbed().setColor('BLURPLE').setFooter({ text: `Gerald v${require('../../package.json').version}` });
         embed.setTitle('Info')
@@ -420,7 +419,7 @@ export class infoCommand extends GeraldCommand {
             return message.member!
         })
         if (user.user.bot) return message.channel.send("Bots do not earn xp")
-        let x = (await prisma.member_level.findUnique({
+        let x = (await bot.db.member_level.findUnique({
             where: {
                 memberID_guildID: {
                     memberID: user.id,
@@ -428,7 +427,7 @@ export class infoCommand extends GeraldCommand {
                 }
             }
         }))
-        if (x === null) x = await prisma.member_level.create({
+        if (x === null) x = await bot.db.member_level.create({
             data: {
                 memberID: user.id,
                 guildID: message.guildId!,
@@ -440,7 +439,7 @@ export class infoCommand extends GeraldCommand {
     public async slashRun(interaction: discord.CommandInteraction) {
         let user = interaction.options.getUser("user") ?? interaction.user
         if (user.bot) return interaction.editReply("Bots do not earn xp")
-        let x = (await prisma.member_level.findUnique({
+        let x = (await bot.db.member_level.findUnique({
             where: {
                 memberID_guildID: {
                     memberID: user.id,
@@ -448,7 +447,7 @@ export class infoCommand extends GeraldCommand {
                 }
             }
         }))
-        if (x === null) x = await prisma.member_level.create({
+        if (x === null) x = await bot.db.member_level.create({
             data: {
                 memberID: user.id,
                 guildID: interaction.guildId!,
@@ -611,7 +610,7 @@ export class SettingsCommand extends GeraldCommand {
 export class queryCommand extends GeraldCommand {
     public async chatRun(message: discord.Message, args: sapphire.Args) {
         let out = await args.restResult("string")
-        let data = await prisma.$queryRawUnsafe(out.value!);
+        let data = await bot.db.$queryRawUnsafe(out.value!);
         let JSONdata = JSON.stringify(data, null, 1);
         if (JSONdata?.length && JSONdata.length < 2000) {
             message.channel.send({
@@ -641,7 +640,7 @@ export class queryCommand extends GeraldCommand {
         })
     }
     public async slashRun(interaction: discord.CommandInteraction) {
-        let top = await prisma.member_level.findMany({
+        let top = await bot.db.member_level.findMany({
             where: {
                 guildID: interaction.guildId!,
             },
@@ -680,23 +679,3 @@ export class queryCommand extends GeraldCommand {
     }
 }
 
-@ApplyOptions<geraldCommandOptions>({
-    name: 'eval',
-    fullCategory: ['_enabled', '_owner', '_hidden'],
-    description: 'eval',
-    requiredClientPermissions: [],
-    preconditions: ['OwnerOnly'],
-})
-export class evalCommand extends GeraldCommand {
-    public async chatRun(message: discord.Message, args: sapphire.Args, context: sapphire.MessageCommand.RunContext) {
-        args;
-        voice
-        let out = message.content.replace(`${context.prefix as string}eval`, ` `)
-        let data = await eval(out);
-        message.channel.send({
-            content: data,
-            allowedMentions: { parse: [] }
-        })
-    };
-
-};
