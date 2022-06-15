@@ -503,8 +503,10 @@ export class infoCommand extends GeraldCommand {
 			utils.handleDismissButton(interaction, response);
 	}
 
-	public async cmdRelics(interaction: discord.Interaction) {
-		interaction;
+	public async cmdRelics(interaction: discord.CommandInteraction) {
+		interaction.editReply({
+			content: "Not implemented yet."
+		});
 	}
 }
 
