@@ -96,12 +96,12 @@ export class scheduledTaskManager extends EventEmitter {
 			if (!x) return;
 			x.forEach(y => {
 				if (y.id.toString() in this.loadedIds) return;
-				const x = setTimeout(() => y.run(), y.when.diffNow().as("seconds") * 1000);
-				y.trigger = x;
+				const timeout = setTimeout(() => y.run(), y.when.diffNow().as("seconds") * 1000);
+				y.trigger = timeout;
 				this.loadedIds.push(y.id.toString());
 				this.loadedTasks.push({
 					task: y,
-					trigger: x,
+					trigger: timeout,
 				});
 
 			});

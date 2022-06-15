@@ -231,7 +231,7 @@ export class infoCommand extends GeraldCommand {
 		const maybe = args.nextMaybe();
 		if (!maybe.exists) return this.baseHelp(message);
 		const command = maybe.value;
-		const cmd = bot.stores.get("commands").find(cmd => (cmd.name === command || cmd.aliases.includes(command)) && !cmd.fullCategory.includes("_hidden"));
+		const cmd = bot.stores.get("commands").find(c => (c.name === command || c.aliases.includes(command)) && !c.fullCategory.includes("_hidden"));
 		if (!cmd) return message.channel.send(`Command \`${command}\` not found`);
 		return message.channel.send({ embeds: [this.cmdHelp(cmd)] });
 	}
@@ -239,7 +239,7 @@ export class infoCommand extends GeraldCommand {
 	public async slashRun(interaction: sapphire.ChatInputCommand.Interaction) {
 		const x = interaction.options.get("command");
 		if (x === null || x.value === undefined) return this.baseHelp(interaction);
-		const cmd = bot.stores.get("commands").find(cmd => cmd.name === x.value);
+		const cmd = bot.stores.get("commands").find(c => c.name === x.value);
 		if (!cmd) return interaction.followUp({
 			content: "Specify a valid command.",
 			ephemeral: true
@@ -418,17 +418,17 @@ export class infoCommand extends GeraldCommand {
 		});
 	}
 	public async cmdMarket(interaction: discord.CommandInteraction) {
-		let item = interaction.options.getString("item");
-		if (!item) return;
-		item = item.replace(/([^a-z])/gmi, "_").toLowerCase();
-		const data = await axios.get(`https://api.warframe.market/v1/items/${item}/orders?include=item`, {
+		let itemToGet = interaction.options.getString("item");
+		if (!itemToGet) return;
+		itemToGet = itemToGet.replace(/([^a-z])/gmi, "_").toLowerCase();
+		const data = await axios.get(`https://api.warframe.market/v1/items/${itemToGet}/orders?include=item`, {
 			responseType: "json",
 			headers: {
 				"Platform": (interaction.options.getString("platform") ?? "pc")
 			}
 		});
 		if (data.status === 404) {
-			interaction.editReply(`404: Item \`${item}\` not found.`);
+			interaction.editReply(`404: Item \`${itemToGet}\` not found.`);
 			return;
 		}
 		if (data.status !== 200) {
@@ -486,11 +486,11 @@ export class infoCommand extends GeraldCommand {
 			.addComponents(
 				new discord.MessageButton()
 					.setLabel("Market listing")
-					.setURL(`https://warframe.market/items/${item}`)
+					.setURL(`https://warframe.market/items/${itemToGet}`)
 					.setStyle("LINK"),
 			).addComponents(utils.dismissButton);
 		const embed = new discord.MessageEmbed()
-			.setTitle(`Market information for ${item} on ${(interaction.options.getString("platform") ?? "pc")}`)
+			.setTitle(`Market information for ${itemToGet} on ${(interaction.options.getString("platform") ?? "pc")}`)
 			.setColor("BLURPLE")
 			.setTimestamp(new Date())
 			.addField("Price information", `Highest price: ${max}p\nLowest price: ${min}p\nMean price: ${mean}p\nTotal sell orders: ${totalOrders}`);

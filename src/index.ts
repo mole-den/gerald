@@ -79,11 +79,7 @@ class Gerald extends sapphire.SapphireClient {
 		sapphire.container.modules.forEach(m => m.load());
 		this.user?.setStatus("dnd");
 		console.log("Ready");
-		this.on("voiceStateUpdate", (i, x) => {
-			i;
-			console.log(x);
-		});
-	} 
+	}
 	public override destroy(): void {
 		bot.db.$disconnect();
 		taskScheduler.removeAllListeners();
