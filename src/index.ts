@@ -5,7 +5,6 @@ import { PrismaClient } from '@prisma/client';
 import Time from '@sapphire/time-utilities';
 import Bugsnag from '@bugsnag/js'
 import { Levelling } from './modules/levelling';
-import { Counting } from './modules/counting';
 export let bugsnag = Bugsnag
 if (process.env.BUGSNAG_KEY) bugsnag.start({
 	apiKey: process.env.BUGSNAG_KEY,
@@ -54,7 +53,7 @@ class Gerald extends sapphire.SapphireClient {
 		this.db = new PrismaClient({
 			log: ['info', 'warn', 'error'],
 		});
-		sapphire.container.modules = [new Levelling(), new Counting()];
+		sapphire.container.modules = [new Levelling()];
 	}
 	
 	public async start(): Promise<void> {

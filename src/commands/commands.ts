@@ -473,7 +473,16 @@ export class infoCommand extends GeraldCommand {
                         .addStringOption(option => option.setName('item').setDescription('The item to get information about').setRequired(true))
                         .addStringOption(option => option.addChoices([["xbox", "xbox"], ["pc", "pc"], ["ps4", "ps4"], ["switch", "switch"]])
                             .setRequired(false).setDescription("Return data for specified platform. Default: pc").setName("platform")))
-
+                .addSubcommand(subcommand => 
+                    subcommand.setName("")
+                    .setDescription("")
+                    .addStringOption(o => 
+                        o.setName("type").setDescription("The type of the relic.").setRequired(true)
+                        .addChoices([["Lith", "lith"], ["Meso", "meso"], ["Neo", "neo"], ["Axi", "axi"], ["Requiem", "requiem"]])
+                    ).addStringOption(o => 
+                        o.setName("name").setDescription("The name of the relic.").setRequired(true)
+                    )
+                )
         }, {
             idHints: ["957171251271585822"],
             behaviorWhenNotIdentical: sapphire.RegisterBehavior.Overwrite
