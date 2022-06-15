@@ -34,20 +34,20 @@ export interface geraldCommandOptions extends sapphire.CommandOptions {
 	usage?: string,
 	alwaysEnabled?: boolean,
 	private?: boolean
-	subcommands?: (string | (() => any))[][]
+	subcommands?: (string | (() => void))[][]
 }
 
-declare class CommandStore extends sapphire.AliasStore<GeraldCommand> {
-	constructor();
-	get categories(): string[];
-	unload(name: string | GeraldCommand): Promise<GeraldCommand>;
-	loadAll(): Promise<void>;
-}
+// declare class CommandStore extends sapphire.AliasStore<GeraldCommand> {
+// 	constructor();
+// 	get categories(): string[];
+// 	unload(name: string | GeraldCommand): Promise<GeraldCommand>;
+// 	loadAll(): Promise<void>;
+// }
 
 export abstract class GeraldCommand extends sapphire.Command {
 	alwaysEnabled: boolean;
 	private: boolean;
-	subcommands: (string | (() => any))[][] | null;
+	subcommands: (string | (() => void))[][] | null;
 	public constructor(context: sapphire.Command.Context, options: geraldCommandOptions) {
 		super(context, {
 			...options,
@@ -72,7 +72,7 @@ export abstract class GeraldCommand extends sapphire.Command {
 			embed.setColor("RED");
 			embed.setTimestamp(new Date());
 			embed.setDescription("An unhandled exception occurred.");
-			const content = (<any>error).message as string;
+			const content = (<Error>error).message as string;
 			embed.addField("Message", content ?? JSON.stringify(error));
 			channel.send({
 				embeds: [embed]
@@ -94,7 +94,7 @@ export abstract class GeraldCommand extends sapphire.Command {
 			embed.setColor("RED");
 			embed.setTimestamp(new Date());
 			embed.setDescription("An unhandled exception occurred.");
-			const content = (<any>error).message as string;
+			const content = (<Error>error).message as string;
 			embed.addField("Message", content ?? JSON.stringify(error));
 			interaction.followUp({
 				embeds: [embed]
