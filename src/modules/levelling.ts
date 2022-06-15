@@ -1,11 +1,11 @@
+/*
 import { bot, getRandomArbitrary, } from "..";
 import { RateLimiterMemory } from "rate-limiter-flexible"
-import { Module, settings } from "../commandClass";
+import { Module } from "../commandClass";
 import { utils } from "../utils";
 import * as discord from "discord.js";
 export class Levelling extends Module {
     xpLimit: RateLimiterMemory | undefined
-    declare settings: settings.Setting[]
     constructor() {
         super({
             name: "levelling",
@@ -87,3 +87,4 @@ export class Levelling extends Module {
         bot.off("messageCreate", x => this.handler(x))
     }
 }
+*/

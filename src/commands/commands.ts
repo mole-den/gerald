@@ -3,7 +3,7 @@ import * as discord from 'discord.js';
 import _ from "lodash"
 import { PaginatedMessageEmbedFields } from '@sapphire/discord.js-utilities';
 import { durationToMS, getRandomArbitrary, bot } from '../index';
-import { GeraldCommand, geraldCommandOptions, Module } from '../commandClass';
+import { GeraldCommand, geraldCommandOptions } from '../commandClass';
 import { ApplyOptions } from '@sapphire/decorators';
 import * as time from '@sapphire/time-utilities';
 import axios from 'axios';
@@ -570,42 +570,6 @@ export class infoCommand extends GeraldCommand {
         let response = await interaction.fetchReply()
         if (response instanceof discord.Message)
             utils.handleDismissButton(interaction, response)
-    }
-}
-@ApplyOptions<geraldCommandOptions>({
-    name: 'settings',
-    description: 'Manage bot settings',
-    preconditions: ["GuildOnly"]
-})
-export class SettingsCommand extends GeraldCommand {
-    public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
-        reg.registerChatInputCommand((builder) => {
-            let commands = bot.stores.get("commands").filter((i) => {
-                let a = <GeraldCommand>i
-                return a.settings !== null
-            })
-            let modules = sapphire.container.modules.filter(i => i.settings !== null)
-            let all = (<Array<GeraldCommand | Module>>[...modules, ...commands])
-            return builder.setName(this.name)
-                .setDescription(this.description)
-                .addStringOption(option => {
-                    option.setName("item").setDescription("The item to view settings for.").setRequired(true)
-                    all.forEach(i => {
-                        option.addChoice(`${i.name}`, i.name)
-                    })
-                    return option
-                })
-        }, {
-            behaviorWhenNotIdentical: sapphire.RegisterBehavior.Overwrite
-        })
-    }
-
-    public async slashRun(interaction: discord.CommandInteraction) {
-        let x = interaction.options.getString("item")
-        let item: Module | GeraldCommand | null = <GeraldCommand | null>bot.stores.get("commands").find(i => i.name === x)
-        item ??= sapphire.container.modules.find(i => i.name === x) ?? null;
-        if (!item) return
-        item.settingsHandler(interaction)
     }
 }
 

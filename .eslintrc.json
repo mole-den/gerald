@@ -19,10 +19,6 @@
             "error",
             "tab"
         ],
-        "linebreak-style": [
-            "error",
-            "windows"
-        ],
         "quotes": [
             "warn",
             "double"
@@ -31,6 +27,7 @@
             "error",
             "always"
         ],
+        "eqeqeq": "warn",
         "prefer-const": "warn",
         "@typescript-eslint/array-type": [
             "error",
