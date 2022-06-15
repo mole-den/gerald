@@ -6,8 +6,8 @@
   "scripts": {
     "start": "node --enable-source-maps build/index.js",
     "heroku-start": "npm start",
-    "source": "npx bugsnag-source-maps upload-node --api-key $BUGSNAG_KEY --directory build --detect-app-version --overwrite",
-    "postinstall": "tsc"
+    "lint": "npx eslint src/**",
+    "postinstall": "tsc && npm run lint"
   },
   "dependencies": {
     "@bugsnag/js": "^7.16.1",
@@ -33,6 +33,9 @@
     "@types/lodash": "^4.14.180",
     "@types/luxon": "^2.0.5",
     "@types/pg": "^8.6.4",
+    "@typescript-eslint/eslint-plugin": "^5.28.0",
+    "@typescript-eslint/parser": "^5.28.0",
+    "eslint": "^8.17.0",
     "prisma": "^3.8.1",
     "typescript": "^4.5.5"
   },
