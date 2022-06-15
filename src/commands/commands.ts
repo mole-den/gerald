@@ -263,8 +263,7 @@ export class infoCommand extends GeraldCommand {
 				embed.addField("Usage:", (cmd.detailedDescription), false);
 			else {
 				Object.keys(cmd.detailedDescription).forEach(c => {
-					//eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					//@ts-expect-error
+					// @ts-expect-error eee
 					embed.addField(`${c}:`, cmd?.detailedDescription[c]);
 				});
 			}
@@ -502,6 +501,10 @@ export class infoCommand extends GeraldCommand {
 		const response = await interaction.fetchReply();
 		if (response instanceof discord.Message)
 			utils.handleDismissButton(interaction, response);
+	}
+
+	public async cmdRelics(interaction: discord.Interaction) {
+
 	}
 }
 
