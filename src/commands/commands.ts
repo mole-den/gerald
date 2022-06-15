@@ -388,7 +388,9 @@ export class infoCommand extends GeraldCommand {
 
 @ApplyOptions<geraldCommandOptions>({
 	name: "warframe",
-	description: "Command to access warframe APIs."
+	description: "Command to access warframe APIs.",
+	subcommands: [{ handlerName: "cmdMarket", name: "market" },
+		{ handlerName: "cmdRelics", name: "relics" }]
 }) export class warframeCommand extends GeraldCommand {
 	public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
 		reg.registerChatInputCommand((builder) => {
@@ -402,7 +404,7 @@ export class infoCommand extends GeraldCommand {
 						.addStringOption(option => option.addChoices([["xbox", "xbox"], ["pc", "pc"], ["ps4", "ps4"], ["switch", "switch"]])
 							.setRequired(false).setDescription("Return data for specified platform. Default: pc").setName("platform")))
 				.addSubcommand(subcommand =>
-					subcommand.setName("")
+					subcommand.setName("relics")
 						.setDescription("")
 						.addStringOption(o =>
 							o.setName("type").setDescription("The type of the relic.").setRequired(true)
@@ -416,7 +418,7 @@ export class infoCommand extends GeraldCommand {
 			behaviorWhenNotIdentical: sapphire.RegisterBehavior.Overwrite
 		});
 	}
-	public async slashRun(interaction: discord.CommandInteraction) {
+	public async cmdMarket(interaction: discord.CommandInteraction) {
 		let item = interaction.options.getString("item");
 		if (!item) return;
 		item = item.replace(/([^a-z])/gmi, "_").toLowerCase();

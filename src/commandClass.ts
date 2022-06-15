@@ -30,11 +30,15 @@ export abstract class Module {
 	abstract unload(): Promise<void>
 }
 
+interface Subcommand {
+	name: string,
+	handlerName: string
+}
 export interface geraldCommandOptions extends sapphire.CommandOptions {
 	usage?: string,
 	alwaysEnabled?: boolean,
 	private?: boolean
-	subcommands?: (string | (() => void))[][]
+	subcommands?: Subcommand[]
 }
 
 // declare class CommandStore extends sapphire.AliasStore<GeraldCommand> {
@@ -47,7 +51,7 @@ export interface geraldCommandOptions extends sapphire.CommandOptions {
 export abstract class GeraldCommand extends sapphire.Command {
 	alwaysEnabled: boolean;
 	private: boolean;
-	subcommands: (string | (() => void))[][] | null;
+	subcommands: Subcommand[] | null;
 	public constructor(context: sapphire.Command.Context, options: geraldCommandOptions) {
 		super(context, {
 			...options,
@@ -110,6 +114,18 @@ export abstract class GeraldCommand extends sapphire.Command {
 		await interaction.deferReply();
 		const reply = await interaction.fetchReply();
 		let x;
+		if (this.subcommands) {
+			const name = interaction.options.getSubcommand(true);
+			const cmd = this.subcommands.find(i => name === i.name);
+			if (cmd === undefined) throw new Error(`Subcommand for "${name}" not found.`);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(this as any)[cmd.handlerName]();
+			try {
+				x = this.slashRun(interaction, <discord.Message>reply, context);
+			} catch (error) {
+				this.slashHandler(error, interaction, context);
+			}	
+		}
 		try {
 			x = this.slashRun(interaction, <discord.Message>reply, context);
 		} catch (error) {
