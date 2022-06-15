@@ -504,7 +504,7 @@ export class infoCommand extends GeraldCommand {
 	}
 
 	public async cmdRelics(interaction: discord.Interaction) {
-
+		interaction;
 	}
 }
 
