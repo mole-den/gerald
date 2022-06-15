@@ -389,8 +389,8 @@ export class infoCommand extends GeraldCommand {
 @ApplyOptions<geraldCommandOptions>({
 	name: "warframe",
 	description: "Command to access warframe APIs.",
-	subcommands: [{ handlerName: "cmdMarket", name: "market" },
-		{ handlerName: "cmdRelics", name: "relics" }]
+	subcommands: [{ handlerName: "cmdMarket", name: "market", slashCommand: true },
+		{ handlerName: "cmdRelics", name: "relics", slashCommand: true }]
 }) export class warframeCommand extends GeraldCommand {
 	public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
 		reg.registerChatInputCommand((builder) => {
