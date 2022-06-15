@@ -405,7 +405,7 @@ export class infoCommand extends GeraldCommand {
 							.setRequired(false).setDescription("Return data for specified platform. Default: pc").setName("platform")))
 				.addSubcommand(subcommand =>
 					subcommand.setName("relics")
-						.setDescription("")
+						.setDescription("Get data and price information about relics and their content.")
 						.addStringOption(o =>
 							o.setName("type").setDescription("The type of the relic.").setRequired(true)
 								.addChoices([["Lith", "lith"], ["Meso", "meso"], ["Neo", "neo"], ["Axi", "axi"], ["Requiem", "requiem"]])
