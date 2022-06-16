@@ -42,9 +42,7 @@ export namespace utils {
 						});
 						return false;
 					}
-					if (type && i.customId !== type) {
-						return false;
-					}
+					if (type && i.customId !== type) return false;
 					return true;
 				}, componentType: "BUTTON", time: timeout
 			});
@@ -69,18 +67,15 @@ export namespace utils {
 			collector.on("collect", async i => {
 				if (i.user.id === input.interaction.user.id) {
 					if (i.customId === "dismissEmbed") return await input.interaction.deleteReply();
-					if (input.type) {
+					if (input.type)
 						if (input.type === i.customId) return await input.onClick(i, next);
 						else return;
-					}
 					return await input.onClick(i, next);
-				} else {
-					return await i.reply({
-						ephemeral: true,
-						content: `Please stop interacting with the components on this message. They are only for ${input.interaction.user.toString()}.`,
-						allowedMentions: { users: [], roles: [] }
-					});
-				}
+				} else return await i.reply({
+					ephemeral: true,
+					content: `Please stop interacting with the components on this message. They are only for ${input.interaction.user.toString()}.`,
+					allowedMentions: { users: [], roles: [] }
+				});
 			});
 
 			collector.on("end", async () => {
@@ -107,7 +102,7 @@ export namespace utils {
 		try {
 			await response.edit({
 				components: [...button]
-			});	
+			});
 		} catch {
 			return;
 		}
@@ -126,20 +121,15 @@ export namespace utils {
 			const collector = input.response.createMessageComponentCollector({ componentType: "SELECT_MENU", time: input.timeout ?? 15000 });
 			const col2 = input.response.createMessageComponentCollector({ componentType: "BUTTON", time: input.timeout ?? 15000 });
 			col2.on("collect", async (i) => {
-				if (i.user.id === input.user && i.customId === "dismissEmbed") {
-					input.response.delete();
-				}
+				if (i.user.id === input.user && i.customId === "dismissEmbed") input.response.delete();
 			});
 			collector.on("collect", async i => {
-				if (i.user.id === input.user) {
-					return await input.onClick(i, next);
-				} else {
-					return await i.reply({
-						ephemeral: true,
-						content: `Please stop interacting with the components on this message. They are only for <@${input.user}>.`,
-						allowedMentions: { users: [], roles: [] }
-					});
-				}
+				if (i.user.id === input.user) return await input.onClick(i, next);
+				else return await i.reply({
+					ephemeral: true,
+					content: `Please stop interacting with the components on this message. They are only for <@${input.user}>.`,
+					allowedMentions: { users: [], roles: [] }
+				});
 			});
 
 			collector.on("end", async () => {
@@ -171,9 +161,7 @@ export namespace utils {
 			const collector = input.response.channel.createMessageCollector({ time: input.timeout ?? 15000 });
 
 			collector.on("collect", async i => {
-				if (i.author.id === input.user) {
-					return await input.onClick(i, next);
-				}
+				if (i.author.id === input.user) return await input.onClick(i, next);
 			});
 
 			collector.on("end", async () => {

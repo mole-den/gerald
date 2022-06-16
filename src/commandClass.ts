@@ -64,14 +64,11 @@ export abstract class GeraldCommand extends sapphire.Command {
 	}
 	private messageHandler(error: unknown, message: discord.Message, args: sapphire.Args, context: sapphire.MessageCommand.RunContext): void {
 		const channel = message.channel;
-		if (error instanceof sapphire.UserError) {
-			channel.send(error.message);
-		} else {
+		if (error instanceof sapphire.UserError) channel.send(error.message);
+		else {
 			args;
 			context;
-			if (process.env.BUGSNAG_KEY) {
-				bugsnag.notify(JSON.stringify(error));
-			}
+			if (process.env.BUGSNAG_KEY) bugsnag.notify(JSON.stringify(error));
 			console.error(error);
 			const embed = new discord.MessageEmbed();
 			embed.setTitle(`Error: Command "${context.commandName}" failed`);
@@ -87,13 +84,10 @@ export abstract class GeraldCommand extends sapphire.Command {
 
 	}
 	private slashHandler(error: unknown, interaction: discord.CommandInteraction, context: sapphire.ChatInputCommand.RunContext): void {
-		if (error instanceof sapphire.UserError) {
-			interaction.reply(error.message);
-		} else {
+		if (error instanceof sapphire.UserError) interaction.reply(error.message);
+		else {
 			context;
-			if (process.env.BUGSNAG_KEY) {
-				bugsnag.notify(JSON.stringify(error));
-			}
+			if (process.env.BUGSNAG_KEY) bugsnag.notify(JSON.stringify(error));
 			console.error(error);
 			const embed = new discord.MessageEmbed();
 			embed.setTitle(`Error: Command "${context.commandName}" failed`);
@@ -118,17 +112,13 @@ export abstract class GeraldCommand extends sapphire.Command {
 		let x;
 		if (!this.slashRun) {
 			if (!this.subcommands) return;
-			if (!this.subcommands.some(i => i.slashCommand === true)) {
-				return;
-			}
+			if (!this.subcommands.some(i => i.slashCommand === true)) return;
 			const name = interaction.options.getSubcommand(true);
 			const cmd = this.subcommands.find(i => name === i.name);
 			if (cmd === undefined) throw new Error(`Subcommand for "${name}" not found.`);
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			func = (this as any)[cmd.handlerName];
-		} else {
-			func = this.slashRun;
-		}
+		} else func = this.slashRun;
 		try {
 			x = func(interaction, <discord.Message>reply, context);
 		} catch (error) {

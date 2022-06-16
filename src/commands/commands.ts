@@ -52,11 +52,8 @@ export class DeletedMSGCommand extends GeraldCommand {
 		del.forEach(async (msg) => {
 			const attachments = <attachment>msg.attachments;
 			let content: string;
-			if (msg.content.length > 1028) {
-				content = msg.content.substring(0, 1025) + "...";
-			} else {
-				content = msg.content;
-			}
+			if (msg.content.length > 1028) content = msg.content.substring(0, 1025) + "..."; 
+			else content = msg.content;
 			const DeleteEmbed = new discord.MessageEmbed()
 				.setTitle("Deleted Message")
 				.setColor("#fc3c3c")
@@ -113,13 +110,10 @@ export class prefixCommand extends GeraldCommand {
 	}
 	private async baseRun(x: string | null, item: discord.Message | discord.CommandInteraction) {
 		function send(msg: string) {
-			if (item instanceof discord.Message) {
-				item.channel.send(msg);
-			} else {
-				item.reply({
-					content: msg
-				});
-			}
+			if (item instanceof discord.Message) item.channel.send(msg);
+			else item.reply({
+				content: msg
+			});
 		}
 		if (!item.guild) return;
 		if (!x) {
@@ -258,18 +252,15 @@ export class infoCommand extends GeraldCommand {
 			embed.addField("Description:", cmd.description, false);
 		else
 			embed.addField("Description:", "null", false);
-		if (cmd.detailedDescription) {
+		if (cmd.detailedDescription)
 			if (typeof cmd.detailedDescription === "string")
 				embed.addField("Usage:", (cmd.detailedDescription), false);
-			else {
+			else
 				Object.keys(cmd.detailedDescription).forEach(c => {
 					// @ts-expect-error eee
 					embed.addField(`${c}:`, cmd?.detailedDescription[c]);
 				});
-			}
-		}
-		else
-			embed.addField("Usage:", "null", false);
+		else embed.addField("Usage:", "null", false);
 		return embed;
 	}
 
@@ -314,11 +305,8 @@ export class infoCommand extends GeraldCommand {
 			message.channel.send(`${getRandomArbitrary(0, 100)}%`);
 			return;
 		}
-		if (getRandomArbitrary(0, 20) > 9) {
-			return message.channel.send("yes");
-		} else {
-			return message.channel.send("no");
-		}
+		if (getRandomArbitrary(0, 20) > 9) return message.channel.send("yes");
+		else return message.channel.send("no");
 
 	}
 }
@@ -581,9 +569,7 @@ export class queryCommand extends GeraldCommand {
 			index++;
 			return;
 		});
-		if (content.length === 1) {
-			content.push("All members have 0 xp.");
-		}
+		if (content.length === 1) content.push("All members have 0 xp.");
 		interaction.editReply({
 			content: content.join("\n"),
 			allowedMentions: { parse: [] }
