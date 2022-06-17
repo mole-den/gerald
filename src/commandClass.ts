@@ -120,7 +120,7 @@ export abstract class GeraldCommand extends sapphire.Command {
 			func = (this as any)[cmd.handlerName];
 		} else func = this.slashRun;
 		try {
-			x = func(interaction, <discord.Message>reply, context);
+			x = func.bind(this)(interaction, <discord.Message>reply, context);
 		} catch (error) {
 			this.slashHandler(error, interaction, context);
 		}
