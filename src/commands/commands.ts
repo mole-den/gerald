@@ -501,30 +501,40 @@ interface order {
 			rarity: string,
 			chance: number
 		}
-		const platform = interaction.	options.getString("platform") ?? "pc";
+		const platform = interaction.options.getString("platform") ?? "pc";
 		const relicType = interaction.options.getString("type");
 		const relicName = interaction.options.getString("name");
+		function getRarity(value: number): string {
+			switch (value) {
+			case 25.33:
+				return "Common";
+			case 11:
+				return "Uncommon";
+			case 2:
+				return "Rare";
+			}
+			return "Unknown";
+		}
 		if (!relicName || !relicType) return;
 		const x = await axios.get(`http://drops.warframestat.us/data/relics/${relicType}/${relicName}.json`);
 		if (x.status !== 200) return interaction.editReply({
 			content: `Relic \`${relicType} ${relicName}\` not found.`,
 		});
-		const rewards: relicReward[] = x.data.rewards.Intact;
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const data: relicData[] = [];
+		const rewards: relicReward[] = x.data.rewards.Intact;let data: relicData[] = [];
 		for (const i of rewards) {
-			console.log(data);
 			const itemName = i.itemName;
 			if (itemName.includes("Forma") || itemName.includes("Kuva")
 				|| itemName.includes("Riven Sliver") || itemName.includes("Exilus")) {
 				data.push({
 					name: i.itemName,
-					rarity: i.rarity,
+					rarity: getRarity(i.chance),
 					price: -1,
+					lowestPrice: -1,
 					orders: -1,
-					link: "NA"
+					link: "NA",
+					meta: i,
 				});
-				return;
+				continue;
 			} else {
 				let urlName = i.itemName.toLowerCase().split(" ").filter(v => v !== "blueprint").join("_");
 				let resolvedItem: {
@@ -549,19 +559,22 @@ interface order {
 				}));
 				if (item.status === 200) resolvedItem = item.data;
 				else {
-					urlName = (<RegExpMatchArray>item.data.error.substring(0, item.data.error.length - 26).match(/[a-z_]+$/))[0];
-					resolvedItem = (await axios.get(`https://api.warframe.market/v1/items/${urlName}_blueprint/orders?include=item`)).data;
+					urlName = `${(<RegExpMatchArray>item.data.error.substring(0, item.data.error.length - 26).match(/[a-z_]+$/))[0]}_blueprint`;
+					resolvedItem = (await axios.get(`https://api.warframe.market/v1/items/${urlName}/orders?include=item`)).data;
 				}
+				const prices = resolvedItem.payload.orders.filter(o => o.order_type !== "buy" && o.user.status !== "offline").sort((a, b) => a.platinum - b.platinum).slice(0, 9).map(o => o.platinum);
 				data.push({
 					name: i.itemName,
-					rarity: i.rarity,
-					price: -1,
+					rarity: getRarity(i.chance),
+					lowestPrice: prices[0],
+					price: Math.round(_.mean(prices)),
 					orders: resolvedItem.payload.orders.length,
-					link: `https://warframe.market/${urlName}`
+					link: `https://warframe.market/items/${urlName}`,
+					meta: i,
 				});
-				
+
 			}
-			
+
 		}
 		type relicData = {
 			name: string;
@@ -569,12 +582,22 @@ interface order {
 			orders: number;
 			link: string;
 			rarity: string;
+			lowestPrice: number;
+			meta: any;
 		};
-		data;
 		const embed = new discord.MessageEmbed();
-		embed;
+		embed.setTitle(`Market data for ${relicType} ${relicName}`);
+		embed.setColor("BLURPLE");
+		embed.setTimestamp(new Date());
+		// sort data by rarity
+		data = data.sort((a, b) => {
+			if (a.rarity === b.rarity) return a.name.localeCompare(b.name);
+			return a.rarity === "Common" ? -1 : 1;
+		});
+		for (const i of data)
+			embed.addField(i.name, `Rarity: ${i.rarity}\nPMean price: ${i.price === -1 ? "NA" : i.price + "p"}, Lowest price: ${i.lowestPrice === -1 ? "NA" : i.lowestPrice + "p"}\nTotal orders: ${i.orders}`);
 		interaction.editReply({
-			content: JSON.stringify(data)
+			embeds: [embed]
 		});
 		return;
 	}
