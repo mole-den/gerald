@@ -52,7 +52,7 @@ export class DeletedMSGCommand extends GeraldCommand {
 		del.forEach(async (msg) => {
 			const attachments = <attachment>msg.attachments;
 			let content: string;
-			if (msg.content.length > 1028) content = msg.content.substring(0, 1025) + "..."; 
+			if (msg.content.length > 1028) content = msg.content.substring(0, 1025) + "...";
 			else content = msg.content;
 			const DeleteEmbed = new discord.MessageEmbed()
 				.setTitle("Deleted Message")
@@ -373,6 +373,27 @@ export class infoCommand extends GeraldCommand {
 	}
 }
 
+interface order {
+	quantity: number,
+	platinum: number,
+	order_type: "sell" | "buy",
+	user: {
+		reputation: number,
+		region: string,
+		last_seen: string,
+		ingame_name: string,
+		id: string,
+		avatar: null | string,
+		status: string
+	},
+	platform: string,
+	region: string,
+	creation_date: string,
+	last_update: string,
+	visible: boolean,
+	id: string
+}
+
 @ApplyOptions<geraldCommandOptions>({
 	name: "warframe",
 	description: "Command to access warframe APIs.",
@@ -395,10 +416,12 @@ export class infoCommand extends GeraldCommand {
 						.setDescription("Get data and price information about relics and their content.")
 						.addStringOption(o =>
 							o.setName("type").setDescription("The type of the relic.").setRequired(true)
-								.addChoices([["Lith", "lith"], ["Meso", "meso"], ["Neo", "neo"], ["Axi", "axi"], ["Requiem", "requiem"]])
+								.addChoices([["Lith", "Lith"], ["Meso", "Meso"], ["Neo", "Neo"], ["Axi", "Axi"], ["Requiem", "Requiem"]])
 						).addStringOption(o =>
 							o.setName("name").setDescription("The name of the relic.").setRequired(true)
-						)
+						).addStringOption(o => {
+							return o.setName("platform").setDescription("Return data for specified platform. Default: pc").setRequired(false);
+						})
 				);
 		}, {
 			idHints: ["957171251271585822"],
@@ -422,26 +445,6 @@ export class infoCommand extends GeraldCommand {
 		if (data.status !== 200) {
 			interaction.editReply(`${data.status}: ${data.statusText}`);
 			return;
-		}
-		interface order {
-			quantity: number,
-			platinum: number,
-			order_type: "sell" | "buy",
-			user: {
-				reputation: number,
-				region: string,
-				last_seen: string,
-				ingame_name: string,
-				id: string,
-				avatar: null | string,
-				status: string
-			},
-			platform: string,
-			region: string,
-			creation_date: string,
-			last_update: string,
-			visible: boolean,
-			id: string
 		}
 		let orders: order[] = data.data.payload.orders;
 		orders = orders.filter(v => {
@@ -492,9 +495,88 @@ export class infoCommand extends GeraldCommand {
 	}
 
 	public async cmdRelics(interaction: discord.CommandInteraction) {
-		interaction.editReply({
-			content: "Not implemented yet."
+		interface relicReward {
+			_id: string,
+			itemName: string,
+			rarity: string,
+			chance: number
+		}
+		const platform = interaction.	options.getString("platform") ?? "pc";
+		const relicType = interaction.options.getString("type");
+		const relicName = interaction.options.getString("name");
+		if (!relicName || !relicType) return;
+		const x = await axios.get(`http://drops.warframestat.us/data/relics/${relicType}/${relicName}.json`);
+		if (x.status !== 200) return interaction.editReply({
+			content: `Relic \`${relicType} ${relicName}\` not found.`,
 		});
+		const rewards: relicReward[] = x.data.rewards.Intact;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const data: relicData[] = [];
+		for (const i of rewards) {
+			console.log(data);
+			const itemName = i.itemName;
+			if (itemName.includes("Forma") || itemName.includes("Kuva")
+				|| itemName.includes("Riven Sliver") || itemName.includes("Exilus")) {
+				data.push({
+					name: i.itemName,
+					rarity: i.rarity,
+					price: -1,
+					orders: -1,
+					link: "NA"
+				});
+				return;
+			} else {
+				let urlName = i.itemName.toLowerCase().split(" ").filter(v => v !== "blueprint").join("_");
+				let resolvedItem: {
+					payload: {
+						orders: order[]
+					},
+					include: {
+						item: {
+							items_in_set: {
+								url_name: string,
+								en: {
+									item_name: string
+								}
+							}[]
+						}
+					}
+				};
+				const item = await (axios.get(`https://api.warframe.market/v1/items/${urlName}/orders?include=item`, {
+					headers: {
+						Platform: platform
+					}
+				}));
+				if (item.status === 200) resolvedItem = item.data;
+				else {
+					urlName = (<RegExpMatchArray>item.data.error.substring(0, item.data.error.length - 26).match(/[a-z_]+$/))[0];
+					resolvedItem = (await axios.get(`https://api.warframe.market/v1/items/${urlName}_blueprint/orders?include=item`)).data;
+				}
+				data.push({
+					name: i.itemName,
+					rarity: i.rarity,
+					price: -1,
+					orders: resolvedItem.payload.orders.length,
+					link: `https://warframe.market/${urlName}`
+				});
+				
+			}
+			
+		}
+		type relicData = {
+			name: string;
+			price: number;
+			orders: number;
+			link: string;
+			rarity: string;
+		};
+		data;
+		const embed = new discord.MessageEmbed();
+		embed;
+		interaction.editReply({
+			content: JSON.stringify(data)
+		});
+		return;
 	}
 }
 

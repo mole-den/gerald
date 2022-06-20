@@ -18,6 +18,7 @@
         
         "curly": ["error", "multi"],
         "no-shadow": "off",
+        "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-shadow": ["error"],      
         "indent": [
             "error",
