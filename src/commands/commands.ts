@@ -591,7 +591,10 @@ interface order {
 		embed.setTimestamp(new Date());
 		// sort data by rarity
 		data = data.sort((a, b) => {
-			if (a.rarity === b.rarity) return a.name.localeCompare(b.name);
+			if (a.rarity === b.rarity) return 0;
+			if (a.rarity === "Common") return -1;
+			if (a.rarity === "Uncommon" && b.rarity === "Rare") return -1;
+			if (a.rarity === "Rare") return 1; 
 			return a.rarity === "Common" ? -1 : 1;
 		});
 		for (const i of data)
@@ -599,7 +602,8 @@ interface order {
 		const row = new discord.MessageActionRow();
 		row.addComponents(utils.dismissButton);
 		interaction.editReply({
-			embeds: [embed]
+			embeds: [embed],
+			components: [row]
 		});
 		const response = await interaction.fetchReply();
 		if (response instanceof discord.Message)
