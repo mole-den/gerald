@@ -595,7 +595,7 @@ interface order {
 			return a.rarity === "Common" ? -1 : 1;
 		});
 		for (const i of data)
-			embed.addField(i.name, `Rarity: ${i.rarity}\nPMean price: ${i.price === -1 ? "NA" : i.price + "p"}, Lowest price: ${i.lowestPrice === -1 ? "NA" : i.lowestPrice + "p"}\nTotal orders: ${i.orders}`);
+			embed.addField(i.name, `Rarity: ${i.rarity}\nMean price: ${i.price === -1 ? "NA" : i.price + "p"}, Lowest price: ${i.lowestPrice === -1 ? "NA" : i.lowestPrice + "p"}\nTotal orders: ${i.orders}`);
 		interaction.editReply({
 			embeds: [embed]
 		});
