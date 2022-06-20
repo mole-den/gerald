@@ -596,9 +596,14 @@ interface order {
 		});
 		for (const i of data)
 			embed.addField(i.name, `Rarity: ${i.rarity}\nMean price: ${i.price === -1 ? "NA" : i.price + "p"}, Lowest price: ${i.lowestPrice === -1 ? "NA" : i.lowestPrice + "p"}\nTotal orders: ${i.orders}`);
+		const row = new discord.MessageActionRow();
+		row.addComponents(utils.dismissButton);
 		interaction.editReply({
 			embeds: [embed]
 		});
+		const response = await interaction.fetchReply();
+		if (response instanceof discord.Message)
+			utils.handleDismissButton(interaction, response);
 		return;
 	}
 }
