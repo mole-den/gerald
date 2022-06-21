@@ -520,7 +520,8 @@ interface order {
 		if (x.status !== 200) return interaction.editReply({
 			content: `Relic \`${relicType} ${relicName}\` not found.`,
 		});
-		const rewards: relicReward[] = x.data.rewards.Intact;let data: relicData[] = [];
+		const rewards: relicReward[] = x.data.rewards.Intact;
+		let data: relicData[] = [];
 		for (const i of rewards) {
 			const itemName = i.itemName;
 			if (itemName.includes("Forma") || itemName.includes("Kuva")
