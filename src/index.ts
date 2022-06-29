@@ -190,6 +190,7 @@ bot.on("guildCreate", async (guild) => {
 async function deletedMessageHandler(message: discord.Message | discord.PartialMessage, delTime: Date) {
 	if (message.partial || message.author.bot || message.guild === null) return;
 	await sleep(100);
+	
 	const logs = await message.guild.fetchAuditLogs({
 		type: 72
 	});
