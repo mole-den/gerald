@@ -1,7 +1,6 @@
-import { cofnigEntry } from "@prisma/client";
 import * as sapphire from "@sapphire/framework";
 import * as discord from "discord.js";
-import { bot, bugsnag } from ".";
+import { bugsnag } from ".";
 
 export interface ModuleOptions {
 	name: string,
@@ -40,7 +39,7 @@ export abstract class GeraldCommand extends sapphire.Command {
 		super(context, {
 			...options,
 		});
-		this.settings = options.settings ?? null
+		this.settings = options.settings ?? null;
 		this.subcommands = options.subcommands ?? null;
 		this.alwaysEnabled = options.alwaysEnabled ?? false;
 		this.private = options.private ?? false;
