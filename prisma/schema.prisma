@@ -10,9 +10,26 @@ datasource db {
 model guild {
   id         Int      @id @default(autoincrement())
   guildId    String   @unique @map("guild_id")
-  joinedTime DateTime @db.Timestamp(6) @map("join_Time")
+  joinedTime DateTime @map("join_Time") @db.Timestamp(6)
   prefix     String   @default("g")
   member     member[]
+  config     config[]
+}
+
+model config {
+  id          Int           @id @default(autoincrement())
+  guild       guild         @relation(fields: [guildId], references: [guildId], onDelete: Cascade)
+  guildId     String
+  module      String        @unique
+  cofnigEntry cofnigEntry[]
+}
+
+model cofnigEntry {
+  id       Int    @id @default(autoincrement())
+  config   config @relation(fields: [configId], references: [id])
+  configId Int
+  key      String
+  value    String
 }
 
 model member {
@@ -27,9 +44,9 @@ model member {
 }
 
 model member_level {
-  memberID    String  @map("user_id")
-  guildID     String  @map("guild_id")
-  level       Int    @default(0) 
+  memberID    String @map("user_id")
+  guildID     String @map("guild_id")
+  level       Int    @default(0)
   nextLevelXp Int    @default(100) @map("next_xp")
   xp          Int    @default(0)
   member      member @relation(fields: [memberID, guildID], references: [userid, guildid], onDelete: Cascade)
@@ -42,11 +59,11 @@ model deleted_msg {
   id          Int      @id @default(autoincrement())
   author      String
   content     String
-  guildId     String @map("guild_id")
-  msgTime     DateTime @db.Timestamp(6) @map("msg_time")
+  guildId     String   @map("guild_id")
+  msgTime     DateTime @map("msg_time") @db.Timestamp(6)
   channel     String
-  deletedTime DateTime @db.Timestamp(6) @map("del_time")
-  deletedBy   String   @db.VarChar(200) @map("del_by")
+  deletedTime DateTime @map("del_time") @db.Timestamp(6)
+  deletedBy   String   @map("del_by") @db.VarChar(200)
   msgId       String   @unique @map("msg_id")
   attachments Json?
   member      member   @relation(fields: [author, guildId], references: [userid, guildid], onDelete: Cascade)
@@ -59,4 +76,3 @@ model scheduled_task {
   time    DateTime @db.Timestamp(6)
   done    Boolean  @default(false)
 }
-

@@ -17,7 +17,6 @@ time;
 	name: "deleted",
 	description: "Shows infomation about the last deleted messages",
 	requiredClientPermissions: [],
-	requiredUserPermissions: "MANAGE_MESSAGES",
 	preconditions: ["GuildOnly"],
 	options: ["id"]
 })
@@ -358,8 +357,8 @@ interface order {
 @ApplyOptions<geraldCommandOptions>({
 	name: "warframe",
 	description: "Command to access warframe APIs.",
-	subcommands: [{ handlerName: "cmdMarket", name: "market", slashCommand: true },
-		{ handlerName: "cmdRelics", name: "relics", slashCommand: true }]
+	subcommands: [{ handlerName: "cmdMarket", name: "market"},
+		{ handlerName: "cmdRelics", name: "relics", }]
 }) export class warframeCommand extends GeraldCommand {
 	public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
 		reg.registerChatInputCommand((builder) => {
