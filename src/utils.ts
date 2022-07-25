@@ -187,4 +187,74 @@ export namespace utils {
 		return string;
 	}
 
+	export function getRandomArbitrary(min: number, max: number) {
+		return Math.round(Math.random() * (max - min) + min);
+	}
+
+	export function durationToMS(duration: string): number {
+		const timeRegex = /([0-9]+(m($| )|min($| )|mins($| )|minute($| )|minutes($| )|h($| )|hr($| )|hrs($| )|hour($| )|hours($| )|d($| )|day($| )|days($| )|wk($| )|wks($| )|week($| )|weeks($| )|mth($| )|mths($| )|month($| )|months($| )|y($| )|yr($| )|yrs($| )|year($| )|years($| )))+/gmi;
+		let durationMS = 0;
+		if (duration.length > 30) return NaN;
+		const durationArr = duration.match(timeRegex);
+		if (!durationArr) return NaN;
+		durationArr.forEach((d) => {
+			const time = d.match(/[0-9]+/gmi);
+			const unit = d.match(/[a-zA-Z]+/gmi);
+			if (!time || !unit) return;
+			const timeNum = parseInt(time[0]);
+			let unitNum = 0;
+			switch (unit[0].toLowerCase()) {
+			case "m":
+			case "min":
+			case "mins":
+			case "minute":
+			case "minutes":
+				unitNum = 60000;
+				break;
+			case "h":
+			case "hr":
+			case "hrs":
+			case "hour":
+			case "hours":
+				unitNum = 3600000;
+				break;
+			case "d":
+			case "day":
+			case "days":
+				unitNum = 86400000;
+				break;
+			case "wk":
+			case "wks":
+			case "week":
+			case "weeks":
+				unitNum = 604800000;
+				break;
+			case "mth":
+			case "mths":
+			case "month":
+			case "months":
+				unitNum = 2592000000;
+				break;
+			case "y":
+			case "yr":
+			case "yrs":
+			case "year":
+			case "years":
+				unitNum = 31536000000;
+				break;
+			}
+			durationMS += timeNum * unitNum;
+		});
+		return durationMS;
+	}
+	export function sleep(ms: number): Promise<void> {
+		return new Promise((resolve) => {
+			setTimeout(resolve, ms);
+		});
+	}
+	
+	export function cleanMentions(str: string): string {
+		return str.replace(/@everyone/g, "@\u200beveryone").replace(/@here/g, "@\u200bhere");
+	}
+	
 }

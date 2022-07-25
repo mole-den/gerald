@@ -26,8 +26,8 @@ model config {
 
 model cofnigEntry {
   id       Int    @id @default(autoincrement())
-  config   config @relation(fields: [configId], references: [id])
-  configId Int
+  config   config @relation(fields: [module], references: [module])
+  module String
   key      String
   value    String
 }

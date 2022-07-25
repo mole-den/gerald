@@ -2,6 +2,7 @@ import * as discord from "discord.js";
 import * as sapphire from "@sapphire/framework";
 import { scheduledTaskManager } from "./taskManager";
 import { PrismaClient } from "@prisma/client";
+import { utils } from "./utils";
 import Time from "@sapphire/time-utilities";
 import Bugsnag from "@bugsnag/js";
 import { GeraldCommand } from "./commandClass";
@@ -39,7 +40,7 @@ class Gerald extends sapphire.SapphireClient {
 		console.log("Starting...");
 		await this.db.$connect();
 		console.log("Connected to database");
-		await sleep(1000);
+		await utils.sleep(1000);
 		await super.login(process.argv.find(i => i === "e") ? process.env.TOKENB : process.env.TOKEN);
 		taskScheduler = new scheduledTaskManager();
 		const x = await this.db.guild.count();
@@ -55,7 +56,7 @@ class Gerald extends sapphire.SapphireClient {
 				});
 			});
 		}
-		await sleep(4000);
+		await utils.sleep(4000);
 		this.user?.setStatus("dnd");
 		bot.stores.get("commands").forEach(i => {
 			(<GeraldCommand>i).onCommandStart();
@@ -70,77 +71,8 @@ class Gerald extends sapphire.SapphireClient {
 
 }
 export const bot = new Gerald();
-export function durationToMS(duration: string): number {
-	const timeRegex = /([0-9]+(m($| )|min($| )|mins($| )|minute($| )|minutes($| )|h($| )|hr($| )|hrs($| )|hour($| )|hours($| )|d($| )|day($| )|days($| )|wk($| )|wks($| )|week($| )|weeks($| )|mth($| )|mths($| )|month($| )|months($| )|y($| )|yr($| )|yrs($| )|year($| )|years($| )))+/gmi;
-	let durationMS = 0;
-	if (duration.length > 30) return NaN;
-	const durationArr = duration.match(timeRegex);
-	if (!durationArr) return NaN;
-	durationArr.forEach((d) => {
-		const time = d.match(/[0-9]+/gmi);
-		const unit = d.match(/[a-zA-Z]+/gmi);
-		if (!time || !unit) return;
-		const timeNum = parseInt(time[0]);
-		let unitNum = 0;
-		switch (unit[0].toLowerCase()) {
-		case "m":
-		case "min":
-		case "mins":
-		case "minute":
-		case "minutes":
-			unitNum = 60000;
-			break;
-		case "h":
-		case "hr":
-		case "hrs":
-		case "hour":
-		case "hours":
-			unitNum = 3600000;
-			break;
-		case "d":
-		case "day":
-		case "days":
-			unitNum = 86400000;
-			break;
-		case "wk":
-		case "wks":
-		case "week":
-		case "weeks":
-			unitNum = 604800000;
-			break;
-		case "mth":
-		case "mths":
-		case "month":
-		case "months":
-			unitNum = 2592000000;
-			break;
-		case "y":
-		case "yr":
-		case "yrs":
-		case "year":
-		case "years":
-			unitNum = 31536000000;
-			break;
-		}
-		durationMS += timeNum * unitNum;
-	});
-	return durationMS;
-}
-export function sleep(ms: number): Promise<void> {
-	return new Promise((resolve) => {
-		setTimeout(resolve, ms);
-	});
-}
-
-export function cleanMentions(str: string): string {
-	return str.replace(/@everyone/g, "@\u200beveryone").replace(/@here/g, "@\u200bhere");
-}
-
-
 export let taskScheduler: scheduledTaskManager;
-export function getRandomArbitrary(min: number, max: number) {
-	return Math.round(Math.random() * (max - min) + min);
-}
+
 
 bot.on("messageCommandDenied", ({ context, message: content }: sapphire.UserError, { message }: sapphire.MessageCommandDeniedPayload) => {
 	// `context: { silent: true }` should make UserError silent:
@@ -171,7 +103,7 @@ bot.on("guildCreate", async (guild) => {
 });
 async function deletedMessageHandler(message: discord.Message | discord.PartialMessage, delTime: Date) {
 	if (message.partial || message.author.bot || message.guild === null) return;
-	await sleep(100);
+	await utils.sleep(100);
 	
 	const logs = await message.guild.fetchAuditLogs({
 		type: 72
@@ -219,7 +151,7 @@ async function deletedMessageHandler(message: discord.Message | discord.PartialM
 bot.on("messageDelete", async (message) => await deletedMessageHandler(message, new Date()));
 bot.on("messageDeleteBulk", async (array) => {
 	const delTime = new Date();
-	await sleep(100);
+	await utils.sleep(100);
 	array.each(async (message) => {
 		await deletedMessageHandler(message, delTime);
 	});
