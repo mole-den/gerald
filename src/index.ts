@@ -4,6 +4,7 @@ import { scheduledTaskManager } from "./taskManager";
 import { PrismaClient } from "@prisma/client";
 import Time from "@sapphire/time-utilities";
 import Bugsnag from "@bugsnag/js";
+import { GeraldCommand } from "./commandClass";
 export const bugsnag = Bugsnag;
 if (process.env.BUGSNAG_KEY) bugsnag.start({
 	apiKey: process.env.BUGSNAG_KEY,
@@ -19,26 +20,6 @@ class Gerald extends sapphire.SapphireClient {
 	constructor() {
 		super({
 			typing: true,
-			caseInsensitiveCommands: true,
-			caseInsensitivePrefixes: true,
-			fetchPrefix: async (message) => {
-				if (!message.guild) return "g";
-				try {
-					const x = await bot.db.guild.findUnique({
-						where: {
-							guildId: message.guild?.id
-						},
-						select: {
-							prefix: true
-						}
-					});
-					return x?.prefix ?? "g";
-				} catch (error) {
-					return "g";
-				}
-
-			},
-			loadMessageCommandListeners: true,
 			intents: new discord.Intents([discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS, discord.Intents.FLAGS.GUILD_MESSAGES,
 				discord.Intents.FLAGS.DIRECT_MESSAGES, discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
 				discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS, discord.Intents.FLAGS.GUILD_VOICE_STATES]),
@@ -52,7 +33,6 @@ class Gerald extends sapphire.SapphireClient {
 		this.db = new PrismaClient({
 			log: ["info", "warn", "error"],
 		});
-		sapphire.container.modules = [];
 	}
 	
 	public async start(): Promise<void> {
@@ -76,8 +56,10 @@ class Gerald extends sapphire.SapphireClient {
 			});
 		}
 		await sleep(4000);
-		sapphire.container.modules.forEach(m => m.load());
 		this.user?.setStatus("dnd");
+		bot.stores.get("commands").forEach(i => {
+			(<GeraldCommand>i).onCommandStart();
+		});
 		console.log("Ready");
 	}
 	public override destroy(): void {

@@ -2,7 +2,7 @@ import * as sapphire from "@sapphire/framework";
 import * as discord from "discord.js";
 import _ from "lodash";
 import { PaginatedMessageEmbedFields } from "@sapphire/discord.js-utilities";
-import { getRandomArbitrary, bot } from "../index";
+import { bot } from "../index";
 import { GeraldCommand, geraldCommandOptions } from "../commandClass";
 import { ApplyOptions } from "@sapphire/decorators";
 import * as time from "@sapphire/time-utilities";
@@ -80,15 +80,6 @@ export class DeletedMSGCommand extends GeraldCommand {
 
 }
 
-
-@ApplyOptions<geraldCommandOptions>({
-	name: "prefix",
-	fullCategory: ["_enabled"],
-	description: "Shows and allows configuration of the bot prefix",
-	requiredClientPermissions: [],
-	requiredUserPermissions: [],
-	preconditions: ["GuildOnly"]
-})
 export class prefixCommand extends GeraldCommand {
 	public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
 		reg.registerChatInputCommand((builder) => {
@@ -154,8 +145,13 @@ export class prefixCommand extends GeraldCommand {
 	description: "Shows invite link"
 })
 export class inviteCommand extends GeraldCommand {
-	public async chatRun(message: discord.Message) {
-		message.channel.send("Invite is: https://discord.com/oauth2/authorize?client_id=671156130483011605&permissions=8&scope=bot%20applications.commands");
+	public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
+		reg.registerChatInputCommand((builder) => {
+			return builder.setName(this.name).setDescription(this.description);
+		});
+	}
+	public override async slashRun(interaction: sapphire.ChatInputCommand.Interaction) {
+		interaction.editReply("Invite is: https://discord.com/oauth2/authorize?client_id=671156130483011605&permissions=8&scope=bot%20applications.commands");
 	}
 }
 @ApplyOptions<geraldCommandOptions>({
@@ -169,17 +165,7 @@ export class infoCommand extends GeraldCommand {
 				.setDescription(this.description);
 		});
 	}
-	public override async chatRun(message: discord.Message) {
-		message.channel.send({
-			embeds: [await this.execute()]
-		});
-	}
 	public override async slashRun(interaction: sapphire.ChatInputCommand.Interaction) {
-		return interaction.editReply({
-			embeds: [await this.execute()]
-		});
-	}
-	private async execute() {
 		let uptime = process.uptime();
 		let uptimeString = "";
 		if (uptime >= 86400) {
@@ -205,7 +191,9 @@ export class infoCommand extends GeraldCommand {
 			.addField("Discord API heartbeat", `${bot.ws.ping}ms`, false)
 			.addField("Database Heartbeat", `${elapsed}ms`, false)
 			.addField("Memory usage", `${Math.round(process.memoryUsage.rss() / 1000000)}MB `);
-		return embed;
+		return interaction.editReply({
+			embeds: [embed]
+		});
 	}
 }
 
@@ -283,33 +271,6 @@ export class infoCommand extends GeraldCommand {
 	}
 }
 
-@ApplyOptions<geraldCommandOptions>({
-	name: "ask",
-	description: "Ask a question and get a response",
-	options: ["user"]
-}) export class askCommand extends GeraldCommand {
-	public async chatRun(message: discord.Message, args: sapphire.Args) {
-		const opt = args.nextMaybe();
-		if (opt.exists && opt.value === "user") {
-			let i = await message.guild?.roles.fetch("915746575689588827");
-			i ??= await message.guild?.roles.fetch("858473576335540224");
-			if (!i) return;
-			const member: string[] = [];
-			i.members.each((mem) => member.push(mem.user.username));
-			member.push("nobody");
-			const uniq = [...new Set(member)];
-			const ask = uniq[getRandomArbitrary(0, member.length - 1)];
-			return await message.channel.send(`${ask}`);
-		}
-		else if (opt.exists && opt.value === "percent") {
-			message.channel.send(`${getRandomArbitrary(0, 100)}%`);
-			return;
-		}
-		if (getRandomArbitrary(0, 20) > 9) return message.channel.send("yes");
-		else return message.channel.send("no");
-
-	}
-}
 
 @ApplyOptions<geraldCommandOptions>({
 	name: "level",
@@ -612,35 +573,6 @@ interface order {
 		return;
 	}
 }
-
-@ApplyOptions<geraldCommandOptions>({
-	name: "query",
-	fullCategory: ["_enabled", "_owner", "_hidden"],
-	description: "Runs SQL input against database",
-	requiredClientPermissions: [],
-	preconditions: ["OwnerOnly"]
-})
-export class queryCommand extends GeraldCommand {
-	public async chatRun(message: discord.Message, args: sapphire.Args) {
-		const out = await args.restResult("string");
-		if (!out.value) return;
-		const data = await bot.db.$queryRawUnsafe(out.value);
-		const JSONdata = JSON.stringify(data, null, 1);
-		if (JSONdata?.length && JSONdata.length < 2000) {
-			message.channel.send({
-				allowedMentions: { parse: [] },
-				content: JSONdata
-			});
-			return;
-		} else if (JSONdata?.length && JSONdata.length > 2000) {
-			const buffer = Buffer.from(JSONdata);
-			const attachment = new discord.MessageAttachment(buffer, "file.json");
-			message.channel.send({ files: [attachment] });
-		}
-	}
-
-}
-
 
 @ApplyOptions<geraldCommandOptions>({
 	name: "leaderboard",

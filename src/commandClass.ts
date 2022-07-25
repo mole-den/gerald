@@ -2,32 +2,10 @@ import * as sapphire from "@sapphire/framework";
 import * as discord from "discord.js";
 import { bugsnag } from ".";
 
-declare module "@sapphire/pieces" {
-	interface Container {
-		modules: Module[];
-	}
-}
-
-
-
 export interface ModuleOptions {
 	name: string,
 	description: string,
 	hidden?: boolean
-}
-
-export abstract class Module {
-	description: string;
-	name: string;
-	hidden: boolean;
-	constructor(options: ModuleOptions) {
-		this.hidden = options.hidden ?? false;
-		this.description = options.description;
-		this.name = options.name;
-	}
-
-	abstract load(): Promise<void>
-	abstract unload(): Promise<void>
 }
 
 interface Subcommand {
@@ -42,13 +20,6 @@ export interface geraldCommandOptions extends sapphire.CommandOptions {
 	private?: boolean
 	subcommands?: Subcommand[]
 }
-
-// declare class CommandStore extends sapphire.AliasStore<GeraldCommand> {
-// 	constructor();
-// 	get categories(): string[];
-// 	unload(name: string | GeraldCommand): Promise<GeraldCommand>;
-// 	loadAll(): Promise<void>;
-// }
 
 export abstract class GeraldCommand extends sapphire.Command {
 	alwaysEnabled: boolean;
@@ -83,6 +54,13 @@ export abstract class GeraldCommand extends sapphire.Command {
 		}
 
 	}
+	
+	public onCommandDisabled(): void {
+		return;
+	}
+	public onCommandStart(): void {
+		return;
+	}
 	private slashHandler(error: unknown, interaction: discord.CommandInteraction, context: sapphire.ChatInputCommand.RunContext): void {
 		if (error instanceof sapphire.UserError) interaction.reply(error.message);
 		else {
@@ -102,7 +80,6 @@ export abstract class GeraldCommand extends sapphire.Command {
 		}
 	}
 	protected slashRun?(interaction: discord.CommandInteraction, reply: discord.Message, context: sapphire.ChatInputCommand.RunContext): sapphire.Awaitable<unknown>
-	protected chatRun?(message: discord.Message, args: sapphire.Args, context: sapphire.MessageCommand.RunContext): sapphire.Awaitable<unknown>
 	protected menuRun?(interaction: discord.ContextMenuInteraction, context: sapphire.ContextMenuCommand.RunContext): sapphire.Awaitable<unknown>
 
 	async chatInputRun(interaction: discord.CommandInteraction, context: sapphire.ChatInputCommand.RunContext) {
@@ -130,21 +107,6 @@ export abstract class GeraldCommand extends sapphire.Command {
 		});
 
 	}
-	messageRun(message: discord.Message, args: sapphire.Args, context: sapphire.MessageCommand.RunContext) {
-		if (!this.chatRun) return;
-		let x;
-		try {
-			x = this.chatRun(message, args, context);
-		} catch (error) {
-			this.messageHandler(error, message, args, context);
-		}
-		if (!(x instanceof Promise)) return;
-		x.catch(e => {
-			this.messageHandler(e, message, args, context);
-		});
-
-	}
-
 }
 /*
 export class CommandManager extends Module {
