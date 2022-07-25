@@ -14,7 +14,7 @@
     "@bugsnag/js": "^7.16.1",
     "@bugsnag/source-maps": "^2.3.1",
     "@discordjs/voice": "^0.8.0",
-    "@prisma/client": "^3.8.1",
+    "@prisma/client": "^4.1.0",
     "@sapphire/decorators": "^4.0.4",
     "@sapphire/discord.js-utilities": "^4.4.0",
     "@sapphire/framework": "^3.0.0-next.a6c297c.0",
@@ -37,7 +37,7 @@
     "@typescript-eslint/eslint-plugin": "^5.28.0",
     "@typescript-eslint/parser": "^5.28.0",
     "eslint": "^8.17.0",
-    "prisma": "^3.8.1",
+    "prisma": "^4.1.0",
     "typescript": "^4.5.5"
   },
   "engines": {

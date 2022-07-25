@@ -13,7 +13,6 @@ model guild {
   joinedTime DateTime @db.Timestamp(6) @map("join_Time")
   prefix     String   @default("g")
   member     member[]
-  settings    module_settings[]
 }
 
 model member {
@@ -53,14 +52,6 @@ model deleted_msg {
   member      member   @relation(fields: [author, guildId], references: [userid, guildid], onDelete: Cascade)
 }
 
-model module_settings {
-  guildid String
-  moduleName String @map("module")
-  settings String @db.Text
-  guild guild @relation(fields: [guildid], references: [guildId], onDelete: Cascade)
-  @@id([guildid, moduleName])
-}
-
 model scheduled_task {
   id      Int      @id @default(autoincrement())
   task    String   @db.VarChar(255)
@@ -69,16 +60,3 @@ model scheduled_task {
   done    Boolean  @default(false)
 }
 
-// Trigger on member_level table
-// CREATE FUNCTION insert_level()
-//   RETURNS trigger AS
-// $func$
-// BEGIN
-//    INSERT INTO member (guildid, userid) VALUES (NEW.guild_id, NEW.user_id) ON CONFLICT DO NOTHING;
-// END
-// $func$  LANGUAGE plpgsql;
-
-// CREATE TRIGGER addLevel
-//     BEFORE INSERT ON member
-//     FOR EACH ROW
-//     EXECUTE FUNCTION insert_level();
