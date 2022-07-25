@@ -1,2 +1,1 @@
-worker: npm run heroku-start
-web: npm run heroku-start
+worker: trap '' SIGTERM; npm run start-a & npm run start-b & wait -n; kill -SIGTERM -$$; wait

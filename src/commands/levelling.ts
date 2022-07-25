@@ -1,15 +1,25 @@
 /*
-import { bot, getRandomArbitrary, } from "..";
-import { RateLimiterMemory } from "rate-limiter-flexible"
-import { Module } from "../commandClass";
-import { utils } from "../utils";
+import * as sapphire from "@sapphire/framework";
 import * as discord from "discord.js";
-export class Levelling extends Module {
+import _ from "lodash";
+import { RateLimiterMemory } from "rate-limiter-flexible";
+import { PaginatedMessageEmbedFields } from "@sapphire/discord.js-utilities";
+import { bot } from "../index";
+import { GeraldCommand, geraldCommandOptions } from "../commandClass";
+import { ApplyOptions } from "@sapphire/decorators";
+import { utils } from "../utils";
+///<reference types="../index"/>
+@ApplyOptions<geraldCommandOptions>({
+	name: "level",
+	description: "A basic server xp and levelling system.",
+	requiredClientPermissions: [],
+	requiredUserPermissions: "MANAGE_MESSAGES",
+	preconditions: ["GuildOnly"],
+	options: ["id"]
+}) export class Levelling extends GeraldCommand {
     xpLimit: RateLimiterMemory | undefined
     constructor() {
         super({
-            name: "levelling",
-            description: "Levelling",
             settings: [{
                 id: "levelUpMsg",
                 name: "Message sent on level up",
@@ -75,16 +85,15 @@ export class Levelling extends Module {
             }
         })
     }
-    async load(): Promise<void> {
+    async onCommandStart(): Promise<void> {
         this.xpLimit = new RateLimiterMemory({
             points: 30,
             duration: 60
         })
-        bot.on("messageCreate", x => this.handler(x))
+        bot.on("messageCreate", x => this.handler(x));
 
     }
-    async unload(): Promise<void> {
-        bot.off("messageCreate", x => this.handler(x))
+    async onCommandDisabled(): Promise<void> {
+        bot.off("messageCreate", x => this.handler(x));
     }
-}
-*/
+}*/
