@@ -542,10 +542,54 @@ interface order {
 export class rollCommand extends GeraldCommand {
 	public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
 		reg.registerChatInputCommand(cmd => cmd.setDescription(this.description).setName(this.name)
-			.addStringOption(i => i.setName("dice").setDescription("Amount and type of dice to roll.")));
+			.addStringOption(i => i.setName("dice").setDescription("Amount and type of dice to roll.")),
+		{ idHints: ["1001300165879152721"] });
 	}
 
 	public override slashRun(interaction: discord.CommandInteraction) {
-		interaction;
+		const option = interaction.options.getString("dice") ?? "d6";
+		let roll = option;
+		const cMatch = roll.match(/^-?\d+/);
+		let count: number;
+		if (cMatch === null)
+			if (roll.startsWith("d") || roll.match(/^\d+/)) count = 1;
+			else return false;
+		else {
+			count = _.toNumber(cMatch[0]);
+			if (_.isNaN(count)) return false;
+			roll = roll.replace(/^-?\d+/, "");
+		}
+		const dMatch = roll.match(/^-?\d+/);
+		let dice: number;
+		if (dMatch === null)
+			return false;
+		else {
+			dice = _.toNumber(dMatch[0].startsWith("d") ? dMatch[0].substring(1) : dMatch[0]);
+			if (_.isNaN(dice)) return false;
+			roll = roll.replace(/^-?\d+/, "");
+		}
+		const aMatch = roll.match(/^(-|\+)\d+/);
+		let mod: [string, number]|null;
+		if (aMatch === null)
+			mod = null;
+		else {
+			const num = _.toNumber(dMatch[0].substring(1));
+			if (_.isNaN(num)) return false;
+			mod = [aMatch[0].startsWith("+") ? "+" : "-", num];
+			if (_.isNaN(dice)) return false;
+			roll = roll.replace(/^-?\d+/, "");
+		}
+		const allResults: number[] = [];
+		for (let index = 0; index < count; index++) allResults.push(utils.getRandomArbitrary(1, dice));
+		let totalResult = allResults.reduce((a, b) => a + b, 0);
+		const resultString = "[ " + allResults.join(", ") + " ]";
+		if (mod) totalResult = mod[0] === "+" ? totalResult + mod[1] : totalResult - mod[1];
+		return interaction.reply({
+			allowedMentions: {
+				users: [],
+				roles: []
+			},
+			content: `${interaction.user} rolled \`${option}\` and got ${totalResult} ${resultString}`
+		});
 	}
 }
