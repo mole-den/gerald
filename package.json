@@ -4,8 +4,7 @@
   "version": "1.0.0",
   "main": "build/index.js",
   "scripts": {
-    "start-a": "node --enable-source-maps build/index.js",
-    "start-b": "node --enable-source-maps build/index.js e",
+    "start": "node --enable-source-maps build/index.js",
     "heroku-start": "npm start",
     "lint": "npx eslint src/**",
     "postinstall": "tsc && npm run lint"
