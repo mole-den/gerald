@@ -553,30 +553,72 @@ export class rollCommand extends GeraldCommand {
 		let count: number;
 		if (cMatch === null)
 			if (roll.startsWith("d") || roll.match(/^\d+/)) count = 1;
-			else return false;
+			else return interaction.reply({
+				allowedMentions: {
+					users: [],
+					roles: []
+				},
+				ephemeral: true,
+				content: `Invalid input \`${option}\``
+			});
 		else {
 			count = _.toNumber(cMatch[0]);
-			if (_.isNaN(count)) return false;
+			if (_.isNaN(count)) return interaction.reply({
+				allowedMentions: {
+					users: [],
+					roles: []
+				},
+				ephemeral: true,
+				content: `Invalid input \`${option}\``
+			});
 			roll = roll.replace(/^-?\d+/, "");
 		}
 		const dMatch = roll.match(/^-?\d+/);
 		let dice: number;
 		if (dMatch === null)
-			return false;
+			return interaction.reply({
+				allowedMentions: {
+					users: [],
+					roles: []
+				},
+				ephemeral: true,
+				content: `Invalid input \`${option}\``
+			});
 		else {
 			dice = _.toNumber(dMatch[0].startsWith("d") ? dMatch[0].substring(1) : dMatch[0]);
-			if (_.isNaN(dice)) return false;
+			if (_.isNaN(dice)) return interaction.reply({
+				allowedMentions: {
+					users: [],
+					roles: []
+				},
+				ephemeral: true,
+				content: `Invalid input \`${option}\``
+			});
 			roll = roll.replace(/^-?\d+/, "");
 		}
 		const aMatch = roll.match(/^(-|\+)\d+/);
-		let mod: [string, number]|null;
+		let mod: [string, number] | null;
 		if (aMatch === null)
 			mod = null;
 		else {
 			const num = _.toNumber(dMatch[0].substring(1));
-			if (_.isNaN(num)) return false;
+			if (_.isNaN(num)) return interaction.reply({
+				allowedMentions: {
+					users: [],
+					roles: []
+				},
+				ephemeral: true,
+				content: `Invalid input \`${option}\``
+			});
 			mod = [aMatch[0].startsWith("+") ? "+" : "-", num];
-			if (_.isNaN(dice)) return false;
+			if (_.isNaN(dice)) return interaction.reply({
+				allowedMentions: {
+					users: [],
+					roles: []
+				},
+				ephemeral: true,
+				content: `Invalid input \`${option}\``
+			});
 			roll = roll.replace(/^-?\d+/, "");
 		}
 		const allResults: number[] = [];
@@ -584,12 +626,20 @@ export class rollCommand extends GeraldCommand {
 		let totalResult = allResults.reduce((a, b) => a + b, 0);
 		const resultString = "[ " + allResults.join(", ") + " ]";
 		if (mod) totalResult = mod[0] === "+" ? totalResult + mod[1] : totalResult - mod[1];
+		const string = `${interaction.user} rolled \`${option}\` and got ${totalResult} ${resultString}`;
+		if (string.length > 1999) return interaction.reply({
+			allowedMentions: {
+				users: [],
+				roles: []
+			},
+			content: `${interaction.user} rolled \`${option}\` but the result was too long to fit in one message`
+		});
 		return interaction.reply({
 			allowedMentions: {
 				users: [],
 				roles: []
 			},
-			content: `${interaction.user} rolled \`${option}\` and got ${totalResult} ${resultString}`
+			content: string
 		});
 	}
 }
