@@ -68,13 +68,11 @@ export abstract class GeraldCommand extends sapphire.Command {
 			});
 		}
 	}
-	protected slashRun?(interaction: discord.CommandInteraction, reply: discord.Message, context: sapphire.ChatInputCommand.RunContext): sapphire.Awaitable<unknown>
+	protected slashRun?(interaction: discord.CommandInteraction, context: sapphire.ChatInputCommand.RunContext): sapphire.Awaitable<unknown>
 	protected menuRun?(interaction: discord.ContextMenuInteraction, context: sapphire.ContextMenuCommand.RunContext): sapphire.Awaitable<unknown>
 
 	async chatInputRun(interaction: discord.CommandInteraction, context: sapphire.ChatInputCommand.RunContext) {
-		let func: (interaction: discord.CommandInteraction, reply: discord.Message, context: sapphire.ChatInputCommand.RunContext) => sapphire.Awaitable<unknown>;
-		await interaction.deferReply();
-		const reply = await interaction.fetchReply();
+		let func: (interaction: discord.CommandInteraction, context: sapphire.ChatInputCommand.RunContext) => sapphire.Awaitable<unknown>;
 		let x;
 		if (!this.slashRun) {
 			if (!this.subcommands) return;
@@ -85,7 +83,7 @@ export abstract class GeraldCommand extends sapphire.Command {
 			func = (this as any)[cmd.handlerName];
 		} else func = this.slashRun;
 		try {
-			x = func.bind(this)(interaction, <discord.Message>reply, context);
+			x = func.bind(this)(interaction, context);
 		} catch (error) {
 			this.slashHandler(error, interaction, context);
 		}

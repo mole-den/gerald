@@ -31,6 +31,7 @@ export class DeletedMSGCommand extends GeraldCommand {
 		});
 	}
 	public async slashRun(interaction: discord.CommandInteraction) {
+		await interaction.deferReply();
 		type attachment = {
 			url: string,
 			name: string | null
@@ -72,71 +73,11 @@ export class DeletedMSGCommand extends GeraldCommand {
 			}
 			embeds.push(DeleteEmbed);
 		});
-		interaction.editReply({
+		interaction.reply({
 			embeds: embeds
 		});
 	}
 
-}
-
-export class prefixCommand extends GeraldCommand {
-	public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
-		reg.registerChatInputCommand((builder) => {
-			return builder.setName(this.name)
-				.setDescription(this.description)
-				.addStringOption(i => i.setName("prefix")
-					.setDescription("New bot prefix.").setAutocomplete(false).setRequired(false));
-		}, {
-			idHints: ["955744435654787082"]
-		});
-	}
-	public override async slashRun(interaction: sapphire.ChatInputCommand.Interaction) {
-		const x = interaction.options.get("prefix");
-		this.baseRun((x?.value as string) ?? null, interaction);
-	}
-	public async chatRun(message: discord.Message, args: sapphire.Args) {
-		const x = args.nextMaybe();
-		this.baseRun(x.value ?? null, message);
-	}
-	private async baseRun(x: string | null, item: discord.Message | discord.CommandInteraction) {
-		function send(msg: string) {
-			if (item instanceof discord.Message) item.channel.send(msg);
-			else item.reply({
-				content: msg
-			});
-		}
-		if (!item.guild) return;
-		if (!x) {
-			const prefix = await bot.db.guild.findUnique({
-				where: {
-					guildId: item.guild.id
-				},
-				select: { prefix: true }
-			});
-			if (!prefix) return;
-			send(`The prefix for this server is \`${prefix.prefix}\``);
-			return;
-		}
-		if (item instanceof discord.CommandInteraction) {
-			if (!item.memberPermissions) return send("Failed to resolve user permissions.");
-			if (!item.memberPermissions.has("ADMINISTRATOR"))
-				return send("You are missing the following permissions to run this command: Administrator");
-		} else {
-			if (!item.member) return;
-			if (!item.member.permissions.has("ADMINISTRATOR"))
-				return send("You are missing the following permissions to run this command: Administrator");
-		}
-		bot.db.guild.update({
-			where: {
-				guildId: item.guild.id
-			},
-			data: {
-				prefix: x
-			}
-		});
-		return send(`Changed prefix for ${item.guild.name} to \`${x}\``);
-
-	}
 }
 
 @ApplyOptions<geraldCommandOptions>({
@@ -150,7 +91,7 @@ export class inviteCommand extends GeraldCommand {
 		});
 	}
 	public override async slashRun(interaction: sapphire.ChatInputCommand.Interaction) {
-		interaction.editReply("Invite is: https://discord.com/oauth2/authorize?client_id=671156130483011605&permissions=8&scope=bot%20applications.commands");
+		interaction.reply("Invite is: https://discord.com/oauth2/authorize?client_id=671156130483011605&permissions=8&scope=bot%20applications.commands");
 	}
 }
 @ApplyOptions<geraldCommandOptions>({
@@ -190,7 +131,7 @@ export class infoCommand extends GeraldCommand {
 			.addField("Discord API heartbeat", `${bot.ws.ping}ms`, false)
 			.addField("Database Heartbeat", `${elapsed}ms`, false)
 			.addField("Memory usage", `${Math.round(process.memoryUsage.rss() / 1000000)}MB `);
-		return interaction.editReply({
+		return interaction.reply({
 			embeds: [embed]
 		});
 	}
@@ -208,15 +149,6 @@ export class infoCommand extends GeraldCommand {
 					.setDescription("The command to get help for").setAutocomplete(false).setRequired(false));
 		});
 	}
-	public async chatRun(message: discord.Message, args: sapphire.Args) {
-		const maybe = args.nextMaybe();
-		if (!maybe.exists) return this.baseHelp(message);
-		const command = maybe.value;
-		const cmd = bot.stores.get("commands").find(c => (c.name === command || c.aliases.includes(command)) && !c.fullCategory.includes("_hidden"));
-		if (!cmd) return message.channel.send(`Command \`${command}\` not found`);
-		return message.channel.send({ embeds: [this.cmdHelp(cmd)] });
-	}
-
 	public async slashRun(interaction: sapphire.ChatInputCommand.Interaction) {
 		const x = interaction.options.get("command");
 		if (x === null || x.value === undefined) return this.baseHelp(interaction);
@@ -225,7 +157,7 @@ export class infoCommand extends GeraldCommand {
 			content: "Specify a valid command.",
 			ephemeral: true
 		});
-		interaction.editReply({ embeds: [this.cmdHelp(cmd)] });
+		interaction.reply({ embeds: [this.cmdHelp(cmd)] });
 	}
 	private cmdHelp(cmd: sapphire.Command) {
 		const embed = new discord.MessageEmbed()
@@ -286,33 +218,10 @@ export class infoCommand extends GeraldCommand {
 					.setDescription("Get a specific members level.").setRequired(false));
 		});
 	}
-	public async chatRun(message: discord.Message, args: sapphire.Args) {
-		const user = await args.pick("member").catch(() => {
-			return message.member;
-		});
-		if (!user) return;
-		if (user.user.bot) return message.channel.send("Bots do not earn xp");
-		if (!message.guild) return;
-		let x = (await bot.db.member_level.findUnique({
-			where: {
-				memberID_guildID: {
-					memberID: user.id,
-					guildID: message.guild.id
-				}
-			}
-		}));
-		if (x === null) x = await bot.db.member_level.create({
-			data: {
-				memberID: user.id,
-				guildID: message.guild.id,
-			}
-		});
-		return message.channel.send(`${user.user.username} is level ${x.level} and has ${x.xp}/${x.nextLevelXp}xp`);
-	}
 
 	public async slashRun(interaction: discord.CommandInteraction) {
 		const user = interaction.options.getUser("user") ?? interaction.user;
-		if (user.bot) return interaction.editReply("Bots do not earn xp");
+		if (user.bot) return interaction.reply("Bots do not earn xp");
 		if (!interaction.guild) return;
 		let x = (await bot.db.member_level.findUnique({
 			where: {
@@ -329,7 +238,7 @@ export class infoCommand extends GeraldCommand {
 			}
 		});
 
-		return interaction.editReply(`${user.username} is level ${x.level} and has ${x.xp}/${x.nextLevelXp}xp`);
+		return interaction.reply(`${user.username} is level ${x.level} and has ${x.xp}/${x.nextLevelXp}xp`);
 	}
 }
 
@@ -357,7 +266,7 @@ interface order {
 @ApplyOptions<geraldCommandOptions>({
 	name: "warframe",
 	description: "Command to access warframe APIs.",
-	subcommands: [{ handlerName: "cmdMarket", name: "market"},
+	subcommands: [{ handlerName: "cmdMarket", name: "market" },
 		{ handlerName: "cmdRelics", name: "relics", }]
 }) export class warframeCommand extends GeraldCommand {
 	public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
@@ -389,6 +298,7 @@ interface order {
 		});
 	}
 	public async cmdMarket(interaction: discord.CommandInteraction) {
+		await interaction.deferReply();
 		let itemToGet = interaction.options.getString("item");
 		if (!itemToGet) return;
 		itemToGet = itemToGet.replace(/([^a-z])/gmi, "_").toLowerCase();
@@ -455,6 +365,7 @@ interface order {
 	}
 
 	public async cmdRelics(interaction: discord.CommandInteraction) {
+		await interaction.deferReply();
 		interface relicReward {
 			_id: string,
 			itemName: string,
@@ -555,7 +466,7 @@ interface order {
 			if (a.rarity === b.rarity) return 0;
 			if (a.rarity === "Common") return -1;
 			if (a.rarity === "Uncommon" && b.rarity === "Rare") return -1;
-			if (a.rarity === "Rare") return 1; 
+			if (a.rarity === "Rare") return 1;
 			return a.rarity === "Common" ? -1 : 1;
 		});
 		for (const i of data)
@@ -586,6 +497,7 @@ interface order {
 	}
 	public async slashRun(interaction: discord.CommandInteraction) {
 		if (!interaction.guild) return;
+		await interaction.deferReply();
 		const top = await bot.db.member_level.findMany({
 			where: {
 				guildID: interaction.guild.id,
@@ -623,3 +535,17 @@ interface order {
 	}
 }
 
+@ApplyOptions<geraldCommandOptions>({
+	name: "roll",
+	description: "Roll dice.",
+})
+export class rollCommand extends GeraldCommand {
+	public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
+		reg.registerChatInputCommand(cmd => cmd.setDescription(this.description).setName(this.name)
+			.addStringOption(i => i.setName("dice").setDescription("Amount and type of dice to roll.")));
+	}
+
+	public override slashRun(interaction: discord.CommandInteraction) {
+		interaction;
+	}
+}
