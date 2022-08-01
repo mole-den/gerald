@@ -73,7 +73,7 @@ export class DeletedMSGCommand extends GeraldCommand {
 			}
 			embeds.push(DeleteEmbed);
 		});
-		interaction.reply({
+		interaction.editReply({
 			embeds: embeds
 		});
 	}
