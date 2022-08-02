@@ -593,6 +593,10 @@ export class rollCommand extends GeraldCommand {
 		});
 	}
 	public async cmdQuery(interaction: discord.CommandInteraction) {
+		if (!process.env.OWNERS?.split(" ").includes(interaction.user.id)) return interaction.reply({
+			ephemeral: true,
+			content: "Not authorized"
+		});
 		const str = interaction.options.getString("query") as string;
 		let query: unknown;
 		if (str.toLowerCase().startsWith("select"))
@@ -615,6 +619,10 @@ export class rollCommand extends GeraldCommand {
 	}
 	
 	public async cmdEval(interaction: discord.CommandInteraction) {
+		if (!process.env.OWNERS?.split(" ").includes(interaction.user.id)) return interaction.reply({
+			ephemeral: true,
+			content: "Not authorized"
+		});
 		const str = interaction.options.getString("string") as string;
 		const x = eval(str);
 		return interaction.reply({
