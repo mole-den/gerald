@@ -547,99 +547,82 @@ export class rollCommand extends GeraldCommand {
 	}
 
 	public override slashRun(interaction: discord.CommandInteraction) {
-		const option = interaction.options.getString("dice") ?? "d6";
-		let roll = option;
-		const cMatch = roll.match(/^-?\d+/);
-		let count: number;
-		if (cMatch === null)
-			if (roll.startsWith("d") || roll.match(/^\d+/)) count = 1;
-			else return interaction.reply({
-				allowedMentions: {
-					users: [],
-					roles: []
-				},
-				ephemeral: true,
-				content: `Invalid input \`${option}\``
-			});
-		else {
-			count = _.toNumber(cMatch[0]);
-			if (_.isNaN(count)) return interaction.reply({
-				allowedMentions: {
-					users: [],
-					roles: []
-				},
-				ephemeral: true,
-				content: `Invalid input \`${option}\``
-			});
-			roll = roll.replace(/^-?\d+/, "");
-		}
-		const dMatch = roll.match(/^-?\d+/);
-		let dice: number;
-		if (dMatch === null)
-			return interaction.reply({
-				allowedMentions: {
-					users: [],
-					roles: []
-				},
-				ephemeral: true,
-				content: `Invalid input \`${option}\``
-			});
-		else {
-			dice = _.toNumber(dMatch[0].startsWith("d") ? dMatch[0].substring(1) : dMatch[0]);
-			if (_.isNaN(dice)) return interaction.reply({
-				allowedMentions: {
-					users: [],
-					roles: []
-				},
-				ephemeral: true,
-				content: `Invalid input \`${option}\``
-			});
-			roll = roll.replace(/^-?\d+/, "");
-		}
-		const aMatch = roll.match(/^(-|\+)\d+/);
-		let mod: [string, number] | null;
-		if (aMatch === null)
-			mod = null;
-		else {
-			const num = _.toNumber(dMatch[0].substring(1));
-			if (_.isNaN(num)) return interaction.reply({
-				allowedMentions: {
-					users: [],
-					roles: []
-				},
-				ephemeral: true,
-				content: `Invalid input \`${option}\``
-			});
-			mod = [aMatch[0].startsWith("+") ? "+" : "-", num];
-			if (_.isNaN(dice)) return interaction.reply({
-				allowedMentions: {
-					users: [],
-					roles: []
-				},
-				ephemeral: true,
-				content: `Invalid input \`${option}\``
-			});
-			roll = roll.replace(/^-?\d+/, "");
-		}
-		const allResults: number[] = [];
-		for (let index = 0; index < count; index++) allResults.push(utils.getRandomArbitrary(1, dice));
-		let totalResult = allResults.reduce((a, b) => a + b, 0);
-		const resultString = "[ " + allResults.join(", ") + " ]";
-		if (mod) totalResult = mod[0] === "+" ? totalResult + mod[1] : totalResult - mod[1];
-		const string = `${interaction.user} rolled \`${option}\` and got ${totalResult} ${resultString}`;
-		if (string.length > 1999) return interaction.reply({
-			allowedMentions: {
-				users: [],
-				roles: []
-			},
-			content: `${interaction.user} rolled \`${option}\` but the result was too long to fit in one message`
+		interaction;
+		// const option = interaction.options.getString("dice") ?? "d6";
+		// const x = option.match(/^\d+/);
+		// const dice = interaction;
+		// const count = x ? _.toNumber(x[0]) : 1;
+		// const allResults: number[] = [];
+		// for (let index = 0; index < count; index++) allResults.push(utils.getRandomArbitrary(1, dice));
+		// let totalResult = allResults.reduce((a, b) => a + b, 0);
+		// const resultString = "[ " + allResults.join(", ") + " ]";
+		// if (mod) totalResult = mod[0] === "+" ? totalResult + mod[1] : totalResult - mod[1];
+		// const string = `${interaction.user} rolled \`${option}\` and got ${totalResult} ${resultString}`;
+		// if (string.length > 1999) return interaction.reply({
+		// 	allowedMentions: {
+		// 		users: [],
+		// 		roles: []
+		// 	},
+		// 	content: `${interaction.user} rolled \`${option}\` but the result was too long to fit in one message`
+		// });
+		// return interaction.reply({
+		// 	allowedMentions: {
+		// 		users: [],
+		// 		roles: []
+		// 	},
+		// 	content: string
+		// });
+	}
+}
+
+@ApplyOptions<geraldCommandOptions>({
+	name: "dev",
+	description: "Developer commands",
+	subcommands: [{ handlerName: "cmdEval", name: "eval" },
+		{ handlerName: "cmdQuery", name: "query", }]
+}) export class devCommand extends GeraldCommand {
+	public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
+		reg.registerChatInputCommand(builder => {
+			return builder.setName(this.name)
+				.setDescription(this.description)
+				.addSubcommand(subcommand =>
+					subcommand.setName("eval").setDescription("Eval JS").addStringOption(o => o.setName("string").setDescription("string to eval").setRequired(true))
+				).addSubcommand(subcommand =>
+					subcommand.setName("query").setDescription("Query database").addStringOption(o => o.setName("query").setDescription("Query to execute").setRequired(true)));
+			
 		});
-		return interaction.reply({
+	}
+
+	public async cmdQuery(interaction: discord.CommandInteraction) {
+		const str = interaction.options.getString("query") as string;
+		let query: unknown;
+		if (str.toLowerCase().startsWith("select"))
+			query = await bot.db.$queryRawUnsafe(str);
+		else
+			query = await bot.db.$executeRawUnsafe(str);
+		
+		if (str.toLowerCase().startsWith("select")) return interaction.reply({
+			content: JSON.stringify(query),
 			allowedMentions: {
-				users: [],
-				roles: []
-			},
-			content: string
+				parse: []
+			}
+		});
+		else return interaction.reply({
+			content: `${(query as number)} rows affected`,
+			allowedMentions: {
+				parse: []
+			}
+		});
+	}
+	
+	public async cmdEval(interaction: discord.CommandInteraction) {
+		const str = interaction.options.getString("string") as string;
+		const x = eval(str);
+		return interaction.reply({
+			content: `${x}`,
+			allowedMentions: {
+				parse: []
+			}
 		});
 	}
 }
