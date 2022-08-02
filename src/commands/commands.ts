@@ -73,7 +73,7 @@ export class DeletedMSGCommand extends GeraldCommand {
 			}
 			embeds.push(DeleteEmbed);
 		});
-		interaction.reply({
+		interaction.editReply({
 			embeds: embeds
 		});
 	}
@@ -592,7 +592,6 @@ export class rollCommand extends GeraldCommand {
 			
 		});
 	}
-
 	public async cmdQuery(interaction: discord.CommandInteraction) {
 		const str = interaction.options.getString("query") as string;
 		let query: unknown;
