@@ -84,7 +84,7 @@ export abstract class GeraldCommand extends sapphire.Command {
 	async chatInputRun(interaction: discord.CommandInteraction, context: sapphire.ChatInputCommand.RunContext) {
 		let func: (interaction: discord.CommandInteraction, context: sapphire.ChatInputCommand.RunContext) => sapphire.Awaitable<unknown>;
 		let x;
-		if (!this.slashRun) {
+		if (this.subcommands) {
 			if (!this.subcommands) return;
 			const name = interaction.options.getSubcommand(true);
 			const cmd = this.subcommands.find(i => name === i.name);
