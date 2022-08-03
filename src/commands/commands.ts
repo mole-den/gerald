@@ -557,7 +557,7 @@ export class rollCommand extends GeraldCommand {
 		const dice = Number((option.match(/^\d+/) ?? "6")[0]);
 		option = option.substring(dice.toString().length);
 		let add: number;
-		const ps = option.startsWith("+") ?? option.startsWith("-") ?? false;
+		const ps = option.includes("+") ? true : option.includes("-") ? true : false;
 		if (!ps)
 			add = 0;
 		else
@@ -574,8 +574,10 @@ export class rollCommand extends GeraldCommand {
 		}
 		result = resultArray.reduce((a, b) => a + b, 0);
 		result += add;
+		const addString = `${add >= 0 ? "+" : "-"} ${Math.abs(add)}`;
+		const resultArrString = `[${resultArray.join(", ")}]`;
 		return interaction.reply({
-			content: `Rolled \`${input}\` and got ${result} - [${resultArray.join(", ")}] ${add > 0 ? "+" : ""}${add}`,
+			content: `Rolled \`${input}\` and got ${result} ${add !== 0 || resultArray.length > 1 ? "(" : ""} ${resultArray.length > 1 || add !== 0 ? resultArrString : ""} ${add !== 0 ? addString : ""} ${add !== 0 || resultArray.length > 1 ? ")" : ""}`,
 		});
 	}
 }
