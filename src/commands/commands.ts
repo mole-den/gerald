@@ -548,30 +548,35 @@ export class rollCommand extends GeraldCommand {
 
 	public override slashRun(interaction: discord.CommandInteraction) {
 		interaction;
-		// const option = interaction.options.getString("dice") ?? "d6";
-		// const x = option.match(/^\d+/);
-		// const dice = interaction;
-		// const count = x ? _.toNumber(x[0]) : 1;
-		// const allResults: number[] = [];
-		// for (let index = 0; index < count; index++) allResults.push(utils.getRandomArbitrary(1, dice));
-		// let totalResult = allResults.reduce((a, b) => a + b, 0);
-		// const resultString = "[ " + allResults.join(", ") + " ]";
-		// if (mod) totalResult = mod[0] === "+" ? totalResult + mod[1] : totalResult - mod[1];
-		// const string = `${interaction.user} rolled \`${option}\` and got ${totalResult} ${resultString}`;
-		// if (string.length > 1999) return interaction.reply({
-		// 	allowedMentions: {
-		// 		users: [],
-		// 		roles: []
-		// 	},
-		// 	content: `${interaction.user} rolled \`${option}\` but the result was too long to fit in one message`
-		// });
-		// return interaction.reply({
-		// 	allowedMentions: {
-		// 		users: [],
-		// 		roles: []
-		// 	},
-		// 	content: string
-		// });
+		const input = interaction.options.getString("dice")?.trimStart().trimEnd() ?? "d6";
+		let option = input;
+		const hasAmount = option.match(/^\d+/) ? true : false;
+		const amount = Number((option.match(/^\d+/) ?? ["1"])[0]);
+		if (hasAmount) option = option.replace(/^\d+/, "");
+		if (option.startsWith("d")) option = option.substring(1);
+		const dice = Number((option.match(/^\d+/) ?? "6")[0]);
+		option = option.substring(dice.toString().length);
+		let add: number;
+		const ps = option.startsWith("+") ?? option.startsWith("-") ?? false;
+		if (!ps)
+			add = 0;
+		else
+			add = Number(((option.match(/^\+\d+|^-\d+/) ?? ["0"])[0]));
+		if (_.isNaN(add) || _.isNaN(dice) || _.isNaN(amount)) return interaction.reply({
+			ephemeral: true,
+			content: `Invalid input: ${input}`
+		});
+		let result: number;
+		const resultArray: number[] = [];
+		for (let i = 0; i < amount; i++) {
+			result = utils.getRandomArbitrary(1, dice);
+			resultArray.push(result);
+		}
+		result = resultArray.reduce((a, b) => a + b, 0);
+		result += add;
+		return interaction.reply({
+			content: `Rolled \`${input}\` and got ${result} - [${resultArray.join(", ")}] ${add > 0 ? "+" : ""}${add}`,
+		});
 	}
 }
 
@@ -589,7 +594,7 @@ export class rollCommand extends GeraldCommand {
 					subcommand.setName("eval").setDescription("Eval JS").addStringOption(o => o.setName("string").setDescription("string to eval").setRequired(true))
 				).addSubcommand(subcommand =>
 					subcommand.setName("query").setDescription("Query database").addStringOption(o => o.setName("query").setDescription("Query to execute").setRequired(true)));
-			
+
 		});
 	}
 	public async cmdQuery(interaction: discord.CommandInteraction) {
@@ -603,7 +608,7 @@ export class rollCommand extends GeraldCommand {
 			query = await bot.db.$queryRawUnsafe(str);
 		else
 			query = await bot.db.$executeRawUnsafe(str);
-		
+
 		if (str.toLowerCase().startsWith("select")) return interaction.reply({
 			content: JSON.stringify(query),
 			allowedMentions: {
@@ -617,7 +622,7 @@ export class rollCommand extends GeraldCommand {
 			}
 		});
 	}
-	
+
 	public async cmdEval(interaction: discord.CommandInteraction) {
 		if (!process.env.OWNERS?.split(" ").includes(interaction.user.id)) return interaction.reply({
 			ephemeral: true,
