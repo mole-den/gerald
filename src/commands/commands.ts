@@ -297,6 +297,11 @@ interface order {
 			behaviorWhenNotIdentical: sapphire.RegisterBehavior.Overwrite
 		});
 	}
+
+	public async slashRun() {
+		return;
+	}
+
 	public async cmdMarket(interaction: discord.CommandInteraction) {
 		await interaction.deferReply();
 		let itemToGet = interaction.options.getString("item");
@@ -473,7 +478,7 @@ interface order {
 			embed.addField(i.name, `Rarity: ${i.rarity}\nMean price: ${i.price === -1 ? "NA" : i.price + "p"}, Lowest price: ${i.lowestPrice === -1 ? "NA" : i.lowestPrice + "p"}\nTotal orders: ${i.orders}`);
 		const row = new discord.MessageActionRow();
 		row.addComponents(utils.dismissButton);
-		interaction.editReply({
+		await interaction.editReply({
 			embeds: [embed],
 			components: [row]
 		});
@@ -528,7 +533,7 @@ interface order {
 			return;
 		});
 		if (content.length === 1) content.push("All members have 0 xp.");
-		interaction.editReply({
+		await interaction.editReply({
 			content: content.join("\n"),
 			allowedMentions: { parse: [] }
 		});
@@ -546,7 +551,7 @@ export class rollCommand extends GeraldCommand {
 		{ idHints: ["1001300165879152721"] });
 	}
 
-	public override slashRun(interaction: discord.CommandInteraction) {
+	public async slashRun(interaction: discord.CommandInteraction) {
 		interaction;
 		const input = interaction.options.getString("dice")?.trimStart().trimEnd() ?? "d6";
 		let option = input;
@@ -562,10 +567,13 @@ export class rollCommand extends GeraldCommand {
 			add = 0;
 		else
 			add = Number(((option.match(/^\+[.\d]+|^-[.\d]+/) ?? ["0"])[0]));
-		if (_.isNaN(add) || _.isNaN(dice) || _.isNaN(amount)) return interaction.reply({
-			ephemeral: true,
-			content: `Invalid input: ${input}`
-		});
+		if (_.isNaN(add) || _.isNaN(dice) || _.isNaN(amount)) {
+			await interaction.reply({
+				ephemeral: true,
+				content: `Invalid input: ${input}`
+			});
+			return;
+		} 
 		let result: number;
 		const resultArray: number[] = [];
 		for (let i = 0; i < amount; i++) {
@@ -577,9 +585,10 @@ export class rollCommand extends GeraldCommand {
 		const addString = `${add >= 0 ? "+" : "-"} ${Math.abs(add)}`;
 		const resultArrString = `[${resultArray.join(", ")}]`;
 		const relpy = `Rolled \`${input}\` and got ${result} ${add !== 0 || resultArray.length > 1 ? "(" : ""}${resultArray.length > 1 || add !== 0 ? resultArrString : ""} ${add !== 0 ? addString : ""}`;
-		return interaction.reply({
+		await interaction.reply({
 			content: `${relpy.trimEnd()}${add !== 0 || resultArray.length > 1 ? ")" : ""}`,
 		});
+		return;
 	}
 }
 
@@ -600,6 +609,11 @@ export class rollCommand extends GeraldCommand {
 
 		});
 	}
+
+	public async slashRun() {
+		return;
+	}
+
 	public async cmdQuery(interaction: discord.CommandInteraction) {
 		if (!process.env.OWNERS?.split(" ").includes(interaction.user.id)) return interaction.reply({
 			ephemeral: true,

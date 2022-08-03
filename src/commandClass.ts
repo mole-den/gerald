@@ -78,7 +78,7 @@ export abstract class GeraldCommand extends sapphire.Command {
 			});
 		}
 	}
-	protected slashRun?(interaction: discord.CommandInteraction, context: sapphire.ChatInputCommand.RunContext): sapphire.Awaitable<unknown>
+	protected abstract slashRun(interaction: discord.CommandInteraction, context: sapphire.ChatInputCommand.RunContext): Promise<unknown>
 	protected menuRun?(interaction: discord.ContextMenuInteraction, context: sapphire.ContextMenuCommand.RunContext): sapphire.Awaitable<unknown>
 
 	async chatInputRun(interaction: discord.CommandInteraction, context: sapphire.ChatInputCommand.RunContext) {

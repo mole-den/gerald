@@ -39,6 +39,9 @@ import { utils } from "../utils";
 		});
 	}
 
+	public async slashRun() {
+		return;
+	}
 	async handler(message: discord.Message) {
 		if (message.author.bot) return;
 		if (this.xpLimit === undefined) return;
