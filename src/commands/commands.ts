@@ -576,8 +576,9 @@ export class rollCommand extends GeraldCommand {
 		result += add;
 		const addString = `${add >= 0 ? "+" : "-"} ${Math.abs(add)}`;
 		const resultArrString = `[${resultArray.join(", ")}]`;
+		const relpy = `Rolled \`${input}\` and got ${result} ${add !== 0 || resultArray.length > 1 ? "(" : ""}${resultArray.length > 1 || add !== 0 ? resultArrString : ""} ${add !== 0 ? addString : ""}${add !== 0 || resultArray.length > 1 ? ")" : ""}`;
 		return interaction.reply({
-			content: `Rolled \`${input}\` and got ${result} ${add !== 0 || resultArray.length > 1 ? "(" : ""} ${resultArray.length > 1 || add !== 0 ? resultArrString : ""} ${add !== 0 ? addString : ""} ${add !== 0 || resultArray.length > 1 ? ")" : ""}`,
+			content: `${relpy.trimEnd()}${add !== 0 || resultArray.length > 1 ? ")" : ""}`,
 		});
 	}
 }
