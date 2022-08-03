@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgres://gzibkeghhcxlfq:81c60eaff2267799b3a0e3a6e9cc829ec97bd97dbdf6c61b7827287d29d4f9df@ec2-34-194-100-156.compute-1.amazonaws.com:5432/ddo6pnpikd2ji3"
+  url      = env("DATABASE_URL")
 }
 
 model guild {
