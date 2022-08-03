@@ -550,18 +550,18 @@ export class rollCommand extends GeraldCommand {
 		interaction;
 		const input = interaction.options.getString("dice")?.trimStart().trimEnd() ?? "d6";
 		let option = input;
-		const hasAmount = option.match(/^\d+/) ? true : false;
-		const amount = Number((option.match(/^\d+/) ?? ["1"])[0]);
-		if (hasAmount) option = option.replace(/^\d+/, "");
+		const hasAmount = option.match(/^-?[.\d]+/) ? true : false;
+		const amount = Number((option.match(/^-?[.\d]+/) ?? ["1"])[0]);
+		if (hasAmount) option = option.replace(/^-?[.\d]+/, "");
 		if (option.startsWith("d")) option = option.substring(1);
-		const dice = Number((option.match(/^\d+/) ?? "6")[0]);
+		const dice = Number((option.match(/^-?[.\d]+/) ?? "6")[0]);
 		option = option.substring(dice.toString().length);
 		let add: number;
 		const ps = option.includes("+") ? true : option.includes("-") ? true : false;
 		if (!ps)
 			add = 0;
 		else
-			add = Number(((option.match(/^\+\d+|^-\d+/) ?? ["0"])[0]));
+			add = Number(((option.match(/^\+[.\d]+|^-[.\d]+/) ?? ["0"])[0]));
 		if (_.isNaN(add) || _.isNaN(dice) || _.isNaN(amount)) return interaction.reply({
 			ephemeral: true,
 			content: `Invalid input: ${input}`
