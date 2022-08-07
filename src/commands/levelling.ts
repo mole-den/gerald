@@ -26,14 +26,22 @@ import { utils } from "../utils";
 	}],
 	subcommands: [{
 		name: "Settings",
-		handlerName: "settings"
+		handlerName: "settings",
+	}, {
+		name: "Leaderboard",
+		handlerName: "leaderboard",
+	}, {
+		name: "viewlevel",
+		handlerName: "viewlevel",
 	}]
 }) export class Levelling extends GeraldCommand {
 	xpLimit: RateLimiterMemory | undefined;
 	public override registerApplicationCommands(reg: ApplicationCommandRegistry) {
 		reg.registerChatInputCommand((builder) => {
 			return builder.setName(this.name)
-				.setDescription(this.description).addSubcommand(x => x.setName("Settings").setDescription("View settings for levelling."));
+				.setDescription(this.description).addSubcommand(x => x.setName("Settings").setDescription("View settings for levelling."))
+				.addSubcommand(x => x.setName("Leaderboard").setDescription("View the leaderboard."))
+				.addSubcommand(x => x.setName("viewlevel").setDescription("View a user's level."));
 		}, {
 			behaviorWhenNotIdentical: RegisterBehavior.Overwrite
 		});
@@ -95,6 +103,67 @@ import { utils } from "../utils";
 				xp: x.xp
 			}
 		});
+	}
+
+	async leaderboard(interaction: discord.CommandInteraction) {
+		if (!interaction.guild) return;
+		await interaction.deferReply();
+		const top = await bot.db.member_level.findMany({
+			where: {
+				guildID: interaction.guild.id,
+			},
+			orderBy: {
+				xp: "desc"
+			},
+			take: 10
+		});
+		let index = 0;
+		const content = [`**Leaderboard for ${interaction.guild.name}**`];
+		top.forEach(i => {
+			if (index === 0) {
+				content.push(`**1st:** <@${i.memberID}>: lvl${i.level}, ${i.xp}xp`);
+				index++;
+				return;
+			} else if (index === 1) {
+				content.push(`**2nd:** <@${i.memberID}>: lvl${i.level}, ${i.xp}xp`);
+				index++;
+				return;
+			} else if (index === 2) {
+				content.push(`**3rd:** <@${i.memberID}>: lvl${i.level}, ${i.xp}xp`);
+				index++;
+				return;
+			}
+			content.push(`**${index + 1}th:** <@${i.memberID}>: lvl${i.level}, ${i.xp}xp`);
+			index++;
+			return;
+		});
+		if (content.length === 1) content.push("All members have 0 xp.");
+		await interaction.editReply({
+			content: content.join("\n"),
+			allowedMentions: { parse: [] }
+		});
+	}
+
+	async viewlevel(interaction: discord.CommandInteraction) {
+		const user = interaction.options.getUser("user") ?? interaction.user;
+		if (user.bot) return interaction.reply("Bots do not earn xp");
+		if (!interaction.guild) return;
+		let x = (await bot.db.member_level.findUnique({
+			where: {
+				memberID_guildID: {
+					memberID: user.id,
+					guildID: interaction.guild.id
+				}
+			}
+		}));
+		if (x === null) x = await bot.db.member_level.create({
+			data: {
+				memberID: user.id,
+				guildID: interaction.guild.id,
+			}
+		});
+
+		return interaction.reply(`${user.username} is level ${x.level} and has ${x.xp}/${x.nextLevelXp}xp`);
 	}
 	async onCommandStart(): Promise<void> {
 		this.xpLimit = new RateLimiterMemory({

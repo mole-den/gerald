@@ -36,7 +36,7 @@ class Gerald extends sapphire.SapphireClient {
 		console.log("Connected to database");
 		await utils.sleep(1000);
 		if (!process.env.TOKEN) throw new Error("No token found");
-		await super.login(process.env.TOKEN);
+		await super.login("NjcxMTU2MTMwNDgzMDExNjA1.Xi402g.5bkHBmP-S4WtI2DMtr2qAt8QVRQ");
 		taskScheduler = new scheduledTaskManager();
 		const x = await this.db.guild.count();
 		const guilds = await this.guilds.fetch();

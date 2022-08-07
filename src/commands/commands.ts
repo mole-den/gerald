@@ -202,7 +202,6 @@ export class infoCommand extends GeraldCommand {
 	}
 }
 
-/*
 @ApplyOptions<geraldCommandOptions>({
 	name: "level",
 	description: "Shows the level of a user.",
@@ -241,7 +240,7 @@ export class infoCommand extends GeraldCommand {
 		return interaction.reply(`${user.username} is level ${x.level} and has ${x.xp}/${x.nextLevelXp}xp`);
 	}
 }
-*/
+
 interface order {
 	quantity: number,
 	platinum: number,
@@ -488,7 +487,7 @@ interface order {
 		return;
 	}
 }
-/*
+
 @ApplyOptions<geraldCommandOptions>({
 	name: "leaderboard",
 	description: "Shows the leaderboard for levelling.",
@@ -538,7 +537,7 @@ interface order {
 			allowedMentions: { parse: [] }
 		});
 	}
-}*/
+}
 
 @ApplyOptions<geraldCommandOptions>({
 	name: "roll",
