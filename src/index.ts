@@ -60,7 +60,6 @@ class Gerald extends sapphire.SapphireClient {
 	}
 	public override destroy(): void {
 		bot.db.$disconnect();
-		taskScheduler.removeAllListeners();
 		super.destroy();
 	}
 
