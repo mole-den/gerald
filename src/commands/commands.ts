@@ -202,7 +202,7 @@ export class infoCommand extends GeraldCommand {
 	}
 }
 
-
+/*
 @ApplyOptions<geraldCommandOptions>({
 	name: "level",
 	description: "Shows the level of a user.",
@@ -241,7 +241,7 @@ export class infoCommand extends GeraldCommand {
 		return interaction.reply(`${user.username} is level ${x.level} and has ${x.xp}/${x.nextLevelXp}xp`);
 	}
 }
-
+*/
 interface order {
 	quantity: number,
 	platinum: number,
@@ -488,7 +488,7 @@ interface order {
 		return;
 	}
 }
-
+/*
 @ApplyOptions<geraldCommandOptions>({
 	name: "leaderboard",
 	description: "Shows the leaderboard for levelling.",
@@ -538,7 +538,7 @@ interface order {
 			allowedMentions: { parse: [] }
 		});
 	}
-}
+}*/
 
 @ApplyOptions<geraldCommandOptions>({
 	name: "roll",
@@ -557,6 +557,10 @@ export class rollCommand extends GeraldCommand {
 		let option = input;
 		const hasAmount = option.match(/^-?[.\d]+/) ? true : false;
 		const amount = Number((option.match(/^-?[.\d]+/) ?? ["1"])[0]);
+		if (amount > 5000) return interaction.reply({
+			ephemeral: true,
+			content: "You can't roll more than 5000 dice at once."
+		});
 		if (hasAmount) option = option.replace(/^-?[.\d]+/, "");
 		if (option.startsWith("d")) option = option.substring(1);
 		const dice = Number((option.match(/^-?[.\d]+/) ?? "6")[0]);
