@@ -1,7 +1,5 @@
 import * as sapphire from "@sapphire/framework";
 import * as discord from "discord.js";
-import { bugsnag } from ".";
-
 export interface ModuleOptions {
 	name: string,
 	description: string,
@@ -61,7 +59,6 @@ export abstract class GeraldCommand extends sapphire.Command {
 		if (error instanceof sapphire.UserError) interaction.reply(error.message);
 		else {
 			context;
-			if (process.env.BUGSNAG_KEY) bugsnag.notify(JSON.stringify(error));
 			console.error(error);
 			const embed = new discord.MessageEmbed();
 			embed.setTitle(`Error: Command "${context.commandName}" failed`);

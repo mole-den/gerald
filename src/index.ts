@@ -4,13 +4,7 @@ import { scheduledTaskManager } from "./taskManager";
 import { PrismaClient } from "@prisma/client";
 import { utils } from "./utils";
 import Time from "@sapphire/time-utilities";
-import Bugsnag from "@bugsnag/js";
 import { GeraldCommand } from "./commandClass";
-export const bugsnag = Bugsnag;
-if (process.env.BUGSNAG_KEY) bugsnag.start({
-	apiKey: process.env.BUGSNAG_KEY,
-});
-
 process.on("SIGTERM", async () => {
 	console.log("SIGTERM received");
 	void bot.destroy();
@@ -41,6 +35,7 @@ class Gerald extends sapphire.SapphireClient {
 		await this.db.$connect();
 		console.log("Connected to database");
 		await utils.sleep(1000);
+		if (!process.env.TOKEN) throw new Error("No token found");
 		await super.login(process.env.TOKEN);
 		taskScheduler = new scheduledTaskManager();
 		const x = await this.db.guild.count();
