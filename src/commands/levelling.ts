@@ -44,7 +44,7 @@ import { utils } from "../utils";
 				.addSubcommand(x => x.setName("viewlevel").setDescription("View a user's level."));
 		}, {
 			behaviorWhenNotIdentical: RegisterBehavior.Overwrite,
-			idHints: ["1005966310548701305"]
+			idHints: ["1005997140365033613"]
 		});
 	}
 
