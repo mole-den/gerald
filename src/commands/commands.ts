@@ -202,45 +202,6 @@ export class infoCommand extends GeraldCommand {
 	}
 }
 
-@ApplyOptions<geraldCommandOptions>({
-	name: "level",
-	description: "Shows the level of a user.",
-	preconditions: ["GuildOnly"],
-	fullCategory: ["levelling"]
-
-}) export class viewLevelCommand extends GeraldCommand {
-	public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
-		reg.registerChatInputCommand((builder) => {
-			return builder.setName(this.name)
-				.setDescription(this.description)
-				.addUserOption(i => i.setName("user")
-					.setDescription("Get a specific members level.").setRequired(false));
-		});
-	}
-
-	public async slashRun(interaction: discord.CommandInteraction) {
-		const user = interaction.options.getUser("user") ?? interaction.user;
-		if (user.bot) return interaction.reply("Bots do not earn xp");
-		if (!interaction.guild) return;
-		let x = (await bot.db.member_level.findUnique({
-			where: {
-				memberID_guildID: {
-					memberID: user.id,
-					guildID: interaction.guild.id
-				}
-			}
-		}));
-		if (x === null) x = await bot.db.member_level.create({
-			data: {
-				memberID: user.id,
-				guildID: interaction.guild.id,
-			}
-		});
-
-		return interaction.reply(`${user.username} is level ${x.level} and has ${x.xp}/${x.nextLevelXp}xp`);
-	}
-}
-
 interface order {
 	quantity: number,
 	platinum: number,
@@ -485,57 +446,6 @@ interface order {
 		if (response instanceof discord.Message)
 			utils.handleDismissButton(interaction, response);
 		return;
-	}
-}
-
-@ApplyOptions<geraldCommandOptions>({
-	name: "leaderboard",
-	description: "Shows the leaderboard for levelling.",
-	preconditions: ["GuildOnly"],
-	fullCategory: ["levelling"]
-}) export class leaderBoardCommand extends GeraldCommand {
-	public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
-		reg.registerChatInputCommand((builder) => {
-			return builder.setName(this.name).setDescription(this.description);
-		});
-	}
-	public async slashRun(interaction: discord.CommandInteraction) {
-		if (!interaction.guild) return;
-		await interaction.deferReply();
-		const top = await bot.db.member_level.findMany({
-			where: {
-				guildID: interaction.guild.id,
-			},
-			orderBy: {
-				xp: "desc"
-			},
-			take: 10
-		});
-		let index = 0;
-		const content = [`**Leaderboard for ${interaction.guild.name}**`];
-		top.forEach(i => {
-			if (index === 0) {
-				content.push(`**1st:** <@${i.memberID}>: lvl${i.level}, ${i.xp}xp`);
-				index++;
-				return;
-			} else if (index === 1) {
-				content.push(`**2nd:** <@${i.memberID}>: lvl${i.level}, ${i.xp}xp`);
-				index++;
-				return;
-			} else if (index === 2) {
-				content.push(`**3rd:** <@${i.memberID}>: lvl${i.level}, ${i.xp}xp`);
-				index++;
-				return;
-			}
-			content.push(`**${index + 1}th:** <@${i.memberID}>: lvl${i.level}, ${i.xp}xp`);
-			index++;
-			return;
-		});
-		if (content.length === 1) content.push("All members have 0 xp.");
-		await interaction.editReply({
-			content: content.join("\n"),
-			allowedMentions: { parse: [] }
-		});
 	}
 }
 

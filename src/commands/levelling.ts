@@ -40,10 +40,11 @@ import { utils } from "../utils";
 		reg.registerChatInputCommand((builder) => {
 			return builder.setName(this.name)
 				.setDescription(this.description).addSubcommand(x => x.setName("Settings").setDescription("View settings for levelling."))
-				.addSubcommand(x => x.setName("Leaderboard").setDescription("View the leaderboard."))
+				.addSubcommand(x => x.setName("leaderboard").setDescription("View the leaderboard."))
 				.addSubcommand(x => x.setName("viewlevel").setDescription("View a user's level."));
 		}, {
-			behaviorWhenNotIdentical: RegisterBehavior.Overwrite
+			behaviorWhenNotIdentical: RegisterBehavior.Overwrite,
+			idHints: ["1005966310548701305"]
 		});
 	}
 
