@@ -50,18 +50,19 @@ import { utils } from "../utils";
 		if (message.author.bot) return;
 		if (this.xpLimit === undefined) return;
 		if (!message.guildId) return;
-		let x = ((await bot.db.member_level.findMany({
+		const x = (await bot.db.member_level.upsert({
 			where: {
-				memberID: message.author.id,
-				guildID: message.guildId
-			}
-		}))[0]);
-		if (!x) x = await bot.db.member_level.create({
-			data: {
+				memberID_guildID: {
+					memberID: message.author.id,
+					guildID: message.guildId
+				},
+			},
+			update: {},
+			create: {
 				memberID: message.author.id,
 				guildID: message.guildId,
 			}
-		});
+		}));
 		const add = utils.getRandomArbitrary(1, 4);
 		try {
 			this.xpLimit.consume(`${message.guildId}-${message.author.id}`, add);
@@ -71,14 +72,14 @@ import { utils } from "../utils";
 		x.xp = x.xp + add;
 		if (x.xp >= x.nextLevelXp) {
 			x.level++;
-			x.nextLevelXp = x.nextLevelXp + Math.round(100 * ((1 + 0.15) ** x.level));
+			x.nextLevelXp = x.nextLevelXp + Math.round(100 * (1.15 ** x.level));
 			const item = await bot.db.cofnigEntry.findFirstOrThrow({
 				where: {
 					module: "level",
 					key: "levelUpMsg"
 				}
 			});
-			await message.channel.send({
+			message.channel.send({
 				content: utils.formatMessage(item.value as string, {
 					user: `<@${message.author.id}>`,
 					level: x.level.toString(),
@@ -86,7 +87,7 @@ import { utils } from "../utils";
 				allowedMentions: { users: [message.author.id] }
 			});
 		}
-		await bot.db.member_level.update({
+		bot.db.member_level.update({
 			where: {
 				memberID_guildID: {
 					memberID: message.author.id,
