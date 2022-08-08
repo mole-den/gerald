@@ -1,7 +1,6 @@
 import * as sapphire from "@sapphire/framework";
 import * as discord from "discord.js";
 import _ from "lodash";
-import { PaginatedMessageEmbedFields } from "@sapphire/discord.js-utilities";
 import { bot } from "../index";
 import { GeraldCommand, geraldCommandOptions } from "../commandClass";
 import { ApplyOptions } from "@sapphire/decorators";
@@ -27,55 +26,61 @@ export class DeletedMSGCommand extends GeraldCommand {
 				.setDescription(this.description).addIntegerOption(i => i.setName("amount")
 					.setDescription("Amount of messages to get").setMinValue(1).setMaxValue(5).setRequired(true));
 		}, {
-			behaviorWhenNotIdentical: sapphire.RegisterBehavior.Overwrite
+			behaviorWhenNotIdentical: sapphire.RegisterBehavior.Overwrite,
+			idHints: ["1006068634256408586"]
 		});
 	}
-	public async slashRun(interaction: discord.CommandInteraction) {
-		await interaction.deferReply();
-		type attachment = {
-			url: string,
-			name: string | null
-		}[];
-		if (!interaction.guild) return;
-		const amount = interaction.options.getInteger("amount");
-		if (!amount) return;
-		const del = await bot.db.deleted_msg.findMany({
-			where: {
-				guildId: interaction.guild.id
-			},
-			orderBy: {
-				msgTime: "desc"
-			},
-			take: amount
-		});
-		const embeds: discord.MessageEmbed[] = [];
-		del.forEach(async (msg) => {
-			const attachments = <attachment>msg.attachments;
-			let content: string;
-			if (msg.content.length > 1028) content = msg.content.substring(0, 1025) + "...";
-			else content = msg.content;
-			const DeleteEmbed = new discord.MessageEmbed()
-				.setTitle("Deleted Message")
-				.setColor("#fc3c3c")
-				.addField("Author", `<@${msg.author}>`, true)
-				.addField("Deleted By", msg.deletedBy, true)
-				.addField("Channel", `<#${msg.channel}>`, true)
-				.addField("Message", content || "None");
-			DeleteEmbed.footer = {
-				text: `ID: ${msg.id} | Message ID: ${msg.msgId}\nAuthor ID: ${msg.author}`
-			};
-			if (attachments.length > 0) {
-				const attachArray: string[] = [];
-				(attachments).forEach((attach) => {
-					attachArray.push(attach.name ? `[${attach.name}](${attach.url})` : `${attach.url}`);
-				});
-				DeleteEmbed.addField("Attachments", attachArray.join("\n"));
-			}
-			embeds.push(DeleteEmbed);
-		});
-		interaction.editReply({
-			embeds: embeds
-		});
+	public async chatInputRun(interaction: discord.CommandInteraction, context: sapphire.ChatInputCommandContext) {
+		try {
+			await interaction.deferReply();
+			type attachment = {
+				url: string,
+				name: string | null
+			}[];
+			if (!interaction.guild) return;
+			const amount = interaction.options.getInteger("amount");
+			if (!amount) return;
+			const del = await bot.db.deleted_msg.findMany({
+				where: {
+					guildId: interaction.guild.id
+				},
+				orderBy: {
+					msgTime: "desc"
+				},
+				take: amount
+			});
+			const embeds: discord.MessageEmbed[] = [];
+			del.forEach(async (msg) => {
+				const attachments = <attachment>msg.attachments;
+				let content: string;
+				if (msg.content.length > 1028) content = msg.content.substring(0, 1025) + "...";
+				else content = msg.content;
+				const DeleteEmbed = new discord.MessageEmbed()
+					.setTitle("Deleted Message")
+					.setColor("#fc3c3c")
+					.addField("Author", `<@${msg.author}>`, true)
+					.addField("Deleted By", msg.deletedBy, true)
+					.addField("Channel", `<#${msg.channel}>`, true)
+					.addField("Message", content || "None");
+				DeleteEmbed.footer = {
+					text: `ID: ${msg.id} | Message ID: ${msg.msgId}\nAuthor ID: ${msg.author}`
+				};
+				if (attachments.length > 0) {
+					const attachArray: string[] = [];
+					(attachments).forEach((attach) => {
+						attachArray.push(attach.name ? `[${attach.name}](${attach.url})` : `${attach.url}`);
+					});
+					DeleteEmbed.addField("Attachments", attachArray.join("\n"));
+				}
+				embeds.push(DeleteEmbed);
+			});
+			interaction.editReply({
+				embeds: embeds
+			});
+		} catch (error) {
+			this.slashHandler(error, interaction, context);
+		}
+
 	}
 
 }
@@ -88,9 +93,11 @@ export class inviteCommand extends GeraldCommand {
 	public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
 		reg.registerChatInputCommand((builder) => {
 			return builder.setName(this.name).setDescription(this.description);
+		}, {
+			idHints: ["1006068635669897277"]
 		});
 	}
-	public override async slashRun(interaction: sapphire.ChatInputCommand.Interaction) {
+	public async chatInputRun(interaction: discord.CommandInteraction) {
 		interaction.reply("Invite is: https://discord.com/oauth2/authorize?client_id=671156130483011605&permissions=8&scope=bot%20applications.commands");
 	}
 }
@@ -103,102 +110,44 @@ export class infoCommand extends GeraldCommand {
 		reg.registerChatInputCommand((builder) => {
 			return builder.setName(this.name)
 				.setDescription(this.description);
+		}, {
+			idHints: ["1006068637087571978"]
 		});
 	}
-	public override async slashRun(interaction: sapphire.ChatInputCommand.Interaction) {
-		let uptime = process.uptime();
-		let uptimeString = "";
-		if (uptime >= 86400) {
-			uptimeString += Math.floor(uptime / 86400) + " days ";
-			uptime %= 86400;
+	public override async chatInputRun(interaction: discord.CommandInteraction, context: sapphire.ChatInputCommandContext) {
+		try {
+			let uptime = process.uptime();
+			let uptimeString = "";
+			if (uptime >= 86400) {
+				uptimeString += Math.floor(uptime / 86400) + " days ";
+				uptime %= 86400;
+			}
+			if (uptime >= 3600) {
+				uptimeString += Math.floor(uptime / 3600) + " hours ";
+				uptime %= 3600;
+			}
+			if (uptime >= 60) {
+				uptimeString += Math.floor(uptime / 60) + " minutes ";
+				uptime %= 60;
+			}
+			uptimeString += Math.floor(uptime) + " seconds";
+			const start = Date.now();
+			await bot.db.$queryRawUnsafe("SELECT 1;");
+			const elapsed = Date.now() - start;
+			const embed = new discord.MessageEmbed().setColor("BLURPLE");
+			embed.setTitle("Info")
+				.addField("Github repo", "https://github.com/mole-den/Gerald")
+				.addField("Uptime", uptimeString)
+				.addField("Discord API heartbeat", `${bot.ws.ping}ms`, false)
+				.addField("Database Heartbeat", `${elapsed}ms`, false)
+				.addField("Memory usage", `${Math.round(process.memoryUsage.rss() / 1000000)}MB `);
+			return interaction.reply({
+				embeds: [embed]
+			});
+		} catch (error) {
+			this.slashHandler(error, interaction, context);
 		}
-		if (uptime >= 3600) {
-			uptimeString += Math.floor(uptime / 3600) + " hours ";
-			uptime %= 3600;
-		}
-		if (uptime >= 60) {
-			uptimeString += Math.floor(uptime / 60) + " minutes ";
-			uptime %= 60;
-		}
-		uptimeString += Math.floor(uptime) + " seconds";
-		const start = Date.now();
-		await bot.db.$queryRawUnsafe("SELECT 1;");
-		const elapsed = Date.now() - start;
-		const embed = new discord.MessageEmbed().setColor("BLURPLE");
-		embed.setTitle("Info")
-			.addField("Github repo", "https://github.com/mole-den/Gerald")
-			.addField("Uptime", uptimeString)
-			.addField("Discord API heartbeat", `${bot.ws.ping}ms`, false)
-			.addField("Database Heartbeat", `${elapsed}ms`, false)
-			.addField("Memory usage", `${Math.round(process.memoryUsage.rss() / 1000000)}MB `);
-		return interaction.reply({
-			embeds: [embed]
-		});
-	}
-}
 
-@ApplyOptions<geraldCommandOptions>({
-	name: "help",
-	description: "Shows infomation about commands"
-}) export class helpCommand extends GeraldCommand {
-	public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
-		reg.registerChatInputCommand((builder) => {
-			return builder.setName(this.name)
-				.setDescription(this.description)
-				.addStringOption(i => i.setName("command")
-					.setDescription("The command to get help for").setAutocomplete(false).setRequired(false));
-		});
-	}
-	public async slashRun(interaction: sapphire.ChatInputCommand.Interaction) {
-		const x = interaction.options.get("command");
-		if (x === null || x.value === undefined) return this.baseHelp(interaction);
-		const cmd = bot.stores.get("commands").find(c => c.name === x.value);
-		if (!cmd) return interaction.followUp({
-			content: "Specify a valid command.",
-			ephemeral: true
-		});
-		interaction.reply({ embeds: [this.cmdHelp(cmd)] });
-	}
-	private cmdHelp(cmd: sapphire.Command) {
-		const embed = new discord.MessageEmbed()
-			.setColor("#0099ff")
-			.setTitle(`Help for **${cmd.name}**`);
-		if (cmd.aliases.length > 0)
-			embed.addField("Command aliases:", cmd.aliases.join(", "), false);
-		else
-			embed.addField("Command aliases:", "None", false);
-		if (cmd.description)
-			embed.addField("Description:", cmd.description, false);
-		else
-			embed.addField("Description:", "null", false);
-		if (cmd.detailedDescription)
-			if (typeof cmd.detailedDescription === "string")
-				embed.addField("Usage:", (cmd.detailedDescription), false);
-			else
-				Object.keys(cmd.detailedDescription).forEach(c => {
-					// @ts-expect-error eee
-					embed.addField(`${c}:`, cmd?.detailedDescription[c]);
-				});
-		else embed.addField("Usage:", "null", false);
-		return embed;
-	}
-
-	private baseHelp(message: discord.Message | sapphire.ChatInputCommand.Interaction) {
-		const items: discord.EmbedFieldData[] = bot.stores.get("commands").filter(cmd => cmd.fullCategory.includes("_hidden") === false).map((x) => {
-			const aliases = x.aliases.length > 0 ? `(aliases: ${x.aliases.join(", ")})` : "";
-			return {
-				name: `${x.name} ${aliases}`,
-				value: x.description,
-				inline: false
-			};
-		});
-		const response = new PaginatedMessageEmbedFields();
-		response.setTemplate({ title: "Help", color: "#0099ff", footer: { text: "Use `help <command>` to get more information on a command" } })
-			.setItems(items)
-			.setItemsPerPage(5)
-			.make()
-			.run(message);
-		return;
 	}
 }
 
@@ -226,8 +175,6 @@ interface order {
 @ApplyOptions<geraldCommandOptions>({
 	name: "warframe",
 	description: "Command to access warframe APIs.",
-	subcommands: [{ handlerName: "cmdMarket", name: "market" },
-		{ handlerName: "cmdRelics", name: "relics", }]
 }) export class warframeCommand extends GeraldCommand {
 	public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
 		reg.registerChatInputCommand((builder) => {
@@ -253,16 +200,22 @@ interface order {
 						})
 				);
 		}, {
-			idHints: ["957171251271585822"],
-			behaviorWhenNotIdentical: sapphire.RegisterBehavior.Overwrite
+			behaviorWhenNotIdentical: sapphire.RegisterBehavior.Overwrite,
+			idHints: ["1006068638610096250"]
 		});
 	}
 
-	public async slashRun() {
-		return;
+	public async chatInputRun(interaction: discord.CommandInteraction, context: sapphire.ChatInputCommandContext) {
+		try {
+			const func: unknown = (this as any)[interaction.options.getSubcommand(true)];
+			if (typeof func !== "function") throw new Error("Invalid subcommand");
+			await func(interaction, context);
+		} catch (error) {
+			this.slashHandler(error, interaction, context);
+		}
 	}
 
-	public async cmdMarket(interaction: discord.CommandInteraction) {
+	public async market(interaction: discord.CommandInteraction) {
 		await interaction.deferReply();
 		let itemToGet = interaction.options.getString("item");
 		if (!itemToGet) return;
@@ -329,7 +282,7 @@ interface order {
 			utils.handleDismissButton(interaction, response);
 	}
 
-	public async cmdRelics(interaction: discord.CommandInteraction) {
+	public async relics(interaction: discord.CommandInteraction) {
 		await interaction.deferReply();
 		interface relicReward {
 			_id: string,
@@ -457,59 +410,60 @@ export class rollCommand extends GeraldCommand {
 	public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
 		reg.registerChatInputCommand(cmd => cmd.setDescription(this.description).setName(this.name)
 			.addStringOption(i => i.setName("dice").setDescription("Amount and type of dice to roll.")),
-		{ idHints: ["1001300165879152721"] });
+		{ idHints: ["1006068640082309201"] });
 	}
 
-	public async slashRun(interaction: discord.CommandInteraction) {
-		interaction;
-		const input = interaction.options.getString("dice")?.trimStart().trimEnd() ?? "d6";
-		let option = input;
-		const hasAmount = option.match(/^-?[.\d]+/) ? true : false;
-		const amount = Number((option.match(/^-?[.\d]+/) ?? ["1"])[0]);
-		if (amount > 5000) return interaction.reply({
-			ephemeral: true,
-			content: "You can't roll more than 5000 dice at once."
-		});
-		if (hasAmount) option = option.replace(/^-?[.\d]+/, "");
-		if (option.startsWith("d")) option = option.substring(1);
-		const dice = Number((option.match(/^-?[.\d]+/) ?? "6")[0]);
-		option = option.substring(dice.toString().length);
-		let add: number;
-		const ps = option.includes("+") ? true : option.includes("-") ? true : false;
-		if (!ps)
-			add = 0;
-		else
-			add = Number(((option.match(/^\+[.\d]+|^-[.\d]+/) ?? ["0"])[0]));
-		if (_.isNaN(add) || _.isNaN(dice) || _.isNaN(amount)) {
-			await interaction.reply({
+	public async slashRun(interaction: discord.CommandInteraction, context: sapphire.ChatInputCommandContext) {
+		try {
+			const input = interaction.options.getString("dice")?.trimStart().trimEnd() ?? "d6";
+			let option = input;
+			const hasAmount = option.match(/^-?[.\d]+/) ? true : false;
+			const amount = Number((option.match(/^-?[.\d]+/) ?? ["1"])[0]);
+			if (amount > 5000) return interaction.reply({
 				ephemeral: true,
-				content: `Invalid input: ${input}`
+				content: "You can't roll more than 5000 dice at once."
+			});
+			if (hasAmount) option = option.replace(/^-?[.\d]+/, "");
+			if (option.startsWith("d")) option = option.substring(1);
+			const dice = Number((option.match(/^-?[.\d]+/) ?? "6")[0]);
+			option = option.substring(dice.toString().length);
+			let add: number;
+			const ps = option.includes("+") ? true : option.includes("-") ? true : false;
+			if (!ps)
+				add = 0;
+			else
+				add = Number(((option.match(/^\+[.\d]+|^-[.\d]+/) ?? ["0"])[0]));
+			if (_.isNaN(add) || _.isNaN(dice) || _.isNaN(amount)) {
+				await interaction.reply({
+					ephemeral: true,
+					content: `Invalid input: ${input}`
+				});
+				return;
+			}
+			let result: number;
+			const resultArray: number[] = [];
+			for (let i = 0; i < amount; i++) {
+				result = utils.getRandomArbitrary(1, dice);
+				resultArray.push(result);
+			}
+			result = resultArray.reduce((a, b) => a + b, 0);
+			result += add;
+			const addString = `${add >= 0 ? "+" : "-"} ${Math.abs(add)}`;
+			const resultArrString = `[${resultArray.join(", ")}]`;
+			const relpy = `Rolled \`${input}\` and got ${result} ${add !== 0 || resultArray.length > 1 ? "(" : ""}${resultArray.length > 1 || add !== 0 ? resultArrString : ""} ${add !== 0 ? addString : ""}`;
+			await interaction.reply({
+				content: `${relpy.trimEnd()}${add !== 0 || resultArray.length > 1 ? ")" : ""}`,
 			});
 			return;
-		} 
-		let result: number;
-		const resultArray: number[] = [];
-		for (let i = 0; i < amount; i++) {
-			result = utils.getRandomArbitrary(1, dice);
-			resultArray.push(result);
+		} catch (error) {
+			this.slashHandler(error, interaction, context);
 		}
-		result = resultArray.reduce((a, b) => a + b, 0);
-		result += add;
-		const addString = `${add >= 0 ? "+" : "-"} ${Math.abs(add)}`;
-		const resultArrString = `[${resultArray.join(", ")}]`;
-		const relpy = `Rolled \`${input}\` and got ${result} ${add !== 0 || resultArray.length > 1 ? "(" : ""}${resultArray.length > 1 || add !== 0 ? resultArrString : ""} ${add !== 0 ? addString : ""}`;
-		await interaction.reply({
-			content: `${relpy.trimEnd()}${add !== 0 || resultArray.length > 1 ? ")" : ""}`,
-		});
-		return;
 	}
 }
 
 @ApplyOptions<geraldCommandOptions>({
 	name: "dev",
 	description: "Developer commands",
-	subcommands: [{ handlerName: "cmdEval", name: "eval" },
-		{ handlerName: "cmdQuery", name: "query", }]
 }) export class devCommand extends GeraldCommand {
 	public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
 		reg.registerChatInputCommand(builder => {
@@ -520,14 +474,20 @@ export class rollCommand extends GeraldCommand {
 				).addSubcommand(subcommand =>
 					subcommand.setName("query").setDescription("Query database").addStringOption(o => o.setName("query").setDescription("Query to execute").setRequired(true)));
 
-		});
+		}, { idHints: ["1006068721787359243"]});
 	}
 
-	public async slashRun() {
-		return;
+	public async chatInputRun(interaction: discord.CommandInteraction, context: sapphire.ChatInputCommandContext) {
+		try {
+			const func: unknown = (this as any)[interaction.options.getSubcommand(true)];
+			if (typeof func !== "function") throw new Error("Invalid subcommand");
+			await func(interaction, context);
+		} catch (error) {
+			this.slashHandler(error, interaction, context);
+		}
 	}
 
-	public async cmdQuery(interaction: discord.CommandInteraction) {
+	public async query(interaction: discord.CommandInteraction) {
 		if (!process.env.OWNERS?.split(" ").includes(interaction.user.id)) return interaction.reply({
 			ephemeral: true,
 			content: "Not authorized"
@@ -553,7 +513,7 @@ export class rollCommand extends GeraldCommand {
 		});
 	}
 
-	public async cmdEval(interaction: discord.CommandInteraction) {
+	public async eval(interaction: discord.CommandInteraction) {
 		if (!process.env.OWNERS?.split(" ").includes(interaction.user.id)) return interaction.reply({
 			ephemeral: true,
 			content: "Not authorized"

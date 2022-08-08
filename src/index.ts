@@ -4,7 +4,7 @@ import { scheduledTaskManager } from "./taskManager";
 import { PrismaClient } from "@prisma/client";
 import { utils } from "./utils";
 import Time from "@sapphire/time-utilities";
-import { GeraldCommand } from "./commandClass";
+import { GeraldCommand, GeraldModule } from "./commandClass";
 process.on("SIGTERM", async () => {
 	console.log("SIGTERM received");
 	void bot.destroy();
@@ -23,6 +23,10 @@ class Gerald extends sapphire.SapphireClient {
 				scope: 3,
 				limit: 2,
 				delay: Time.Time.Second * 3
+			},
+			logger: {
+				level: sapphire.LogLevel.Info,
+				instance: new sapphire.Logger(sapphire.LogLevel.Info)
 			}
 		});
 		this.db = new PrismaClient({
@@ -54,9 +58,11 @@ class Gerald extends sapphire.SapphireClient {
 		await utils.sleep(4000);
 		this.user?.setStatus("dnd");
 		bot.stores.get("commands").forEach(i => {
-			(<GeraldCommand>i).onCommandStart();
+			const m = (<GeraldCommand | GeraldCommand & GeraldModule>i);
+			if (m.isModule(m)) m.onModuleStart();
 		});
 		console.log("Ready");
+		
 	}
 	public override destroy(): void {
 		bot.db.$disconnect();
@@ -68,11 +74,8 @@ export const bot = new Gerald();
 export let taskScheduler: scheduledTaskManager;
 
 
-bot.on("messageCommandDenied", ({ context, message: content }: sapphire.UserError, { message }: sapphire.MessageCommandDeniedPayload) => {
-	// `context: { silent: true }` should make UserError silent:
-	// Use cases for this are for example permissions error when running a hidden command.
-	if (Reflect.get(Object(context), "silent")) return;
-	message.channel.send({ content, allowedMentions: { users: [message.author.id], roles: [] } });
+bot.on("chatInputCommandDenied", (error: sapphire.UserError, payload: sapphire.ChatInputCommandDeniedPayload) => {
+	payload.interaction.reply({ content: error.message, allowedMentions: { users: [payload.interaction.user.id], roles: [] }, ephemeral: true });
 });
 
 bot.on("guildCreate", async (guild) => {

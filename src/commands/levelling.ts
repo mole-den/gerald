@@ -1,19 +1,19 @@
 import * as discord from "discord.js";
-import { ApplicationCommandRegistry, RegisterBehavior } from "@sapphire/framework";
+import { ApplicationCommandRegistry, ChatInputCommandContext, RegisterBehavior } from "@sapphire/framework";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 import { bot } from "../index";
-import { GeraldCommand, geraldCommandOptions } from "../commandClass";
+import { GeraldCommand, geraldCommandOptions, GeraldModule } from "../commandClass";
 import { ApplyOptions } from "@sapphire/decorators";
 import { utils } from "../utils";
 ///<reference types="../index"/>
 @ApplyOptions<geraldCommandOptions>({
-	name: "level",
+	name: "levelling",
 	description: "A basic server xp and levelling system.",
 	requiredClientPermissions: [],
-	requiredUserPermissions: "MANAGE_MESSAGES",
 	preconditions: ["GuildOnly"],
-	options: ["id"],
-	settings: [{
+}) export class levellingCommand extends GeraldCommand implements GeraldModule {
+	xpLimit: RateLimiterMemory | undefined;
+	settings = [{
 		id: "levelUpMsg",
 		name: "Message sent on level up",
 		description: "Message sent when a user levels up. Use `{{user}}` to mention the user and `{{level}}` to get the user's new level.",
@@ -23,35 +23,30 @@ import { utils } from "../utils";
 		name: "Earn xp from activty in voice channels.",
 		default: "true",
 		description: "Earn xp from talking in voice channels and streaming."
-	}],
-	subcommands: [{
-		name: "Settings",
-		handlerName: "settings",
-	}, {
-		name: "Leaderboard",
-		handlerName: "leaderboard",
-	}, {
-		name: "viewlevel",
-		handlerName: "viewlevel",
-	}]
-}) export class Levelling extends GeraldCommand {
-	xpLimit: RateLimiterMemory | undefined;
+	}];
 	public override registerApplicationCommands(reg: ApplicationCommandRegistry) {
 		reg.registerChatInputCommand((builder) => {
 			return builder.setName(this.name)
 				.setDescription(this.description).addSubcommand(x => x.setName("settings").setDescription("View settings for levelling."))
 				.addSubcommand(x => x.setName("leaderboard").setDescription("View the leaderboard."))
-				.addSubcommand(x => x.setName("viewlevel").setDescription("View a user's level."));
+				.addSubcommand(x => x.setName("viewlevel").setDescription("View a user's level.").addUserOption(o => o.setName("user").setDescription("The user to view the level of.").setRequired(false)));
 		}, {
 			behaviorWhenNotIdentical: RegisterBehavior.Overwrite,
-			idHints: ["1005997140365033613"]
+			idHints: ["1006068723456675910"]
 		});
 	}
 
-	public async slashRun() {
-		return;
+	public async chatInputRun(interaction: discord.CommandInteraction, context: ChatInputCommandContext) {
+		try {
+			const func: unknown = (this as any)[interaction.options.getSubcommand(true)];
+			if (typeof func !== "function") throw new Error("Invalid subcommand");
+			await func(interaction, context);
+		} catch (error) {
+			this.slashHandler(error, interaction, context);
+		}
 	}
-	async handler(message: discord.Message) {
+
+	private async handler(message: discord.Message) {
 		if (message.author.bot) return;
 		if (this.xpLimit === undefined) return;
 		if (!message.guildId) return;
@@ -106,7 +101,7 @@ import { utils } from "../utils";
 		});
 	}
 
-	async leaderboard(interaction: discord.CommandInteraction) {
+	public async leaderboard(interaction: discord.CommandInteraction) {
 		if (!interaction.guild) return;
 		await interaction.deferReply();
 		const top = await bot.db.member_level.findMany({
@@ -145,7 +140,7 @@ import { utils } from "../utils";
 		});
 	}
 
-	async viewlevel(interaction: discord.CommandInteraction) {
+	public async viewlevel(interaction: discord.CommandInteraction) {
 		const user = interaction.options.getUser("user") ?? interaction.user;
 		if (user.bot) return interaction.reply("Bots do not earn xp");
 		if (!interaction.guild) return;
@@ -166,14 +161,14 @@ import { utils } from "../utils";
 
 		return interaction.reply(`${user.username} is level ${x.level} and has ${x.xp}/${x.nextLevelXp}xp`);
 	}
-	async onCommandStart(): Promise<void> {
+	async onModuleStart(): Promise<void> {
 		this.xpLimit = new RateLimiterMemory({
 			points: 30,
 			duration: 60
 		});
 		bot.on("messageCreate", this.handler);
 	}
-	async onCommandDisabled(): Promise<void> {
+	async onModuleDisabled(): Promise<void> {
 		bot.off("messageCreate", this.handler);
 		this.xpLimit = undefined;
 	}
