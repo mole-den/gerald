@@ -39,7 +39,7 @@ import { utils } from "../utils";
 	public override registerApplicationCommands(reg: ApplicationCommandRegistry) {
 		reg.registerChatInputCommand((builder) => {
 			return builder.setName(this.name)
-				.setDescription(this.description).addSubcommand(x => x.setName("Settings").setDescription("View settings for levelling."))
+				.setDescription(this.description).addSubcommand(x => x.setName("settings").setDescription("View settings for levelling."))
 				.addSubcommand(x => x.setName("leaderboard").setDescription("View the leaderboard."))
 				.addSubcommand(x => x.setName("viewlevel").setDescription("View a user's level."));
 		}, {
