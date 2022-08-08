@@ -161,15 +161,16 @@ import { utils } from "../utils";
 
 		return interaction.reply(`${user.username} is level ${x.level} and has ${x.xp}/${x.nextLevelXp}xp`);
 	}
+	
 	async onModuleStart(): Promise<void> {
 		this.xpLimit = new RateLimiterMemory({
 			points: 30,
 			duration: 60
 		});
-		bot.on("messageCreate", this.handler);
+		bot.on("messageCreate", this.handler.bind(this));
 	}
 	async onModuleDisabled(): Promise<void> {
-		bot.off("messageCreate", this.handler);
+		bot.off("messageCreate", this.handler.bind(this));
 		this.xpLimit = undefined;
 	}
 }
