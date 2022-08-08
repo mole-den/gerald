@@ -7,7 +7,7 @@ import { ApplyOptions } from "@sapphire/decorators";
 import { utils } from "../utils";
 ///<reference types="../index"/>
 @ApplyOptions<geraldCommandOptions>({
-	name: "levelling",
+	name: "level",
 	description: "A basic server xp and levelling system.",
 	requiredClientPermissions: [],
 	requiredUserPermissions: "MANAGE_MESSAGES",
