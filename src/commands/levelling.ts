@@ -54,7 +54,7 @@ import { utils } from "../utils";
 		try {
 			await this.xpLimit.consume(`${message.guildId}-${message.author.id}`, add);
 		} catch { return; }
-		const x = (await bot.db.member_level.upsert({
+		let {xp, nextLevelXp, level} = (await bot.db.member_level.upsert({
 			where: {
 				memberID_guildID: {
 					memberID: message.author.id,
@@ -67,10 +67,10 @@ import { utils } from "../utils";
 				guildID: message.guildId,
 			}
 		}));
-		x.xp = x.xp + add;
-		if (x.xp >= x.nextLevelXp) {
-			x.level++;
-			x.nextLevelXp = x.nextLevelXp + Math.round(100 * (1.15 ** x.level));
+		xp = xp + add;
+		if (xp > nextLevelXp) {
+			level++;
+			nextLevelXp = nextLevelXp + Math.round(100 * (1.15 ** level));
 			const item = await bot.db.cofnigEntry.upsert({
 				where: {
 					guildId_module_key: {
@@ -87,15 +87,25 @@ import { utils } from "../utils";
 					value: this.settings.find(s => s.id === "levelUpMsg")?.default ?? ""
 				}
 			});
+			await bot.db.member_level.update({
+				where: {
+					memberID_guildID: {
+						memberID: message.author.id,
+						guildID: message.guildId
+					},
+				},
+				data: {
+					xp, nextLevelXp, level
+				}	
+			});
 			message.channel.send({
 				content: utils.formatMessage(item.value as string, {
 					user: `<@${message.author.id}>`,
-					level: x.level.toString(),
+					level: level.toString(),
 				}),
 				allowedMentions: { users: [message.author.id] }
 			});
-		}
-		await bot.db.member_level.update({
+		} else await bot.db.member_level.update({
 			where: {
 				memberID_guildID: {
 					memberID: message.author.id,
@@ -103,12 +113,10 @@ import { utils } from "../utils";
 				},
 			},
 			data: {
-				level: x.level,
-				nextLevelXp: x.nextLevelXp,
-				xp: x.xp
+				xp: xp
 			}
 		});
-		
+
 	}
 
 	public async leaderboard(interaction: discord.CommandInteraction) {
@@ -171,7 +179,7 @@ import { utils } from "../utils";
 
 		return interaction.reply(`${user.username} is level ${x.level} and has ${x.xp}/${x.nextLevelXp}xp`);
 	}
-	
+
 	async onModuleStart(): Promise<void> {
 		this.xpLimit = new RateLimiterMemory({
 			points: 30,
