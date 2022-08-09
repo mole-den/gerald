@@ -19,10 +19,11 @@ model guild {
 model cofnigEntry {
   id      Int    @id @default(autoincrement())
   guild   guild  @relation(fields: [guildId], references: [guildId], onDelete: Cascade)
-  guildId String
+  guildId String 
   module  String
   key     String
   value   String
+  @@unique([guildId, module, key])
 }
 
 model member {
