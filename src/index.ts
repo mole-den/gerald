@@ -6,10 +6,10 @@ import { utils } from "./utils";
 import Time from "@sapphire/time-utilities";
 import { GeraldCommand, GeraldModule } from "./commandClass";
 process.on("SIGTERM", async () => {
-	console.log("SIGTERM received");
 	void bot.destroy();
 	process.exit(0);
 });
+
 class Gerald extends sapphire.SapphireClient {
 	db: PrismaClient;
 	constructor() {
@@ -42,19 +42,6 @@ class Gerald extends sapphire.SapphireClient {
 		if (!process.env.TOKEN) throw new Error("No token found");
 		await super.login(process.env.TOKEN);
 		taskScheduler = new scheduledTaskManager();
-		const x = await this.db.guild.count();
-		const guilds = await this.guilds.fetch();
-		if (guilds.size > x) {
-			console.log("Guilds:", guilds.size, "Database:", x);
-			guilds.each(async (guild) => {
-				await this.db.guild.create({
-					data: {
-						guildId: guild.id,
-						joinedTime: new Date()
-					}
-				});
-			});
-		}
 		await utils.sleep(4000);
 		this.user?.setStatus("dnd");
 		bot.stores.get("commands").forEach(i => {
@@ -89,7 +76,7 @@ bot.on("guildCreate", async (guild) => {
 		channels.each(async (ch) => {
 			if (ch.type === "GUILD_TEXT") {
 				const c = (await ch.fetch() as discord.TextChannel);
-				c.messages.fetch({ limit: 100 });
+				c.messages.fetch({ limit: 10 });
 			}
 		});
 	});
