@@ -8,28 +8,21 @@ datasource db {
 }
 
 model guild {
-  id         Int      @id @default(autoincrement())
-  guildId    String   @unique @map("guild_id")
-  joinedTime DateTime @map("join_Time") @db.Timestamp(6)
-  prefix     String   @default("g")
+  id         Int           @id @default(autoincrement())
+  guildId    String        @unique @map("guild_id")
+  joinedTime DateTime      @map("join_Time") @db.Timestamp(6)
+  prefix     String        @default("g")
   member     member[]
-  config     config[]
-}
-
-model config {
-  id          Int           @id @default(autoincrement())
-  guild       guild         @relation(fields: [guildId], references: [guildId], onDelete: Cascade)
-  guildId     String
-  module      String        @unique
-  cofnigEntry cofnigEntry[]
+  config     cofnigEntry[]
 }
 
 model cofnigEntry {
-  id       Int    @id @default(autoincrement())
-  config   config @relation(fields: [module], references: [module])
-  module String
-  key      String
-  value    String
+  id      Int    @id @default(autoincrement())
+  guild   guild  @relation(fields: [guildId], references: [guildId], onDelete: Cascade)
+  guildId String
+  module  String
+  key     String
+  value   String
 }
 
 model member {
