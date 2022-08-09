@@ -95,7 +95,7 @@ import { utils } from "../utils";
 				allowedMentions: { users: [message.author.id] }
 			});
 		}
-		bot.db.member_level.update({
+		await bot.db.member_level.update({
 			where: {
 				memberID_guildID: {
 					memberID: message.author.id,
