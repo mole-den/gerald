@@ -79,10 +79,6 @@ bot.on("chatInputCommandDenied", (error: sapphire.UserError, payload: sapphire.C
 });
 
 bot.on("guildCreate", async (guild) => {
-	const botUser = bot.user?.id;
-	if (!botUser) return;
-	const user = await guild.members.fetch(botUser);
-	if (user.permissions.has(discord.Permissions.FLAGS.ADMINISTRATOR) === false) guild.leave();
 	bot.db.guild.create({
 		data: {
 			guildId: guild.id,
