@@ -50,6 +50,10 @@ import { utils } from "../utils";
 		if (message.author.bot) return;
 		if (this.xpLimit === undefined) return;
 		if (!message.guildId) return;
+		const add = utils.getRandomArbitrary(1, 4);
+		try {
+			await this.xpLimit.consume(`${message.guildId}-${message.author.id}`, add);
+		} catch { return; }
 		const x = (await bot.db.member_level.upsert({
 			where: {
 				memberID_guildID: {
@@ -63,20 +67,24 @@ import { utils } from "../utils";
 				guildID: message.guildId,
 			}
 		}));
-		const add = utils.getRandomArbitrary(1, 4);
-		try {
-			this.xpLimit.consume(`${message.guildId}-${message.author.id}`, add);
-		} catch (error) {
-			return;
-		}
 		x.xp = x.xp + add;
 		if (x.xp >= x.nextLevelXp) {
 			x.level++;
 			x.nextLevelXp = x.nextLevelXp + Math.round(100 * (1.15 ** x.level));
-			const item = await bot.db.cofnigEntry.findFirstOrThrow({
+			const item = await bot.db.cofnigEntry.upsert({
 				where: {
+					guildId_module_key: {
+						module: "level",
+						key: "levelUpMsg",
+						guildId: message.guildId
+					}
+				},
+				update: {},
+				create: {
 					module: "level",
-					key: "levelUpMsg"
+					key: "levelUpMsg",
+					guildId: message.guildId,
+					value: this.settings.find(s => s.id === "levelUpMsg")?.default ?? ""
 				}
 			});
 			message.channel.send({
@@ -100,6 +108,7 @@ import { utils } from "../utils";
 				xp: x.xp
 			}
 		});
+		
 	}
 
 	public async leaderboard(interaction: discord.CommandInteraction) {
