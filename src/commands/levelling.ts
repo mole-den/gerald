@@ -2,7 +2,7 @@ import * as discord from "discord.js";
 import { ApplicationCommandRegistry, ChatInputCommandContext, RegisterBehavior } from "@sapphire/framework";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 import { bot } from "../index";
-import { GeraldCommand, geraldCommandOptions, GeraldModule } from "../commandClass";
+import { GeraldCommand, geraldCommandOptions, GeraldModule, GeraldModuleSetting } from "../commandClass";
 import { ApplyOptions } from "@sapphire/decorators";
 import { utils } from "../utils";
 ///<reference types="../index"/>
@@ -13,22 +13,50 @@ import { utils } from "../utils";
 	preconditions: ["GuildOnly"],
 }) export class levellingCommand extends GeraldCommand implements GeraldModule {
 	xpLimit: RateLimiterMemory | undefined;
-	settings = [{
+	ignore: string[] = [];
+	settings: GeraldModuleSetting[] = [{
 		id: "levelUpMsg",
-		name: "Message sent on level up",
+		name: "levelupmessage",
 		description: "Message sent when a user levels up. Use `{{user}}` to mention the user and `{{level}}` to get the user's new level.",
-		default: "{{user}} is now level {{level}}."
+		default: "{{user}} is now level {{level}}.",
+		type: "string",
+		multiple: false
 	}, {
 		id: "earnVcXp",
-		name: "Earn xp from activty in voice channels.",
+		name: "vcxp",
 		default: "true",
-		description: "Earn xp from talking in voice channels and streaming."
+		type: "boolean",
+		description: "Earn xp from talking in voice channels and streaming.",
+		multiple: false
+	}, {
+		id: "ignoreChannels",
+		name: "ignorechannels",
+		type: "channel",
+		default: "",
+		description: "List of channels to not earn xp from.",
+		multiple: true
 	}];
 	public override registerApplicationCommands(reg: ApplicationCommandRegistry) {
-		reg.registerChatInputCommand((builder) => {
-			return builder.setName(this.name)
-				.setDescription(this.description).addSubcommand(x => x.setName("settings").setDescription("View settings for levelling."))
-				.addSubcommand(x => x.setName("leaderboard").setDescription("View the leaderboard."))
+		reg.registerChatInputCommand((cmd) => {
+			return cmd.setName(this.name)
+				.setDescription(this.description).addSubcommandGroup(x => {
+					x.setName("settings").setDescription("Settings for levelling.");
+					this.settings.forEach(s => {
+						x.addSubcommand(builder => {
+							builder.setName(s.name).setDescription(s.description);
+							if (s.multiple) builder.addStringOption(o => o.setName("set").setDescription("Add or remove value").addChoices([["add", "add"], ["remove", "remove"]]));
+							if (s.type === "boolean") builder.addBooleanOption(o => o.setName("value").setDescription("New value"));
+							else if (s.type === "channel") builder.addChannelOption(o => o.setName("value").setDescription("New value"));
+							else if (s.type === "string") builder.addStringOption(o => o.setName("value").setDescription("New value"));
+							else if (s.type === "number") builder.addNumberOption(o => o.setName("value").setDescription("New value"));
+							else if (s.type === "role") builder.addRoleOption(o => o.setName("value").setDescription("New value"));
+							else if (s.type === "user") builder.addUserOption(o => o.setName("value").setDescription("New value"));
+							else throw new Error("Invalid type");
+							return builder;
+						});
+					});
+					return x;
+				}).addSubcommand(x => x.setName("leaderboard").setDescription("View the leaderboard."))
 				.addSubcommand(x => x.setName("viewlevel").setDescription("View a user's level.").addUserOption(o => o.setName("user").setDescription("The user to view the level of.").setRequired(false)));
 		}, {
 			behaviorWhenNotIdentical: RegisterBehavior.Overwrite,
@@ -50,11 +78,12 @@ import { utils } from "../utils";
 		if (message.author.bot) return;
 		if (this.xpLimit === undefined) return;
 		if (!message.guildId) return;
+		if (this.ignore.includes(message.guildId)) return;
 		const add = utils.getRandomArbitrary(1, 4);
 		try {
 			await this.xpLimit.consume(`${message.guildId}-${message.author.id}`, add);
 		} catch { return; }
-		let {xp, nextLevelXp, level} = (await bot.db.member_level.upsert({
+		let { xp, nextLevelXp, level } = (await bot.db.member_level.upsert({
 			where: {
 				memberID_guildID: {
 					memberID: message.author.id,
@@ -96,7 +125,7 @@ import { utils } from "../utils";
 				},
 				data: {
 					xp, nextLevelXp, level
-				}	
+				}
 			});
 			message.channel.send({
 				content: utils.formatMessage(item.value as string, {
@@ -187,8 +216,11 @@ import { utils } from "../utils";
 		});
 		bot.on("messageCreate", this.handler.bind(this));
 	}
-	async onModuleDisabled(): Promise<void> {
-		bot.off("messageCreate", this.handler.bind(this));
-		this.xpLimit = undefined;
+	async onModuleDisabledInGuild(id: string): Promise<void> {
+		this.ignore.push(id);
+	}
+
+	async onModuleEnabledInGuild(id: string): Promise<void> {
+		this.ignore = this.ignore.filter(i => i !== id);
 	}
 }
