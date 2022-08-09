@@ -519,7 +519,7 @@ export class rollCommand extends GeraldCommand {
 			content: "Not authorized"
 		});
 		const str = interaction.options.getString("string") as string;
-		const x = (new Function(str))();
+		const x = eval(str);
 		return interaction.reply({
 			content: `${x}`,
 			allowedMentions: {
