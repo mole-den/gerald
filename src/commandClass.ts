@@ -19,6 +19,7 @@ export interface GeraldModuleSetting {
 	id: string
 	name: string
 	description: string
+	detailedDesc?: string
 	default: string
 	type: "string" | "number" | "boolean" | "user" | "channel" | "role",
 	multiple: boolean

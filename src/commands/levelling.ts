@@ -7,7 +7,7 @@ import { ApplyOptions } from "@sapphire/decorators";
 import { utils } from "../utils";
 ///<reference types="../index"/>
 @ApplyOptions<geraldCommandOptions>({
-	name: "levelling",
+	name: "Levelling",
 	description: "A basic server xp and levelling system.",
 	requiredClientPermissions: [],
 	preconditions: ["GuildOnly"],
@@ -17,7 +17,8 @@ import { utils } from "../utils";
 	settings: GeraldModuleSetting[] = [{
 		id: "levelUpMsg",
 		name: "levelupmessage",
-		description: "Message sent when a user levels up. Use `{{user}}` to mention the user and `{{level}}` to get the user's new level.",
+		description: "Message sent when a user levels up.",
+		detailedDesc: "Message sent when a user levels up. Use `{{user}}` to mention the user and `{{level}}` to get the user's new level.",
 		default: "{{user}} is now level {{level}}.",
 		type: "string",
 		multiple: false
@@ -44,14 +45,14 @@ import { utils } from "../utils";
 					this.settings.forEach(s => {
 						x.addSubcommand(builder => {
 							builder.setName(s.name).setDescription(s.description);
-							if (s.multiple) builder.addStringOption(o => o.setName("set").setDescription("Add or remove value").addChoices([["add", "add"], ["remove", "remove"]]));
+							/*if (s.multiple) builder.addStringOption(o => o.setName("set").setDescription("Add or remove value").addChoices([["add", "add"], ["remove", "remove"]]));
 							if (s.type === "boolean") builder.addBooleanOption(o => o.setName("value").setDescription("New value"));
 							else if (s.type === "channel") builder.addChannelOption(o => o.setName("value").setDescription("New value"));
 							else if (s.type === "string") builder.addStringOption(o => o.setName("value").setDescription("New value"));
 							else if (s.type === "number") builder.addNumberOption(o => o.setName("value").setDescription("New value"));
 							else if (s.type === "role") builder.addRoleOption(o => o.setName("value").setDescription("New value"));
 							else if (s.type === "user") builder.addUserOption(o => o.setName("value").setDescription("New value"));
-							else throw new Error("Invalid type");
+							else throw new Error("Invalid type");*/
 							return builder;
 						});
 					});
@@ -66,12 +67,46 @@ import { utils } from "../utils";
 
 	public async chatInputRun(interaction: discord.CommandInteraction, context: ChatInputCommandContext) {
 		try {
-			const func: unknown = (this as any)[interaction.options.getSubcommand(true)];
-			if (typeof func !== "function") throw new Error("Invalid subcommand");
-			await func(interaction, context);
+			if (interaction.options.getSubcommandGroup(false) && interaction.options.getSubcommandGroup(false) === "settings") this.settingsRun(interaction);
+			else {
+				const func: unknown = (this as any)[interaction.options.getSubcommand(true)];
+				if (typeof func !== "function") throw new Error("Invalid subcommand");
+				await func(interaction, context);
+			}
 		} catch (error) {
 			this.slashHandler(error, interaction, context);
 		}
+	}
+
+	private async settingsRun(interaction: discord.CommandInteraction) {
+		const setting = this.settings.find(s => s.name === interaction.options.getSubcommand(true));
+		if (!setting) throw new Error("Interaction returned invalid setting");
+		const value = await bot.db.cofnigEntry.upsert({
+			where: {
+				guildId_module_key: {
+					guildId: interaction.guild?.id ?? "",
+					module: this.name,
+					key: setting.id
+				}
+			},
+			create: {
+				guildId: interaction.guild?.id ?? "",
+				module: this.name,
+				key: setting.id,
+				value: setting.default
+			},
+			update: {}
+		});
+		const embed = new discord.MessageEmbed();
+		embed.setTitle(`${this.name} settings - ${setting.name}`);
+		embed.addField("Description", setting.detailedDesc ?? setting.description);
+		embed.addField("Current value", value.value);
+		embed.addField("Default value", setting.default);
+		const row = new discord.MessageActionRow().addComponents([new discord.MessageButton().setStyle("PRIMARY").setCustomId("changesetting").setLabel("Edit setting")]);
+		row;
+		interaction.reply({
+			embeds: [embed]
+		});
 	}
 
 	private async handler(message: discord.Message) {
@@ -210,6 +245,7 @@ import { utils } from "../utils";
 	}
 
 	async onModuleStart(): Promise<void> {
+		return;
 		this.xpLimit = new RateLimiterMemory({
 			points: 30,
 			duration: 60
