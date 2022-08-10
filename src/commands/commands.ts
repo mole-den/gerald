@@ -65,15 +65,13 @@ export class DeletedMSGCommand extends GeraldCommand {
 			if (user && channel) filterMsg = `Filtering by user ${user} and channel ${channel}`;
 			else if (channel) filterMsg = `Filtering by channel ${channel}`; 
 			else if (user) filterMsg = `Filtering by user ${user}`;
-			const embeds: discord.MessageEmbed[] = this.getEmbeds(del, user ? true : false, channel ? true : false);
+			const embeds: discord.MessageEmbed[] = this.getEmbeds(del, user !== null, channel !== null);
 			const advanceButton = new discord.MessageButton().setCustomId("del-next").setLabel("Next page").setStyle("PRIMARY");
 			const backButton = new discord.MessageButton().setCustomId("del-back").setLabel("Previous page").setStyle("PRIMARY");
 			const dismiss = utils.dismissButton;
 			const row = new discord.MessageActionRow();
-			if (total < 3) {
-				backButton.setDisabled(true);
-				advanceButton.setDisabled(true);
-			}
+			if (total < 3) advanceButton.setDisabled(true);
+			backButton.setDisabled(true);
 			row.addComponents(backButton, advanceButton, dismiss);
 			await interaction.editReply({
 				embeds: embeds,
@@ -87,10 +85,28 @@ export class DeletedMSGCommand extends GeraldCommand {
 			const reply = await interaction.fetchReply() as discord.Message;
 			// eslint-disable-next-line no-constant-condition
 			while (true) {
-				const x = await reply.awaitMessageComponent({
-					filter: (button) => button.user.id === interaction.user.id,
-					time: 15_000
-				});
+				let x: discord.ButtonInteraction<discord.CacheType>;
+				try {
+					x = await reply.awaitMessageComponent({
+						componentType: "BUTTON",
+						filter: (button) => button.user.id === interaction.user.id,
+						time: 15_000
+					});	
+				} catch (error) {
+					const advance = new discord.MessageButton().setCustomId("del-next").setLabel("Next page").setStyle("PRIMARY").setDisabled(true);
+					const back = new discord.MessageButton().setCustomId("del-back").setLabel("Previous page").setStyle("PRIMARY").setDisabled(true);
+					const remove = utils.dismissButton.setDisabled(true);
+					const newRow = new discord.MessageActionRow();		
+					newRow.addComponents(back, advance, remove);
+					interaction.editReply({
+						components: [newRow],
+						allowedMentions: {
+							parse: []
+						}
+					});
+					break;
+				}
+				x.deferUpdate();
 				if (x.customId === "dismissEmbed") {
 					interaction.deleteReply();
 					break;
@@ -104,32 +120,44 @@ export class DeletedMSGCommand extends GeraldCommand {
 						skip: at
 					});
 					at = at + 3;
-					const newEmbeds = this.getEmbeds(query, user ? true : false, channel ? true : false);
-					if (at + 3 > total) advanceButton.setDisabled(true);
+					const newEmbeds = this.getEmbeds(query, user !== null, channel !== null);
+					const advance = new discord.MessageButton().setCustomId("del-next").setLabel("Next page").setStyle("PRIMARY");
+					const back = new discord.MessageButton().setCustomId("del-back").setLabel("Previous page").setStyle("PRIMARY");
+					const remove = utils.dismissButton;
+					const newRow = new discord.MessageActionRow();		
+					newRow.addComponents(back, advance, remove);
+					if (at + 3 > total) advance.setDisabled(true);
+					if (at - 3 <= 0) back.setDisabled(true);
+					back.setDisabled(false);
 					interaction.editReply({
 						embeds: newEmbeds,
-						components: [row],
-						content: `Showing ${at}-${at+3 >= 3 ? total : at+3} of ${total} ${filterMsg ? "\n" + filterMsg : ""}`,
+						components: [newRow],
+						content: `Showing ${at-3}-${at >= total ? total : at} of ${total} ${filterMsg ? "\n" + filterMsg : ""}`,
 						allowedMentions: {
 							parse: []
 						}
 					});
 				} else if (x.customId === "del-back") {
+					at = at - 3;
 					const query = await bot.db.deleted_msg.findMany({
 						where,
 						orderBy: {
 							msgTime: "desc"
 						},
 						take: 3,
-						skip: at - 3
+						skip: at
 					});
-					at = at - 3;
-					if (at - 3 <= 0) backButton.setDisabled(true);
-					const newEmbeds = this.getEmbeds(query, user ? true : false, channel ? true : false);
+					const newEmbeds = this.getEmbeds(query, user !== null, channel !== null);
+					const advance = new discord.MessageButton().setCustomId("del-next").setLabel("Next page").setStyle("PRIMARY");
+					const back = new discord.MessageButton().setCustomId("del-back").setLabel("Previous page").setStyle("PRIMARY");
+					const remove = utils.dismissButton;
+					const newRow = new discord.MessageActionRow();		
+					newRow.addComponents(back, advance, remove);
+					if (at - 3 <= 0) back.setDisabled(true);
 					interaction.editReply({
 						embeds: newEmbeds,
-						components: [row],
-						content: `Showing ${at}-${at+3 >= 3 ? total : at+3} of ${total} ${filterMsg ? "\n" + filterMsg : ""}`,
+						components: [newRow],
+						content: `Showing ${at-3}-${at} of ${total} ${filterMsg ? "\n" + filterMsg : ""}`,
 						allowedMentions: {
 							parse: []
 						}
