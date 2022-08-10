@@ -7,8 +7,13 @@ import { ApplyOptions } from "@sapphire/decorators";
 import * as time from "@sapphire/time-utilities";
 import axios from "axios";
 import { utils } from "../utils";
+import { deleted_msg } from "@prisma/client";
 axios.defaults.validateStatus = () => true;
 ///<reference types="../index"/>
+type attachment = {
+	url: string,
+	name: string | null
+}[];
 time;
 
 
@@ -23,8 +28,9 @@ export class DeletedMSGCommand extends GeraldCommand {
 	public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
 		reg.registerChatInputCommand((builder) => {
 			return builder.setName(this.name)
-				.setDescription(this.description).addIntegerOption(i => i.setName("amount")
-					.setDescription("Amount of messages to get").setMinValue(1).setMaxValue(5).setRequired(true));
+				.setDescription(this.description)
+				.addUserOption(u => u.setName("user").setDescription("Filter by user").setRequired(false))
+				.addChannelOption(c => c.setName("channel").setDescription("Filter by channel").setRequired(false));
 		}, {
 			behaviorWhenNotIdentical: sapphire.RegisterBehavior.Overwrite,
 			idHints: ["1006068634256408586"]
@@ -33,56 +39,136 @@ export class DeletedMSGCommand extends GeraldCommand {
 	public async chatInputRun(interaction: discord.CommandInteraction, context: sapphire.ChatInputCommandContext) {
 		try {
 			await interaction.deferReply();
-			type attachment = {
-				url: string,
-				name: string | null
-			}[];
 			if (!interaction.guild) return;
-			const amount = interaction.options.getInteger("amount");
-			if (!amount) return;
+			const user = interaction.options.getUser("user");
+			const channel = interaction.options.getChannel("channel");
+			const where: {
+				guildId: string,
+				author?: string,
+				channel?: string
+			} = {
+				guildId: interaction.guild.id,
+			};
+			if (user) where.author = user.id;
+			if (channel) where.channel = channel.id;
+			const total = await bot.db.deleted_msg.count({
+				where
+			});
 			const del = await bot.db.deleted_msg.findMany({
-				where: {
-					guildId: interaction.guild.id
-				},
+				where,
 				orderBy: {
 					msgTime: "desc"
 				},
-				take: amount
+				take: 3
 			});
-			const embeds: discord.MessageEmbed[] = [];
-			del.forEach(async (msg) => {
-				const attachments = <attachment>msg.attachments;
-				let content: string;
-				if (msg.content.length > 1028) content = msg.content.substring(0, 1025) + "...";
-				else content = msg.content;
-				const DeleteEmbed = new discord.MessageEmbed()
-					.setTitle("Deleted Message")
-					.setColor("#fc3c3c")
-					.addField("Author", `<@${msg.author}>`, true)
-					.addField("Deleted By", msg.deletedBy, true)
-					.addField("Channel", `<#${msg.channel}>`, true)
-					.addField("Message", content || "None");
-				DeleteEmbed.footer = {
-					text: `ID: ${msg.id} | Message ID: ${msg.msgId}\nAuthor ID: ${msg.author}`
-				};
-				if (attachments.length > 0) {
-					const attachArray: string[] = [];
-					(attachments).forEach((attach) => {
-						attachArray.push(attach.name ? `[${attach.name}](${attach.url})` : `${attach.url}`);
-					});
-					DeleteEmbed.addField("Attachments", attachArray.join("\n"));
+			let filterMsg: string | null = null;
+			if (user && channel) filterMsg = `Filtering by user ${user} and channel ${channel}`;
+			else if (channel) filterMsg = `Filtering by channel ${channel}`; 
+			else if (user) filterMsg = `Filtering by user ${user}`;
+			const embeds: discord.MessageEmbed[] = this.getEmbeds(del, user ? true : false, channel ? true : false);
+			const advanceButton = new discord.MessageButton().setCustomId("del-next").setLabel("Next page").setStyle("PRIMARY");
+			const backButton = new discord.MessageButton().setCustomId("del-back").setLabel("Previous page").setStyle("PRIMARY");
+			const dismiss = utils.dismissButton;
+			const row = new discord.MessageActionRow();
+			if (total < 3) {
+				backButton.setDisabled(true);
+				advanceButton.setDisabled(true);
+			}
+			row.addComponents(backButton, advanceButton, dismiss);
+			await interaction.editReply({
+				embeds: embeds,
+				components: [row],
+				content: `Showing 1-${total < 3 ? total : 3} of ${total} ${filterMsg ? "\n" + filterMsg : ""}`,
+				allowedMentions: {
+					parse: []
 				}
-				embeds.push(DeleteEmbed);
 			});
-			interaction.editReply({
-				embeds: embeds
-			});
+			let at = 3;
+			const reply = await interaction.fetchReply() as discord.Message;
+			// eslint-disable-next-line no-constant-condition
+			while (true) {
+				const x = await reply.awaitMessageComponent({
+					filter: (button) => button.user.id === interaction.user.id,
+					time: 15_000
+				});
+				if (x.customId === "dismissEmbed") {
+					interaction.deleteReply();
+					break;
+				} else if (x.customId === "del-next") {
+					const query = await bot.db.deleted_msg.findMany({
+						where,
+						orderBy: {
+							msgTime: "desc"
+						},
+						take: 3,
+						skip: at
+					});
+					at = at + 3;
+					const newEmbeds = this.getEmbeds(query, user ? true : false, channel ? true : false);
+					if (at + 3 > total) advanceButton.setDisabled(true);
+					interaction.editReply({
+						embeds: newEmbeds,
+						components: [row],
+						content: `Showing ${at}-${at+3 >= 3 ? total : at+3} of ${total} ${filterMsg ? "\n" + filterMsg : ""}`,
+						allowedMentions: {
+							parse: []
+						}
+					});
+				} else if (x.customId === "del-back") {
+					const query = await bot.db.deleted_msg.findMany({
+						where,
+						orderBy: {
+							msgTime: "desc"
+						},
+						take: 3,
+						skip: at - 3
+					});
+					at = at - 3;
+					if (at - 3 <= 0) backButton.setDisabled(true);
+					const newEmbeds = this.getEmbeds(query, user ? true : false, channel ? true : false);
+					interaction.editReply({
+						embeds: newEmbeds,
+						components: [row],
+						content: `Showing ${at}-${at+3 >= 3 ? total : at+3} of ${total} ${filterMsg ? "\n" + filterMsg : ""}`,
+						allowedMentions: {
+							parse: []
+						}
+					});
+				}
+			}
 		} catch (error) {
 			this.slashHandler(error, interaction, context);
 		}
-
+ 
 	}
-
+	private getEmbeds(del: deleted_msg[], user: boolean, channel: boolean): discord.MessageEmbed[] {
+		const embeds: discord.MessageEmbed[] = [];
+		del.forEach((msg) => {
+			const attachments = <attachment>msg.attachments;
+			let msgContent: string;
+			if (msg.content.length > 1028) msgContent = msg.content.substring(0, 1025) + "...";
+			else msgContent = msg.content;
+			const DeleteEmbed = new discord.MessageEmbed()
+				.setTitle("Deleted Message")
+				.setColor("#fc3c3c")
+				.addField("Deleted By", msg.deletedBy, true)
+				.addField("Message", msgContent || "None");
+			if (user === null) DeleteEmbed.addField("Author", `<@${msg.author}>`, true);
+			if (channel === null) DeleteEmbed.addField("Channel", `<#${msg.channel}>`, true);
+			DeleteEmbed.footer = {
+				text: `ID: ${msg.id} | Message ID: ${msg.msgId}\nAuthor ID: ${msg.author}`
+			};
+			if (attachments.length > 0) {
+				const attachArray: string[] = [];
+				(attachments).forEach((attach) => {
+					attachArray.push(attach.name ? `[${attach.name}](${attach.url})` : `${attach.url}`);
+				});
+				DeleteEmbed.addField("Attachments", attachArray.join("\n"));
+			}
+			embeds.push(DeleteEmbed);
+		});
+		return embeds;
+	}
 }
 
 @ApplyOptions<geraldCommandOptions>({
@@ -474,7 +560,7 @@ export class rollCommand extends GeraldCommand {
 				).addSubcommand(subcommand =>
 					subcommand.setName("query").setDescription("Query database").addStringOption(o => o.setName("query").setDescription("Query to execute").setRequired(true)));
 
-		}, { idHints: ["1006068721787359243"]});
+		}, { idHints: ["1006068721787359243"] });
 	}
 
 	public async chatInputRun(interaction: discord.CommandInteraction, context: sapphire.ChatInputCommandContext) {
