@@ -138,7 +138,7 @@ export class DeletedMSGCommand extends GeraldCommand {
 					const remove = utils.dismissButton;
 					const newRow = new discord.MessageActionRow();
 					newRow.addComponents(back, advance, remove);
-					if (at + 3 > total) advance.setDisabled(true);
+					if (at >= total) advance.setDisabled(true);
 					if (at - 3 <= 0) back.setDisabled(true);
 					back.setDisabled(false);
 					interaction.editReply({
