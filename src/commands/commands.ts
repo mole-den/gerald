@@ -38,10 +38,21 @@ export class DeletedMSGCommand extends GeraldCommand {
 	}
 	public async chatInputRun(interaction: discord.CommandInteraction, context: sapphire.ChatInputCommandContext) {
 		try {
-			await interaction.deferReply();
 			if (!interaction.guild) return;
 			const user = interaction.options.getUser("user");
 			const channel = interaction.options.getChannel("channel");
+			if (channel && channel.type !== "GUILD_TEXT" && channel.type !== "GUILD_NEWS") {
+				if (channel.type === "GUILD_NEWS_THREAD" || channel.type === "GUILD_PUBLIC_THREAD" || channel.type === "GUILD_PRIVATE_THREAD") 
+					return interaction.reply({
+						ephemeral: true,
+						content: "Messages in threads are not recorded"
+					});
+				return interaction.reply({
+					ephemeral: true,
+					content: `The channel \`${channel.name}\` is not a valid text channel.`
+				});
+			}
+			await interaction.deferReply();
 			const where: {
 				guildId: string,
 				author?: string,
@@ -63,7 +74,7 @@ export class DeletedMSGCommand extends GeraldCommand {
 			});
 			let filterMsg: string | null = null;
 			if (user && channel) filterMsg = `Filtering by user ${user} and channel ${channel}`;
-			else if (channel) filterMsg = `Filtering by channel ${channel}`; 
+			else if (channel) filterMsg = `Filtering by channel ${channel}`;
 			else if (user) filterMsg = `Filtering by user ${user}`;
 			const embeds: discord.MessageEmbed[] = this.getEmbeds(del, user !== null, channel !== null);
 			const advanceButton = new discord.MessageButton().setCustomId("del-next").setLabel("Next page").setStyle("PRIMARY");
@@ -91,12 +102,12 @@ export class DeletedMSGCommand extends GeraldCommand {
 						componentType: "BUTTON",
 						filter: (button) => button.user.id === interaction.user.id,
 						time: 15_000
-					});	
+					});
 				} catch (error) {
 					const advance = new discord.MessageButton().setCustomId("del-next").setLabel("Next page").setStyle("PRIMARY").setDisabled(true);
 					const back = new discord.MessageButton().setCustomId("del-back").setLabel("Previous page").setStyle("PRIMARY").setDisabled(true);
 					const remove = utils.dismissButton.setDisabled(true);
-					const newRow = new discord.MessageActionRow();		
+					const newRow = new discord.MessageActionRow();
 					newRow.addComponents(back, advance, remove);
 					interaction.editReply({
 						components: [newRow],
@@ -124,7 +135,7 @@ export class DeletedMSGCommand extends GeraldCommand {
 					const advance = new discord.MessageButton().setCustomId("del-next").setLabel("Next page").setStyle("PRIMARY");
 					const back = new discord.MessageButton().setCustomId("del-back").setLabel("Previous page").setStyle("PRIMARY");
 					const remove = utils.dismissButton;
-					const newRow = new discord.MessageActionRow();		
+					const newRow = new discord.MessageActionRow();
 					newRow.addComponents(back, advance, remove);
 					if (at + 3 > total) advance.setDisabled(true);
 					if (at - 3 <= 0) back.setDisabled(true);
@@ -132,7 +143,7 @@ export class DeletedMSGCommand extends GeraldCommand {
 					interaction.editReply({
 						embeds: newEmbeds,
 						components: [newRow],
-						content: `Showing ${at-3}-${at >= total ? total : at} of ${total} ${filterMsg ? "\n" + filterMsg : ""}`,
+						content: `Showing ${at - 3}-${at >= total ? total : at} of ${total} ${filterMsg ? "\n" + filterMsg : ""}`,
 						allowedMentions: {
 							parse: []
 						}
@@ -151,13 +162,13 @@ export class DeletedMSGCommand extends GeraldCommand {
 					const advance = new discord.MessageButton().setCustomId("del-next").setLabel("Next page").setStyle("PRIMARY");
 					const back = new discord.MessageButton().setCustomId("del-back").setLabel("Previous page").setStyle("PRIMARY");
 					const remove = utils.dismissButton;
-					const newRow = new discord.MessageActionRow();		
+					const newRow = new discord.MessageActionRow();
 					newRow.addComponents(back, advance, remove);
 					if (at - 3 <= 0) back.setDisabled(true);
 					interaction.editReply({
 						embeds: newEmbeds,
 						components: [newRow],
-						content: `Showing ${at-3}-${at} of ${total} ${filterMsg ? "\n" + filterMsg : ""}`,
+						content: `Showing ${at - 3}-${at} of ${total} ${filterMsg ? "\n" + filterMsg : ""}`,
 						allowedMentions: {
 							parse: []
 						}
@@ -167,7 +178,7 @@ export class DeletedMSGCommand extends GeraldCommand {
 		} catch (error) {
 			this.slashHandler(error, interaction, context);
 		}
- 
+
 	}
 	private getEmbeds(del: deleted_msg[], user: boolean, channel: boolean): discord.MessageEmbed[] {
 		const embeds: discord.MessageEmbed[] = [];
@@ -176,13 +187,14 @@ export class DeletedMSGCommand extends GeraldCommand {
 			let msgContent: string;
 			if (msg.content.length > 1028) msgContent = msg.content.substring(0, 1025) + "...";
 			else msgContent = msg.content;
-			const DeleteEmbed = new discord.MessageEmbed()
+			const DeleteEmbed = new discord.MessageEmbed();
+			if (user === false) DeleteEmbed.addField("Author", `<@${msg.author}>`, true);
+			if (channel === false) DeleteEmbed.addField("Channel", `<#${msg.channel}>`, true);
+			DeleteEmbed
 				.setTitle("Deleted Message")
 				.setColor("#fc3c3c")
 				.addField("Deleted By", msg.deletedBy, true)
 				.addField("Message", msgContent || "None");
-			if (user === null) DeleteEmbed.addField("Author", `<@${msg.author}>`, true);
-			if (channel === null) DeleteEmbed.addField("Channel", `<#${msg.channel}>`, true);
 			DeleteEmbed.footer = {
 				text: `ID: ${msg.id} | Message ID: ${msg.msgId}\nAuthor ID: ${msg.author}`
 			};
