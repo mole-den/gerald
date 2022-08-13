@@ -7,7 +7,7 @@ import _ from "lodash";
 @ApplyOptions<GeraldCommandOptions>({
 	name: "counting",
 	description: "Counting.",
-	requiredUserPermissions: ["MANAGE_CHANNELS"],
+	requiredUserPermissions: [],
 	requiredClientPermissions: [],
 	preconditions: ["GuildOnly"],
 }) export class Counting extends GeraldCommand implements GeraldModule {
@@ -39,7 +39,7 @@ import _ from "lodash";
 		if (!interaction.guild) return;
 		const channel = interaction.options.getChannel("channel", true);
 		if (channel && channel.type !== "GUILD_TEXT") {
-			if (channel.type === "GUILD_NEWS_THREAD" || channel.type === "GUILD_PUBLIC_THREAD" || channel.type === "GUILD_PRIVATE_THREAD") 
+			if (channel.type === "GUILD_NEWS_THREAD" || channel.type === "GUILD_PUBLIC_THREAD" || channel.type === "GUILD_PRIVATE_THREAD")
 				return interaction.reply({
 					ephemeral: true,
 					content: "Cannot be set to a thread."
@@ -89,6 +89,18 @@ import _ from "lodash";
 				value: "0"
 			}
 		});
+		bot.db.cofnigEntry.update({
+			where: {
+				guildId_module_key: {
+					guildId: interaction.guild.id,
+					module: "counting",
+					key: "currentuser"
+				}
+			},
+			data: {
+				value: ""
+			}
+		});
 		this.channels = this.channels.filter(i => i !== channel.value);
 		bot.db.cofnigEntry.update({
 			where: {
@@ -114,7 +126,26 @@ import _ from "lodash";
 		const number = _.parseInt(message.content);
 		console.log(number);
 		if (isNaN(number)) return;
-		const current = _.parseInt((await bot.db.cofnigEntry.findUniqueOrThrow({
+		const user = await bot.db.cofnigEntry.upsert({
+			where: {
+				guildId_module_key: {
+					guildId: message.guild.id,
+					module: "counting",
+					key: "currentuser"
+				}
+			},
+			update: {},
+			create: {
+				guildId: message.guild.id,
+				module: "counting",
+				key: "currentuser",
+				value: ""
+			},
+			select: {
+				value: true
+			}
+		});
+		const current = _.parseInt((await bot.db.cofnigEntry.upsert({
 			where: {
 				guildId_module_key: {
 					guildId: message.guild.id,
@@ -122,12 +153,19 @@ import _ from "lodash";
 					key: "currentnumber"
 				}
 			},
+			update: {},
+			create: {
+				guildId: message.guild.id,
+				module: "counting",
+				key: "currentnumber",
+				value: "0"
+			},
 			select: {
 				value: true
 			}
 		})).value);
-		if (number !== current + 1) {
-			const failrole = await bot.db.cofnigEntry.findUniqueOrThrow({
+		if (user.value === message.author.id) {
+			const failrole = await bot.db.cofnigEntry.findUnique({
 				where: {
 					guildId_module_key: {
 						guildId: message.guild.id,
@@ -139,7 +177,73 @@ import _ from "lodash";
 					value: true
 				}
 			});
-			if (failrole.value !== "") (message.member as GuildMember).roles.add(failrole.value);
+			bot.db.cofnigEntry.update({
+				where: {
+					guildId_module_key: {
+						guildId: message.guild.id,
+						module: "counting",
+						key: "currentuser"
+					}
+				},
+				data: {
+					value: ""
+				}
+			});
+			await bot.db.cofnigEntry.update({
+				where: {
+					guildId_module_key: {
+						guildId: message.guild.id,
+						module: "counting",
+						key: "currentnumber"
+					}
+				},
+				data: {
+					value: "0"
+				}
+			});
+			if (failrole && failrole.value !== "") (message.member as GuildMember).roles.add(failrole.value);
+			message.react("❗");
+			message.channel.send(`${message.author} You can't count two numbers in a row. The next number was ${current + 1}`);
+			return;
+		}
+		if (number !== current + 1) {
+			const failrole = await bot.db.cofnigEntry.findUnique({
+				where: {
+					guildId_module_key: {
+						guildId: message.guild.id,
+						module: "counting",
+						key: "failrole"
+					}
+				},
+				select: {
+					value: true
+				}
+			});
+			bot.db.cofnigEntry.update({
+				where: {
+					guildId_module_key: {
+						guildId: message.guild.id,
+						module: "counting",
+						key: "currentuser"
+					}
+				},
+				data: {
+					value: ""
+				}
+			});
+			await bot.db.cofnigEntry.update({
+				where: {
+					guildId_module_key: {
+						guildId: message.guild.id,
+						module: "counting",
+						key: "currentnumber"
+					}
+				},
+				data: {
+					value: "0"
+				}
+			});
+			if (failrole && failrole.value !== "") (message.member as GuildMember).roles.add(failrole.value);
 			message.react("❗");
 			message.channel.send(`${message.author} Incorrect number. The next number was ${current + 1}`);
 			return;
@@ -156,6 +260,19 @@ import _ from "lodash";
 					value: (current + 1).toString()
 				}
 			});
+			await bot.db.cofnigEntry.update({
+				where: {
+					guildId_module_key: {
+						guildId: message.guild.id,
+						module: "counting",
+						key: "currentuser"
+					}
+				},
+				data: {
+					value: message.author.id
+				}
+			});
+
 			message.react("✅");
 		}
 
@@ -182,13 +299,22 @@ import _ from "lodash";
 				guildId: g
 			}
 		});
+		bot.db.cofnigEntry.create({
+			data: {
+				value: "",
+				guildId: g,
+				module: "counting",
+				key: "currentuser"
+
+			}
+		});
 	}
 
 	public async chatInputRun(interaction: CommandInteraction, context: ChatInputCommandContext) {
 		try {
 			const func: unknown = (this as any)[interaction.options.getSubcommand(true)];
 			if (typeof func !== "function") throw new Error("Invalid subcommand");
-			await func(interaction, context);
+			await func.bind(this)(interaction, context);
 		} catch (error) {
 			this.slashHandler(error, interaction, context);
 		}
