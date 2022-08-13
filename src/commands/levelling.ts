@@ -2,11 +2,11 @@ import * as discord from "discord.js";
 import { ApplicationCommandRegistry, ChatInputCommandContext, RegisterBehavior } from "@sapphire/framework";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 import { bot } from "../index";
-import { GeraldCommand, geraldCommandOptions, GeraldModule, GeraldModuleSetting } from "../commandClass";
+import { GeraldCommand, GeraldCommandOptions, GeraldModule, GeraldModuleSetting } from "../commandClass";
 import { ApplyOptions } from "@sapphire/decorators";
 import { utils } from "../utils";
 ///<reference types="../index"/>
-@ApplyOptions<geraldCommandOptions>({
+@ApplyOptions<GeraldCommandOptions>({
 	name: "Levelling",
 	description: "A basic server xp and levelling system.",
 	requiredClientPermissions: [],
@@ -40,23 +40,8 @@ import { utils } from "../utils";
 	public override registerApplicationCommands(reg: ApplicationCommandRegistry) {
 		reg.registerChatInputCommand((cmd) => {
 			return cmd.setName(this.name)
-				.setDescription(this.description).addSubcommandGroup(x => {
-					x.setName("settings").setDescription("Settings for levelling.");
-					this.settings.forEach(s => {
-						x.addSubcommand(builder => {
-							builder.setName(s.name).setDescription(s.description);
-							/*if (s.multiple) builder.addStringOption(o => o.setName("set").setDescription("Add or remove value").addChoices([["add", "add"], ["remove", "remove"]]));
-							if (s.type === "boolean") builder.addBooleanOption(o => o.setName("value").setDescription("New value"));
-							else if (s.type === "channel") builder.addChannelOption(o => o.setName("value").setDescription("New value"));
-							else if (s.type === "string") builder.addStringOption(o => o.setName("value").setDescription("New value"));
-							else if (s.type === "number") builder.addNumberOption(o => o.setName("value").setDescription("New value"));
-							else if (s.type === "role") builder.addRoleOption(o => o.setName("value").setDescription("New value"));
-							else if (s.type === "user") builder.addUserOption(o => o.setName("value").setDescription("New value"));
-							else throw new Error("Invalid type");*/
-							return builder;
-						});
-					});
-					return x;
+				.setDescription(this.description).addSubcommand(x => {
+					return x.setName("settings").setDescription("Settings for levelling.");
 				}).addSubcommand(x => x.setName("leaderboard").setDescription("View the leaderboard."))
 				.addSubcommand(x => x.setName("viewlevel").setDescription("View a user's level.").addUserOption(o => o.setName("user").setDescription("The user to view the level of.").setRequired(false)));
 		}, {

@@ -72,6 +72,11 @@ bot.on("guildCreate", async (guild) => {
 			joinedTime: new Date(),
 		},
 	});
+	bot.stores.get("commands").forEach(i => {
+		const m = (<GeraldCommand | GeraldCommand & GeraldModule>i);
+		if (m.isModule(m)) m.onModuleEnabledInGuild(guild.id);
+	});
+
 	guild.channels.fetch().then(async (channels) => {
 		channels.each(async (ch) => {
 			if (ch.type === "GUILD_TEXT") {

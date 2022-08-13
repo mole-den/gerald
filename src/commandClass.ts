@@ -1,19 +1,15 @@
 import * as sapphire from "@sapphire/framework";
 import * as discord from "discord.js";
+
 export interface GeraldModule {
 	onModuleDisabledInGuild(guildid: string): void
 	onModuleEnabledInGuild(guildid: string): void
 	onModuleStart(): void
-	settings: {
-		id: string,
-		name: string,
-		description: string,
-		default: string
-	}[] | null;
+	settings: GeraldModuleSetting[] | null;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface geraldCommandOptions extends sapphire.CommandOptions {}
+export interface GeraldCommandOptions extends sapphire.CommandOptions {}
 
 export interface GeraldModuleSetting {
 	id: string
@@ -28,7 +24,7 @@ export abstract class GeraldCommand extends sapphire.Command {
 	isModule(x: any): x is GeraldCommand & GeraldModule {
 		return x["onModuleStart"] ? true : false;
 	}
-	public constructor(context: sapphire.Command.Context, options: geraldCommandOptions) {
+	public constructor(context: sapphire.Command.Context, options: GeraldCommandOptions) {
 		super(context, {
 			...options,
 		});

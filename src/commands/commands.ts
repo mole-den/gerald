@@ -2,7 +2,7 @@ import * as sapphire from "@sapphire/framework";
 import * as discord from "discord.js";
 import _ from "lodash";
 import { bot } from "../index";
-import { GeraldCommand, geraldCommandOptions } from "../commandClass";
+import { GeraldCommand, GeraldCommandOptions } from "../commandClass";
 import { ApplyOptions } from "@sapphire/decorators";
 import * as time from "@sapphire/time-utilities";
 import axios from "axios";
@@ -17,7 +17,7 @@ type attachment = {
 time;
 
 
-@ApplyOptions<geraldCommandOptions>({
+@ApplyOptions<GeraldCommandOptions>({
 	name: "deleted",
 	description: "Shows infomation about the last deleted messages",
 	requiredClientPermissions: [],
@@ -212,7 +212,7 @@ export class DeletedMSGCommand extends GeraldCommand {
 	}
 }
 
-@ApplyOptions<geraldCommandOptions>({
+@ApplyOptions<GeraldCommandOptions>({
 	name: "invite",
 	description: "Shows invite link"
 })
@@ -228,7 +228,7 @@ export class inviteCommand extends GeraldCommand {
 		interaction.reply("Invite is: https://discord.com/oauth2/authorize?client_id=671156130483011605&permissions=8&scope=bot%20applications.commands");
 	}
 }
-@ApplyOptions<geraldCommandOptions>({
+@ApplyOptions<GeraldCommandOptions>({
 	name: "info",
 	description: "Shows general information about the bot",
 })
@@ -299,7 +299,7 @@ interface order {
 	id: string
 }
 
-@ApplyOptions<geraldCommandOptions>({
+@ApplyOptions<GeraldCommandOptions>({
 	name: "warframe",
 	description: "Command to access warframe APIs.",
 }) export class warframeCommand extends GeraldCommand {
@@ -529,7 +529,7 @@ interface order {
 	}
 }
 
-@ApplyOptions<geraldCommandOptions>({
+@ApplyOptions<GeraldCommandOptions>({
 	name: "roll",
 	description: "Roll dice.",
 })
@@ -588,7 +588,7 @@ export class rollCommand extends GeraldCommand {
 	}
 }
 
-@ApplyOptions<geraldCommandOptions>({
+@ApplyOptions<GeraldCommandOptions>({
 	name: "dev",
 	description: "Developer commands",
 }) export class devCommand extends GeraldCommand {
