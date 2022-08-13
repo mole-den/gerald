@@ -21,7 +21,7 @@ import _ from "lodash";
 							o.setName("channel").setDescription("Channel to count in.").setRequired(true)))
 						
 				.addSubcommand(x => x.setName("disable").setDescription("Disable counting."))
-				.addSubcommand(x => x.setName("failrole").setDescription("Set the role given when someone counts incorrectly..")
+				.addSubcommand(x => x.setName("failrole").setDescription("Set the role given when someone counts incorrectly.")
 					.addRoleOption(o => o.setName("role").setDescription("Role to give.").setRequired(true)));
 		}, {
 			behaviorWhenNotIdentical: RegisterBehavior.Overwrite,
