@@ -14,6 +14,7 @@ model guild {
   prefix     String        @default("g")
   member     member[]
   config     cofnigEntry[]
+  counting  counting_data[]
 }
 
 model cofnigEntry {
@@ -69,4 +70,14 @@ model scheduled_task {
   context Json?    @db.Json
   time    DateTime @db.Timestamp(6)
   done    Boolean  @default(false)
+}
+
+model counting_data {
+  id Int @id @default(autoincrement())
+  guildid String @unique
+  number Int @default(0)
+  channel String
+  user String 
+  failrole String
+  guild        guild         @relation(fields: [guildid], references: [guildId], onDelete: Cascade)
 }
