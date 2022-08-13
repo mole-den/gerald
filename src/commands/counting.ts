@@ -7,7 +7,7 @@ import _ from "lodash";
 @ApplyOptions<GeraldCommandOptions>({
 	name: "counting",
 	description: "Counting.",
-	requiredUserPermissions: [],
+	requiredUserPermissions: ["MANAGE_CHANNELS"],
 	requiredClientPermissions: [],
 	preconditions: ["GuildOnly"],
 }) export class Counting extends GeraldCommand implements GeraldModule {
@@ -19,7 +19,10 @@ import _ from "lodash";
 					x.setName("setchannel").setDescription("Set the channel to count in.")
 						.addChannelOption(o =>
 							o.setName("channel").setDescription("Channel to count in.").setRequired(true)))
-				.addSubcommand(x => x.setName("disable").setDescription("Disable counting."));
+						
+				.addSubcommand(x => x.setName("disable").setDescription("Disable counting."))
+				.addSubcommand(x => x.setName("failrole").setDescription("Set the role given when someone counts incorrectly..")
+					.addRoleOption(o => o.setName("role").setDescription("Role to give.").setRequired(true)));
 		}, {
 			behaviorWhenNotIdentical: RegisterBehavior.Overwrite,
 			idHints: ["1007863726298365972"]
@@ -35,6 +38,23 @@ import _ from "lodash";
 	}];
 	channels: string[] = [];
 
+	public async failrole(interaction: CommandInteraction) {
+		if (!interaction.guild) return;
+		const role = interaction.options.getRole("role", true);
+		if (!role) return;
+		bot.db.counting_data.update({
+			where: {
+				guildid: interaction.guild.id
+			},
+			data: {
+				failrole: role.id,
+			}
+		});
+		interaction.reply({
+			content: `Role ${role} will be given when someone counts incorrectly.`,
+			ephemeral: true,
+		});
+	}
 	public async setchannel(interaction: CommandInteraction) {
 		if (!interaction.guild) return;
 		const channel = interaction.options.getChannel("channel", true);
@@ -115,7 +135,7 @@ import _ from "lodash";
 					failrole: true,
 				}
 			});
-			bot.db.counting_data.update({
+			await bot.db.counting_data.update({
 				where: {
 					guildid: message.guild.id
 				},
@@ -138,7 +158,7 @@ import _ from "lodash";
 					failrole: true,
 				}
 			});
-			bot.db.counting_data.update({
+			await bot.db.counting_data.update({
 				where: {
 					guildid: message.guild.id
 				},
