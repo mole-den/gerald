@@ -42,7 +42,7 @@ import _ from "lodash";
 		if (!interaction.guild) return;
 		const role = interaction.options.getRole("role", true);
 		if (!role) return;
-		bot.db.counting_data.update({
+		await bot.db.counting_data.update({
 			where: {
 				guildid: interaction.guild.id
 			},
