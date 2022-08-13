@@ -22,7 +22,7 @@ import _ from "lodash";
 				.addSubcommand(x => x.setName("disable").setDescription("Disable counting."));
 		}, {
 			behaviorWhenNotIdentical: RegisterBehavior.Overwrite,
-			idHints: []
+			idHints: ["1007863726298365972"]
 		});
 	}
 	settings: GeraldModuleSetting[] = [{
