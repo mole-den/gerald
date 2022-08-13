@@ -62,6 +62,9 @@ import _ from "lodash";
 			}
 		});
 		this.channels.push(channel.id);
+		interaction.reply({
+			content: `Counting channel set to ${channel} (Next number is 1)`
+		});
 	}
 	public async disable(interaction: CommandInteraction) {
 		if (!interaction.guild) return;
