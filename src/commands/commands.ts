@@ -540,7 +540,7 @@ export class rollCommand extends GeraldCommand {
 		{ idHints: ["1006068640082309201"] });
 	}
 
-	public async slashRun(interaction: discord.CommandInteraction, context: sapphire.ChatInputCommandContext) {
+	public async chatInputRun(interaction: discord.CommandInteraction, context: sapphire.ChatInputCommandContext) {
 		try {
 			const input = interaction.options.getString("dice")?.trimStart().trimEnd() ?? "d6";
 			let option = input;
