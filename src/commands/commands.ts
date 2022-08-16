@@ -28,7 +28,9 @@ export class DeletedMSGCommand extends GeraldCommand {
 	public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
 		reg.registerChatInputCommand((builder) => {
 			return builder.setName(this.name)
-				.setDescription(this.description)
+				.setDescription(this.description).
+				addIntegerOption(i => i.setName("amount")
+					.setDescription("Amount of messages to get").setMinValue(1).setMaxValue(5).setRequired(false))
 				.addUserOption(u => u.setName("user").setDescription("Filter by user").setRequired(false))
 				.addChannelOption(c => c.setName("channel").setDescription("Filter by channel").setRequired(false));
 		}, {
@@ -42,7 +44,7 @@ export class DeletedMSGCommand extends GeraldCommand {
 			const user = interaction.options.getUser("user");
 			const channel = interaction.options.getChannel("channel");
 			if (channel && channel.type !== "GUILD_TEXT" && channel.type !== "GUILD_NEWS") {
-				if (channel.type === "GUILD_NEWS_THREAD" || channel.type === "GUILD_PUBLIC_THREAD" || channel.type === "GUILD_PRIVATE_THREAD") 
+				if (channel.type === "GUILD_NEWS_THREAD" || channel.type === "GUILD_PUBLIC_THREAD" || channel.type === "GUILD_PRIVATE_THREAD")
 					return interaction.reply({
 						ephemeral: true,
 						content: "Messages in threads are not recorded"
@@ -52,6 +54,7 @@ export class DeletedMSGCommand extends GeraldCommand {
 					content: `The channel \`${channel.name}\` is not a valid text channel.`
 				});
 			}
+			const amount = interaction.options.getInteger("amount") ?? 3;
 			await interaction.deferReply();
 			const where: {
 				guildId: string,
@@ -70,7 +73,7 @@ export class DeletedMSGCommand extends GeraldCommand {
 				orderBy: {
 					msgTime: "desc"
 				},
-				take: 3
+				take: amount
 			});
 			let filterMsg: string | null = null;
 			if (user && channel) filterMsg = `Filtering by user ${user} and channel ${channel}`;
@@ -81,18 +84,18 @@ export class DeletedMSGCommand extends GeraldCommand {
 			const backButton = new discord.MessageButton().setCustomId("del-back").setLabel("Previous page").setStyle("PRIMARY");
 			const dismiss = utils.dismissButton;
 			const row = new discord.MessageActionRow();
-			if (total < 3) advanceButton.setDisabled(true);
+			if (total < amount) advanceButton.setDisabled(true);
 			backButton.setDisabled(true);
 			row.addComponents(backButton, advanceButton, dismiss);
 			await interaction.editReply({
 				embeds: embeds,
 				components: [row],
-				content: `Showing 1-${total < 3 ? total : 3} of ${total} ${filterMsg ? "\n" + filterMsg : ""}`,
+				content: `Showing 1-${total < amount ? total : amount} of ${total} ${filterMsg ? "\n" + filterMsg : ""}`,
 				allowedMentions: {
 					parse: []
 				}
 			});
-			let at = 3;
+			let at = amount;
 			const reply = await interaction.fetchReply() as discord.Message;
 			// eslint-disable-next-line no-constant-condition
 			while (true) {
@@ -104,7 +107,6 @@ export class DeletedMSGCommand extends GeraldCommand {
 						time: 15_000
 					});
 				} catch (error) {
-					console.log(error);
 					const advance = new discord.MessageButton().setCustomId("del-next").setLabel("Next page").setStyle("PRIMARY").setDisabled(true);
 					const back = new discord.MessageButton().setCustomId("del-back").setLabel("Previous page").setStyle("PRIMARY").setDisabled(true);
 					const remove = utils.dismissButton.setDisabled(true);
@@ -128,10 +130,10 @@ export class DeletedMSGCommand extends GeraldCommand {
 						orderBy: {
 							msgTime: "desc"
 						},
-						take: 3,
+						take: amount,
 						skip: at
 					});
-					at = at + 3;
+					at = at + amount;
 					const newEmbeds = this.getEmbeds(query, user !== null, channel !== null);
 					const advance = new discord.MessageButton().setCustomId("del-next").setLabel("Next page").setStyle("PRIMARY");
 					const back = new discord.MessageButton().setCustomId("del-back").setLabel("Previous page").setStyle("PRIMARY");
@@ -139,24 +141,24 @@ export class DeletedMSGCommand extends GeraldCommand {
 					const newRow = new discord.MessageActionRow();
 					newRow.addComponents(back, advance, remove);
 					if (at >= total) advance.setDisabled(true);
-					if (at - 3 <= 0) back.setDisabled(true);
+					if (at - amount <= 0) back.setDisabled(true);
 					back.setDisabled(false);
 					interaction.editReply({
 						embeds: newEmbeds,
 						components: [newRow],
-						content: `Showing ${at - 3}-${at >= total ? total : at} of ${total} ${filterMsg ? "\n" + filterMsg : ""}`,
+						content: `Showing ${at - amount}-${at >= total ? total : at} of ${total} ${filterMsg ? "\n" + filterMsg : ""}`,
 						allowedMentions: {
 							parse: []
 						}
 					});
 				} else if (x.customId === "del-back") {
-					at = at - 3;
+					at = at - amount;
 					const query = await bot.db.deleted_msg.findMany({
 						where,
 						orderBy: {
 							msgTime: "desc"
 						},
-						take: 3,
+						take: amount,
 						skip: at
 					});
 					const newEmbeds = this.getEmbeds(query, user !== null, channel !== null);
@@ -165,11 +167,11 @@ export class DeletedMSGCommand extends GeraldCommand {
 					const remove = utils.dismissButton;
 					const newRow = new discord.MessageActionRow();
 					newRow.addComponents(back, advance, remove);
-					if (at - 3 <= 0) back.setDisabled(true);
+					if (at - amount <= 0) back.setDisabled(true);
 					interaction.editReply({
 						embeds: newEmbeds,
 						components: [newRow],
-						content: `Showing ${at - 3}-${at} of ${total} ${filterMsg ? "\n" + filterMsg : ""}`,
+						content: `Showing ${at - amount}-${at} of ${total} ${filterMsg ? "\n" + filterMsg : ""}`,
 						allowedMentions: {
 							parse: []
 						}
