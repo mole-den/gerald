@@ -30,7 +30,7 @@ export class DeletedMSGCommand extends GeraldCommand {
 			return builder.setName(this.name)
 				.setDescription(this.description).
 				addIntegerOption(i => i.setName("amount")
-					.setDescription("Amount of messages to get").setMinValue(1).setMaxValue(5).setRequired(false))
+					.setDescription("Amount of messages to get").setMinValue(1).setMaxValue(5).setRequired(true))
 				.addUserOption(u => u.setName("user").setDescription("Filter by user").setRequired(false))
 				.addChannelOption(c => c.setName("channel").setDescription("Filter by channel").setRequired(false));
 		}, {
