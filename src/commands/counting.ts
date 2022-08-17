@@ -1,4 +1,4 @@
-import { GeraldCommand, GeraldModule, GeraldCommandOptions, GeraldModuleSetting } from "../commandClass";
+import { GeraldCommand, GeraldModule, GeraldCommandOptions } from "../commandClass";
 import { ApplyOptions } from "@sapphire/decorators";
 import { CommandInteraction, GuildMember, Message } from "discord.js";
 import { ApplicationCommandRegistry, ChatInputCommandContext, RegisterBehavior } from "@sapphire/framework";
@@ -28,16 +28,8 @@ import _ from "lodash";
 			idHints: ["1007863726298365972"]
 		});
 	}
-	settings: GeraldModuleSetting[] = [{
-		id: "failrole",
-		name: "failrole",
-		description: "Role given when someone counts incorrectly.",
-		type: "role",
-		default: "",
-		multiple: false
-	}];
 	channels: string[] = [];
-
+	settings = null;
 	public async failrole(interaction: CommandInteraction) {
 		if (!interaction.guild) return;
 		const role = interaction.options.getRole("role", true);

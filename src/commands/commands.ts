@@ -107,6 +107,7 @@ export class DeletedMSGCommand extends GeraldCommand {
 						time: 15_000
 					});
 				} catch (error) {
+					console.log(error);
 					const advance = new discord.MessageButton().setCustomId("del-next").setLabel("Next page").setStyle("PRIMARY").setDisabled(true);
 					const back = new discord.MessageButton().setCustomId("del-back").setLabel("Previous page").setStyle("PRIMARY").setDisabled(true);
 					const remove = utils.dismissButton.setDisabled(true);
@@ -142,7 +143,6 @@ export class DeletedMSGCommand extends GeraldCommand {
 					newRow.addComponents(back, advance, remove);
 					if (at >= total) advance.setDisabled(true);
 					if (at - amount <= 0) back.setDisabled(true);
-					back.setDisabled(false);
 					interaction.editReply({
 						embeds: newEmbeds,
 						components: [newRow],
