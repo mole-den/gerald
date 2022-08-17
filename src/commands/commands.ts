@@ -82,11 +82,10 @@ export class DeletedMSGCommand extends GeraldCommand {
 			const embeds: discord.MessageEmbed[] = this.getEmbeds(del, user !== null, channel !== null);
 			const advanceButton = new discord.MessageButton().setCustomId("del-next").setLabel("Next page").setStyle("PRIMARY");
 			const backButton = new discord.MessageButton().setCustomId("del-back").setLabel("Previous page").setStyle("PRIMARY");
-			const dismiss = utils.dismissButton;
 			const row = new discord.MessageActionRow();
 			if (total < amount) advanceButton.setDisabled(true);
 			backButton.setDisabled(true);
-			row.addComponents(backButton, advanceButton, dismiss);
+			row.addComponents(backButton, advanceButton, new utils.dismissButton());
 			await interaction.editReply({
 				embeds: embeds,
 				components: [row],
@@ -110,7 +109,7 @@ export class DeletedMSGCommand extends GeraldCommand {
 					console.log(error);
 					const advance = new discord.MessageButton().setCustomId("del-next").setLabel("Next page").setStyle("PRIMARY").setDisabled(true);
 					const back = new discord.MessageButton().setCustomId("del-back").setLabel("Previous page").setStyle("PRIMARY").setDisabled(true);
-					const remove = utils.dismissButton.setDisabled(true);
+					const remove = (new utils.dismissButton).setDisabled(true);
 					const newRow = new discord.MessageActionRow();
 					newRow.addComponents(back, advance, remove);
 					interaction.editReply({
@@ -138,9 +137,8 @@ export class DeletedMSGCommand extends GeraldCommand {
 					const newEmbeds = this.getEmbeds(query, user !== null, channel !== null);
 					const advance = new discord.MessageButton().setCustomId("del-next").setLabel("Next page").setStyle("PRIMARY");
 					const back = new discord.MessageButton().setCustomId("del-back").setLabel("Previous page").setStyle("PRIMARY");
-					const remove = utils.dismissButton;
 					const newRow = new discord.MessageActionRow();
-					newRow.addComponents(back, advance, remove);
+					newRow.addComponents(back, advance, new utils.dismissButton());
 					if (at >= total) advance.setDisabled(true);
 					if (at - amount <= 0) back.setDisabled(true);
 					interaction.editReply({
@@ -164,9 +162,8 @@ export class DeletedMSGCommand extends GeraldCommand {
 					const newEmbeds = this.getEmbeds(query, user !== null, channel !== null);
 					const advance = new discord.MessageButton().setCustomId("del-next").setLabel("Next page").setStyle("PRIMARY");
 					const back = new discord.MessageButton().setCustomId("del-back").setLabel("Previous page").setStyle("PRIMARY");
-					const remove = utils.dismissButton;
 					const newRow = new discord.MessageActionRow();
-					newRow.addComponents(back, advance, remove);
+					newRow.addComponents(back, advance, new utils.dismissButton());
 					if (at - amount <= 0) back.setDisabled(true);
 					interaction.editReply({
 						embeds: newEmbeds,
@@ -381,7 +378,7 @@ interface order {
 				.addField("No sell orders", `Item "${item}" has 0 sell orders.`);
 			await interaction.editReply({
 				embeds: [embed],
-				components: [new discord.MessageActionRow().addComponents(utils.dismissButton)]
+				components: [new discord.MessageActionRow().addComponents(new utils.dismissButton())]
 			});
 			const response = await interaction.fetchReply();
 			if (response instanceof discord.Message) utils.handleDismissButton(interaction, response);
@@ -396,7 +393,7 @@ interface order {
 					.setLabel("Market listing")
 					.setURL(`https://warframe.market/items/${itemToGet}`)
 					.setStyle("LINK"),
-			).addComponents(utils.dismissButton);
+			).addComponents(new utils.dismissButton());
 		const embed = new discord.MessageEmbed()
 			.setTitle(`Market information for ${itemToGet} on ${(interaction.options.getString("platform") ?? "pc")}`)
 			.setColor("BLURPLE")
@@ -519,7 +516,7 @@ interface order {
 		for (const i of data)
 			embed.addField(i.name, `Rarity: ${i.rarity}\nMean price: ${i.price === -1 ? "NA" : i.price + "p"}, Lowest price: ${i.lowestPrice === -1 ? "NA" : i.lowestPrice + "p"}\nTotal orders: ${i.orders}`);
 		const row = new discord.MessageActionRow();
-		row.addComponents(utils.dismissButton);
+		row.addComponents(new utils.dismissButton());
 		await interaction.editReply({
 			embeds: [embed],
 			components: [row]

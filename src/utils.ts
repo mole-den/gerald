@@ -1,6 +1,11 @@
 import * as discord from "discord.js";
 export namespace utils {
-	export const dismissButton = new discord.MessageButton().setLabel("Dismiss").setCustomId("dismissEmbed").setStyle("DANGER");
+	export class dismissButton extends discord.MessageButton {
+		constructor() {
+			super();
+			this.setLabel("Dismiss").setCustomId("dismissEmbed").setStyle("DANGER").setDisabled(false);
+		}
+	}
 	export function handleDismissButton(interaction: discord.CommandInteraction, response: discord.Message) {
 		const button = response.components;
 		button.forEach(i => {
@@ -252,9 +257,9 @@ export namespace utils {
 			setTimeout(resolve, ms);
 		});
 	}
-	
+
 	export function cleanMentions(str: string): string {
 		return str.replace(/@everyone/g, "@\u200beveryone").replace(/@here/g, "@\u200bhere");
 	}
-	
+
 }
