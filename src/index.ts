@@ -24,10 +24,6 @@ class Gerald extends sapphire.SapphireClient {
 				limit: 2,
 				delay: Time.Time.Second * 3
 			},
-			logger: {
-				level: sapphire.LogLevel.Info,
-				instance: new sapphire.Logger(sapphire.LogLevel.Info)
-			}
 		});
 		this.db = new PrismaClient({
 			log: ["info", "warn", "error"],
@@ -59,7 +55,6 @@ class Gerald extends sapphire.SapphireClient {
 }
 export const bot = new Gerald();
 export let taskScheduler: scheduledTaskManager;
-
 
 bot.on("chatInputCommandDenied", (error: sapphire.UserError, payload: sapphire.ChatInputCommandDeniedPayload) => {
 	payload.interaction.reply({ content: error.message, allowedMentions: { users: [payload.interaction.user.id], roles: [] }, ephemeral: true });
