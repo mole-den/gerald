@@ -590,6 +590,7 @@ export class rollCommand extends GeraldCommand {
 @ApplyOptions<GeraldCommandOptions>({
 	name: "dev",
 	description: "Developer commands",
+	preconditions: ["OwnerOnly"]
 }) export class devCommand extends GeraldCommand {
 	public override registerApplicationCommands(reg: sapphire.ApplicationCommandRegistry) {
 		reg.registerChatInputCommand(builder => {
