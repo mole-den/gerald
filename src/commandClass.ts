@@ -41,11 +41,11 @@ export abstract class GeraldCommand extends sapphire.Command {
 		else {
 			context;
 			console.error(error);
-			const embed = new discord.MessageEmbed();
-			embed.setTitle(`Error: Command "${context.commandName}" failed`);
-			embed.setColor("RED");
-			embed.setTimestamp(new Date());
-			embed.setDescription("An unhandled exception occurred.");
+			const embed = new discord.MessageEmbed()
+				.setTitle(`Error: Command "${context.commandName}" failed`)
+				.setColor("RED")
+				.setTimestamp(new Date())
+				.setDescription("An unhandled exception occurred.");
 			const content = (<Error>error).message as string;
 			embed.addField("Message", content ?? JSON.stringify(error));
 			if (reply) interaction.followUp({
