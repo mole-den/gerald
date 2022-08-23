@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = "postgres://mwhxyigbywnfbn:28f0532ccfa11d6736bc8079db44724486c9679a6e2190a6cb375f05f0423811@ec2-34-194-100-156.compute-1.amazonaws.com:5432/ddo6pnpikd2ji3"
 }
 
 model guild {
@@ -87,8 +87,16 @@ model starboard_data {
   id Int @id @default(autoincrement())
   guildid String @unique
   channel String
+  invalid Boolean @default(false)
   emoji String[]
+  allowNsfw Boolean
   minstars Int @default(1)
-  starredMsgs String[]
   guild        guild         @relation(fields: [guildid], references: [guildId], onDelete: Cascade)
+}
+
+model starred_msg {
+  id Int @id @default(autoincrement())
+  guildId String
+  msgId String
+  boardId String
 }

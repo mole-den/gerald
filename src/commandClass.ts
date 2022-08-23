@@ -30,20 +30,28 @@ export abstract class GeraldCommand extends sapphire.Command {
 		});
 	}
 	protected async slashHandler(error: unknown, interaction: discord.CommandInteraction, context: sapphire.ChatInputCommand.RunContext): Promise<void> {
+		const group = interaction.options.getSubcommandGroup(false);
+		const sub = interaction.options.getSubcommand(false);
 		if (error instanceof sapphire.UserError) interaction.reply(error.message);
 		else {
 			context;
 			console.error(error);
 			const embed = new discord.MessageEmbed()
-				.setTitle(`Error: Command "${context.commandName}" failed`)
+				.setTitle(`Error: Command "${context.commandName} ${group ? group : ""} ${sub ? sub : ""}" failed`)
 				.setColor("RED")
 				.setTimestamp(new Date())
 				.setDescription("An unhandled exception occurred.");
 			const content = (<Error>error).message as string;
 			embed.addField("Message", content ?? JSON.stringify(error));
-			interaction.channel?.send({
-				embeds: [embed]
-			});
+			try {
+				await interaction.reply({
+					embeds: [embed]
+				});
+			} catch {
+				interaction.channel?.send({
+					embeds: [embed]
+				});
+			}
 		}
 	}
 }

@@ -18,7 +18,7 @@ class Gerald extends sapphire.SapphireClient {
 			intents: new discord.Intents([discord.Intents.FLAGS.GUILDS, discord.Intents.FLAGS.GUILD_MEMBERS, discord.Intents.FLAGS.GUILD_MESSAGES,
 				discord.Intents.FLAGS.DIRECT_MESSAGES, discord.Intents.FLAGS.GUILD_BANS, discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
 				discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS, discord.Intents.FLAGS.GUILD_VOICE_STATES]),
-			partials: ["CHANNEL"],
+			partials: ["CHANNEL", "MESSAGE", "REACTION"],
 			defaultCooldown: {
 				scope: 3,
 				limit: 2,
