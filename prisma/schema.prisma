@@ -15,6 +15,7 @@ model guild {
   member     member[]
   config     cofnigEntry[]
   counting  counting_data[]
+  starboard_data starboard_data[]
 }
 
 model cofnigEntry {
@@ -79,5 +80,15 @@ model counting_data {
   channel String
   user String 
   failrole String
+  guild        guild         @relation(fields: [guildid], references: [guildId], onDelete: Cascade)
+}
+
+model starboard_data {
+  id Int @id @default(autoincrement())
+  guildid String @unique
+  channel String
+  emoji String[]
+  minstars Int @default(1)
+  starredMsgs String[]
   guild        guild         @relation(fields: [guildid], references: [guildId], onDelete: Cascade)
 }
