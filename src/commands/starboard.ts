@@ -213,9 +213,19 @@ Emoji used as "stars": :star::star2:`
 				text: reaction.message.author?.username,
 				iconURL: reaction.message.author.avatarURL() ?? ""
 			});
-			if (!edit) channel.send({
-				embeds: [embed]
-			});
+			if (!edit) {
+				const i = await channel.send({
+					embeds: [embed]
+				});
+				this.starred.set(reaction.message.id, i.id);
+				await bot.db.starred_msg.create({
+					data: {
+						guildId: reaction.message.guild.id,
+						msgId: reaction.message.id,
+						boardId: i.id
+					}
+				});
+			}
 			else {
 				const i = this.starred.get(reaction.message.id);
 				let msg;
