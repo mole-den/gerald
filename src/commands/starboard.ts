@@ -203,7 +203,7 @@ Emoji used as "stars": :star::star2:`
 			const content = reaction.message.content ? reaction.message.content.length > 1750 ? reaction.message.content.substring(0, 1749) + "..." : reaction.message.content : null;
 			content ? embed.setDescription(content) : "";
 			const messageAttachment = reaction.message.attachments.size > 0 ? reaction.message.attachments.at(0)?.url : null;
-			const embedAttachemnt = reaction.message.embeds[0].image?.url ?? null;
+			const embedAttachemnt = reaction.message.embeds[0] ? reaction.message.embeds[0].image?.url ?? null : null;
 			if (channel instanceof TextChannel && channel.nsfw === false)
 				if (embedAttachemnt) embed.setImage(embedAttachemnt);
 				else if (messageAttachment) embed.setImage(messageAttachment);	
