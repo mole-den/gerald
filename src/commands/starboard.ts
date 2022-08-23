@@ -6,7 +6,7 @@ import { bot } from "..";
 @ApplyOptions<GeraldCommandOptions>({
 	name: "starboard",
 	description: "Starboard.",
-	requiredUserPermissions: [],
+	requiredUserPermissions: ["ADMINISTRATOR"],
 	requiredClientPermissions: [],
 	preconditions: ["GuildOnly"],
 }) export class Starboard extends GeraldCommand implements GeraldModule {
