@@ -20,11 +20,7 @@ import { bot } from "..";
 							o.setName("channel").setDescription("Channel.").setRequired(true)))
 				.addSubcommand(x => x.setName("disable").setDescription("Disable the starboard."))
 				.addSubcommand(x => x.setName("minstars").setDescription("Amount of stars required for a message to go on the starboard.").addIntegerOption(o => o.setName("amount").setDescription("Amount of stars.").setRequired(true)))
-				.addSubcommand(x => x.setName("allownsfw").setDescription("Allow NSFW messages to go on the starboard.").addBooleanOption(o => o.setName("allow").setDescription("Allow NSFW messages.").setRequired(true)))
-				.addSubcommandGroup(x => x.setName("emoji").setDescription("Set the emoji to be used as \"stars\".")
-					.addSubcommand(i => i.setName("list").setDescription("List the emoji used as stars."))
-					.addSubcommand(i => i.setName("add").setDescription("Add an emoji to be used as a \"stars\".").addStringOption(o => o.setName("emoji").setDescription("Emoji.").setRequired(true)))
-					.addSubcommand(i => i.setName("remove").setDescription("Remove an emoji from the list of emoji used as stars.").addStringOption(o => o.setName("emoji").setDescription("Emoji.").setRequired(true))));
+				.addSubcommand(x => x.setName("allownsfw").setDescription("Allow NSFW messages to go on the starboard.").addBooleanOption(o => o.setName("allow").setDescription("Allow NSFW messages.").setRequired(true)));
 		}, {
 			behaviorWhenNotIdentical: RegisterBehavior.Overwrite,
 			idHints: ["1011433430942220379"]
@@ -130,30 +126,6 @@ Emoji used as "stars": :star::star2:`
 			}
 		});
 		interaction.reply(interaction.options.getBoolean("allow", true) === false ? "NSFW messages will not appear on the starboard" : "Allowed NSFW messages to show on starboard");
-	}
-
-	public async emoji_list(interaction: CommandInteraction) {
-		if (!interaction.guild) return;
-		if (!this.channels.get(interaction.guild.id)) return interaction.reply({
-			content: "Starboard is currently disabled or set to an invalid channel. To enable, use `/starboard setchannel`."
-		});
-		throw new Error("Not implemented yet");
-	}
-
-	public async emoji_add(interaction: CommandInteraction) {
-		if (!interaction.guild) return;
-		if (!this.channels.get(interaction.guild.id)) return interaction.reply({
-			content: "Starboard is currently disabled or set to an invalid channel. To enable, use `/starboard setchannel`."
-		});
-		throw new Error("Not implemented yet");
-	}
-
-	public async emoji_remove(interaction: CommandInteraction) {
-		if (!interaction.guild) return;
-		if (!this.channels.get(interaction.guild.id)) return interaction.reply({
-			content: "Starboard is currently disabled or set to an invalid channel. To enable, use `/starboard setchannel`."
-		});
-		throw new Error("Not implemented yet");
 	}
 
 	private async reactionHandler(r: MessageReaction | PartialMessageReaction) {
