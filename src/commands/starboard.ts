@@ -1,6 +1,6 @@
 import { GeraldCommand, GeraldModule, GeraldCommandOptions } from "../commandClass";
 import { ApplyOptions } from "@sapphire/decorators";
-import { CommandInteraction, MessageEmbed, MessageReaction, PartialMessageReaction, ReactionEmoji } from "discord.js";
+import { CommandInteraction, MessageEmbed, MessageReaction, PartialMessageReaction, ReactionEmoji, TextChannel } from "discord.js";
 import { ApplicationCommandRegistry, ChatInputCommandContext, RegisterBehavior } from "@sapphire/framework";
 import { bot } from "..";
 @ApplyOptions<GeraldCommandOptions>({
@@ -195,6 +195,7 @@ Emoji used as "stars": :star::star2:`
 			}
 			if (!channel?.isText()) return;
 			if (this.starred.has(reaction.message.id)) edit = true;
+			if (channel instanceof TextChannel && channel.nsfw && min.allowNsfw === false) return;
 			const embed = new MessageEmbed()
 				.setColor("GOLD")
 				.setTimestamp(reaction.message.createdTimestamp)
@@ -202,7 +203,10 @@ Emoji used as "stars": :star::star2:`
 			const content = reaction.message.content ? reaction.message.content.length > 1750 ? reaction.message.content.substring(0, 1749) + "..." : reaction.message.content : null;
 			content ? embed.setDescription(content) : "";
 			const messageAttachment = reaction.message.attachments.size > 0 ? reaction.message.attachments.at(0)?.url : null;
-			if (messageAttachment) embed.setImage(messageAttachment);
+			const embedAttachemnt = reaction.message.embeds[0].image?.url ?? null;
+			if (channel instanceof TextChannel && channel.nsfw === false)
+				if (embedAttachemnt) embed.setImage(embedAttachemnt);
+				else if (messageAttachment) embed.setImage(messageAttachment);	
 			embed.addField("Channel", `${reaction.message.channel}`)
 				.addField("Link to message", `[Link](${reaction.message.url})`);
 			if (reaction.message.author) embed.setFooter({
