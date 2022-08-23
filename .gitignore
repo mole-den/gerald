@@ -4,3 +4,4 @@ build/
 .env
 .vs/
 a.js
+migrateStars.ts

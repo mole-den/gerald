@@ -158,9 +158,7 @@ Emoji used as "stars": :star::star2:`
 
 	private async reactionHandler(r: MessageReaction | PartialMessageReaction) {
 		const reaction = r.partial ? await r.fetch() : r;
-		if (!reaction.message.guild) return;
-		if (reaction.message.author?.bot) return;
-		
+		if (!reaction.message.guild) return;		
 		const request = bot.db.starboard_data.findUnique({
 			where: {
 				guildid: reaction.message.guild.id
