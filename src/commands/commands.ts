@@ -4,7 +4,6 @@ import _ from "lodash";
 import { bot } from "../index";
 import { GeraldCommand, GeraldCommandOptions } from "../commandClass";
 import { ApplyOptions } from "@sapphire/decorators";
-import * as time from "@sapphire/time-utilities";
 import axios from "axios";
 import { utils } from "../utils";
 import { deleted_msg } from "@prisma/client";
@@ -14,7 +13,6 @@ type attachment = {
 	url: string,
 	name: string | null
 }[];
-time;
 
 
 @ApplyOptions<GeraldCommandOptions>({

@@ -30,13 +30,6 @@ export abstract class GeraldCommand extends sapphire.Command {
 		});
 	}
 	protected async slashHandler(error: unknown, interaction: discord.CommandInteraction, context: sapphire.ChatInputCommand.RunContext): Promise<void> {
-		let reply;
-		try {
-			reply = await interaction.fetchReply();
-
-		} catch{
-			reply = null;
-		}
 		if (error instanceof sapphire.UserError) interaction.reply(error.message);
 		else {
 			context;
@@ -48,10 +41,7 @@ export abstract class GeraldCommand extends sapphire.Command {
 				.setDescription("An unhandled exception occurred.");
 			const content = (<Error>error).message as string;
 			embed.addField("Message", content ?? JSON.stringify(error));
-			if (reply) interaction.followUp({
-				embeds: [embed]
-			});
-			else interaction.reply({
+			interaction.channel?.send({
 				embeds: [embed]
 			});
 		}
