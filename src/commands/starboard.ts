@@ -216,8 +216,13 @@ Emoji used as "stars": :star::star2:`
 			});
 			else {
 				const i = this.starred.get(reaction.message.id);
+				let msg;
 				if (!i) return;
-				const msg = await channel.messages.fetch(i);
+				try {
+					msg = await channel.messages.fetch(i);
+				} catch {
+					return;
+				}
 				msg.edit({
 					embeds: [embed]
 				});
