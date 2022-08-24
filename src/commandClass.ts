@@ -2,14 +2,17 @@ import * as sapphire from "@sapphire/framework";
 import * as discord from "discord.js";
 
 export interface GeraldModule {
-	onModuleDisabledInGuild(guildid: string): void
 	onModuleEnabledInGuild(guildid: string): void
 	onModuleStart(): void
-	settings: GeraldModuleSetting[] | null;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface GeraldCommandOptions extends sapphire.CommandOptions {}
+export interface GeraldCommandOptions extends sapphire.CommandOptions {
+	subcommandPreconditions?: {
+		cmd: string,
+		preconditions: sapphire.PreconditionEntryResolvable[]
+	}[]
+}
 
 export interface GeraldModuleSetting {
 	id: string
@@ -24,10 +27,18 @@ export abstract class GeraldCommand extends sapphire.Command {
 	isModule(x: any): x is GeraldCommand & GeraldModule {
 		return x["onModuleStart"] ? true : false;
 	}
+	protected subcommandPreconditions: Map<string, sapphire.PreconditionEntryResolvable[]> | null;
 	public constructor(context: sapphire.Command.Context, options: GeraldCommandOptions) {
 		super(context, {
 			...options,
 		});
+		if (options.subcommandPreconditions) {
+			this.subcommandPreconditions = new Map();
+			options.subcommandPreconditions.forEach(o => {
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				this.subcommandPreconditions!.set(o.cmd, o.preconditions);
+			});	
+		} else this.subcommandPreconditions = null;
 	}
 	protected async slashHandler(error: unknown, interaction: discord.CommandInteraction, context: sapphire.ChatInputCommand.RunContext): Promise<void> {
 		const group = interaction.options.getSubcommandGroup(false);

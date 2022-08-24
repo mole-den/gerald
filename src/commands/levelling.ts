@@ -1,3 +1,4 @@
+/*
 import * as discord from "discord.js";
 import { ApplicationCommandRegistry, ChatInputCommandContext, RegisterBehavior } from "@sapphire/framework";
 import { RateLimiterMemory } from "rate-limiter-flexible";
@@ -244,4 +245,4 @@ import { utils } from "../utils";
 	async onModuleEnabledInGuild(id: string): Promise<void> {
 		this.ignore = this.ignore.filter(i => i !== id);
 	}
-}
+}*/

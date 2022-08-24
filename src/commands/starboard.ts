@@ -1,7 +1,7 @@
 import { GeraldCommand, GeraldModule, GeraldCommandOptions } from "../commandClass";
 import { ApplyOptions } from "@sapphire/decorators";
 import { CommandInteraction, MessageEmbed, MessageReaction, PartialMessageReaction, ReactionEmoji, TextChannel } from "discord.js";
-import { ApplicationCommandRegistry, ChatInputCommandContext, RegisterBehavior } from "@sapphire/framework";
+import { ApplicationCommandRegistry, ChatInputCommandContext, PreconditionContainerArray, RegisterBehavior } from "@sapphire/framework";
 import { bot } from "..";
 @ApplyOptions<GeraldCommandOptions>({
 	name: "starboard",
@@ -219,9 +219,20 @@ Emoji used as "stars": :star::star2:`
 			const group = interaction.options.getSubcommandGroup(false);
 			const sub = interaction.options.getSubcommand(false);
 			if (!sub) throw new Error("Invalid subcommand");
-			const func: unknown = (this as any)[group ? `${group}_${sub}` : sub];
-			console.log(group ? `${group}-${interaction.options.getSubcommand()}` : interaction.options.getSubcommand());
+			const id = group ? `${group}_${sub}` : sub;
+			const func: unknown = (this as any)[id];
 			if (typeof func !== "function") throw new Error("Invalid subcommand");
+			if (this.subcommandPreconditions && this.subcommandPreconditions.has(id)) {
+				const conditions = new PreconditionContainerArray(this.subcommandPreconditions.get(id));
+				const results = await conditions.chatInputRun(interaction, this);
+				if (results.error) {
+					interaction.reply({
+						content: results.error.message,
+						ephemeral: true
+					});
+					return;
+				}
+			}
 			await func.bind(this)(interaction, context);
 		} catch (error) {
 			this.slashHandler(error, interaction, context);

@@ -331,14 +331,29 @@ interface order {
 
 	public async chatInputRun(interaction: discord.CommandInteraction, context: sapphire.ChatInputCommandContext) {
 		try {
-			const func: unknown = (this as any)[interaction.options.getSubcommand(true)];
+			const group = interaction.options.getSubcommandGroup(false);
+			const sub = interaction.options.getSubcommand(false);
+			if (!sub) throw new Error("Invalid subcommand");
+			const id = group ? `${group}_${sub}` : sub;
+			const func: unknown = (this as any)[id];
 			if (typeof func !== "function") throw new Error("Invalid subcommand");
-			await func(interaction, context);
+			if (this.subcommandPreconditions && this.subcommandPreconditions.has(id)) {
+				const conditions = new sapphire.PreconditionContainerArray(this.subcommandPreconditions.get(id));
+				const results = await conditions.chatInputRun(interaction, this);
+				if (results.error) {
+					interaction.reply({
+						content: results.error.message,
+						ephemeral: true
+					});
+					return;
+				}
+			}
+			await func.bind(this)(interaction, context);
 		} catch (error) {
 			this.slashHandler(error, interaction, context);
 		}
-	}
 
+	}
 	public async market(interaction: discord.CommandInteraction) {
 		await interaction.deferReply();
 		let itemToGet = interaction.options.getString("item");
