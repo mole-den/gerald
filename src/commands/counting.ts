@@ -1,7 +1,7 @@
 import { GeraldCommand, GeraldModule, GeraldCommandOptions } from "../commandClass";
 import { ApplyOptions } from "@sapphire/decorators";
 import { CommandInteraction, GuildMember, Message } from "discord.js";
-import { ApplicationCommandRegistry, ChatInputCommandContext, PreconditionContainerArray, RegisterBehavior } from "@sapphire/framework";
+import { ApplicationCommandRegistry, ChatInputCommandContext, RegisterBehavior } from "@sapphire/framework";
 import { bot } from "..";
 import _ from "lodash";
 @ApplyOptions<GeraldCommandOptions>({
@@ -194,17 +194,6 @@ import _ from "lodash";
 			const id = group ? `${group}_${sub}` : sub;
 			const func: unknown = (this as any)[id];
 			if (typeof func !== "function") throw new Error("Invalid subcommand");
-			if (this.subcommandPreconditions && this.subcommandPreconditions.has(id)) {
-				const conditions = new PreconditionContainerArray(this.subcommandPreconditions.get(id));
-				const results = await conditions.chatInputRun(interaction, this);
-				if (results.error) {
-					interaction.reply({
-						content: results.error.message,
-						ephemeral: true
-					});
-					return;
-				}
-			}
 			await func.bind(this)(interaction, context);
 		} catch (error) {
 			this.slashHandler(error, interaction, context);
