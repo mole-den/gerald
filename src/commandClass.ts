@@ -9,8 +9,6 @@ export interface GeraldModule {
 export const ApplyPreconditions = (conditions: sapphire.PreconditionEntryResolvable[]) => (target: unknown, propertyKey: string, descriptor: PropertyDescriptor) => {
 	const method = descriptor.value;
 	descriptor.value = async function (...args: any[]) {
-		console.log(conditions);
-		console.log(args);
 		const c = new sapphire.PreconditionContainerArray(conditions);
 		const results = await c.chatInputRun(args[0], this as sapphire.ChatInputCommand);
 		if (results.error) {
