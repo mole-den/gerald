@@ -2,7 +2,7 @@ import * as sapphire from "@sapphire/framework";
 import * as discord from "discord.js";
 import _ from "lodash";
 import { bot } from "../index";
-import { ApplyPreconditions, GeraldCommand, GeraldCommandOptions } from "../commandClass";
+import { GeraldCommand, GeraldCommandOptions } from "../commandClass";
 import { ApplyOptions } from "@sapphire/decorators";
 import axios from "axios";
 import { utils } from "../utils";
@@ -421,7 +421,6 @@ interface order {
 			utils.handleDismissButton(interaction, response);
 	}
 
-	@ApplyPreconditions(["DMOnly"])
 	public async relics(interaction: discord.CommandInteraction) {
 		await interaction.deferReply();
 		interface relicReward {
