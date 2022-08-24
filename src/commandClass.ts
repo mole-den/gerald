@@ -6,6 +6,24 @@ export interface GeraldModule {
 	onModuleStart(): void
 }
 
+export const ApplyPreconditions = (conditions: sapphire.PreconditionEntryResolvable[]) => (target: unknown, propertyKey: string, descriptor: PropertyDescriptor) => {
+	const method = descriptor.value;
+	descriptor.value = async function (...args: any[]) {
+		console.log(conditions);
+		console.log(args);
+		const c = new sapphire.PreconditionContainerArray(conditions);
+		const results = await c.chatInputRun(args[0], this as sapphire.ChatInputCommand);
+		if (results.error) {
+			args[0].reply({
+				content: results.error.message,
+				ephemeral: true
+			});
+			return;
+		}
+		method.apply(this, args);
+	};
+};
+
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface GeraldCommandOptions extends sapphire.CommandOptions {
 	subcommandPreconditions?: {
@@ -37,7 +55,7 @@ export abstract class GeraldCommand extends sapphire.Command {
 			options.subcommandPreconditions.forEach(o => {
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 				this.subcommandPreconditions!.set(o.cmd, o.preconditions);
-			});	
+			});
 		} else this.subcommandPreconditions = null;
 	}
 	protected async slashHandler(error: unknown, interaction: discord.CommandInteraction, context: sapphire.ChatInputCommand.RunContext): Promise<void> {
