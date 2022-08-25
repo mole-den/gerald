@@ -39,7 +39,7 @@ export interface GeraldModuleSetting {
 	type: "string" | "number" | "boolean" | "user" | "channel" | "role",
 	multiple: boolean
 }
-export abstract class GeraldCommand extends sapphire.Command {
+export class GeraldCommand extends sapphire.Command {
 	isModule(x: any): x is GeraldCommand & GeraldModule {
 		return x["onModuleStart"] ? true : false;
 	}
@@ -56,6 +56,22 @@ export abstract class GeraldCommand extends sapphire.Command {
 			});
 		} else this.subcommandPreconditions = null;
 	}
+
+	public async chatInputRun(interaction: discord.CommandInteraction, context: sapphire.ChatInputCommandContext) {
+		try {
+			const group = interaction.options.getSubcommandGroup(false);
+			const sub = interaction.options.getSubcommand(false);
+			if (!sub) throw new Error("Invalid subcommand");
+			const id = group ? `${group}_${sub}` : sub;
+			const func: unknown = (this as any)[id];
+			if (typeof func !== "function") throw new Error("Invalid subcommand");
+			await func.bind(this)(interaction, context);
+		} catch (error) {
+			this.slashHandler(error, interaction, context);
+		}
+
+	}
+
 	protected async slashHandler(error: unknown, interaction: discord.CommandInteraction, context: sapphire.ChatInputCommand.RunContext): Promise<void> {
 		const group = interaction.options.getSubcommandGroup(false);
 		const sub = interaction.options.getSubcommand(false);

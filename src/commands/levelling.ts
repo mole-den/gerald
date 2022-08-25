@@ -51,19 +51,6 @@ import { utils } from "../utils";
 		});
 	}
 
-	public async chatInputRun(interaction: discord.CommandInteraction, context: ChatInputCommandContext) {
-		try {
-			if (interaction.options.getSubcommandGroup(false) && interaction.options.getSubcommandGroup(false) === "settings") this.settingsRun(interaction);
-			else {
-				const func: unknown = (this as any)[interaction.options.getSubcommand(true)];
-				if (typeof func !== "function") throw new Error("Invalid subcommand");
-				await func(interaction, context);
-			}
-		} catch (error) {
-			this.slashHandler(error, interaction, context);
-		}
-	}
-
 	private async settingsRun(interaction: discord.CommandInteraction) {
 		const setting = this.settings.find(s => s.name === interaction.options.getSubcommand(true));
 		if (!setting) throw new Error("Interaction returned invalid setting");

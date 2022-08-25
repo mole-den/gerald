@@ -36,7 +36,7 @@ export class DeletedMSGCommand extends GeraldCommand {
 			idHints: ["1006068634256408586"]
 		});
 	}
-	public async chatInputRun(interaction: discord.CommandInteraction, context: sapphire.ChatInputCommandContext) {
+	public override async chatInputRun(interaction: discord.CommandInteraction, context: sapphire.ChatInputCommandContext) {
 		try {
 			if (!interaction.guild) return;
 			const user = interaction.options.getUser("user");
@@ -221,7 +221,7 @@ export class inviteCommand extends GeraldCommand {
 			idHints: ["1006068635669897277"]
 		});
 	}
-	public async chatInputRun(interaction: discord.CommandInteraction) {
+	public override async chatInputRun(interaction: discord.CommandInteraction) {
 		interaction.reply("Invite is: https://discord.com/oauth2/authorize?client_id=671156130483011605&permissions=8&scope=bot%20applications.commands");
 	}
 }
@@ -329,20 +329,6 @@ interface order {
 		});
 	}
 
-	public async chatInputRun(interaction: discord.CommandInteraction, context: sapphire.ChatInputCommandContext) {
-		try {
-			const group = interaction.options.getSubcommandGroup(false);
-			const sub = interaction.options.getSubcommand(false);
-			if (!sub) throw new Error("Invalid subcommand");
-			const id = group ? `${group}_${sub}` : sub;
-			const func: unknown = (this as any)[id];
-			if (typeof func !== "function") throw new Error("Invalid subcommand");
-			await func.bind(this)(interaction, context);
-		} catch (error) {
-			this.slashHandler(error, interaction, context);
-		}
-
-	}
 	public async market(interaction: discord.CommandInteraction) {
 		await interaction.deferReply();
 		let itemToGet = interaction.options.getString("item");
@@ -541,7 +527,7 @@ export class rollCommand extends GeraldCommand {
 		{ idHints: ["1006068640082309201"] });
 	}
 
-	public async chatInputRun(interaction: discord.CommandInteraction, context: sapphire.ChatInputCommandContext) {
+	public override async chatInputRun(interaction: discord.CommandInteraction, context: sapphire.ChatInputCommandContext) {
 		try {
 			const input = interaction.options.getString("dice")?.trimStart().trimEnd() ?? "d6";
 			let option = input;
@@ -604,16 +590,6 @@ export class rollCommand extends GeraldCommand {
 					subcommand.setName("query").setDescription("Query database").addStringOption(o => o.setName("query").setDescription("Query to execute").setRequired(true)));
 
 		}, { idHints: ["1006068721787359243"] });
-	}
-
-	public async chatInputRun(interaction: discord.CommandInteraction, context: sapphire.ChatInputCommandContext) {
-		try {
-			const func: unknown = (this as any)[interaction.options.getSubcommand(true)];
-			if (typeof func !== "function") throw new Error("Invalid subcommand");
-			await func(interaction, context);
-		} catch (error) {
-			this.slashHandler(error, interaction, context);
-		}
 	}
 
 	public async query(interaction: discord.CommandInteraction) {

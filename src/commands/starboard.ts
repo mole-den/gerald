@@ -1,7 +1,7 @@
 import { GeraldCommand, GeraldModule, GeraldCommandOptions } from "../commandClass";
 import { ApplyOptions } from "@sapphire/decorators";
 import { CommandInteraction, MessageEmbed, MessageReaction, PartialMessageReaction, ReactionEmoji, TextChannel } from "discord.js";
-import { ApplicationCommandRegistry, ChatInputCommandContext, RegisterBehavior } from "@sapphire/framework";
+import { ApplicationCommandRegistry, RegisterBehavior } from "@sapphire/framework";
 import { bot } from "..";
 @ApplyOptions<GeraldCommandOptions>({
 	name: "starboard",
@@ -212,21 +212,6 @@ Emoji used as "stars": :star::star2:`
 				});
 			}
 		}
-	}
-
-	public async chatInputRun(interaction: CommandInteraction, context: ChatInputCommandContext) {
-		try {
-			const group = interaction.options.getSubcommandGroup(false);
-			const sub = interaction.options.getSubcommand(false);
-			if (!sub) throw new Error("Invalid subcommand");
-			const id = group ? `${group}_${sub}` : sub;
-			const func: unknown = (this as any)[id];
-			if (typeof func !== "function") throw new Error("Invalid subcommand");
-			await func.bind(this)(interaction, context);
-		} catch (error) {
-			this.slashHandler(error, interaction, context);
-		}
-
 	}
 
 	async onModuleDisabledInGuild() {
