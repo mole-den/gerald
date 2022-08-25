@@ -623,12 +623,12 @@ export class rollCommand extends GeraldCommand {
 		});
 		const str = interaction.options.getString("query") as string;
 		let query: unknown;
-		if (str.toLowerCase().startsWith("select"))
+		if (str.startsWith("SELECT"))
 			query = await bot.db.$queryRawUnsafe(str);
 		else
 			query = await bot.db.$executeRawUnsafe(str);
 
-		if (str.toLowerCase().startsWith("select")) return interaction.reply({
+		if (str.startsWith("SELECT")) return interaction.reply({
 			content: JSON.stringify(query),
 			allowedMentions: {
 				parse: []
