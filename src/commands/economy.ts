@@ -1,5 +1,6 @@
 import { ApplyOptions } from "@sapphire/decorators";
 import { ApplicationCommandRegistry, RegisterBehavior } from "@sapphire/framework";
+import { CommandInteraction } from "discord.js";
 import { GeraldCommand, GeraldCommandOptions } from "../commandClass";
 @ApplyOptions<GeraldCommandOptions>({
 	name: "economy",
@@ -50,4 +51,7 @@ export class Economy extends GeraldCommand {
 		});
 	}
 	
+	override async chatInputRun(interaction: CommandInteraction) {
+		interaction.reply("Not implemented yet");
+	}
 }
