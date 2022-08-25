@@ -16,6 +16,7 @@ model guild {
   config     cofnigEntry[]
   counting  counting_data[]
   starboard_data starboard_data[]
+  guild_economy guild_economy? 
 }
 
 model cofnigEntry {
@@ -99,4 +100,19 @@ model starred_msg {
   guildId String
   msgId String
   boardId String
+}
+
+model guild_economy {
+  guildId String @id @unique
+  guild guild @relation(fields: [guildId], references: [guildId])
+  users member_economy[]
+}
+
+model member_economy {
+  guildId String
+  memberId String
+  economy guild_economy @relation(fields: [guildId], references: [guildId])
+  job String
+  balance BigInt
+  @@id([guildId, memberId])
 }

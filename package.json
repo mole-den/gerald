@@ -7,7 +7,7 @@
     "start": "node --enable-source-maps build/index.js",
     "heroku-start": "npm start",
     "lint": "npx eslint src/**",
-    "postinstall": "tsc && npm run lint"
+    "postinstall": "tsc && npm run lint && npx prisma db push"
   },
   "dependencies": {
     "@bugsnag/js": "^7.16.1",
