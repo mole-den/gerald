@@ -263,7 +263,7 @@ export class infoCommand extends GeraldCommand {
 				.addField("Github repo", "https://github.com/mole-den/Gerald")
 				.addField("Uptime", uptimeString)
 				.addField("Discord API heartbeat", `${bot.ws.ping}ms`, false)
-				.addField("Database Heartbeat", `${elapsed}ms`, false)
+				.addField("Database heartbeat", `${elapsed}ms`, false)
 				.addField("Memory usage", `${Math.round(process.memoryUsage.rss() / 1000000)}MB `);
 			return interaction.reply({
 				embeds: [embed]
