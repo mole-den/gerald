@@ -1,6 +1,6 @@
 import { GeraldCommand, GeraldModule, GeraldCommandOptions } from "../commandClass";
 import { ApplyOptions } from "@sapphire/decorators";
-import { CommandInteraction, GuildMember, Message } from "discord.js";
+import { CommandInteraction, Message } from "discord.js";
 import { ApplicationCommandRegistry, RegisterBehavior } from "@sapphire/framework";
 import { bot } from "..";
 import _ from "lodash";
@@ -33,7 +33,6 @@ import _ from "lodash";
 	public async failrole(interaction: CommandInteraction) {
 		if (!interaction.guild) return;
 		const role = interaction.options.getRole("role", true);
-		if (!role) return;
 		await bot.db.counting_data.update({
 			where: {
 				guildid: interaction.guild.id
@@ -50,7 +49,7 @@ import _ from "lodash";
 	public async setchannel(interaction: CommandInteraction) {
 		if (!interaction.guild) return;
 		const channel = interaction.options.getChannel("channel", true);
-		if (channel && channel.type !== "GUILD_TEXT") {
+		if (channel.type !== "GUILD_TEXT") {
 			if (channel.type === "GUILD_NEWS_THREAD" || channel.type === "GUILD_PUBLIC_THREAD" || channel.type === "GUILD_PRIVATE_THREAD")
 				return interaction.reply({
 					ephemeral: true,
@@ -136,7 +135,7 @@ import _ from "lodash";
 					number: 0,
 				}
 			});
-			if (failrole && failrole.failrole !== "") (message.member as GuildMember).roles.add(failrole.failrole);
+			if (failrole && failrole.failrole !== "") (message.member!).roles.add(failrole.failrole);
 			message.react("❗");
 			message.channel.send(`${message.author} You can't count two numbers in a row. The next number was ${data.number + 1}.`);
 			return;
@@ -159,7 +158,7 @@ import _ from "lodash";
 					number: 0,
 				}
 			});
-			if (failrole && failrole.failrole !== "") (message.member as GuildMember).roles.add(failrole.failrole);
+			if (failrole && failrole.failrole !== "") (message.member!).roles.add(failrole.failrole);
 			message.react("❗");
 			message.channel.send(`${message.author} Incorrect number. The next number was ${data.number + 1}.`);
 			return;

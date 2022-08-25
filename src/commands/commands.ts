@@ -94,9 +94,9 @@ export class DeletedMSGCommand extends GeraldCommand {
 			});
 			let at = amount;
 			const reply = await interaction.fetchReply() as discord.Message;
-			// eslint-disable-next-line no-constant-condition
+			// eslint-disable-next-line no-constant-condition, @typescript-eslint/no-unnecessary-condition
 			while (true) {
-				let x: discord.ButtonInteraction<discord.CacheType>;
+				let x: discord.ButtonInteraction;
 				try {
 					x = await reply.awaitMessageComponent({
 						componentType: "BUTTON",
@@ -181,13 +181,13 @@ export class DeletedMSGCommand extends GeraldCommand {
 	private getEmbeds(del: deleted_msg[], user: boolean, channel: boolean): discord.MessageEmbed[] {
 		const embeds: discord.MessageEmbed[] = [];
 		del.forEach((msg) => {
-			const attachments = <attachment>msg.attachments;
+			const attachments = msg.attachments as attachment;
 			let msgContent: string;
 			if (msg.content.length > 1028) msgContent = msg.content.substring(0, 1025) + "...";
 			else msgContent = msg.content;
 			const DeleteEmbed = new discord.MessageEmbed();
-			if (user === false) DeleteEmbed.addField("Author", `<@${msg.author}>`, true);
-			if (channel === false) DeleteEmbed.addField("Channel", `<#${msg.channel}>`, true);
+			if (!user) DeleteEmbed.addField("Author", `<@${msg.author}>`, true);
+			if (!channel) DeleteEmbed.addField("Channel", `<#${msg.channel}>`, true);
 			DeleteEmbed
 				.setTitle("Deleted Message")
 				.setColor("#fc3c3c")
@@ -463,7 +463,7 @@ interface order {
 				}));
 				if (item.status === 200) resolvedItem = item.data;
 				else {
-					urlName = `${(<RegExpMatchArray>item.data.error.substring(0, item.data.error.length - 26).match(/[a-z_]+$/))[0]}_blueprint`;
+					urlName = `${(item.data.error.substring(0, item.data.error.length - 26).match(/[a-z_]+$/) as RegExpMatchArray)[0]}_blueprint`;
 					resolvedItem = (await axios.get(`https://api.warframe.market/v1/items/${urlName}/orders?include=item`)).data;
 				}
 				const prices = resolvedItem.payload.orders.filter(o => o.order_type !== "buy" && o.user.status !== "offline").sort((a, b) => a.platinum - b.platinum).slice(0, 9).map(o => o.platinum);
@@ -480,15 +480,15 @@ interface order {
 			}
 
 		}
-		type relicData = {
+		interface relicData {
 			name: string;
 			price: number;
 			orders: number;
 			link: string;
 			rarity: string;
 			lowestPrice: number;
-			meta: any;
-		};
+			meta: unknown;
+		}
 		const embed = new discord.MessageEmbed();
 		embed.setTitle(`Market data for ${relicType} ${relicName}`);
 		embed.setColor("BLURPLE");
@@ -597,7 +597,7 @@ export class rollCommand extends GeraldCommand {
 			ephemeral: true,
 			content: "Not authorized"
 		});
-		const str = interaction.options.getString("query") as string;
+		const str = interaction.options.getString("query", true);
 		let query: unknown;
 		if (str.startsWith("SELECT"))
 			query = await bot.db.$queryRawUnsafe(str);
@@ -623,7 +623,7 @@ export class rollCommand extends GeraldCommand {
 			ephemeral: true,
 			content: "Not authorized"
 		});
-		const str = interaction.options.getString("string") as string;
+		const str = interaction.options.getString("string", true);
 		const x = eval(str);
 		return interaction.reply({
 			content: `${x}`,

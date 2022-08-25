@@ -8,11 +8,11 @@ export interface GeraldModule {
 
 export const ApplyPreconditions = (conditions: sapphire.PreconditionEntryResolvable[]) => (target: unknown, propertyKey: string, descriptor: PropertyDescriptor) => {
 	const method = descriptor.value;
-	descriptor.value = async function (...args: any[]) {
+	descriptor.value = async function (...args: unknown[]) {
 		const c = new sapphire.PreconditionContainerArray(conditions);
-		const results = await c.chatInputRun(args[0], this as sapphire.ChatInputCommand);
+		const results = await c.chatInputRun(args[0] as discord.CommandInteraction, this as sapphire.ChatInputCommand);
 		if (results.error) {
-			args[0].reply({
+			(args[0] as discord.CommandInteraction).reply({
 				content: results.error.message,
 				ephemeral: true
 			});
@@ -40,8 +40,9 @@ export interface GeraldModuleSetting {
 	multiple: boolean
 }
 export class GeraldCommand extends sapphire.Command {
-	isModule(x: any): x is GeraldCommand & GeraldModule {
-		return x["onModuleStart"] ? true : false;
+	isModule(x: unknown): x is GeraldCommand & GeraldModule {
+		if (typeof x === "object" && Object.keys(x!).includes("onModuleStart")) return true;
+		return false;
 	}
 	protected subcommandPreconditions: Map<string, sapphire.PreconditionEntryResolvable[]> | null;
 	public constructor(context: sapphire.Command.Context, options: GeraldCommandOptions) {
@@ -63,7 +64,7 @@ export class GeraldCommand extends sapphire.Command {
 			const sub = interaction.options.getSubcommand(false);
 			if (!sub) throw new Error("Invalid subcommand");
 			const id = group ? `${group}_${sub}` : sub;
-			const func: unknown = (this as any)[id];
+			const func: unknown = (this as never)[id];
 			if (typeof func !== "function") throw new Error("Invalid subcommand");
 			await func.bind(this)(interaction, context);
 		} catch (error) {
@@ -84,7 +85,7 @@ export class GeraldCommand extends sapphire.Command {
 				.setColor("RED")
 				.setTimestamp(new Date())
 				.setDescription("An unhandled exception occurred.");
-			const content = (<Error>error).message as string;
+			const content = (error as Error).message as string | undefined;
 			embed.addField("Message", content ?? JSON.stringify(error));
 			try {
 				await interaction.reply({

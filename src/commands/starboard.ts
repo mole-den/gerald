@@ -33,7 +33,7 @@ import { bot } from "..";
 	public async setchannel(interaction: CommandInteraction) {
 		if (!interaction.guild) return;
 		const channel = interaction.options.getChannel("channel", true);
-		if (channel && channel.type !== "GUILD_TEXT") {
+		if (channel.type !== "GUILD_TEXT") {
 			if (channel.type === "GUILD_NEWS_THREAD" || channel.type === "GUILD_PUBLIC_THREAD" || channel.type === "GUILD_PRIVATE_THREAD")
 				return interaction.reply({
 					ephemeral: true,
@@ -125,7 +125,7 @@ Emoji used as "stars": :star::star2:`
 				allowNsfw: interaction.options.getBoolean("allow", true)
 			}
 		});
-		interaction.reply(interaction.options.getBoolean("allow", true) === false ? "NSFW messages will not appear on the starboard" : "Allowed NSFW messages to show on starboard");
+		interaction.reply(!interaction.options.getBoolean("allow", true) ? "NSFW messages will not appear on the starboard" : "Allowed NSFW messages to show on starboard");
 	}
 
 	private async reactionHandler(r: MessageReaction | PartialMessageReaction) {
@@ -144,7 +144,7 @@ Emoji used as "stars": :star::star2:`
 			if (!i) return false;
 			return this.reactions.has(i);
 		});
-		const users: Set<string> = new Set();
+		const users = new Set<string>();
 		const p = v.map(a => a.users.fetch());
 		const x = await Promise.all(p);
 		const min = await request;
@@ -165,9 +165,9 @@ Emoji used as "stars": :star::star2:`
 				});
 				return;
 			}
-			if (!channel?.isText()) return;
+			if (!channel.isText()) return;
 			if (this.starred.has(reaction.message.id)) edit = true;
-			if (channel instanceof TextChannel && channel.nsfw && min.allowNsfw === false) return;
+			if (channel instanceof TextChannel && channel.nsfw && !min.allowNsfw) return;
 			const embed = new MessageEmbed()
 				.setColor("GOLD")
 				.setTimestamp(reaction.message.createdTimestamp)
@@ -176,13 +176,13 @@ Emoji used as "stars": :star::star2:`
 			content ? embed.setDescription(content) : "";
 			const messageAttachment = reaction.message.attachments.size > 0 ? reaction.message.attachments.at(0)?.url : null;
 			const embedAttachemnt = reaction.message.embeds[0] ? reaction.message.embeds[0].image?.url ?? null : null;
-			if (channel instanceof TextChannel && channel.nsfw === false)
+			if (channel instanceof TextChannel && !channel.nsfw)
 				if (embedAttachemnt) embed.setImage(embedAttachemnt);
 				else if (messageAttachment) embed.setImage(messageAttachment);	
 			embed.addField("Channel", `${reaction.message.channel}`)
 				.addField("Link to message", `[Link](${reaction.message.url})`);
 			if (reaction.message.author) embed.setFooter({
-				text: reaction.message.author?.username,
+				text: reaction.message.author.username,
 				iconURL: reaction.message.author.avatarURL() ?? ""
 			});
 			if (!edit) {

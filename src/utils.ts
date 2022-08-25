@@ -35,7 +35,7 @@ export namespace utils {
 
 	}
 	export async function awaitButtonResponse(interaction: discord.CommandInteraction, response: discord.Message, type?: string, timeout = 15000) {
-		let x: discord.ButtonInteraction<discord.CacheType>;
+		let x: discord.ButtonInteraction;
 		try {
 			x = await response.awaitMessageComponent({
 				filter: (i) => {
@@ -84,7 +84,7 @@ export namespace utils {
 			});
 
 			collector.on("end", async () => {
-				if (resolved === false) {
+				if (!resolved) {
 					input.onEnd();
 					resolve(undefined);
 				}
@@ -138,7 +138,7 @@ export namespace utils {
 			});
 
 			collector.on("end", async () => {
-				if (resolved === false) {
+				if (!resolved) {
 					input.onEnd();
 					resolve(undefined);
 				}
@@ -170,7 +170,7 @@ export namespace utils {
 			});
 
 			collector.on("end", async () => {
-				if (resolved === false) {
+				if (!resolved) {
 					input.onEnd();
 					resolve(undefined);
 				}
@@ -185,7 +185,7 @@ export namespace utils {
 
 	}
 
-	export function formatMessage(string: string, items: { [key: string]: string }) {
+	export function formatMessage(string: string, items: Record<string, string>) {
 		Object.keys(items).forEach(k => {
 			string = string.replace(`{{${k}}}`, items[k]);
 		});

@@ -1,12 +1,11 @@
 import * as discord from "discord.js";
 import * as sapphire from "@sapphire/framework";
-import { scheduledTaskManager } from "./taskManager";
 import { PrismaClient } from "@prisma/client";
 import { utils } from "./utils";
 import Time from "@sapphire/time-utilities";
 import { GeraldCommand, GeraldModule } from "./commandClass";
 process.on("SIGTERM", async () => {
-	void bot.destroy();
+	bot.destroy();
 	process.exit(0);
 });
 
@@ -37,11 +36,10 @@ class Gerald extends sapphire.SapphireClient {
 		await utils.sleep(1000);
 		if (!process.env.TOKEN) throw new Error("No token found");
 		await super.login(process.env.TOKEN);
-		taskScheduler = new scheduledTaskManager();
 		await utils.sleep(4000);
 		this.user?.setStatus("dnd");
 		bot.stores.get("commands").forEach(i => {
-			const m = (<GeraldCommand | GeraldCommand & GeraldModule>i);
+			const m = (i as GeraldCommand | GeraldCommand & GeraldModule);
 			if (m.isModule(m)) m.onModuleStart();
 		});
 		console.log("Ready");
@@ -54,8 +52,6 @@ class Gerald extends sapphire.SapphireClient {
 
 }
 export const bot = new Gerald();
-export let taskScheduler: scheduledTaskManager;
-
 bot.on("chatInputCommandDenied", (error: sapphire.UserError, payload: sapphire.ChatInputCommandDeniedPayload) => {
 	payload.interaction.reply({ content: error.message, allowedMentions: { users: [payload.interaction.user.id], roles: [] }, ephemeral: true });
 });
@@ -68,7 +64,7 @@ bot.on("guildCreate", async (guild) => {
 		},
 	});
 	bot.stores.get("commands").forEach(i => {
-		const m = (<GeraldCommand | GeraldCommand & GeraldModule>i);
+		const m = (i as GeraldCommand | GeraldCommand & GeraldModule);
 		if (m.isModule(m)) m.onModuleEnabledInGuild(guild.id);
 	});
 
@@ -94,7 +90,7 @@ async function deletedMessageHandler(message: discord.Message | discord.PartialM
 		&& Date.now() - a.createdTimestamp < 5000
 	);
 	const entry = auditEntry;
-	const executor = (entry && entry.executor) ? entry.executor.tag : "Unknown (Most likely the author or a bot)";
+	const executor = (entry?.executor) ? entry.executor.tag : "Unknown (Most likely the author or a bot)";
 	const attachments: {
 		url: string,
 		name: string | null
