@@ -10,8 +10,6 @@
     "postinstall": "tsc && npm run lint"
   },
   "dependencies": {
-    "@bugsnag/js": "^7.16.1",
-    "@bugsnag/source-maps": "^2.3.1",
     "@discordjs/voice": "^0.8.0",
     "@prisma/client": "^4.1.0",
     "@sapphire/decorators": "^4.0.4",
@@ -20,7 +18,6 @@
     "@sapphire/plugin-subcommands": "^2.0.2",
     "@sapphire/time-utilities": "^1.5.2",
     "axios": "^0.26.0",
-    "cron": "^1.8.2",
     "discord.js": "^13.6.0",
     "libsodium-wrappers": "^0.7.10",
     "lodash": "^4.17.21",
@@ -29,10 +26,8 @@
     "tslib": "^2.3.1"
   },
   "devDependencies": {
-    "@types/cron": "^1.7.3",
     "@types/lodash": "^4.14.180",
     "@types/luxon": "^2.0.5",
-    "@types/pg": "^8.6.4",
     "@typescript-eslint/eslint-plugin": "^5.28.0",
     "@typescript-eslint/parser": "^5.28.0",
     "eslint": "^8.17.0",

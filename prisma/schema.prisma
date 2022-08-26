@@ -4,29 +4,18 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = "postgres://mhlsqugoyyjgtp:ca904e6fdbe060e81848227af49e6ed491e7c0e3d0a2bb6c5738e4e8ee18a664@ec2-34-194-100-156.compute-1.amazonaws.com:5432/ddo6pnpikd2ji3"
 }
 
 model guild {
-  id         Int           @id @default(autoincrement())
-  guildId    String        @unique @map("guild_id")
-  joinedTime DateTime      @map("join_Time") @db.Timestamp(6)
-  prefix     String        @default("g")
-  member     member[]
-  config     cofnigEntry[]
-  counting  counting_data[]
-  starboard_data starboard_data[]
-  guild_economy guild_economy? 
-}
-
-model cofnigEntry {
-  id      Int    @id @default(autoincrement())
-  guild   guild  @relation(fields: [guildId], references: [guildId], onDelete: Cascade)
-  guildId String 
-  module  String
-  key     String
-  value   String
-  @@unique([guildId, module, key])
+  id             Int             @id @default(autoincrement())
+  guildId        String          @unique @map("guild_id")
+  joinedTime     DateTime        @map("join_Time") @db.Timestamp(6)
+  prefix         String          @default("g")
+  counting       counting_data?
+  guild_economy  guild_economy?
+  member         member[]
+  starboard_data starboard_data?
 }
 
 model member {
@@ -75,44 +64,57 @@ model scheduled_task {
 }
 
 model counting_data {
-  id Int @id @default(autoincrement())
-  guildid String @unique
-  number Int @default(0)
-  channel String
-  user String 
+  id       Int    @id @default(autoincrement())
+  guildid  String @unique
+  number   Int    @default(0)
+  channel  String
+  user     String
   failrole String
-  guild        guild         @relation(fields: [guildid], references: [guildId], onDelete: Cascade)
+  guild    guild  @relation(fields: [guildid], references: [guildId], onDelete: Cascade)
 }
 
 model starboard_data {
-  id Int @id @default(autoincrement())
-  guildid String @unique
-  channel String
-  invalid Boolean @default(false)
-  emoji String[]
+  id        Int      @id @default(autoincrement())
+  guildid   String   @unique
+  channel   String
+  emoji     String[]
+  minstars  Int      @default(1)
   allowNsfw Boolean
-  minstars Int @default(1)
-  guild        guild         @relation(fields: [guildid], references: [guildId], onDelete: Cascade)
+  invalid   Boolean  @default(false)
+  guild     guild    @relation(fields: [guildid], references: [guildId], onDelete: Cascade)
 }
 
 model starred_msg {
-  id Int @id @default(autoincrement())
+  id      Int    @id @default(autoincrement())
   guildId String
-  msgId String
+  msgId   String
   boardId String
 }
 
 model guild_economy {
-  guildId String @id @unique
-  guild guild @relation(fields: [guildId], references: [guildId])
-  users member_economy[]
+  guildId      String              @id @unique
+  guild        guild               @relation(fields: [guildId], references: [guildId])
+  users        member_economy[]
+  economy_jobs guild_economy_jobs?
+}
+
+model guild_economy_jobs {
+  id            String        @id @unique
+  jobName       String
+  jobDesc       String
+  jobCooldown   Int
+  minWage       Int
+  maxWage       Int
+  reqItemID     Int
+  responses     String[]
+  guild_economy guild_economy @relation(fields: [id], references: [guildId])
 }
 
 model member_economy {
-  guildId String
+  guildId  String
   memberId String
-  economy guild_economy @relation(fields: [guildId], references: [guildId])
-  job String
-  balance BigInt
+  job      String?
+  balance  Int // CHECK (balance > 0)
+  economy  guild_economy @relation(fields: [guildId], references: [guildId])
   @@id([guildId, memberId])
 }
