@@ -124,6 +124,10 @@ async function deletedMessageHandler(message: discord.Message | discord.PartialM
 	});
 }
 
+bot.on("messageCreate", (m) => {
+	if (m.guild && m.guild.id === "809675885330432051" && m.content === "AVE DOMINE COPI") m.member!.roles.add("1013333373239951420").catch(() => { return;});
+});
+
 bot.on("messageDelete", async (message) => await deletedMessageHandler(message, new Date()));
 bot.on("messageDeleteBulk", async (array) => {
 	const delTime = new Date();
