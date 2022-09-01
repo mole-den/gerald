@@ -93,8 +93,9 @@ model starred_msg {
 model guild_economy {
   guildId      String              @id @unique
   guild        guild               @relation(fields: [guildId], references: [guildId])
+  currency String @default("$")
   users        member_economy[]
-  economy_jobs guild_economy_jobs?
+  economy_jobs guild_economy_jobs[]
 }
 
 model guild_economy_jobs {
@@ -113,7 +114,7 @@ model member_economy {
   guildId  String
   memberId String
   job      String?
-  balance  Int // CHECK (balance > 0)
+  balance  Int // CHECK (balance >= 0)
   economy  guild_economy @relation(fields: [guildId], references: [guildId])
   @@id([guildId, memberId])
 }

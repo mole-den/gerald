@@ -22,7 +22,6 @@ export const ApplyPreconditions = (conditions: sapphire.PreconditionEntryResolva
 	};
 };
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface GeraldCommandOptions extends sapphire.CommandOptions {
 	subcommandPreconditions?: {
 		cmd: string,
@@ -40,8 +39,8 @@ export interface GeraldModuleSetting {
 	multiple: boolean
 }
 export class GeraldCommand extends sapphire.Command {
-	isModule(x: unknown): x is GeraldCommand & GeraldModule {
-		if (typeof x === "object" && Object.keys(x!).includes("onModuleStart")) return true;
+	isModule(x: GeraldCommand): x is GeraldCommand & GeraldModule {
+		if (x.fullCategory.includes("module")) return true;
 		return false;
 	}
 	protected subcommandPreconditions: Map<string, sapphire.PreconditionEntryResolvable[]> | null;
@@ -52,7 +51,6 @@ export class GeraldCommand extends sapphire.Command {
 		if (options.subcommandPreconditions) {
 			this.subcommandPreconditions = new Map();
 			options.subcommandPreconditions.forEach(o => {
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 				this.subcommandPreconditions!.set(o.cmd, o.preconditions);
 			});
 		} else this.subcommandPreconditions = null;
@@ -86,15 +84,21 @@ export class GeraldCommand extends sapphire.Command {
 				.setTimestamp(new Date())
 				.setDescription("An unhandled exception occurred.");
 			const content = (error as Error).message as string | undefined;
-			embed.addField("Message", content ?? JSON.stringify(error));
+			embed.addField("Message", `\`\`\`${content ?? JSON.stringify(error)}\`\`\``);
 			try {
 				await interaction.reply({
 					embeds: [embed]
 				});
 			} catch {
-				interaction.channel?.send({
-					embeds: [embed]
-				});
+				try {
+					await interaction.editReply({
+						embeds: [embed]
+					});
+				} catch {
+					interaction.channel?.send({
+						embeds: [embed]
+					});
+				}
 			}
 		}
 	}

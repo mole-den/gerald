@@ -10,6 +10,7 @@ import _ from "lodash";
 	requiredUserPermissions: ["MANAGE_CHANNELS"],
 	requiredClientPermissions: [],
 	preconditions: ["GuildOnly"],
+	fullCategory: ["module"],
 }) export class Counting extends GeraldCommand implements GeraldModule {
 	public override registerApplicationCommands(reg: ApplicationCommandRegistry) {
 		reg.registerChatInputCommand((cmd) => {

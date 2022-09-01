@@ -9,6 +9,7 @@ import { bot } from "..";
 	requiredUserPermissions: ["ADMINISTRATOR"],
 	requiredClientPermissions: [],
 	preconditions: ["GuildOnly"],
+	fullCategory: ["module"]
 }) export class Starboard extends GeraldCommand implements GeraldModule {
 	public override registerApplicationCommands(reg: ApplicationCommandRegistry) {
 		reg.registerChatInputCommand((cmd) => {
